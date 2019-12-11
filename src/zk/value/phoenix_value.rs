@@ -1,5 +1,5 @@
 use super::{gen_cs_transcript, gen_random_scalar};
-use crate::{CompressedRistretto, Error, Scalar};
+use crate::{CompressedRistretto, Error, PhoenixIdx, Scalar};
 
 use std::marker::PhantomData;
 
@@ -7,19 +7,13 @@ use bulletproofs::r1cs::{Prover, R1CSProof, Verifier};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PhoenixValue<K>
-where
-    K: for<'d> Deserialize<'d>,
-{
+pub struct PhoenixValue<K: PhoenixIdx> {
     commitments: Vec<CompressedRistretto>,
     blinding_factors: Vec<Scalar>,
     phantom: PhantomData<K>,
 }
 
-impl<K> PhoenixValue<K>
-where
-    K: for<'d> Deserialize<'d>,
-{
+impl<K: PhoenixIdx> PhoenixValue<K> {
     pub fn new(idx: K, value: Scalar) -> Self {
         PhoenixValue::with_blinding_factors(idx, value, vec![gen_random_scalar()])
     }
