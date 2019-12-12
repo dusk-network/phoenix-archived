@@ -23,6 +23,8 @@ pub enum Error {
     R1CS(R1CSError),
     /// I/O [`io::Error`]
     Io(io::Error),
+    /// Field operation error
+    Field(String),
 }
 
 impl fmt::Display for Error {
@@ -30,6 +32,7 @@ impl fmt::Display for Error {
         match self {
             Error::Io(e) => write!(f, "{}", e),
             Error::R1CS(e) => write!(f, "{}", e),
+            Error::Field(s) => write!(f, "{}", s),
         }
     }
 }
@@ -38,7 +41,7 @@ impl error::Error for Error {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match self {
             Error::Io(e) => Some(e),
-            Error::R1CS(_) => None, // R1CSError doesnt implement std error
+            _ => None,
         }
     }
 }
@@ -72,6 +75,7 @@ impl Into<io::Error> for Error {
         match self {
             Error::Io(e) => e,
             Error::R1CS(e) => io::Error::new(io::ErrorKind::Other, e.to_string()),
+            Error::Field(s) => io::Error::new(io::ErrorKind::Other, s),
         }
     }
 }

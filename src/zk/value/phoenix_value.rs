@@ -1,5 +1,5 @@
-use super::{gen_cs_transcript, gen_random_scalar};
-use crate::{CompressedRistretto, Error, PhoenixIdx, Scalar};
+use super::gen_cs_transcript;
+use crate::{utils, CompressedRistretto, Error, PhoenixIdx, Scalar};
 
 use std::marker::PhantomData;
 
@@ -15,7 +15,7 @@ pub struct PhoenixValue<K: PhoenixIdx> {
 
 impl<K: PhoenixIdx> PhoenixValue<K> {
     pub fn new(idx: K, value: Scalar) -> Self {
-        PhoenixValue::with_blinding_factors(idx, value, vec![gen_random_scalar()])
+        PhoenixValue::with_blinding_factors(idx, value, vec![utils::gen_random_scalar()])
     }
 
     pub fn with_blinding_factors(_idx: K, value: Scalar, blinding_factors: Vec<Scalar>) -> Self {
