@@ -6,6 +6,7 @@ pub use keys::{PublicKey, SecretKey, ViewKey};
 pub use note::{NoteType, NoteUtxoType, PhoenixIdx, PhoenixNote, TransparentNote};
 pub use zk::value::PhoenixValue;
 
+pub mod crypto;
 pub mod error;
 pub mod hash;
 pub mod keys;

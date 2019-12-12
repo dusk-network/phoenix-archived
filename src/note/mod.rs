@@ -7,7 +7,7 @@ pub mod transparent;
 
 pub use transparent::TransparentNote;
 
-pub trait PhoenixIdx: for<'de> Deserialize<'de> {}
+pub trait PhoenixIdx: Copy + for<'de> Deserialize<'de> {}
 pub trait PhoenixNote: Sized {
     fn utxo(&self) -> NoteUtxoType;
     fn note(&self) -> NoteType;
