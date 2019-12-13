@@ -1,16 +1,17 @@
 use super::SecretKey;
-use crate::CompressedRistretto;
+use crate::RistrettoPoint;
 
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+// TODO - Serialization and deserialization should be based on compressed points
 pub struct PublicKey {
-    pub a_p: CompressedRistretto,
-    pub b_p: CompressedRistretto,
+    pub a_p: RistrettoPoint,
+    pub b_p: RistrettoPoint,
 }
 
 impl PublicKey {
-    pub fn new(a_p: CompressedRistretto, b_p: CompressedRistretto) -> Self {
+    pub fn new(a_p: RistrettoPoint, b_p: RistrettoPoint) -> Self {
         PublicKey { a_p, b_p }
     }
 }

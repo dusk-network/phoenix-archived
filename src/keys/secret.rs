@@ -24,14 +24,14 @@ impl SecretKey {
     }
 
     pub fn public_key(&self) -> PublicKey {
-        let a_p = utils::scalar_to_field(&self.a).compress();
-        let b_p = utils::scalar_to_field(&self.b).compress();
+        let a_p = utils::scalar_to_field(&self.a);
+        let b_p = utils::scalar_to_field(&self.b);
 
         PublicKey::new(a_p, b_p)
     }
 
     pub fn view_key(&self) -> ViewKey {
-        let b_p = utils::scalar_to_field(&self.b).compress();
+        let b_p = utils::scalar_to_field(&self.b);
 
         ViewKey::new(self.a, b_p)
     }
