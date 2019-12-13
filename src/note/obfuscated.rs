@@ -1,5 +1,5 @@
 use super::{NoteType, NoteUtxoType, PhoenixIdx, PhoenixNote};
-use crate::{crypto, hash, utils, CompressedRistretto, Error, PhoenixValue, PublicKey, Scalar};
+use crate::{crypto, hash, utils, CompressedRistretto, PhoenixValue, PublicKey, Scalar};
 
 use serde::{Deserialize, Serialize};
 
@@ -45,7 +45,7 @@ impl<K: Default + PhoenixIdx> PhoenixNote for ObfuscatedNote<K> {
         NoteType::Obfuscated
     }
 
-    fn output(pk: &PublicKey, value: u64) -> Result<Self, Error> {
+    fn output(pk: &PublicKey, value: u64) -> Self {
         // TODO - Grant r is in Fp
         let r = utils::gen_random_scalar();
         let r_p = utils::scalar_to_field(&r);
@@ -58,10 +58,13 @@ impl<K: Default + PhoenixIdx> PhoenixNote for ObfuscatedNote<K> {
         let phoenix_value = PhoenixValue::new(idx, Scalar::from(value));
         let commitments = phoenix_value.commitments().clone();
         let blinding_factors = phoenix_value.blinding_factors();
-        let blinding_factors = bincode::serialize(blinding_factors)?;
+        let blinding_factors = blinding_factors.iter().fold(vec![], |mut v, f| {
+            v.extend_from_slice(&f.as_bytes()[..]);
+            v
+        });
         let encrypted_blinding_factors = crypto::encrypt(pk_r, blinding_factors);
 
-        Ok(ObfuscatedNote::new(
+        ObfuscatedNote::new(
             NoteUtxoType::Output,
             commitments,
             r_p.compress(),
@@ -69,6 +72,6 @@ impl<K: Default + PhoenixIdx> PhoenixNote for ObfuscatedNote<K> {
             idx,
             encrypted_value,
             encrypted_blinding_factors,
-        ))
+        )
     }
 }

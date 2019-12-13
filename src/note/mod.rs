@@ -1,4 +1,4 @@
-use crate::{Error, PublicKey};
+use crate::PublicKey;
 
 use serde::{Deserialize, Serialize};
 
@@ -11,7 +11,7 @@ pub trait PhoenixIdx: Copy + for<'de> Deserialize<'de> {}
 pub trait PhoenixNote: Sized {
     fn utxo(&self) -> NoteUtxoType;
     fn note(&self) -> NoteType;
-    fn output(pk: &PublicKey, value: u64) -> Result<Self, Error>;
+    fn output(pk: &PublicKey, value: u64) -> Self;
 }
 
 impl PhoenixIdx for () {}

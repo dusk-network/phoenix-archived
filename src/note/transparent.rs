@@ -1,5 +1,5 @@
 use super::{NoteType, NoteUtxoType, PhoenixNote};
-use crate::{hash, utils, CompressedRistretto, Error, PublicKey};
+use crate::{hash, utils, CompressedRistretto, PublicKey};
 
 use serde::{Deserialize, Serialize};
 
@@ -39,7 +39,7 @@ impl<K: Default> PhoenixNote for TransparentNote<K> {
         NoteType::Transparent
     }
 
-    fn output(pk: &PublicKey, value: u64) -> Result<Self, Error> {
+    fn output(pk: &PublicKey, value: u64) -> Self {
         // TODO - Grant r is in Fp
         let r = utils::gen_random_scalar();
         let r_p = utils::scalar_to_field(&r);
@@ -47,12 +47,12 @@ impl<K: Default> PhoenixNote for TransparentNote<K> {
         let b_p = pk.b_p;
         let pk_r = hash::hash_in_p(&r * &a_p) + b_p;
 
-        Ok(TransparentNote::new(
+        TransparentNote::new(
             NoteUtxoType::Output,
             value,
             r_p.compress(),
             pk_r.compress(),
             K::default(),
-        ))
+        )
     }
 }
