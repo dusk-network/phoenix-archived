@@ -4,23 +4,23 @@ use crate::{crypto, hash, utils, CompressedRistretto, PhoenixValue, PublicKey, S
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ObfuscatedNote<K: Default> {
+pub struct ObfuscatedNote {
     utxo: NoteUtxoType,
     commitments: Vec<CompressedRistretto>,
     r_p: CompressedRistretto,
     pk_r: CompressedRistretto,
-    idx: K,
+    idx: PhoenixIdx,
     encrypted_value: Vec<u8>,
     encrypted_blinding_factors: Vec<u8>,
 }
 
-impl<K: Default> ObfuscatedNote<K> {
+impl ObfuscatedNote {
     pub fn new(
         utxo: NoteUtxoType,
         commitments: Vec<CompressedRistretto>,
         r_p: CompressedRistretto,
         pk_r: CompressedRistretto,
-        idx: K,
+        idx: PhoenixIdx,
         encrypted_value: Vec<u8>,
         encrypted_blinding_factors: Vec<u8>,
     ) -> Self {
@@ -36,7 +36,7 @@ impl<K: Default> ObfuscatedNote<K> {
     }
 }
 
-impl<K: Default + PhoenixIdx> PhoenixNote for ObfuscatedNote<K> {
+impl PhoenixNote for ObfuscatedNote {
     fn utxo(&self) -> NoteUtxoType {
         self.utxo
     }
@@ -53,7 +53,7 @@ impl<K: Default + PhoenixIdx> PhoenixNote for ObfuscatedNote<K> {
         let b_p = pk.b_p;
         let pk_r = hash::hash_in_p(&r * &a_p) + b_p;
 
-        let idx = K::default();
+        let idx = PhoenixIdx::default();
         let encrypted_value = crypto::encrypt(pk_r, value.to_le_bytes().to_vec());
         let phoenix_value = PhoenixValue::new(idx, Scalar::from(value));
         let commitments = phoenix_value.commitments().clone();

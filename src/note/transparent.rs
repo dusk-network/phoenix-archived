@@ -1,24 +1,24 @@
-use super::{NoteType, NoteUtxoType, PhoenixNote};
+use super::{NoteType, NoteUtxoType, PhoenixIdx, PhoenixNote};
 use crate::{hash, utils, CompressedRistretto, PublicKey};
 
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub struct TransparentNote<K: Default> {
+pub struct TransparentNote {
     utxo: NoteUtxoType,
     value: u64,
     r_p: CompressedRistretto,
     pk_r: CompressedRistretto,
-    idx: K,
+    idx: PhoenixIdx,
 }
 
-impl<K: Default> TransparentNote<K> {
+impl TransparentNote {
     pub fn new(
         utxo: NoteUtxoType,
         value: u64,
         r_p: CompressedRistretto,
         pk_r: CompressedRistretto,
-        idx: K,
+        idx: PhoenixIdx,
     ) -> Self {
         TransparentNote {
             utxo,
@@ -30,7 +30,7 @@ impl<K: Default> TransparentNote<K> {
     }
 }
 
-impl<K: Default> PhoenixNote for TransparentNote<K> {
+impl PhoenixNote for TransparentNote {
     fn utxo(&self) -> NoteUtxoType {
         self.utxo
     }
@@ -52,7 +52,7 @@ impl<K: Default> PhoenixNote for TransparentNote<K> {
             value,
             r_p.compress(),
             pk_r.compress(),
-            K::default(),
+            PhoenixIdx::default(),
         )
     }
 }

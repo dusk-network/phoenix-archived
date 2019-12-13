@@ -1,24 +1,25 @@
 use super::gen_cs_transcript;
 use crate::{utils, CompressedRistretto, Error, PhoenixIdx, Scalar};
 
-use std::marker::PhantomData;
-
 use bulletproofs::r1cs::{Prover, R1CSProof, Verifier};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PhoenixValue<K: PhoenixIdx> {
+pub struct PhoenixValue {
     commitments: Vec<CompressedRistretto>,
     blinding_factors: Vec<Scalar>,
-    phantom: PhantomData<K>,
 }
 
-impl<K: PhoenixIdx> PhoenixValue<K> {
-    pub fn new(idx: K, value: Scalar) -> Self {
+impl PhoenixValue {
+    pub fn new(idx: PhoenixIdx, value: Scalar) -> Self {
         PhoenixValue::with_blinding_factors(idx, value, vec![utils::gen_random_scalar()])
     }
 
-    pub fn with_blinding_factors(_idx: K, value: Scalar, blinding_factors: Vec<Scalar>) -> Self {
+    pub fn with_blinding_factors(
+        _idx: PhoenixIdx,
+        value: Scalar,
+        blinding_factors: Vec<Scalar>,
+    ) -> Self {
         let (pc_gens, _, mut transcript) = gen_cs_transcript();
         let mut prover = Prover::new(&pc_gens, &mut transcript);
 
@@ -41,7 +42,6 @@ impl<K: PhoenixIdx> PhoenixValue<K> {
         PhoenixValue {
             commitments,
             blinding_factors,
-            phantom: PhantomData,
         }
     }
 
