@@ -2,7 +2,6 @@ use std::error;
 use std::fmt;
 use std::io;
 
-use bincode::Error as BincodeError;
 use bulletproofs::r1cs::R1CSError;
 use serde::de::Error as SerdeDeError;
 use serde::ser::Error as SerdeSerError;
@@ -26,8 +25,6 @@ pub enum Error {
     Io(io::Error),
     /// Field operation error
     Field(String),
-    /// [`BincodeError`]
-    Bincode(BincodeError),
     /// Cryptographic bottom
     Generic,
 }
@@ -44,7 +41,6 @@ impl fmt::Display for Error {
             Error::Io(e) => write!(f, "{}", e),
             Error::R1CS(e) => write!(f, "{}", e),
             Error::Field(s) => write!(f, "{}", s),
-            Error::Bincode(e) => write!(f, "{}", e),
             _ => write!(f, "{:?}", self),
         }
     }
@@ -54,7 +50,6 @@ impl error::Error for Error {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match self {
             Error::Io(e) => Some(e),
-            Error::Bincode(e) => Some(e),
             _ => None,
         }
     }
@@ -95,4 +90,3 @@ impl Into<io::Error> for Error {
 
 from_error!(io::Error, Io);
 from_error!(R1CSError, R1CS);
-from_error!(BincodeError, Bincode);
