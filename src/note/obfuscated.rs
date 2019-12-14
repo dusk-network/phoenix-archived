@@ -131,13 +131,11 @@ impl PhoenixNote for ObfuscatedNote {
 
     fn prove_value(&self, sk_r: &SecretKey) -> Result<R1CSProof, Error> {
         let value = self.decrypt_value(sk_r);
-        let value = Scalar::from(value);
-
         let blinding_factors = self.decrypt_blinding_factors(sk_r);
 
         let phoenix_value = PhoenixValue::with_blinding_factors(self.idx, value, blinding_factors);
 
-        phoenix_value.prove(&value).map_err(Error::generic)
+        phoenix_value.prove(value).map_err(Error::generic)
     }
 
     fn verify_value(&self, proof: &R1CSProof) -> Result<(), Error> {

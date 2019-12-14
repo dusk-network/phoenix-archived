@@ -11,18 +11,19 @@ pub struct PhoenixValue {
 }
 
 impl PhoenixValue {
-    pub fn new(idx: PhoenixIdx, value: Scalar) -> Self {
+    pub fn new<S: Into<Scalar>>(idx: PhoenixIdx, value: S) -> Self {
         PhoenixValue::with_blinding_factors(idx, value, vec![utils::gen_random_scalar()])
     }
 
-    pub fn with_blinding_factors(
+    pub fn with_blinding_factors<S: Into<Scalar>>(
         _idx: PhoenixIdx,
-        value: Scalar,
+        value: S,
         blinding_factors: Vec<Scalar>,
     ) -> Self {
         let (pc_gens, _, mut transcript) = gen_cs_transcript();
         let mut prover = Prover::new(&pc_gens, &mut transcript);
 
+        let value: Scalar = value.into();
         let commitments = blinding_factors
             .iter()
             .map(|b| prover.commit(value, *b).0)
@@ -45,12 +46,14 @@ impl PhoenixValue {
         }
     }
 
-    pub fn prove(&self, value: &Scalar) -> Result<R1CSProof, Error> {
+    pub fn prove<S: Into<Scalar>>(&self, value: S) -> Result<R1CSProof, Error> {
+        let value: Scalar = value.into();
+
         let (pc_gens, bp_gens, mut transcript) = gen_cs_transcript();
         let mut prover = Prover::new(&pc_gens, &mut transcript);
 
         self.blinding_factors.iter().for_each(|b| {
-            prover.commit(*value, *b).0;
+            prover.commit(value, *b).0;
         });
 
         prover.prove(&bp_gens).map_err(Error::from)
