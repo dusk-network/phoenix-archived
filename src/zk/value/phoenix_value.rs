@@ -1,7 +1,7 @@
 use super::gen_cs_transcript;
-use crate::{utils, CompressedRistretto, Error, PhoenixIdx, Scalar};
+use crate::{utils, CompressedRistretto, Error, PhoenixIdx, R1CSProof, Scalar};
 
-use bulletproofs::r1cs::{Prover, R1CSProof, Verifier};
+use bulletproofs::r1cs::{Prover, Verifier};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

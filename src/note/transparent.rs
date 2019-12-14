@@ -1,14 +1,15 @@
 use super::{NoteType, NoteUtxoType, PhoenixIdx, PhoenixNote};
-use crate::{hash, utils, CompressedRistretto, PublicKey};
+use crate::{hash, utils, PublicKey, RistrettoPoint};
 
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+// TODO - Serialization and deserialization should be based on compressed points
 pub struct TransparentNote {
     utxo: NoteUtxoType,
     value: u64,
-    r_p: CompressedRistretto,
-    pk_r: CompressedRistretto,
+    r_p: RistrettoPoint,
+    pk_r: RistrettoPoint,
     idx: PhoenixIdx,
 }
 
@@ -16,8 +17,8 @@ impl TransparentNote {
     pub fn new(
         utxo: NoteUtxoType,
         value: u64,
-        r_p: CompressedRistretto,
-        pk_r: CompressedRistretto,
+        r_p: RistrettoPoint,
+        pk_r: RistrettoPoint,
         idx: PhoenixIdx,
     ) -> Self {
         TransparentNote {
@@ -28,6 +29,10 @@ impl TransparentNote {
             idx,
         }
     }
+
+    pub fn value(&self) -> u64 {
+        self.value
+    }
 }
 
 impl PhoenixNote for TransparentNote {
@@ -37,6 +42,10 @@ impl PhoenixNote for TransparentNote {
 
     fn note(&self) -> NoteType {
         NoteType::Transparent
+    }
+
+    fn idx(&self) -> &PhoenixIdx {
+        &self.idx
     }
 
     fn output(pk: &PublicKey, value: u64) -> Self {
@@ -50,9 +59,14 @@ impl PhoenixNote for TransparentNote {
         TransparentNote::new(
             NoteUtxoType::Output,
             value,
-            r_p.compress(),
-            pk_r.compress(),
+            r_p,
+            pk_r,
             PhoenixIdx::default(),
         )
+    }
+
+    fn set_idx(mut self, idx: PhoenixIdx) -> Self {
+        self.idx = idx;
+        self
     }
 }

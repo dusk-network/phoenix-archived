@@ -28,6 +28,14 @@ pub enum Error {
     Field(String),
     /// [`BincodeError`]
     Bincode(BincodeError),
+    /// Cryptographic bottom
+    Generic,
+}
+
+impl Error {
+    pub fn generic<T>(_e: T) -> Error {
+        Error::Generic
+    }
 }
 
 impl fmt::Display for Error {
@@ -37,6 +45,7 @@ impl fmt::Display for Error {
             Error::R1CS(e) => write!(f, "{}", e),
             Error::Field(s) => write!(f, "{}", s),
             Error::Bincode(e) => write!(f, "{}", e),
+            _ => write!(f, "{:?}", self),
         }
     }
 }
@@ -79,9 +88,7 @@ impl Into<io::Error> for Error {
     fn into(self) -> io::Error {
         match self {
             Error::Io(e) => e,
-            Error::R1CS(e) => io::Error::new(io::ErrorKind::Other, e.to_string()),
-            Error::Field(s) => io::Error::new(io::ErrorKind::Other, s),
-            Error::Bincode(e) => io::Error::new(io::ErrorKind::Other, e.to_string()),
+            _ => io::Error::new(io::ErrorKind::Other, format!("{:?}", self)),
         }
     }
 }

@@ -1,5 +1,5 @@
 use super::{PublicKey, ViewKey};
-use crate::{utils, Scalar};
+use crate::{hash, utils, RistrettoPoint, Scalar};
 
 use serde::{Deserialize, Serialize};
 
@@ -34,5 +34,12 @@ impl SecretKey {
         let b_p = utils::scalar_to_field(&self.b);
 
         ViewKey::new(self.a, b_p)
+    }
+
+    pub fn r_p(&self, r_p: &RistrettoPoint) -> RistrettoPoint {
+        let a_r = hash::hash_in_p(&self.a * r_p);
+        let b_r = utils::scalar_to_field(&self.b);
+
+        a_r + b_r
     }
 }

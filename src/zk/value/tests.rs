@@ -1,5 +1,4 @@
-use crate::{PhoenixIdx, PhoenixValue};
-use bulletproofs::r1cs::R1CSProof;
+use crate::{PhoenixIdx, PhoenixValue, R1CSProof};
 use curve25519_dalek::ristretto::CompressedRistretto;
 use curve25519_dalek::scalar::Scalar;
 
