@@ -88,7 +88,7 @@ impl Into<io::Error> for Error {
     fn into(self) -> io::Error {
         match self {
             Error::Io(e) => e,
-            _ => io::Error::new(io::ErrorKind::Other, format!("{:?}", self)),
+            _ => io::Error::new(io::ErrorKind::Other, format!("{}", self)),
         }
     }
 }
