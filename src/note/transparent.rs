@@ -1,4 +1,4 @@
-use super::{NoteType, NoteUtxoType, PhoenixIdx, PhoenixNote};
+use super::{Idx, Note, NoteType, NoteUtxoType};
 use crate::{hash, utils, PublicKey, RistrettoPoint};
 
 use serde::{Deserialize, Serialize};
@@ -10,7 +10,7 @@ pub struct TransparentNote {
     value: u64,
     r_p: RistrettoPoint,
     pk_r: RistrettoPoint,
-    idx: PhoenixIdx,
+    idx: Idx,
 }
 
 impl TransparentNote {
@@ -19,7 +19,7 @@ impl TransparentNote {
         value: u64,
         r_p: RistrettoPoint,
         pk_r: RistrettoPoint,
-        idx: PhoenixIdx,
+        idx: Idx,
     ) -> Self {
         TransparentNote {
             utxo,
@@ -35,7 +35,7 @@ impl TransparentNote {
     }
 }
 
-impl PhoenixNote for TransparentNote {
+impl Note for TransparentNote {
     fn utxo(&self) -> NoteUtxoType {
         self.utxo
     }
@@ -44,11 +44,11 @@ impl PhoenixNote for TransparentNote {
         NoteType::Transparent
     }
 
-    fn idx(&self) -> &PhoenixIdx {
+    fn idx(&self) -> &Idx {
         &self.idx
     }
 
-    fn input(_idx: &PhoenixIdx) -> Self {
+    fn input(_idx: &Idx) -> Self {
         unimplemented!()
     }
 
@@ -60,16 +60,10 @@ impl PhoenixNote for TransparentNote {
         let b_p = pk.b_p;
         let pk_r = hash::hash_in_p(&r * &a_p) + b_p;
 
-        TransparentNote::new(
-            NoteUtxoType::Output,
-            value,
-            r_p,
-            pk_r,
-            PhoenixIdx::default(),
-        )
+        TransparentNote::new(NoteUtxoType::Output, value, r_p, pk_r, Idx::default())
     }
 
-    fn set_idx(mut self, idx: PhoenixIdx) -> Self {
+    fn set_idx(mut self, idx: Idx) -> Self {
         self.idx = idx;
         self
     }

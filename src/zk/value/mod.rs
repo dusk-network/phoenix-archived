@@ -1,9 +1,9 @@
 use bulletproofs::{BulletproofGens, PedersenGens};
 use merlin::Transcript;
 
-pub use phoenix_value::PhoenixValue;
+pub use value::Value;
 
-mod phoenix_value;
+mod value;
 
 #[cfg(test)]
 mod tests;

@@ -12,17 +12,22 @@ pub use obfuscated::ObfuscatedNote;
 pub use transparent::TransparentNote;
 
 #[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
-pub struct PhoenixIdx(pub u64);
+pub struct Nullifier {
+    point: RistrettoPoint,
+}
 
-impl From<u64> for PhoenixIdx {
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
+pub struct Idx(pub u64);
+
+impl From<u64> for Idx {
     fn from(idx: u64) -> Self {
-        PhoenixIdx(idx)
+        Idx(idx)
     }
 }
 
-pub trait PhoenixNote: Sized {
+pub trait Note: Sized {
     /// Create a new phoenix note
-    fn input(idx: &PhoenixIdx) -> Self;
+    fn input(idx: &Idx) -> Self;
     fn output(pk: &PublicKey, value: u64) -> Self;
 
     /// Generate a proof of knowledge of the value
@@ -38,9 +43,9 @@ pub trait PhoenixNote: Sized {
     /// Attributes
     fn utxo(&self) -> NoteUtxoType;
     fn note(&self) -> NoteType;
-    fn idx(&self) -> &PhoenixIdx;
-    fn set_idx(self, idx: PhoenixIdx) -> Self;
-    fn nullifier(&self, _sk_r: &SecretKey) -> RistrettoPoint {
+    fn idx(&self) -> &Idx;
+    fn set_idx(self, idx: Idx) -> Self;
+    fn nullifier(&self, _sk_r: &SecretKey) -> Nullifier {
         unimplemented!()
     }
 }

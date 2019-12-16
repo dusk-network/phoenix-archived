@@ -1,4 +1,4 @@
-use crate::{Error, NoteUtxoType, ObfuscatedNote, PhoenixNote, PublicKey, TransparentNote};
+use crate::{Error, Note, NoteUtxoType, ObfuscatedNote, PublicKey, TransparentNote};
 
 use serde::{Deserialize, Serialize};
 
@@ -12,14 +12,14 @@ pub struct Transaction {
 }
 
 impl Transaction {
-    pub fn push_transparent<N: PhoenixNote>(&mut self, note: TransparentNote) {
+    pub fn push_transparent<N: Note>(&mut self, note: TransparentNote) {
         match note.utxo() {
             NoteUtxoType::Input => self.input_transparent.push(note),
             NoteUtxoType::Output => self.output_transparent.push(note),
         }
     }
 
-    pub fn push_obfuscated<N: PhoenixNote>(&mut self, note: ObfuscatedNote) {
+    pub fn push_obfuscated<N: Note>(&mut self, note: ObfuscatedNote) {
         match note.utxo() {
             NoteUtxoType::Input => self.input_obfuscated.push(note),
             NoteUtxoType::Output => self.output_obfuscated.push(note),

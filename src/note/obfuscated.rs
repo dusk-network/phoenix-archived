@@ -1,7 +1,7 @@
-use super::{NoteType, NoteUtxoType, PhoenixIdx, PhoenixNote};
+use super::{Idx, Note, NoteType, NoteUtxoType};
 use crate::{
-    crypto, hash, utils, CompressedRistretto, Error, PhoenixValue, PublicKey, R1CSProof,
-    RistrettoPoint, Scalar, SecretKey,
+    crypto, hash, utils, CompressedRistretto, Error, PublicKey, R1CSProof, RistrettoPoint, Scalar,
+    SecretKey, Value,
 };
 use std::cmp;
 
@@ -14,7 +14,7 @@ pub struct ObfuscatedNote {
     commitments: Vec<CompressedRistretto>,
     r_p: RistrettoPoint,
     pk_r: RistrettoPoint,
-    idx: PhoenixIdx,
+    idx: Idx,
     encrypted_value: Vec<u8>,
     encrypted_blinding_factors: Vec<u8>,
 }
@@ -25,7 +25,7 @@ impl ObfuscatedNote {
         commitments: Vec<CompressedRistretto>,
         r_p: RistrettoPoint,
         pk_r: RistrettoPoint,
-        idx: PhoenixIdx,
+        idx: Idx,
         encrypted_value: Vec<u8>,
         encrypted_blinding_factors: Vec<u8>,
     ) -> Self {
@@ -84,7 +84,7 @@ impl ObfuscatedNote {
     }
 }
 
-impl PhoenixNote for ObfuscatedNote {
+impl Note for ObfuscatedNote {
     fn utxo(&self) -> NoteUtxoType {
         self.utxo
     }
@@ -93,11 +93,11 @@ impl PhoenixNote for ObfuscatedNote {
         NoteType::Obfuscated
     }
 
-    fn idx(&self) -> &PhoenixIdx {
+    fn idx(&self) -> &Idx {
         &self.idx
     }
 
-    fn input(_idx: &PhoenixIdx) -> Self {
+    fn input(_idx: &Idx) -> Self {
         unimplemented!()
     }
 
@@ -109,8 +109,8 @@ impl PhoenixNote for ObfuscatedNote {
         let b_p = pk.b_p;
         let pk_r = hash::hash_in_p(&r * &a_p) + b_p;
 
-        let idx = PhoenixIdx::default();
-        let phoenix_value = PhoenixValue::new(idx, Scalar::from(value));
+        let idx = Idx::default();
+        let phoenix_value = Value::new(idx, Scalar::from(value));
         let commitments = phoenix_value.commitments().clone();
 
         let encrypted_value = ObfuscatedNote::encrypt_value(&pk_r, value);
@@ -128,7 +128,7 @@ impl PhoenixNote for ObfuscatedNote {
         )
     }
 
-    fn set_idx(mut self, idx: PhoenixIdx) -> Self {
+    fn set_idx(mut self, idx: Idx) -> Self {
         self.idx = idx;
         self
     }
@@ -137,13 +137,13 @@ impl PhoenixNote for ObfuscatedNote {
         let value = self.decrypt_value(sk_r);
         let blinding_factors = self.decrypt_blinding_factors(sk_r);
 
-        let phoenix_value = PhoenixValue::with_blinding_factors(self.idx, value, blinding_factors);
+        let phoenix_value = Value::with_blinding_factors(self.idx, value, blinding_factors);
 
         phoenix_value.prove(value).map_err(Error::generic)
     }
 
     fn verify_value(&self, proof: &R1CSProof) -> Result<(), Error> {
-        PhoenixValue::with_commitments(self.commitments.clone())
+        Value::with_commitments(self.commitments.clone())
             .verify(proof)
             .map_err(Error::generic)
     }

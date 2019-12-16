@@ -1,22 +1,22 @@
 use super::gen_cs_transcript;
-use crate::{utils, CompressedRistretto, Error, PhoenixIdx, R1CSProof, Scalar};
+use crate::{utils, CompressedRistretto, Error, Idx, R1CSProof, Scalar};
 
 use bulletproofs::r1cs::{Prover, Verifier};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PhoenixValue {
+pub struct Value {
     commitments: Vec<CompressedRistretto>,
     blinding_factors: Vec<Scalar>,
 }
 
-impl PhoenixValue {
-    pub fn new<S: Into<Scalar>>(idx: PhoenixIdx, value: S) -> Self {
-        PhoenixValue::with_blinding_factors(idx, value, vec![utils::gen_random_scalar()])
+impl Value {
+    pub fn new<S: Into<Scalar>>(idx: Idx, value: S) -> Self {
+        Value::with_blinding_factors(idx, value, vec![utils::gen_random_scalar()])
     }
 
     pub fn with_blinding_factors<S: Into<Scalar>>(
-        _idx: PhoenixIdx,
+        _idx: Idx,
         value: S,
         blinding_factors: Vec<Scalar>,
     ) -> Self {
@@ -29,18 +29,18 @@ impl PhoenixValue {
             .map(|b| prover.commit(value, *b).0)
             .collect();
 
-        PhoenixValue::with_commitments_and_blinding_factors(commitments, blinding_factors)
+        Value::with_commitments_and_blinding_factors(commitments, blinding_factors)
     }
 
     pub fn with_commitments(commitments: Vec<CompressedRistretto>) -> Self {
-        PhoenixValue::with_commitments_and_blinding_factors(commitments, vec![])
+        Value::with_commitments_and_blinding_factors(commitments, vec![])
     }
 
     pub fn with_commitments_and_blinding_factors(
         commitments: Vec<CompressedRistretto>,
         blinding_factors: Vec<Scalar>,
     ) -> Self {
-        PhoenixValue {
+        Value {
             commitments,
             blinding_factors,
         }
