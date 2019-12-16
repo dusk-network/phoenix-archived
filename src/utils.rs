@@ -10,6 +10,6 @@ pub fn gen_random_scalar() -> Scalar {
     Scalar::from_bits(s)
 }
 
-pub fn scalar_to_field(s: &Scalar) -> RistrettoPoint {
+pub fn mul_by_basepoint(s: &Scalar) -> RistrettoPoint {
     s * &constants::RISTRETTO_BASEPOINT_TABLE
 }

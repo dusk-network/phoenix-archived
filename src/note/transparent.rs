@@ -1,4 +1,4 @@
-use super::{Idx, Note, NoteType, NoteUtxoType};
+use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
 use crate::{hash, utils, PublicKey, RistrettoPoint};
 
 use serde::{Deserialize, Serialize};
@@ -29,13 +29,30 @@ impl TransparentNote {
             idx,
         }
     }
+}
 
-    pub fn value(&self) -> u64 {
-        self.value
+impl NoteGenerator for TransparentNote {
+    fn input(_idx: &Idx) -> Self {
+        unimplemented!()
+    }
+
+    fn output(pk: &PublicKey, value: u64) -> Self {
+        // TODO - Grant r is in Fp
+        let r = utils::gen_random_scalar();
+        let r_p = utils::mul_by_basepoint(&r);
+        let a_p = pk.a_p;
+        let b_p = pk.b_p;
+        let pk_r = hash::hash_in_p(&r * &a_p) + b_p;
+
+        TransparentNote::new(NoteUtxoType::Output, value, r_p, pk_r, Idx::default())
     }
 }
 
 impl Note for TransparentNote {
+    fn box_clone(&self) -> Box<dyn Note> {
+        Box::new(self.clone())
+    }
+
     fn utxo(&self) -> NoteUtxoType {
         self.utxo
     }
@@ -48,23 +65,11 @@ impl Note for TransparentNote {
         &self.idx
     }
 
-    fn input(_idx: &Idx) -> Self {
-        unimplemented!()
-    }
-
-    fn output(pk: &PublicKey, value: u64) -> Self {
-        // TODO - Grant r is in Fp
-        let r = utils::gen_random_scalar();
-        let r_p = utils::scalar_to_field(&r);
-        let a_p = pk.a_p;
-        let b_p = pk.b_p;
-        let pk_r = hash::hash_in_p(&r * &a_p) + b_p;
-
-        TransparentNote::new(NoteUtxoType::Output, value, r_p, pk_r, Idx::default())
-    }
-
-    fn set_idx(mut self, idx: Idx) -> Self {
+    fn set_idx(&mut self, idx: Idx) {
         self.idx = idx;
-        self
+    }
+
+    fn value(&self) -> u64 {
+        self.value
     }
 }

@@ -24,21 +24,21 @@ impl SecretKey {
     }
 
     pub fn public_key(&self) -> PublicKey {
-        let a_p = utils::scalar_to_field(&self.a);
-        let b_p = utils::scalar_to_field(&self.b);
+        let a_p = utils::mul_by_basepoint(&self.a);
+        let b_p = utils::mul_by_basepoint(&self.b);
 
         PublicKey::new(a_p, b_p)
     }
 
     pub fn view_key(&self) -> ViewKey {
-        let b_p = utils::scalar_to_field(&self.b);
+        let b_p = utils::mul_by_basepoint(&self.b);
 
         ViewKey::new(self.a, b_p)
     }
 
     pub fn r_p(&self, r_p: &RistrettoPoint) -> RistrettoPoint {
         let a_r = hash::hash_in_p(&self.a * r_p);
-        let b_r = utils::scalar_to_field(&self.b);
+        let b_r = utils::mul_by_basepoint(&self.b);
 
         a_r + b_r
     }

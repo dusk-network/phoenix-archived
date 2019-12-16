@@ -1,6 +1,10 @@
+use crate::{Idx, Note, Nullifier};
+
+use std::collections::{HashMap, HashSet};
 use std::error;
 use std::fmt;
 use std::io;
+use std::sync::{MutexGuard, TryLockError};
 
 use bulletproofs::r1cs::R1CSError;
 use serde::de::Error as SerdeDeError;
@@ -11,6 +15,16 @@ macro_rules! from_error {
         impl From<$t> for Error {
             fn from(e: $t) -> Self {
                 Error::$id(e)
+            }
+        }
+    };
+}
+
+macro_rules! from_error_unit {
+    ($t:ty, $id:ident) => {
+        impl From<$t> for Error {
+            fn from(_e: $t) -> Self {
+                Error::$id
             }
         }
     };
@@ -27,6 +41,8 @@ pub enum Error {
     Field(String),
     /// Cryptographic bottom
     Generic,
+    /// Resource not ready
+    NotReady,
 }
 
 impl Error {
@@ -90,3 +106,8 @@ impl Into<io::Error> for Error {
 
 from_error!(io::Error, Io);
 from_error!(R1CSError, R1CS);
+from_error_unit!(
+    TryLockError<MutexGuard<'_, HashMap<Idx, Box<(dyn Note + 'static)>>>>,
+    NotReady
+);
+from_error_unit!(TryLockError<MutexGuard<'_, HashSet<Nullifier>>>, NotReady);

@@ -1,4 +1,4 @@
-use super::{Idx, Note, NoteType, NoteUtxoType};
+use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
 use crate::{
     crypto, hash, utils, CompressedRistretto, Error, PublicKey, R1CSProof, RistrettoPoint, Scalar,
     SecretKey, Value,
@@ -39,9 +39,7 @@ impl ObfuscatedNote {
             encrypted_blinding_factors,
         }
     }
-}
 
-impl ObfuscatedNote {
     fn encrypt_value(pk_r: &RistrettoPoint, value: u64) -> Vec<u8> {
         crypto::encrypt(pk_r, &value.to_le_bytes()[..])
     }
@@ -84,19 +82,7 @@ impl ObfuscatedNote {
     }
 }
 
-impl Note for ObfuscatedNote {
-    fn utxo(&self) -> NoteUtxoType {
-        self.utxo
-    }
-
-    fn note(&self) -> NoteType {
-        NoteType::Obfuscated
-    }
-
-    fn idx(&self) -> &Idx {
-        &self.idx
-    }
-
+impl NoteGenerator for ObfuscatedNote {
     fn input(_idx: &Idx) -> Self {
         unimplemented!()
     }
@@ -104,7 +90,7 @@ impl Note for ObfuscatedNote {
     fn output(pk: &PublicKey, value: u64) -> Self {
         // TODO - Grant r is in Fp
         let r = utils::gen_random_scalar();
-        let r_p = utils::scalar_to_field(&r);
+        let r_p = utils::mul_by_basepoint(&r);
         let a_p = pk.a_p;
         let b_p = pk.b_p;
         let pk_r = hash::hash_in_p(&r * &a_p) + b_p;
@@ -127,10 +113,27 @@ impl Note for ObfuscatedNote {
             encrypted_blinding_factors,
         )
     }
+}
 
-    fn set_idx(mut self, idx: Idx) -> Self {
+impl Note for ObfuscatedNote {
+    fn box_clone(&self) -> Box<dyn Note> {
+        Box::new(self.clone())
+    }
+
+    fn utxo(&self) -> NoteUtxoType {
+        self.utxo
+    }
+
+    fn note(&self) -> NoteType {
+        NoteType::Obfuscated
+    }
+
+    fn idx(&self) -> &Idx {
+        &self.idx
+    }
+
+    fn set_idx(&mut self, idx: Idx) {
         self.idx = idx;
-        self
     }
 
     fn prove_value(&self, sk_r: &SecretKey) -> Result<R1CSProof, Error> {

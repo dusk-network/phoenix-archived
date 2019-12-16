@@ -1,55 +1,84 @@
-use crate::{Error, Note, NoteUtxoType, ObfuscatedNote, PublicKey, TransparentNote};
+use crate::{Db, Error, Note, NoteGenerator, NoteUtxoType, Nullifier, PublicKey, TransparentNote};
 
-use serde::{Deserialize, Serialize};
+#[derive(Debug)]
+pub struct TransactionItem {
+    utxo: NoteUtxoType,
+    note: Box<dyn Note>,
+    nullifier: Nullifier,
+}
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+impl TransactionItem {
+    pub fn new<N: Note>(utxo: NoteUtxoType, note: N, nullifier: Nullifier) -> Self {
+        TransactionItem {
+            utxo,
+            note: note.box_clone(),
+            nullifier,
+        }
+    }
+
+    pub fn value(&self) -> u64 {
+        self.note.value()
+    }
+
+    pub fn note(&self) -> Box<dyn Note> {
+        self.note.box_clone()
+    }
+
+    pub fn nullifier(&self) -> Nullifier {
+        self.nullifier.clone()
+    }
+}
+
+#[derive(Debug)]
 pub struct Transaction {
-    // TODO - Maybe use dyn implementation?
-    input_transparent: Vec<TransparentNote>,
-    input_obfuscated: Vec<ObfuscatedNote>,
-    output_transparent: Vec<TransparentNote>,
-    output_obfuscated: Vec<ObfuscatedNote>,
+    fee: TransactionItem,
+    items: Vec<TransactionItem>,
 }
 
 impl Transaction {
-    pub fn push_transparent<N: Note>(&mut self, note: TransparentNote) {
-        match note.utxo() {
-            NoteUtxoType::Input => self.input_transparent.push(note),
-            NoteUtxoType::Output => self.output_transparent.push(note),
+    pub fn push(&mut self, item: TransactionItem) {
+        self.items.push(item);
+    }
+
+    pub fn fee(&self) -> &TransactionItem {
+        &self.fee
+    }
+
+    pub fn items(&self) -> &Vec<TransactionItem> {
+        &self.items
+    }
+
+    pub fn prepare(&mut self, db: &Db, miner_pk: &PublicKey) -> Result<(), Error> {
+        // TODO - Generate the proper fee value
+        let fee = TransparentNote::output(miner_pk, 1);
+        self.fee = TransactionItem::new(NoteUtxoType::Output, fee, Nullifier::default());
+
+        // Grant no nullifier exists for the inputs
+        self.items.iter().try_fold((), |_, i| {
+            if i.utxo == NoteUtxoType::Input {
+                if db.fetch_nullifier(&i.nullifier)?.is_some() {
+                    return Err(Error::Generic);
+                }
+            }
+
+            Ok(())
+        })?;
+
+        let mut sum = (0, 0);
+        self.items.iter().for_each(|i| match i.utxo {
+            NoteUtxoType::Input => sum.0 += i.value(),
+            NoteUtxoType::Output => sum.1 += i.value(),
+        });
+        let (input, output) = sum;
+
+        // TODO - Apply a homomorphic sum from input to obfuscated input values
+        // TODO - Apply a homomorphic sum from output to obfuscated output values
+
+        // TODO - Validate the homomorphic result instead
+        if input != output {
+            return Err(Error::Generic);
         }
-    }
 
-    pub fn push_obfuscated<N: Note>(&mut self, note: ObfuscatedNote) {
-        match note.utxo() {
-            NoteUtxoType::Input => self.input_obfuscated.push(note),
-            NoteUtxoType::Output => self.output_obfuscated.push(note),
-        }
-    }
-
-    pub fn prepare(mut self, miner_pk: &PublicKey) -> Self {
-        // TODO - Write the logic to create the transaction fee / gas cost
-        self.output_transparent
-            .push(TransparentNote::output(miner_pk, 1));
-        self
-    }
-
-    pub fn validate(self) -> Result<Self, Error> {
-        // TODO - Grant no nullifier exists for input_transparent
-        // TODO - Grant no nullifier exists for input_obfuscated
-
-        let _input: u64 = self.input_transparent.iter().map(|n| n.value()).sum();
-        let _output: u64 = self.output_transparent.iter().map(|n| n.value()).sum();
-
-        // TODO - Apply a homomorphic sum from input to input_obfuscated
-        // TODO - Apply a homomorphic sum from output to output_obfuscated
-        // TODO - Grant the sum input_obfuscated = output_obfuscated
-
-        Ok(self)
-    }
-
-    pub fn execute(self) -> Result<(), Error> {
-        // TODO - Write all notes to the chain
-        // TODO - Write the nullifiers to the storage
         Ok(())
     }
 }

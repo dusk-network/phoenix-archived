@@ -5,7 +5,10 @@ pub use curve25519_dalek::scalar::Scalar;
 pub use db::Db;
 pub use error::Error;
 pub use keys::{PublicKey, SecretKey, ViewKey};
-pub use note::{Idx, Note, NoteType, NoteUtxoType, Nullifier, ObfuscatedNote, TransparentNote};
+pub use note::{
+    Idx, Note, NoteGenerator, NoteType, NoteUtxoType, Nullifier, ObfuscatedNote, TransparentNote,
+};
+pub use transaction::Transaction;
 pub use zk::value::Value;
 
 pub mod crypto;

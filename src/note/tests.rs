@@ -1,4 +1,6 @@
-use crate::{NoteType, NoteUtxoType, ObfuscatedNote, PhoenixNote, SecretKey, TransparentNote};
+use crate::{
+    Note, NoteGenerator, NoteType, NoteUtxoType, ObfuscatedNote, SecretKey, TransparentNote,
+};
 
 #[test]
 fn transparent_note() {

@@ -1,34 +1,30 @@
-use crate::{Error, PublicKey, R1CSProof, RistrettoPoint, SecretKey};
+use crate::{Error, PublicKey, R1CSProof, SecretKey};
+
+use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
 
+pub mod idx;
+pub mod nullifier;
 pub mod obfuscated;
 pub mod transparent;
 
 #[cfg(test)]
 mod tests;
 
+pub use idx::Idx;
+pub use nullifier::Nullifier;
 pub use obfuscated::ObfuscatedNote;
 pub use transparent::TransparentNote;
 
-#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
-pub struct Nullifier {
-    point: RistrettoPoint,
-}
-
-#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
-pub struct Idx(pub u64);
-
-impl From<u64> for Idx {
-    fn from(idx: u64) -> Self {
-        Idx(idx)
-    }
-}
-
-pub trait Note: Sized {
+pub trait NoteGenerator {
     /// Create a new phoenix note
     fn input(idx: &Idx) -> Self;
     fn output(pk: &PublicKey, value: u64) -> Self;
+}
+
+pub trait Note: Debug + Send + Sync {
+    fn box_clone(&self) -> Box<dyn Note>;
 
     /// Generate a proof of knowledge of the value
     ///
@@ -40,13 +36,22 @@ pub trait Note: Sized {
         Err(Error::Generic)
     }
 
+    /// Nullifier handle
+    fn generate_nullifier(&self, _sk_r: &SecretKey) -> Nullifier {
+        unimplemented!()
+    }
+    fn validate_nullifier(&self, _nullifier: &Nullifier) -> Result<(), Error> {
+        unimplemented!()
+    }
+
     /// Attributes
     fn utxo(&self) -> NoteUtxoType;
     fn note(&self) -> NoteType;
     fn idx(&self) -> &Idx;
-    fn set_idx(self, idx: Idx) -> Self;
-    fn nullifier(&self, _sk_r: &SecretKey) -> Nullifier {
-        unimplemented!()
+    fn set_idx(&mut self, idx: Idx);
+    // N/A to obfuscated notes
+    fn value(&self) -> u64 {
+        0
     }
 }
 
