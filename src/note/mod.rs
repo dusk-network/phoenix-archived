@@ -1,4 +1,4 @@
-use crate::{Error, PublicKey, R1CSProof, SecretKey};
+use crate::{Error, PublicKey, R1CSProof, RistrettoPoint, SecretKey};
 
 use serde::{Deserialize, Serialize};
 
@@ -22,6 +22,7 @@ impl From<u64> for PhoenixIdx {
 
 pub trait PhoenixNote: Sized {
     /// Create a new phoenix note
+    fn input(idx: &PhoenixIdx) -> Self;
     fn output(pk: &PublicKey, value: u64) -> Self;
 
     /// Generate a proof of knowledge of the value
@@ -39,6 +40,9 @@ pub trait PhoenixNote: Sized {
     fn note(&self) -> NoteType;
     fn idx(&self) -> &PhoenixIdx;
     fn set_idx(self, idx: PhoenixIdx) -> Self;
+    fn nullifier(&self, _sk_r: &SecretKey) -> RistrettoPoint {
+        unimplemented!()
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

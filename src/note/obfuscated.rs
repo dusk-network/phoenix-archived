@@ -97,6 +97,10 @@ impl PhoenixNote for ObfuscatedNote {
         &self.idx
     }
 
+    fn input(_idx: &PhoenixIdx) -> Self {
+        unimplemented!()
+    }
+
     fn output(pk: &PublicKey, value: u64) -> Self {
         // TODO - Grant r is in Fp
         let r = utils::gen_random_scalar();
