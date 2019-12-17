@@ -54,6 +54,12 @@ impl Transaction {
         self.items.push(item);
     }
 
+    pub fn calculate_fee(&mut self, miner_pk: &PublicKey) {
+        // TODO - Generate the proper fee value
+        let fee = TransparentNote::output(miner_pk, 1);
+        self.fee = Some(TransactionItem::new(fee, None));
+    }
+
     pub fn fee(&self) -> Option<&TransactionItem> {
         self.fee.as_ref()
     }
@@ -62,16 +68,17 @@ impl Transaction {
         &self.items
     }
 
-    pub fn prepare(&mut self, miner_pk: &PublicKey) -> Result<(), Error> {
-        // TODO - Generate the proper fee value
-        let fee = TransparentNote::output(miner_pk, 1);
-        self.fee = Some(TransactionItem::new(fee, None));
+    pub fn prepare(&mut self, db: &Db) -> Result<(), Error> {
+        let fee = match &self.fee {
+            Some(f) => f,
+            None => return Err(Error::FeeOutput),
+        };
 
         // Grant no nullifier exists for the inputs
         self.items.iter().try_fold((), |_, i| {
             if i.utxo() == NoteUtxoType::Input {
                 let nullifier = i.nullifier().ok_or(Error::Generic)?;
-                if Db::data().fetch_nullifier(nullifier)?.is_some() {
+                if db.fetch_nullifier(nullifier)?.is_some() {
                     return Err(Error::Generic);
                 }
             }
@@ -79,16 +86,24 @@ impl Transaction {
             Ok(())
         })?;
 
-        let mut sum = (0, 0);
+        let mut sum = (0, fee.value());
         self.items.iter().for_each(|i| match i.utxo() {
             NoteUtxoType::Input => sum.0 += i.value(),
-            NoteUtxoType::Output => sum.1 += i.value(),
+            NoteUtxoType::Output => {
+                sum.1 += i.value();
+            }
         });
-        let (_input, _output) = sum;
+        let (input, output) = sum;
 
         // TODO - Apply a homomorphic sum from input to obfuscated input values
         // TODO - Apply a homomorphic sum from output to obfuscated output values
-        // TODO - Return Error::Generic if input != output
+        //
+        if output > input {
+            // TODO - Use the homomorphic sums instead
+            return Err(Error::Generic);
+        }
+
+        // TODO - Generate an output with the remainer input - output
 
         Ok(())
     }

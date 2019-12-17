@@ -1,4 +1,4 @@
-use crate::{Error, PublicKey, R1CSProof, SecretKey, TransactionItem};
+use crate::{Db, Error, PublicKey, R1CSProof, SecretKey, TransactionItem};
 
 use std::fmt::Debug;
 
@@ -19,7 +19,7 @@ pub use transparent::TransparentNote;
 
 pub trait NoteGenerator: Sized + Note {
     /// Create a new phoenix note
-    fn input(idx: &Idx) -> Result<Self, Error>;
+    fn input(db: &Db, idx: &Idx) -> Result<Self, Error>;
     fn output(pk: &PublicKey, value: u64) -> Self;
 
     /// Transaction

@@ -2,6 +2,8 @@ use crate::{Db, Idx, Note, NoteGenerator, ObfuscatedNote, SecretKey, Transparent
 
 #[test]
 fn store_notes() {
+    let db = Db::new().unwrap();
+
     let transaparent_notes: Vec<(Idx, TransparentNote)> = (0..20)
         .map(|i| {
             let sk = SecretKey::default();
@@ -9,10 +11,7 @@ fn store_notes() {
             let value = (i * i) as u64;
 
             let note = TransparentNote::output(&pk, value);
-            let idx = Db::data()
-                .store_note(note.box_clone(), None)
-                .unwrap()
-                .unwrap();
+            let idx = db.store_note(note.box_clone(), None).unwrap().unwrap();
 
             (idx, note)
         })
@@ -25,17 +24,14 @@ fn store_notes() {
             let value = (i * i) as u64;
 
             let note = ObfuscatedNote::output(&pk, value);
-            let idx = Db::data()
-                .store_note(note.box_clone(), None)
-                .unwrap()
-                .unwrap();
+            let idx = db.store_note(note.box_clone(), None).unwrap().unwrap();
 
             (idx, note)
         })
         .collect();
 
     transaparent_notes.iter().for_each(|(idx, note)| {
-        let db_note: TransparentNote = Db::data().fetch_note(idx).unwrap();
+        let db_note: TransparentNote = db.fetch_note(idx).unwrap();
 
         assert_eq!(note.utxo(), db_note.utxo());
         assert_eq!(note.note(), db_note.note());
@@ -44,7 +40,7 @@ fn store_notes() {
     });
 
     obfuscated_notes.iter().for_each(|(idx, note)| {
-        let db_note: ObfuscatedNote = Db::data().fetch_note(idx).unwrap();
+        let db_note: ObfuscatedNote = db.fetch_note(idx).unwrap();
 
         assert_eq!(note.utxo(), db_note.utxo());
         assert_eq!(note.note(), db_note.note());

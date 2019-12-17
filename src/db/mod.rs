@@ -3,10 +3,6 @@ use crate::{Error, Idx, Note, NoteUtxoType, Nullifier, Transaction};
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
 
-lazy_static::lazy_static! {
-    static ref DB: Db = Db::new().expect("Failed to create the database!");
-}
-
 #[cfg(test)]
 mod tests;
 
@@ -22,10 +18,6 @@ impl Db {
             notes: Arc::new(Mutex::new(HashMap::new())),
             nullifiers: Arc::new(Mutex::new(HashSet::new())),
         })
-    }
-
-    pub fn data() -> &'static Db {
-        &*DB
     }
 
     pub fn store(&self, transaction: &Transaction) -> Result<Vec<Idx>, Error> {

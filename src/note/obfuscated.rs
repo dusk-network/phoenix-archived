@@ -83,8 +83,8 @@ impl ObfuscatedNote {
 }
 
 impl NoteGenerator for ObfuscatedNote {
-    fn input(idx: &Idx) -> Result<Self, Error> {
-        Db::data().fetch_note(idx)
+    fn input(db: &Db, idx: &Idx) -> Result<Self, Error> {
+        db.fetch_note(idx)
     }
 
     fn output(pk: &PublicKey, value: u64) -> Self {
