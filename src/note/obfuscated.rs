@@ -1,22 +1,22 @@
 use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
 use crate::{
-    crypto, hash, utils, CompressedRistretto, Error, PublicKey, R1CSProof, RistrettoPoint, Scalar,
-    SecretKey, Value,
+    crypto, hash, utils, CompressedRistretto, Db, Error, PublicKey, R1CSProof, RistrettoPoint,
+    Scalar, SecretKey, Value,
 };
 use std::cmp;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 // TODO - Serialization and deserialization should be based on compressed points
 pub struct ObfuscatedNote {
     utxo: NoteUtxoType,
-    commitments: Vec<CompressedRistretto>,
+    pub(crate) commitments: Vec<CompressedRistretto>,
     r_p: RistrettoPoint,
     pk_r: RistrettoPoint,
     idx: Idx,
-    encrypted_value: Vec<u8>,
-    encrypted_blinding_factors: Vec<u8>,
+    pub(crate) encrypted_value: Vec<u8>,
+    pub(crate) encrypted_blinding_factors: Vec<u8>,
 }
 
 impl ObfuscatedNote {
@@ -83,8 +83,8 @@ impl ObfuscatedNote {
 }
 
 impl NoteGenerator for ObfuscatedNote {
-    fn input(_idx: &Idx) -> Self {
-        unimplemented!()
+    fn input(idx: &Idx) -> Result<Self, Error> {
+        Db::data().fetch_note(idx)
     }
 
     fn output(pk: &PublicKey, value: u64) -> Self {

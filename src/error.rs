@@ -43,6 +43,10 @@ pub enum Error {
     Generic,
     /// Resource not ready
     NotReady,
+    /// The transaction needs to be prepared before it can be stored
+    TransactionNotPrepared,
+    /// Failed to create the fee output
+    FeeOutput,
 }
 
 impl Error {

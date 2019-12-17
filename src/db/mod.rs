@@ -1,7 +1,14 @@
-use crate::{Error, Idx, Note, Nullifier, Transaction};
+use crate::{Error, Idx, Note, NoteUtxoType, Nullifier, Transaction};
 
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
+
+lazy_static::lazy_static! {
+    static ref DB: Db = Db::new().expect("Failed to create the database!");
+}
+
+#[cfg(test)]
+mod tests;
 
 pub struct Db {
     // TODO - HashMap and HashSet implementation to emulate KVS. Use Kelvin?
@@ -10,24 +17,59 @@ pub struct Db {
 }
 
 impl Db {
-    pub fn store(&self, transaction: &Transaction) -> Result<Vec<Box<dyn Note>>, Error> {
+    pub fn new() -> Result<Self, Error> {
+        Ok(Db {
+            notes: Arc::new(Mutex::new(HashMap::new())),
+            nullifiers: Arc::new(Mutex::new(HashSet::new())),
+        })
+    }
+
+    pub fn data() -> &'static Db {
+        &*DB
+    }
+
+    pub fn store(&self, transaction: &Transaction) -> Result<Vec<Idx>, Error> {
         // TODO - Should be able to rollback state in case of failure
-        transaction.items().iter().try_fold(vec![], |mut v, i| {
-            v.push(self.store_note(i.note(), i.nullifier())?);
+        let fee = transaction.fee().ok_or(Error::TransactionNotPrepared)?;
+
+        let fee_idx = self.store_note(fee.note(), None)?.ok_or(Error::FeeOutput)?;
+        let notes = vec![fee_idx];
+
+        transaction.items().iter().try_fold(notes, |mut v, i| {
+            let nullifier = if i.note().utxo() == NoteUtxoType::Input {
+                Some(i.nullifier())
+            } else {
+                None
+            };
+
+            let idx = self.store_note(i.note(), nullifier)?;
+            if let Some(idx_inserted) = idx {
+                v.push(idx_inserted);
+            }
 
             Ok(v)
         })
     }
 
-    pub fn store_note(
+    /// Attempt to store the note.
+    ///
+    /// If it is an input note, only the nullifier will be stored and no new Idx will be returned.
+    ///
+    /// If it is an output note, only the note will be stored and the new Idx will be returned.
+    fn store_note(
         &self,
         note: Box<dyn Note>,
-        nullifier: Nullifier,
-    ) -> Result<Box<dyn Note>, Error> {
-        // TODO - Should be able to rollback state in case of failure
-        note.validate_nullifier(&nullifier)?;
+        nullifier: Option<Nullifier>,
+    ) -> Result<Option<Idx>, Error> {
+        if note.utxo() == NoteUtxoType::Input {
+            let nullifier = nullifier.ok_or(Error::Generic)?;
 
-        let note = {
+            note.validate_nullifier(&nullifier)?;
+            let mut nullifiers = self.nullifiers.try_lock()?;
+            nullifiers.insert(nullifier.clone());
+
+            Ok(None)
+        } else {
             let mut notes = self.notes.try_lock()?;
             let mut note = note.box_clone();
 
@@ -36,20 +78,19 @@ impl Db {
 
             notes.insert(idx, note.box_clone());
 
-            note
-        };
-
-        {
-            let mut nullifiers = self.nullifiers.try_lock()?;
-            nullifiers.insert(nullifier.clone());
+            Ok(Some(idx))
         }
-
-        Ok(note)
     }
 
-    pub fn fetch_note(&self, idx: &Idx) -> Result<Box<dyn Note>, Error> {
+    pub fn fetch_note<N: Note>(&self, idx: &Idx) -> Result<N, Error> {
         let notes = self.notes.try_lock()?;
-        notes.get(idx).map(|n| n.box_clone()).ok_or(Error::Generic)
+        let note = notes
+            .get(idx)
+            .map(|n| n.box_clone())
+            .ok_or(Error::Generic)?;
+
+        // TODO - As a temporary solution until Kelvin is implemented, using very unsafe code
+        unsafe { Ok(Box::into_raw(note).cast::<N>().read()) }
     }
 
     pub fn fetch_nullifier(&self, nullifier: &Nullifier) -> Result<Option<()>, Error> {

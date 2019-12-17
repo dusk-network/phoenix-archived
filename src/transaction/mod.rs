@@ -31,7 +31,7 @@ impl TransactionItem {
 
 #[derive(Debug)]
 pub struct Transaction {
-    fee: TransactionItem,
+    fee: Option<TransactionItem>,
     items: Vec<TransactionItem>,
 }
 
@@ -40,8 +40,8 @@ impl Transaction {
         self.items.push(item);
     }
 
-    pub fn fee(&self) -> &TransactionItem {
-        &self.fee
+    pub fn fee(&self) -> Option<&TransactionItem> {
+        self.fee.as_ref()
     }
 
     pub fn items(&self) -> &Vec<TransactionItem> {
@@ -51,7 +51,11 @@ impl Transaction {
     pub fn prepare(&mut self, db: &Db, miner_pk: &PublicKey) -> Result<(), Error> {
         // TODO - Generate the proper fee value
         let fee = TransparentNote::output(miner_pk, 1);
-        self.fee = TransactionItem::new(NoteUtxoType::Output, fee, Nullifier::default());
+        self.fee = Some(TransactionItem::new(
+            NoteUtxoType::Output,
+            fee,
+            Nullifier::default(),
+        ));
 
         // Grant no nullifier exists for the inputs
         self.items.iter().try_fold((), |_, i| {
@@ -69,15 +73,11 @@ impl Transaction {
             NoteUtxoType::Input => sum.0 += i.value(),
             NoteUtxoType::Output => sum.1 += i.value(),
         });
-        let (input, output) = sum;
+        let (_input, _output) = sum;
 
         // TODO - Apply a homomorphic sum from input to obfuscated input values
         // TODO - Apply a homomorphic sum from output to obfuscated output values
-
-        // TODO - Validate the homomorphic result instead
-        if input != output {
-            return Err(Error::Generic);
-        }
+        // TODO - Return Error::Generic if input != output
 
         Ok(())
     }

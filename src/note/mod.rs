@@ -17,9 +17,9 @@ pub use nullifier::Nullifier;
 pub use obfuscated::ObfuscatedNote;
 pub use transparent::TransparentNote;
 
-pub trait NoteGenerator {
+pub trait NoteGenerator: Sized {
     /// Create a new phoenix note
-    fn input(idx: &Idx) -> Self;
+    fn input(idx: &Idx) -> Result<Self, Error>;
     fn output(pk: &PublicKey, value: u64) -> Self;
 }
 
@@ -38,10 +38,16 @@ pub trait Note: Debug + Send + Sync {
 
     /// Nullifier handle
     fn generate_nullifier(&self, _sk_r: &SecretKey) -> Nullifier {
-        unimplemented!()
+        // TODO - Create a secure nullifier
+        Nullifier::new(self.idx().0)
     }
-    fn validate_nullifier(&self, _nullifier: &Nullifier) -> Result<(), Error> {
-        unimplemented!()
+    fn validate_nullifier(&self, nullifier: &Nullifier) -> Result<(), Error> {
+        // TODO - Validate the nullifier securely
+        if nullifier.point() == self.idx().0 {
+            Ok(())
+        } else {
+            Err(Error::Generic)
+        }
     }
 
     /// Attributes
@@ -59,6 +65,12 @@ pub trait Note: Debug + Send + Sync {
 pub enum NoteUtxoType {
     Input,
     Output,
+}
+
+impl Default for NoteUtxoType {
+    fn default() -> Self {
+        NoteUtxoType::Input
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

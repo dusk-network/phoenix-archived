@@ -1,9 +1,9 @@
 use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
-use crate::{hash, utils, PublicKey, RistrettoPoint};
+use crate::{hash, utils, Db, Error, PublicKey, RistrettoPoint};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 // TODO - Serialization and deserialization should be based on compressed points
 pub struct TransparentNote {
     utxo: NoteUtxoType,
@@ -32,8 +32,8 @@ impl TransparentNote {
 }
 
 impl NoteGenerator for TransparentNote {
-    fn input(_idx: &Idx) -> Self {
-        unimplemented!()
+    fn input(idx: &Idx) -> Result<Self, Error> {
+        Db::data().fetch_note(idx)
     }
 
     fn output(pk: &PublicKey, value: u64) -> Self {
