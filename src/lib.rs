@@ -8,7 +8,7 @@ pub use keys::{PublicKey, SecretKey, ViewKey};
 pub use note::{
     Idx, Note, NoteGenerator, NoteType, NoteUtxoType, Nullifier, ObfuscatedNote, TransparentNote,
 };
-pub use transaction::Transaction;
+pub use transaction::{Transaction, TransactionItem};
 pub use zk::value::Value;
 
 pub mod crypto;

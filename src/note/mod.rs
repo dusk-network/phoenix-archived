@@ -1,4 +1,4 @@
-use crate::{Error, PublicKey, R1CSProof, SecretKey};
+use crate::{Error, PublicKey, R1CSProof, SecretKey, TransactionItem};
 
 use std::fmt::Debug;
 
@@ -17,10 +17,20 @@ pub use nullifier::Nullifier;
 pub use obfuscated::ObfuscatedNote;
 pub use transparent::TransparentNote;
 
-pub trait NoteGenerator: Sized {
+pub trait NoteGenerator: Sized + Note {
     /// Create a new phoenix note
     fn input(idx: &Idx) -> Result<Self, Error>;
     fn output(pk: &PublicKey, value: u64) -> Self;
+
+    /// Transaction
+    fn to_transaction_input(mut self, sk_r: &SecretKey) -> TransactionItem {
+        let nullifier = self.generate_nullifier(sk_r);
+        self.set_utxo(NoteUtxoType::Input);
+        TransactionItem::new(self, Some(nullifier))
+    }
+    fn to_transaction_output(self) -> TransactionItem {
+        TransactionItem::new(self, None)
+    }
 }
 
 pub trait Note: Debug + Send + Sync {
@@ -52,6 +62,7 @@ pub trait Note: Debug + Send + Sync {
 
     /// Attributes
     fn utxo(&self) -> NoteUtxoType;
+    fn set_utxo(&mut self, utxo: NoteUtxoType);
     fn note(&self) -> NoteType;
     fn idx(&self) -> &Idx;
     fn set_idx(&mut self, idx: Idx);

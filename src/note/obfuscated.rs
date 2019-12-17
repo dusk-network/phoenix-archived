@@ -124,6 +124,10 @@ impl Note for ObfuscatedNote {
         self.utxo
     }
 
+    fn set_utxo(&mut self, utxo: NoteUtxoType) {
+        self.utxo = utxo;
+    }
+
     fn note(&self) -> NoteType {
         NoteType::Obfuscated
     }

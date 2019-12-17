@@ -36,13 +36,7 @@ impl Db {
         let notes = vec![fee_idx];
 
         transaction.items().iter().try_fold(notes, |mut v, i| {
-            let nullifier = if i.note().utxo() == NoteUtxoType::Input {
-                Some(i.nullifier())
-            } else {
-                None
-            };
-
-            let idx = self.store_note(i.note(), nullifier)?;
+            let idx = self.store_note(i.note(), i.nullifier().cloned())?;
             if let Some(idx_inserted) = idx {
                 v.push(idx_inserted);
             }
@@ -56,7 +50,7 @@ impl Db {
     /// If it is an input note, only the nullifier will be stored and no new Idx will be returned.
     ///
     /// If it is an output note, only the note will be stored and the new Idx will be returned.
-    fn store_note(
+    pub fn store_note(
         &self,
         note: Box<dyn Note>,
         nullifier: Option<Nullifier>,
@@ -70,16 +64,18 @@ impl Db {
 
             Ok(None)
         } else {
-            let mut notes = self.notes.try_lock()?;
-            let mut note = note.box_clone();
-
-            let idx = Idx((notes.len() as u64) + 1);
-            note.set_idx(idx);
-
-            notes.insert(idx, note.box_clone());
-
-            Ok(Some(idx))
+            self.store_unspent_note(note).map(|idx| Some(idx))
         }
+    }
+
+    pub fn store_unspent_note(&self, mut note: Box<dyn Note>) -> Result<Idx, Error> {
+        let mut notes = self.notes.try_lock()?;
+
+        let idx = Idx(notes.len() as u64);
+        note.set_idx(idx);
+        notes.insert(idx, note);
+
+        Ok(idx)
     }
 
     pub fn fetch_note<N: Note>(&self, idx: &Idx) -> Result<N, Error> {

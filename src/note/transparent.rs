@@ -57,6 +57,10 @@ impl Note for TransparentNote {
         self.utxo
     }
 
+    fn set_utxo(&mut self, utxo: NoteUtxoType) {
+        self.utxo = utxo;
+    }
+
     fn note(&self) -> NoteType {
         NoteType::Transparent
     }

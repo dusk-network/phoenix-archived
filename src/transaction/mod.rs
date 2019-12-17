@@ -1,16 +1,17 @@
 use crate::{Db, Error, Note, NoteGenerator, NoteUtxoType, Nullifier, PublicKey, TransparentNote};
 
+#[cfg(test)]
+mod tests;
+
 #[derive(Debug)]
 pub struct TransactionItem {
-    utxo: NoteUtxoType,
     note: Box<dyn Note>,
-    nullifier: Nullifier,
+    nullifier: Option<Nullifier>,
 }
 
 impl TransactionItem {
-    pub fn new<N: Note>(utxo: NoteUtxoType, note: N, nullifier: Nullifier) -> Self {
+    pub fn new<N: Note>(note: N, nullifier: Option<Nullifier>) -> Self {
         TransactionItem {
-            utxo,
             note: note.box_clone(),
             nullifier,
         }
@@ -20,12 +21,16 @@ impl TransactionItem {
         self.note.value()
     }
 
+    pub fn utxo(&self) -> NoteUtxoType {
+        self.note.utxo()
+    }
+
     pub fn note(&self) -> Box<dyn Note> {
         self.note.box_clone()
     }
 
-    pub fn nullifier(&self) -> Nullifier {
-        self.nullifier.clone()
+    pub fn nullifier(&self) -> Option<&Nullifier> {
+        self.nullifier.as_ref()
     }
 }
 
@@ -33,6 +38,15 @@ impl TransactionItem {
 pub struct Transaction {
     fee: Option<TransactionItem>,
     items: Vec<TransactionItem>,
+}
+
+impl Default for Transaction {
+    fn default() -> Self {
+        Self {
+            fee: None,
+            items: vec![],
+        }
+    }
 }
 
 impl Transaction {
@@ -48,19 +62,16 @@ impl Transaction {
         &self.items
     }
 
-    pub fn prepare(&mut self, db: &Db, miner_pk: &PublicKey) -> Result<(), Error> {
+    pub fn prepare(&mut self, miner_pk: &PublicKey) -> Result<(), Error> {
         // TODO - Generate the proper fee value
         let fee = TransparentNote::output(miner_pk, 1);
-        self.fee = Some(TransactionItem::new(
-            NoteUtxoType::Output,
-            fee,
-            Nullifier::default(),
-        ));
+        self.fee = Some(TransactionItem::new(fee, None));
 
         // Grant no nullifier exists for the inputs
         self.items.iter().try_fold((), |_, i| {
-            if i.utxo == NoteUtxoType::Input {
-                if db.fetch_nullifier(&i.nullifier)?.is_some() {
+            if i.utxo() == NoteUtxoType::Input {
+                let nullifier = i.nullifier().ok_or(Error::Generic)?;
+                if Db::data().fetch_nullifier(nullifier)?.is_some() {
                     return Err(Error::Generic);
                 }
             }
@@ -69,7 +80,7 @@ impl Transaction {
         })?;
 
         let mut sum = (0, 0);
-        self.items.iter().for_each(|i| match i.utxo {
+        self.items.iter().for_each(|i| match i.utxo() {
             NoteUtxoType::Input => sum.0 += i.value(),
             NoteUtxoType::Output => sum.1 += i.value(),
         });
