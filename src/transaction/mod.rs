@@ -56,8 +56,7 @@ impl Transaction {
 
     pub fn calculate_fee(&mut self, miner_pk: &PublicKey) {
         // TODO - Generate the proper fee value
-        let fee = TransparentNote::output(miner_pk, 1);
-        self.fee = Some(TransactionItem::new(fee, None));
+        self.fee = Some(TransparentNote::output(miner_pk, 1).to_transaction_output());
     }
 
     pub fn fee(&self) -> Option<&TransactionItem> {

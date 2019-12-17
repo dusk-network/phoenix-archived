@@ -1,4 +1,4 @@
-use crate::{Error, Idx, Note, NoteUtxoType, Nullifier, Transaction};
+use crate::{Error, Idx, Note, NoteUtxoType, Nullifier, Transaction, TransactionItem};
 
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
@@ -24,11 +24,11 @@ impl Db {
         // TODO - Should be able to rollback state in case of failure
         let fee = transaction.fee().ok_or(Error::TransactionNotPrepared)?;
 
-        let fee_idx = self.store_note(fee.note(), None)?.ok_or(Error::FeeOutput)?;
+        let fee_idx = self.store_transaction_item(fee)?.ok_or(Error::FeeOutput)?;
         let notes = vec![fee_idx];
 
         transaction.items().iter().try_fold(notes, |mut v, i| {
-            let idx = self.store_note(i.note(), i.nullifier().cloned())?;
+            let idx = self.store_transaction_item(i)?;
             if let Some(idx_inserted) = idx {
                 v.push(idx_inserted);
             }
@@ -37,26 +37,20 @@ impl Db {
         })
     }
 
-    /// Attempt to store the note.
+    /// Attempt to store a given transaction item.
     ///
-    /// If it is an input note, only the nullifier will be stored and no new Idx will be returned.
-    ///
-    /// If it is an output note, only the note will be stored and the new Idx will be returned.
-    pub fn store_note(
-        &self,
-        note: Box<dyn Note>,
-        nullifier: Option<Nullifier>,
-    ) -> Result<Option<Idx>, Error> {
-        if note.utxo() == NoteUtxoType::Input {
-            let nullifier = nullifier.ok_or(Error::Generic)?;
+    /// If its an unspent output, will return the idx of the stored note.
+    pub fn store_transaction_item(&self, item: &TransactionItem) -> Result<Option<Idx>, Error> {
+        if item.utxo() == NoteUtxoType::Input {
+            let nullifier = item.nullifier().cloned().ok_or(Error::Generic)?;
+            item.note().validate_nullifier(&nullifier)?;
 
-            note.validate_nullifier(&nullifier)?;
             let mut nullifiers = self.nullifiers.try_lock()?;
-            nullifiers.insert(nullifier.clone());
+            nullifiers.insert(nullifier);
 
             Ok(None)
         } else {
-            self.store_unspent_note(note).map(|idx| Some(idx))
+            self.store_unspent_note(item.note()).map(|idx| Some(idx))
         }
     }
 
