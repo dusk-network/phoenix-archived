@@ -19,7 +19,8 @@ fn transactions_with_transparent_notes() {
 
     // Set the first unspent note as the input of the transaction
     let sk = &notes[0].0;
-    transaction.push(notes[0].4.clone().to_transaction_input(sk));
+    let nullifier = notes[0].4.generate_nullifier(sk);
+    transaction.push(notes[0].4.clone().to_transaction_input(nullifier));
 
     // Set the fee cost
     miner_keys.push(generate_keys());

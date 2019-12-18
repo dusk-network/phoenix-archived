@@ -23,8 +23,7 @@ pub trait NoteGenerator: Sized + Note {
     fn output(pk: &PublicKey, value: u64) -> Self;
 
     /// Transaction
-    fn to_transaction_input(mut self, sk_r: &SecretKey) -> TransactionItem {
-        let nullifier = self.generate_nullifier(sk_r);
+    fn to_transaction_input(mut self, nullifier: Nullifier) -> TransactionItem {
         self.set_utxo(NoteUtxoType::Input);
         TransactionItem::new(self, Some(nullifier))
     }
