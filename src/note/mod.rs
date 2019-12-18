@@ -1,4 +1,6 @@
-use crate::{Db, Error, PublicKey, R1CSProof, SecretKey, TransactionItem};
+use crate::{
+    utils, Db, Error, PublicKey, R1CSProof, RistrettoPoint, SecretKey, TransactionItem, ViewKey,
+};
 
 use std::fmt::Debug;
 
@@ -29,6 +31,15 @@ pub trait NoteGenerator: Sized + Note {
     }
     fn to_transaction_output(self) -> TransactionItem {
         TransactionItem::new(self, None)
+    }
+
+    /// Attributes
+    fn generate_pk_r(pk: &PublicKey) -> (RistrettoPoint, RistrettoPoint) {
+        let r = utils::gen_random_scalar();
+        let r_p = utils::mul_by_basepoint(&r);
+        let pk_r = (&r * &pk.a_p) + pk.b_p;
+
+        (r_p, pk_r)
     }
 }
 
@@ -64,10 +75,18 @@ pub trait Note: Debug + Send + Sync {
     fn set_utxo(&mut self, utxo: NoteUtxoType);
     fn note(&self) -> NoteType;
     fn idx(&self) -> &Idx;
+    fn r_p(&self) -> &RistrettoPoint;
+    fn pk_r(&self) -> &RistrettoPoint;
     fn set_idx(&mut self, idx: Idx);
     // N/A to obfuscated notes
     fn value(&self) -> u64 {
         0
+    }
+
+    /// Validations
+    fn is_owned_by(&self, vk: &ViewKey) -> bool {
+        let pk_r = (&vk.a * self.r_p()) + vk.b_p;
+        self.pk_r() == &pk_r
     }
 }
 

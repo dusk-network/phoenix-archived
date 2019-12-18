@@ -1,5 +1,5 @@
 use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
-use crate::{hash, utils, Db, Error, PublicKey, RistrettoPoint};
+use crate::{Db, Error, PublicKey, RistrettoPoint};
 
 use serde::{Deserialize, Serialize};
 
@@ -37,12 +37,7 @@ impl NoteGenerator for TransparentNote {
     }
 
     fn output(pk: &PublicKey, value: u64) -> Self {
-        // TODO - Grant r is in Fp
-        let r = utils::gen_random_scalar();
-        let r_p = utils::mul_by_basepoint(&r);
-        let a_p = pk.a_p;
-        let b_p = pk.b_p;
-        let pk_r = hash::hash_in_p(&r * &a_p) + b_p;
+        let (r_p, pk_r) = Self::generate_pk_r(pk);
 
         TransparentNote::new(NoteUtxoType::Output, value, r_p, pk_r, Idx::default())
     }
@@ -67,6 +62,14 @@ impl Note for TransparentNote {
 
     fn idx(&self) -> &Idx {
         &self.idx
+    }
+
+    fn r_p(&self) -> &RistrettoPoint {
+        &self.r_p
+    }
+
+    fn pk_r(&self) -> &RistrettoPoint {
+        &self.pk_r
     }
 
     fn set_idx(&mut self, idx: Idx) {

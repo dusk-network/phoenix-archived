@@ -88,9 +88,7 @@ impl Transaction {
         let mut sum = (0, fee.value());
         self.items.iter().for_each(|i| match i.utxo() {
             NoteUtxoType::Input => sum.0 += i.value(),
-            NoteUtxoType::Output => {
-                sum.1 += i.value();
-            }
+            NoteUtxoType::Output => sum.1 += i.value(),
         });
         let (input, output) = sum;
 

@@ -1,7 +1,7 @@
 use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
 use crate::{
-    crypto, hash, utils, CompressedRistretto, Db, Error, PublicKey, R1CSProof, RistrettoPoint,
-    Scalar, SecretKey, Value,
+    crypto, CompressedRistretto, Db, Error, PublicKey, R1CSProof, RistrettoPoint, Scalar,
+    SecretKey, Value,
 };
 use std::cmp;
 
@@ -88,12 +88,7 @@ impl NoteGenerator for ObfuscatedNote {
     }
 
     fn output(pk: &PublicKey, value: u64) -> Self {
-        // TODO - Grant r is in Fp
-        let r = utils::gen_random_scalar();
-        let r_p = utils::mul_by_basepoint(&r);
-        let a_p = pk.a_p;
-        let b_p = pk.b_p;
-        let pk_r = hash::hash_in_p(&r * &a_p) + b_p;
+        let (r_p, pk_r) = Self::generate_pk_r(pk);
 
         let idx = Idx::default();
         let phoenix_value = Value::new(idx, Scalar::from(value));
@@ -134,6 +129,14 @@ impl Note for ObfuscatedNote {
 
     fn idx(&self) -> &Idx {
         &self.idx
+    }
+
+    fn r_p(&self) -> &RistrettoPoint {
+        &self.r_p
+    }
+
+    fn pk_r(&self) -> &RistrettoPoint {
+        &self.pk_r
     }
 
     fn set_idx(&mut self, idx: Idx) {
