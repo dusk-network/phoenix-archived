@@ -1,6 +1,6 @@
 use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
 use crate::{
-    crypto, CompressedRistretto, Db, Error, PublicKey, R1CSProof, RistrettoPoint, Scalar,
+    crypto, CompressedRistretto, Db, Error, MontgomeryPoint, PublicKey, R1CSProof, Scalar,
     SecretKey, Value,
 };
 use std::cmp;
@@ -12,8 +12,8 @@ use serde::{Deserialize, Serialize};
 pub struct ObfuscatedNote {
     utxo: NoteUtxoType,
     pub(crate) commitments: Vec<CompressedRistretto>,
-    r_g: RistrettoPoint,
-    pk_r: RistrettoPoint,
+    r_g: MontgomeryPoint,
+    pk_r: MontgomeryPoint,
     idx: Idx,
     pub(crate) encrypted_value: Vec<u8>,
     pub(crate) encrypted_blinding_factors: Vec<u8>,
@@ -23,8 +23,8 @@ impl ObfuscatedNote {
     pub fn new(
         utxo: NoteUtxoType,
         commitments: Vec<CompressedRistretto>,
-        r_g: RistrettoPoint,
-        pk_r: RistrettoPoint,
+        r_g: MontgomeryPoint,
+        pk_r: MontgomeryPoint,
         idx: Idx,
         encrypted_value: Vec<u8>,
         encrypted_blinding_factors: Vec<u8>,
@@ -128,11 +128,11 @@ impl Note for ObfuscatedNote {
         &self.idx
     }
 
-    fn r_g(&self) -> &RistrettoPoint {
+    fn r_g(&self) -> &MontgomeryPoint {
         &self.r_g
     }
 
-    fn pk_r(&self) -> &RistrettoPoint {
+    fn pk_r(&self) -> &MontgomeryPoint {
         &self.pk_r
     }
 

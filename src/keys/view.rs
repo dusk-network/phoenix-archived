@@ -1,5 +1,5 @@
 use super::{PublicKey, SecretKey};
-use crate::{utils, RistrettoPoint, Scalar};
+use crate::{utils, MontgomeryPoint, Scalar};
 
 use serde::{Deserialize, Serialize};
 
@@ -7,11 +7,11 @@ use serde::{Deserialize, Serialize};
 // TODO - Serialization and deserialization should be based on compressed points
 pub struct ViewKey {
     pub a: Scalar,
-    pub b_g: RistrettoPoint,
+    pub b_g: MontgomeryPoint,
 }
 
 impl ViewKey {
-    pub fn new(a: Scalar, b_g: RistrettoPoint) -> Self {
+    pub fn new(a: Scalar, b_g: MontgomeryPoint) -> Self {
         ViewKey { a, b_g }
     }
 

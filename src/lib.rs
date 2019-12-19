@@ -1,4 +1,5 @@
 pub use bulletproofs::r1cs::R1CSProof;
+pub use curve25519_dalek::montgomery::MontgomeryPoint;
 pub use curve25519_dalek::ristretto::{CompressedRistretto, RistrettoPoint};
 pub use curve25519_dalek::scalar::Scalar;
 

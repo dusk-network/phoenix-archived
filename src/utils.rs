@@ -1,4 +1,4 @@
-use crate::{RistrettoPoint, Scalar};
+use crate::{MontgomeryPoint, Scalar};
 
 use curve25519_dalek::constants;
 use rand::rngs::OsRng;
@@ -10,6 +10,6 @@ pub fn gen_random_scalar() -> Scalar {
     Scalar::from_bits(s)
 }
 
-pub fn mul_by_basepoint(s: &Scalar) -> RistrettoPoint {
-    s * &constants::RISTRETTO_BASEPOINT_TABLE
+pub fn mul_by_basepoint(s: &Scalar) -> MontgomeryPoint {
+    (&constants::ED25519_BASEPOINT_TABLE * s).to_montgomery()
 }

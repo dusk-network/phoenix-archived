@@ -1,5 +1,5 @@
 use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
-use crate::{Db, Error, PublicKey, RistrettoPoint};
+use crate::{Db, Error, MontgomeryPoint, PublicKey};
 
 use serde::{Deserialize, Serialize};
 
@@ -8,8 +8,8 @@ use serde::{Deserialize, Serialize};
 pub struct TransparentNote {
     utxo: NoteUtxoType,
     value: u64,
-    r_g: RistrettoPoint,
-    pk_r: RistrettoPoint,
+    r_g: MontgomeryPoint,
+    pk_r: MontgomeryPoint,
     idx: Idx,
 }
 
@@ -17,8 +17,8 @@ impl TransparentNote {
     pub fn new(
         utxo: NoteUtxoType,
         value: u64,
-        r_g: RistrettoPoint,
-        pk_r: RistrettoPoint,
+        r_g: MontgomeryPoint,
+        pk_r: MontgomeryPoint,
         idx: Idx,
     ) -> Self {
         TransparentNote {
@@ -64,11 +64,11 @@ impl Note for TransparentNote {
         &self.idx
     }
 
-    fn r_g(&self) -> &RistrettoPoint {
+    fn r_g(&self) -> &MontgomeryPoint {
         &self.r_g
     }
 
-    fn pk_r(&self) -> &RistrettoPoint {
+    fn pk_r(&self) -> &MontgomeryPoint {
         &self.pk_r
     }
 
