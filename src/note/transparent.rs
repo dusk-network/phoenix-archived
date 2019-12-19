@@ -37,7 +37,7 @@ impl NoteGenerator for TransparentNote {
     }
 
     fn output(pk: &PublicKey, value: u64) -> Self {
-        let (r_g, pk_r) = Self::generate_pk_r(pk);
+        let (_, r_g, pk_r) = Self::generate_pk_r(pk);
 
         TransparentNote::new(NoteUtxoType::Output, value, r_g, pk_r, Idx::default())
     }

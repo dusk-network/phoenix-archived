@@ -12,8 +12,8 @@ pub struct SecretKey {
 impl Default for SecretKey {
     fn default() -> Self {
         SecretKey {
-            a: utils::gen_random_scalar(),
-            b: utils::gen_random_scalar(),
+            a: utils::gen_random_clamped_scalar(),
+            b: utils::gen_random_clamped_scalar(),
         }
     }
 }

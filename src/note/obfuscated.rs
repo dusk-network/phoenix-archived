@@ -1,7 +1,7 @@
 use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
 use crate::{
-    crypto, CompressedRistretto, Db, Error, MontgomeryPoint, PublicKey, R1CSProof, Scalar,
-    SecretKey, Value,
+    crypto, CompressedRistretto, Db, Error, MontgomeryPoint, PublicKey, R1CSProof, Scalar, Value,
+    ViewKey,
 };
 use std::cmp;
 
@@ -40,12 +40,12 @@ impl ObfuscatedNote {
         }
     }
 
-    fn encrypt_value(pk: &PublicKey, value: u64) -> Vec<u8> {
-        crypto::encrypt(pk, &value.to_le_bytes()[..])
+    fn encrypt_value(r: &Scalar, pk: &PublicKey, value: u64) -> Vec<u8> {
+        crypto::encrypt(r, pk, &value.to_le_bytes()[..])
     }
 
-    fn decrypt_value(&self, sk: &SecretKey) -> u64 {
-        let decrypt_value = crypto::decrypt(&sk, self.encrypted_value.as_slice());
+    pub fn decrypt_value(&self, vk: &ViewKey) -> u64 {
+        let decrypt_value = crypto::decrypt(&self.r_g, &vk, self.encrypted_value.as_slice());
 
         let mut v = [0x00u8; 8];
         let chunk = cmp::max(decrypt_value.len(), 8);
@@ -54,7 +54,11 @@ impl ObfuscatedNote {
         u64::from_le_bytes(v)
     }
 
-    fn encrypt_blinding_factors(pk: &PublicKey, blinding_factors: &[Scalar]) -> Vec<u8> {
+    fn encrypt_blinding_factors(
+        r: &Scalar,
+        pk: &PublicKey,
+        blinding_factors: &[Scalar],
+    ) -> Vec<u8> {
         let blinding_factors = blinding_factors
             .iter()
             .map(|s| &s.as_bytes()[..])
@@ -62,11 +66,11 @@ impl ObfuscatedNote {
             .map(|b| *b)
             .collect::<Vec<u8>>();
 
-        crypto::encrypt(pk, blinding_factors)
+        crypto::encrypt(r, pk, blinding_factors)
     }
 
-    fn decrypt_blinding_factors(&self, sk: &SecretKey) -> Vec<Scalar> {
-        crypto::decrypt(sk, self.encrypted_blinding_factors.as_slice())
+    pub fn decrypt_blinding_factors(&self, vk: &ViewKey) -> Vec<Scalar> {
+        crypto::decrypt(&self.r_g, vk, self.encrypted_blinding_factors.as_slice())
             .as_slice()
             .chunks(32)
             .map(|b| {
@@ -85,15 +89,15 @@ impl NoteGenerator for ObfuscatedNote {
     }
 
     fn output(pk: &PublicKey, value: u64) -> Self {
-        let (r_g, pk_r) = Self::generate_pk_r(pk);
+        let (r, r_g, pk_r) = Self::generate_pk_r(pk);
 
         let idx = Idx::default();
         let phoenix_value = Value::new(idx, Scalar::from(value));
         let commitments = phoenix_value.commitments().clone();
 
-        let encrypted_value = ObfuscatedNote::encrypt_value(pk, value);
+        let encrypted_value = ObfuscatedNote::encrypt_value(&r, pk, value);
         let encrypted_blinding_factors =
-            ObfuscatedNote::encrypt_blinding_factors(pk, phoenix_value.blinding_factors());
+            ObfuscatedNote::encrypt_blinding_factors(&r, pk, phoenix_value.blinding_factors());
 
         ObfuscatedNote::new(
             NoteUtxoType::Output,
@@ -140,9 +144,9 @@ impl Note for ObfuscatedNote {
         self.idx = idx;
     }
 
-    fn prove_value(&self, sk_r: &SecretKey) -> Result<R1CSProof, Error> {
-        let value = self.decrypt_value(sk_r);
-        let blinding_factors = self.decrypt_blinding_factors(sk_r);
+    fn prove_value(&self, vk: &ViewKey) -> Result<R1CSProof, Error> {
+        let value = self.decrypt_value(vk);
+        let blinding_factors = self.decrypt_blinding_factors(vk);
 
         let phoenix_value = Value::with_blinding_factors(self.idx, value, blinding_factors);
 

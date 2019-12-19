@@ -21,6 +21,7 @@ fn transparent_note() {
 fn obfuscated_note() {
     let sk = SecretKey::default();
     let pk = sk.public_key();
+    let vk = sk.view_key();
     let value = 25;
 
     let note = ObfuscatedNote::output(&pk, value);
@@ -28,7 +29,7 @@ fn obfuscated_note() {
     assert_eq!(note.utxo(), NoteUtxoType::Output);
     assert_eq!(note.note(), NoteType::Obfuscated);
 
-    let proof = note.prove_value(&sk).unwrap();
+    let proof = note.prove_value(&vk).unwrap();
 
     let note = bincode::serialize(&note).unwrap();
     let note: ObfuscatedNote = bincode::deserialize(note.as_slice()).unwrap();

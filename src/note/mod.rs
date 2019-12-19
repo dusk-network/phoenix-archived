@@ -1,5 +1,6 @@
 use crate::{
-    utils, Db, Error, MontgomeryPoint, PublicKey, R1CSProof, SecretKey, TransactionItem, ViewKey,
+    utils, Db, Error, MontgomeryPoint, PublicKey, R1CSProof, Scalar, SecretKey, TransactionItem,
+    ViewKey,
 };
 
 use std::fmt::Debug;
@@ -34,13 +35,13 @@ pub trait NoteGenerator: Sized + Note {
     }
 
     /// Attributes
-    fn generate_pk_r(pk: &PublicKey) -> (MontgomeryPoint, MontgomeryPoint) {
-        let r = utils::gen_random_scalar();
+    fn generate_pk_r(pk: &PublicKey) -> (Scalar, MontgomeryPoint, MontgomeryPoint) {
+        let r = utils::gen_random_clamped_scalar();
         let r_g = utils::mul_by_basepoint(&r);
         // TODO - Review if it should not be r * A + B
         let pk_r = &r * &pk.a_g;
 
-        (r_g, pk_r)
+        (r, r_g, pk_r)
     }
 }
 
@@ -50,7 +51,7 @@ pub trait Note: Debug + Send + Sync {
     /// Generate a proof of knowledge of the value
     ///
     /// N/A to transparent notes.
-    fn prove_value(&self, _sk_r: &SecretKey) -> Result<R1CSProof, Error> {
+    fn prove_value(&self, _vk: &ViewKey) -> Result<R1CSProof, Error> {
         Err(Error::Generic)
     }
     fn verify_value(&self, _proof: &R1CSProof) -> Result<(), Error> {
