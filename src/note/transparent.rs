@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 pub struct TransparentNote {
     utxo: NoteUtxoType,
     value: u64,
-    r_p: RistrettoPoint,
+    r_g: RistrettoPoint,
     pk_r: RistrettoPoint,
     idx: Idx,
 }
@@ -17,14 +17,14 @@ impl TransparentNote {
     pub fn new(
         utxo: NoteUtxoType,
         value: u64,
-        r_p: RistrettoPoint,
+        r_g: RistrettoPoint,
         pk_r: RistrettoPoint,
         idx: Idx,
     ) -> Self {
         TransparentNote {
             utxo,
             value,
-            r_p,
+            r_g,
             pk_r,
             idx,
         }
@@ -37,9 +37,9 @@ impl NoteGenerator for TransparentNote {
     }
 
     fn output(pk: &PublicKey, value: u64) -> Self {
-        let (r_p, pk_r) = Self::generate_pk_r(pk);
+        let (r_g, pk_r) = Self::generate_pk_r(pk);
 
-        TransparentNote::new(NoteUtxoType::Output, value, r_p, pk_r, Idx::default())
+        TransparentNote::new(NoteUtxoType::Output, value, r_g, pk_r, Idx::default())
     }
 }
 
@@ -64,8 +64,8 @@ impl Note for TransparentNote {
         &self.idx
     }
 
-    fn r_p(&self) -> &RistrettoPoint {
-        &self.r_p
+    fn r_g(&self) -> &RistrettoPoint {
+        &self.r_g
     }
 
     fn pk_r(&self) -> &RistrettoPoint {

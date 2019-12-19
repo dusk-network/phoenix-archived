@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 pub struct ObfuscatedNote {
     utxo: NoteUtxoType,
     pub(crate) commitments: Vec<CompressedRistretto>,
-    r_p: RistrettoPoint,
+    r_g: RistrettoPoint,
     pk_r: RistrettoPoint,
     idx: Idx,
     pub(crate) encrypted_value: Vec<u8>,
@@ -23,7 +23,7 @@ impl ObfuscatedNote {
     pub fn new(
         utxo: NoteUtxoType,
         commitments: Vec<CompressedRistretto>,
-        r_p: RistrettoPoint,
+        r_g: RistrettoPoint,
         pk_r: RistrettoPoint,
         idx: Idx,
         encrypted_value: Vec<u8>,
@@ -32,7 +32,7 @@ impl ObfuscatedNote {
         ObfuscatedNote {
             utxo,
             commitments,
-            r_p,
+            r_g,
             pk_r,
             idx,
             encrypted_value,
@@ -85,7 +85,7 @@ impl NoteGenerator for ObfuscatedNote {
     }
 
     fn output(pk: &PublicKey, value: u64) -> Self {
-        let (r_p, pk_r) = Self::generate_pk_r(pk);
+        let (r_g, pk_r) = Self::generate_pk_r(pk);
 
         let idx = Idx::default();
         let phoenix_value = Value::new(idx, Scalar::from(value));
@@ -98,7 +98,7 @@ impl NoteGenerator for ObfuscatedNote {
         ObfuscatedNote::new(
             NoteUtxoType::Output,
             commitments,
-            r_p,
+            r_g,
             pk_r,
             idx,
             encrypted_value,
@@ -128,8 +128,8 @@ impl Note for ObfuscatedNote {
         &self.idx
     }
 
-    fn r_p(&self) -> &RistrettoPoint {
-        &self.r_p
+    fn r_g(&self) -> &RistrettoPoint {
+        &self.r_g
     }
 
     fn pk_r(&self) -> &RistrettoPoint {

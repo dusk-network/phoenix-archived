@@ -6,13 +6,13 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 // TODO - Serialization and deserialization should be based on compressed points
 pub struct PublicKey {
-    pub a_p: RistrettoPoint,
-    pub b_p: RistrettoPoint,
+    pub a_g: RistrettoPoint,
+    pub b_g: RistrettoPoint,
 }
 
 impl PublicKey {
-    pub fn new(a_p: RistrettoPoint, b_p: RistrettoPoint) -> Self {
-        PublicKey { a_p, b_p }
+    pub fn new(a_g: RistrettoPoint, b_g: RistrettoPoint) -> Self {
+        PublicKey { a_g, b_g }
     }
 }
 

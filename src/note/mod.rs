@@ -36,10 +36,10 @@ pub trait NoteGenerator: Sized + Note {
     /// Attributes
     fn generate_pk_r(pk: &PublicKey) -> (RistrettoPoint, RistrettoPoint) {
         let r = utils::gen_random_scalar();
-        let r_p = utils::mul_by_basepoint(&r);
-        let pk_r = (&r * &pk.a_p) + pk.b_p;
+        let r_g = utils::mul_by_basepoint(&r);
+        let pk_r = (&r * &pk.a_g) + pk.b_g;
 
-        (r_p, pk_r)
+        (r_g, pk_r)
     }
 }
 
@@ -75,7 +75,7 @@ pub trait Note: Debug + Send + Sync {
     fn set_utxo(&mut self, utxo: NoteUtxoType);
     fn note(&self) -> NoteType;
     fn idx(&self) -> &Idx;
-    fn r_p(&self) -> &RistrettoPoint;
+    fn r_g(&self) -> &RistrettoPoint;
     fn pk_r(&self) -> &RistrettoPoint;
     fn set_idx(&mut self, idx: Idx);
     // N/A to obfuscated notes
@@ -85,7 +85,7 @@ pub trait Note: Debug + Send + Sync {
 
     /// Validations
     fn is_owned_by(&self, vk: &ViewKey) -> bool {
-        let pk_r = (&vk.a * self.r_p()) + vk.b_p;
+        let pk_r = (&vk.a * self.r_g()) + vk.b_g;
         self.pk_r() == &pk_r
     }
 }

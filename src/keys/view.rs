@@ -7,18 +7,18 @@ use serde::{Deserialize, Serialize};
 // TODO - Serialization and deserialization should be based on compressed points
 pub struct ViewKey {
     pub a: Scalar,
-    pub b_p: RistrettoPoint,
+    pub b_g: RistrettoPoint,
 }
 
 impl ViewKey {
-    pub fn new(a: Scalar, b_p: RistrettoPoint) -> Self {
-        ViewKey { a, b_p }
+    pub fn new(a: Scalar, b_g: RistrettoPoint) -> Self {
+        ViewKey { a, b_g }
     }
 
     pub fn public_key(&self) -> PublicKey {
-        let a_p = utils::mul_by_basepoint(&self.a);
+        let a_g = utils::mul_by_basepoint(&self.a);
 
-        PublicKey::new(a_p, self.b_p)
+        PublicKey::new(a_g, self.b_g)
     }
 }
 
