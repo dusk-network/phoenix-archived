@@ -1,12 +1,13 @@
 use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
-use crate::{Db, Error, MontgomeryPoint, PublicKey};
+use crate::{utils, Db, Error, MontgomeryPoint, Nonce, PublicKey};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TransparentNote {
     utxo: NoteUtxoType,
     value: u64,
+    nonce: Nonce,
     r_g: MontgomeryPoint,
     pk_r: MontgomeryPoint,
     idx: Idx,
@@ -16,6 +17,7 @@ impl TransparentNote {
     pub fn new(
         utxo: NoteUtxoType,
         value: u64,
+        nonce: Nonce,
         r_g: MontgomeryPoint,
         pk_r: MontgomeryPoint,
         idx: Idx,
@@ -23,6 +25,7 @@ impl TransparentNote {
         TransparentNote {
             utxo,
             value,
+            nonce,
             r_g,
             pk_r,
             idx,
@@ -36,9 +39,17 @@ impl NoteGenerator for TransparentNote {
     }
 
     fn output(pk: &PublicKey, value: u64) -> Self {
+        let nonce = utils::gen_nonce();
         let (_, r_g, pk_r) = Self::generate_pk_r(pk);
 
-        TransparentNote::new(NoteUtxoType::Output, value, r_g, pk_r, Idx::default())
+        TransparentNote::new(
+            NoteUtxoType::Output,
+            value,
+            nonce,
+            r_g,
+            pk_r,
+            Idx::default(),
+        )
     }
 }
 
@@ -61,6 +72,10 @@ impl Note for TransparentNote {
 
     fn idx(&self) -> &Idx {
         &self.idx
+    }
+
+    fn nonce(&self) -> &Nonce {
+        &self.nonce
     }
 
     fn r_g(&self) -> &MontgomeryPoint {

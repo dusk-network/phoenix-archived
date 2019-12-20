@@ -1,6 +1,6 @@
 use crate::{
-    utils, Db, Error, MontgomeryPoint, PublicKey, R1CSProof, Scalar, SecretKey, TransactionItem,
-    ViewKey,
+    utils, Db, Error, MontgomeryPoint, Nonce, PublicKey, R1CSProof, Scalar, SecretKey,
+    TransactionItem, ViewKey,
 };
 
 use std::fmt::Debug;
@@ -77,6 +77,7 @@ pub trait Note: Debug + Send + Sync {
     fn set_utxo(&mut self, utxo: NoteUtxoType);
     fn note(&self) -> NoteType;
     fn idx(&self) -> &Idx;
+    fn nonce(&self) -> &Nonce;
     fn r_g(&self) -> &MontgomeryPoint;
     fn pk_r(&self) -> &MontgomeryPoint;
     fn set_idx(&mut self, idx: Idx);

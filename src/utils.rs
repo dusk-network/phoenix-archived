@@ -1,8 +1,9 @@
-use crate::{MontgomeryPoint, Scalar};
+use crate::{MontgomeryPoint, Nonce, Scalar};
 
 use curve25519_dalek::constants;
 use rand::rngs::OsRng;
 use rand::RngCore;
+use sodiumoxide::crypto::box_;
 
 pub fn gen_random_scalar() -> Scalar {
     let mut s = [0x00u8; 32];
@@ -23,4 +24,8 @@ pub fn gen_random_clamped_scalar() -> Scalar {
 
 pub fn mul_by_basepoint(s: &Scalar) -> MontgomeryPoint {
     (&constants::ED25519_BASEPOINT_TABLE * s).to_montgomery()
+}
+
+pub fn gen_nonce() -> Nonce {
+    box_::gen_nonce()
 }
