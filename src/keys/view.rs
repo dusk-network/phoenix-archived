@@ -1,21 +1,21 @@
 use super::{PublicKey, SecretKey};
-use crate::{utils, MontgomeryPoint, Scalar};
+use crate::{utils, EdwardsPoint, Scalar};
 
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ViewKey {
     pub a: Scalar,
-    pub b_g: MontgomeryPoint,
+    pub b_g: EdwardsPoint,
 }
 
 impl ViewKey {
-    pub fn new(a: Scalar, b_g: MontgomeryPoint) -> Self {
+    pub fn new(a: Scalar, b_g: EdwardsPoint) -> Self {
         ViewKey { a, b_g }
     }
 
     pub fn public_key(&self) -> PublicKey {
-        let a_g = utils::mul_by_basepoint(&self.a);
+        let a_g = utils::mul_by_basepoint_edwards(&self.a);
 
         PublicKey::new(a_g, self.b_g)
     }

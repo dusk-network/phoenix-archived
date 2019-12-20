@@ -1,4 +1,4 @@
-use crate::{MontgomeryPoint, Nonce, Scalar};
+use crate::{EdwardsPoint, Nonce, Scalar};
 
 use curve25519_dalek::constants;
 use rand::rngs::OsRng;
@@ -22,8 +22,8 @@ pub fn gen_random_clamped_scalar() -> Scalar {
     Scalar::from_bits(s)
 }
 
-pub fn mul_by_basepoint(s: &Scalar) -> MontgomeryPoint {
-    (&constants::ED25519_BASEPOINT_TABLE * s).to_montgomery()
+pub fn mul_by_basepoint_edwards(s: &Scalar) -> EdwardsPoint {
+    (&constants::ED25519_BASEPOINT_TABLE * s)
 }
 
 pub fn gen_nonce() -> Nonce {

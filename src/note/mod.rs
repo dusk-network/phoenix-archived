@@ -1,5 +1,5 @@
 use crate::{
-    utils, Db, Error, MontgomeryPoint, Nonce, PublicKey, R1CSProof, Scalar, SecretKey,
+    utils, Db, EdwardsPoint, Error, Nonce, PublicKey, R1CSProof, Scalar, SecretKey,
     TransactionItem, ViewKey,
 };
 
@@ -35,11 +35,11 @@ pub trait NoteGenerator: Sized + Note {
     }
 
     /// Attributes
-    fn generate_pk_r(pk: &PublicKey) -> (Scalar, MontgomeryPoint, MontgomeryPoint) {
+    fn generate_pk_r(pk: &PublicKey) -> (Scalar, EdwardsPoint, EdwardsPoint) {
         let r = utils::gen_random_clamped_scalar();
-        let r_g = utils::mul_by_basepoint(&r);
+        let r_g = utils::mul_by_basepoint_edwards(&r);
         // TODO - Review if it should not be r * A + B
-        let pk_r = &r * &pk.a_g;
+        let pk_r = &pk.a_g * &r;
 
         (r, r_g, pk_r)
     }
@@ -78,8 +78,8 @@ pub trait Note: Debug + Send + Sync {
     fn note(&self) -> NoteType;
     fn idx(&self) -> &Idx;
     fn nonce(&self) -> &Nonce;
-    fn r_g(&self) -> &MontgomeryPoint;
-    fn pk_r(&self) -> &MontgomeryPoint;
+    fn r_g(&self) -> &EdwardsPoint;
+    fn pk_r(&self) -> &EdwardsPoint;
     fn set_idx(&mut self, idx: Idx);
     // N/A to obfuscated notes
     fn value(&self) -> u64 {

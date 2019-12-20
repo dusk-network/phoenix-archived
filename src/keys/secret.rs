@@ -24,14 +24,14 @@ impl SecretKey {
     }
 
     pub fn public_key(&self) -> PublicKey {
-        let a_g = utils::mul_by_basepoint(&self.a);
-        let b_g = utils::mul_by_basepoint(&self.b);
+        let a_g = utils::mul_by_basepoint_edwards(&self.a);
+        let b_g = utils::mul_by_basepoint_edwards(&self.b);
 
         PublicKey::new(a_g, b_g)
     }
 
     pub fn view_key(&self) -> ViewKey {
-        let b_g = utils::mul_by_basepoint(&self.b);
+        let b_g = utils::mul_by_basepoint_edwards(&self.b);
 
         ViewKey::new(self.a, b_g)
     }

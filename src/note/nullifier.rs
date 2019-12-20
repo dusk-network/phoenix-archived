@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Nullifier {
-    // TODO - Use a MontgomeryPoint and hash the note
+    // TODO - Use a EdwardsPoint and hash the note
     point: u64,
 }
 

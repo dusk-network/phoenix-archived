@@ -1,16 +1,16 @@
 use super::SecretKey;
-use crate::MontgomeryPoint;
+use crate::EdwardsPoint;
 
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PublicKey {
-    pub a_g: MontgomeryPoint,
-    pub b_g: MontgomeryPoint,
+    pub a_g: EdwardsPoint,
+    pub b_g: EdwardsPoint,
 }
 
 impl PublicKey {
-    pub fn new(a_g: MontgomeryPoint, b_g: MontgomeryPoint) -> Self {
+    pub fn new(a_g: EdwardsPoint, b_g: EdwardsPoint) -> Self {
         PublicKey { a_g, b_g }
     }
 }

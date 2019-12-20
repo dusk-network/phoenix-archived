@@ -1,6 +1,6 @@
 use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
 use crate::{
-    crypto, utils, CompressedRistretto, Db, Error, MontgomeryPoint, Nonce, PublicKey, R1CSProof,
+    crypto, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, PublicKey, R1CSProof,
     Scalar, Value, ViewKey,
 };
 
@@ -13,8 +13,8 @@ pub struct ObfuscatedNote {
     utxo: NoteUtxoType,
     pub(crate) commitments: Vec<CompressedRistretto>,
     nonce: Nonce,
-    r_g: MontgomeryPoint,
-    pk_r: MontgomeryPoint,
+    r_g: EdwardsPoint,
+    pk_r: EdwardsPoint,
     idx: Idx,
     pub(crate) encrypted_value: Vec<u8>,
     pub(crate) encrypted_blinding_factors: Vec<u8>,
@@ -25,8 +25,8 @@ impl ObfuscatedNote {
         utxo: NoteUtxoType,
         commitments: Vec<CompressedRistretto>,
         nonce: Nonce,
-        r_g: MontgomeryPoint,
-        pk_r: MontgomeryPoint,
+        r_g: EdwardsPoint,
+        pk_r: EdwardsPoint,
         idx: Idx,
         encrypted_value: Vec<u8>,
         encrypted_blinding_factors: Vec<u8>,
@@ -153,11 +153,11 @@ impl Note for ObfuscatedNote {
         &self.nonce
     }
 
-    fn r_g(&self) -> &MontgomeryPoint {
+    fn r_g(&self) -> &EdwardsPoint {
         &self.r_g
     }
 
-    fn pk_r(&self) -> &MontgomeryPoint {
+    fn pk_r(&self) -> &EdwardsPoint {
         &self.pk_r
     }
 

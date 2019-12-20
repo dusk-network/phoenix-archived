@@ -1,4 +1,4 @@
-use crate::{MontgomeryPoint, Nonce, PublicKey, Scalar, ViewKey};
+use crate::{EdwardsPoint, Nonce, PublicKey, Scalar, ViewKey};
 
 use rand::rngs::OsRng;
 use rand::seq::SliceRandom;
@@ -11,14 +11,14 @@ use sodiumoxide::crypto::box_::curve25519xsalsa20poly1305::{
 mod tests;
 
 pub fn encrypt<V: AsRef<[u8]>>(r: &Scalar, pk: &PublicKey, nonce: &Nonce, value: V) -> Vec<u8> {
-    let a_g = SodiumPk(pk.a_g.to_bytes());
+    let a_g = SodiumPk(pk.a_g.to_montgomery().to_bytes());
     let r = SodiumSk(r.to_bytes());
 
     box_::seal(value.as_ref(), nonce, &a_g, &r)
 }
 
-pub fn decrypt(r_g: &MontgomeryPoint, vk: &ViewKey, nonce: &Nonce, value: &[u8]) -> Vec<u8> {
-    let r_g = SodiumPk(r_g.to_bytes());
+pub fn decrypt(r_g: &EdwardsPoint, vk: &ViewKey, nonce: &Nonce, value: &[u8]) -> Vec<u8> {
+    let r_g = SodiumPk(r_g.to_montgomery().to_bytes());
     let a = SodiumSk(vk.a.to_bytes());
 
     box_::open(value, nonce, &r_g, &a).unwrap_or({
