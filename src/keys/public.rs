@@ -3,8 +3,7 @@ use crate::MontgomeryPoint;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-// TODO - Serialization and deserialization should be based on compressed points
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PublicKey {
     pub a_g: MontgomeryPoint,
     pub b_g: MontgomeryPoint,

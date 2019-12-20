@@ -3,7 +3,7 @@ use crate::{utils, Scalar};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SecretKey {
     pub a: Scalar,
     pub b: Scalar,

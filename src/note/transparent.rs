@@ -4,7 +4,6 @@ use crate::{Db, Error, MontgomeryPoint, PublicKey};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
-// TODO - Serialization and deserialization should be based on compressed points
 pub struct TransparentNote {
     utxo: NoteUtxoType,
     value: u64,

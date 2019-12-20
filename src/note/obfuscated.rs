@@ -8,7 +8,6 @@ use std::cmp;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-// TODO - Serialization and deserialization should be based on compressed points
 pub struct ObfuscatedNote {
     utxo: NoteUtxoType,
     pub(crate) commitments: Vec<CompressedRistretto>,

@@ -3,8 +3,7 @@ use crate::{utils, MontgomeryPoint, Scalar};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-// TODO - Serialization and deserialization should be based on compressed points
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ViewKey {
     pub a: Scalar,
     pub b_g: MontgomeryPoint,

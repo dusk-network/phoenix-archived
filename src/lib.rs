@@ -15,7 +15,6 @@ pub use zk::value::Value;
 pub mod crypto;
 pub mod db;
 pub mod error;
-pub mod hash;
 pub mod keys;
 pub mod note;
 pub mod transaction;

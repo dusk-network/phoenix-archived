@@ -94,7 +94,6 @@ impl Transaction {
 
         // TODO - Apply a homomorphic sum from input to obfuscated input values
         // TODO - Apply a homomorphic sum from output to obfuscated output values
-        //
         if output > input {
             // TODO - Use the homomorphic sums instead
             return Err(Error::Generic);
