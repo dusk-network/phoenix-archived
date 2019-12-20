@@ -38,8 +38,8 @@ pub trait NoteGenerator: Sized + Note {
     fn generate_pk_r(pk: &PublicKey) -> (Scalar, EdwardsPoint, EdwardsPoint) {
         let r = utils::gen_random_clamped_scalar();
         let r_g = utils::mul_by_basepoint_edwards(&r);
-        // TODO - Review if it should not be r * A + B
-        let pk_r = &pk.a_g * &r;
+
+        let pk_r = &pk.a_g * &r + &pk.b_g;
 
         (r, r_g, pk_r)
     }
@@ -80,6 +80,10 @@ pub trait Note: Debug + Send + Sync {
     fn nonce(&self) -> &Nonce;
     fn r_g(&self) -> &EdwardsPoint;
     fn pk_r(&self) -> &EdwardsPoint;
+    fn generate_sk_r(&self, _sk: &SecretKey) {
+        // TODO - Find the proper Schnorr signature
+        unimplemented!()
+    }
     fn set_idx(&mut self, idx: Idx);
     // N/A to obfuscated notes
     fn value(&self) -> u64 {
@@ -88,7 +92,7 @@ pub trait Note: Debug + Send + Sync {
 
     /// Validations
     fn is_owned_by(&self, vk: &ViewKey) -> bool {
-        let pk_r = &vk.a * self.r_g();
+        let pk_r = &vk.a * self.r_g() + &vk.b_g;
         self.pk_r() == &pk_r
     }
 }
