@@ -1,11 +1,8 @@
 use crate::{
     utils, zk::gadgets, zk::value::gen_cs_transcript, CompressedRistretto, Db, Error, Note,
-    NoteGenerator, NoteUtxoType, Nullifier, Prover, PublicKey, R1CSProof, Scalar, TransparentNote,
+    NoteGenerator, NoteUtxoType, Nullifier, Prover, PublicKey, R1CSProof, TransparentNote,
     Variable, Verifier,
 };
-
-use hades252::linear_combination;
-use hades252::scalar;
 
 #[cfg(test)]
 mod tests;
@@ -14,13 +11,15 @@ mod tests;
 pub struct TransactionItem {
     note: Box<dyn Note>,
     nullifier: Option<Nullifier>,
+    value: Option<u64>,
 }
 
 impl TransactionItem {
-    pub fn new<N: Note>(note: N, nullifier: Option<Nullifier>) -> Self {
+    pub fn new<N: Note>(note: N, nullifier: Option<Nullifier>, value: Option<u64>) -> Self {
         TransactionItem {
             note: note.box_clone(),
             nullifier,
+            value,
         }
     }
 
@@ -63,7 +62,7 @@ impl Transaction {
 
     pub fn calculate_fee(&mut self, miner_pk: &PublicKey) {
         // TODO - Generate the proper fee value
-        self.fee = Some(TransparentNote::output(miner_pk, 1).to_transaction_output());
+        self.fee = Some(TransparentNote::output(miner_pk, 1).to_transaction_output(1));
     }
 
     pub fn fee(&self) -> Option<&TransactionItem> {
@@ -80,17 +79,16 @@ impl Transaction {
         let mut prover = Prover::new(&pc_gens, &mut transcript);
 
         // Commit and constrain the pre-image of the notes
-        let commits: (Vec<CompressedRistretto>, Vec<Variable>) = self
+        let commitments: Vec<CompressedRistretto> = self
             .items()
             .iter()
             .map(|item| {
                 let (y, x) = item.note().zk_preimage();
                 let (c, v) = prover.commit(y, utils::gen_random_scalar());
                 gadgets::note_preimage(&mut prover, v.into(), x.into());
-                (c, v)
+                c
             })
-            .unzip();
-        let (commitments, variables) = commits;
+            .collect();
 
         let proof = prover.prove(&bp_gens).map_err(Error::from)?;
 

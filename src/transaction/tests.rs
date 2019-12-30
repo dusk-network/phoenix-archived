@@ -37,8 +37,9 @@ fn transactions_with_transparent_notes() {
     // Set the first unspent note as the input of the transaction
     let sk = &senders[0].0;
     let note = &notes[0].3;
+    let value = notes[0].1;
     let nullifier = note.generate_nullifier(sk);
-    transaction.push(note.clone().to_transaction_input(nullifier));
+    transaction.push(note.clone().to_transaction_input(nullifier, value));
 
     // Set the fee cost
     miner_keys.push(generate_keys());
@@ -52,9 +53,11 @@ fn transactions_with_transparent_notes() {
     let pk = &receivers[1].1;
     outputs.push(create_transparent_output_note(pk, 50 - fee_cost));
     let note = &outputs[0].2;
-    transaction.push(note.to_transaction_output());
+    let value = outputs[0].1;
+    transaction.push(note.to_transaction_output(value));
     let note = &outputs[1].2;
-    transaction.push(note.to_transaction_output());
+    let value = outputs[1].1;
+    transaction.push(note.to_transaction_output(value));
 
     // Execute the transaction
     transaction.prepare(&db).unwrap();

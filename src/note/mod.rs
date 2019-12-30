@@ -27,12 +27,12 @@ pub trait NoteGenerator: Sized + Note {
     fn output(pk: &PublicKey, value: u64) -> Self;
 
     /// Transaction
-    fn to_transaction_input(mut self, nullifier: Nullifier) -> TransactionItem {
+    fn to_transaction_input(mut self, nullifier: Nullifier, value: u64) -> TransactionItem {
         self.set_utxo(NoteUtxoType::Input);
-        TransactionItem::new(self, Some(nullifier))
+        TransactionItem::new(self, Some(nullifier), Some(value))
     }
-    fn to_transaction_output(self) -> TransactionItem {
-        TransactionItem::new(self, None)
+    fn to_transaction_output(self, value: u64) -> TransactionItem {
+        TransactionItem::new(self, None, Some(value))
     }
 
     /// Attributes

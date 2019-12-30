@@ -12,7 +12,7 @@ fn store_notes() {
 
             let note = TransparentNote::output(&pk, value);
             let idx = db
-                .store_transaction_item(&note.to_transaction_output())
+                .store_transaction_item(&note.to_transaction_output(value))
                 .unwrap()
                 .unwrap();
 
@@ -28,7 +28,7 @@ fn store_notes() {
 
             let note = ObfuscatedNote::output(&pk, value);
             let idx = db
-                .store_transaction_item(&note.clone().to_transaction_output())
+                .store_transaction_item(&note.clone().to_transaction_output(value))
                 .unwrap()
                 .unwrap();
 

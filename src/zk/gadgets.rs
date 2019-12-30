@@ -1,4 +1,4 @@
-use crate::{ConstraintSystem, Error, LinearCombination};
+use crate::{ConstraintSystem, LinearCombination};
 
 use hades252::linear_combination;
 
