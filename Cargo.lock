@@ -40,7 +40,7 @@ dependencies = [
 [[package]]
 name = "bulletproofs"
 version = "1.0.4"
-source = "git+https://github.com/dalek-cryptography/bulletproofs?branch=develop#3239bc9dd562bc8400f9054477c7c26c36974baf"
+source = "git+https://github.com/dusk-network/bulletproofs.git?branch=dalek-v2#b21ba8b66dd4275ab644807a326ae5c66a6473b5"
 dependencies = [
  "byteorder",
  "clear_on_drop",
@@ -185,6 +185,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "hades252"
+version = "0.2.0"
+source = "git+https://github.com/dusk-network/Hades252.git?branch=dalek-v2#088bcd8275372803284ad2ce3ca62b9349469c2d"
+dependencies = [
+ "bulletproofs",
+ "curve25519-dalek",
+ "lazy_static",
+ "merlin",
+]
+
+[[package]]
 name = "keccak"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -262,6 +273,7 @@ dependencies = [
  "bincode",
  "bulletproofs",
  "curve25519-dalek",
+ "hades252",
  "lazy_static",
  "merlin",
  "rand",
@@ -354,18 +366,18 @@ checksum = "cabe4fa914dec5870285fa7f71f602645da47c486e68486d2b4ceb4a343e90ac"
 
 [[package]]
 name = "serde"
-version = "1.0.103"
+version = "1.0.104"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1217f97ab8e8904b57dd22eb61cde455fa7446a9c1cf43966066da047c1f3702"
+checksum = "414115f25f818d7dfccec8ee535d76949ae78584fc4f79a6f45a904bf8ab4449"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.103"
+version = "1.0.104"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a8c6faef9a2e64b0064f48570289b4bf8823b7581f1d6157c1b52152306651d0"
+checksum = "128f9e303a5a29922045a830221b8f78ec74a5f544944f3d5984f8ec3895ef64"
 dependencies = [
  "proc-macro2",
  "quote",

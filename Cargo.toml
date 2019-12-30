@@ -16,6 +16,10 @@ bincode = "1.2"
 lazy_static = "1.4"
 
 [dependencies.bulletproofs]
-git = "https://github.com/dalek-cryptography/bulletproofs"
-branch = "develop"
+git = "https://github.com/dusk-network/bulletproofs.git"
+branch = "dalek-v2"
 features = ["yoloproofs"]
+
+[dependencies.hades252]
+git = "https://github.com/dusk-network/Hades252.git"
+branch = "dalek-v2"

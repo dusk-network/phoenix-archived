@@ -5,6 +5,7 @@ use crate::{
 
 use std::fmt::Debug;
 
+use hades252::scalar;
 use serde::{Deserialize, Serialize};
 
 pub mod idx;
@@ -76,6 +77,14 @@ pub trait Note: Debug + Send + Sync {
     fn hash(&self) -> Scalar {
         // TODO - Hash the entire note
         Scalar::from_bits(self.pk_r().compress().to_bytes())
+    }
+    /// Generate y, x for the zero-knowledge pre-image
+    fn zk_preimage(&self) -> (Scalar, Scalar) {
+        let y = self.hash();
+        // TODO - Update hades252 to a never-fail scalar hash
+        let x = scalar::hash(&[y]).unwrap();
+
+        (y, x)
     }
     fn utxo(&self) -> NoteUtxoType;
     fn set_utxo(&mut self, utxo: NoteUtxoType);

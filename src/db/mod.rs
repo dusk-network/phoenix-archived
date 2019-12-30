@@ -72,7 +72,7 @@ impl Db {
             .ok_or(Error::Generic)?;
 
         // TODO - As a temporary solution until Kelvin is implemented, using very unsafe code
-        unsafe { Ok(Box::into_raw(note).cast::<N>().read()) }
+        Ok(Db::note_box_into(note))
     }
 
     pub fn fetch_nullifier(&self, nullifier: &Nullifier) -> Result<Option<()>, Error> {
@@ -82,5 +82,10 @@ impl Db {
         } else {
             None
         })
+    }
+
+    pub fn note_box_into<N>(note: Box<dyn Note>) -> N {
+        // TODO - As a temporary solution until Kelvin is implemented, using very unsafe code
+        unsafe { Box::into_raw(note).cast::<N>().read() }
     }
 }

@@ -1,4 +1,11 @@
-use crate::{Db, Error, Note, NoteGenerator, NoteUtxoType, Nullifier, PublicKey, TransparentNote};
+use crate::{
+    utils, zk::gadgets, zk::value::gen_cs_transcript, CompressedRistretto, Db, Error, Note,
+    NoteGenerator, NoteUtxoType, Nullifier, Prover, PublicKey, R1CSProof, Scalar, TransparentNote,
+    Variable, Verifier,
+};
+
+use hades252::linear_combination;
+use hades252::scalar;
 
 #[cfg(test)]
 mod tests;
@@ -65,6 +72,53 @@ impl Transaction {
 
     pub fn items(&self) -> &Vec<TransactionItem> {
         &self.items
+    }
+
+    // TODO - Generate a proper structure for the proofs
+    pub fn prove(&mut self) -> Result<(R1CSProof, Vec<CompressedRistretto>), Error> {
+        let (pc_gens, bp_gens, mut transcript) = gen_cs_transcript();
+        let mut prover = Prover::new(&pc_gens, &mut transcript);
+
+        // Commit and constrain the pre-image of the notes
+        let commits: (Vec<CompressedRistretto>, Vec<Variable>) = self
+            .items()
+            .iter()
+            .map(|item| {
+                let (y, x) = item.note().zk_preimage();
+                let (c, v) = prover.commit(y, utils::gen_random_scalar());
+                gadgets::note_preimage(&mut prover, v.into(), x.into());
+                (c, v)
+            })
+            .unzip();
+        let (commitments, variables) = commits;
+
+        let proof = prover.prove(&bp_gens).map_err(Error::from)?;
+
+        Ok((proof, commitments))
+    }
+
+    pub fn verify(
+        &self,
+        proof: &R1CSProof,
+        commitments: &Vec<CompressedRistretto>,
+    ) -> Result<(), Error> {
+        let (pc_gens, bp_gens, mut transcript) = gen_cs_transcript();
+        let mut verifier = Verifier::new(&mut transcript);
+
+        let mut commits = commitments.iter();
+        self.items().iter().for_each(|item| {
+            let var = commits
+                .next()
+                .map(|point| verifier.commit(*point))
+                .unwrap_or(Variable::One());
+
+            let (_, x) = item.note().zk_preimage();
+            gadgets::note_preimage(&mut verifier, var.into(), x.into());
+        });
+
+        verifier
+            .verify(&proof, &pc_gens, &bp_gens)
+            .map_err(Error::from)
     }
 
     pub fn prepare(&mut self, db: &Db) -> Result<(), Error> {

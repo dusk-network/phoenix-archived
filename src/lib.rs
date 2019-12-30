@@ -1,4 +1,6 @@
-pub use bulletproofs::r1cs::R1CSProof;
+pub use bulletproofs::r1cs::{
+    ConstraintSystem, LinearCombination, Prover, R1CSProof, Variable, Verifier,
+};
 pub use curve25519_dalek::edwards::EdwardsPoint;
 pub use curve25519_dalek::montgomery::MontgomeryPoint;
 pub use curve25519_dalek::ristretto::{CompressedRistretto, RistrettoPoint};
