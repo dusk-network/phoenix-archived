@@ -73,6 +73,10 @@ pub trait Note: Debug + Send + Sync {
     }
 
     /// Attributes
+    fn hash(&self) -> Scalar {
+        // TODO - Hash the entire note
+        Scalar::from_bits(self.pk_r().compress().to_bytes())
+    }
     fn utxo(&self) -> NoteUtxoType;
     fn set_utxo(&mut self, utxo: NoteUtxoType);
     fn note(&self) -> NoteType;

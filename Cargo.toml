@@ -17,5 +17,5 @@ lazy_static = "1.4"
 
 [dependencies.bulletproofs]
 git = "https://github.com/dalek-cryptography/bulletproofs"
-branch = "update-rand"
+branch = "develop"
 features = ["yoloproofs"]

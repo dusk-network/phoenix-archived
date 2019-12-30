@@ -40,7 +40,7 @@ dependencies = [
 [[package]]
 name = "bulletproofs"
 version = "1.0.4"
-source = "git+https://github.com/dalek-cryptography/bulletproofs?branch=update-rand#194787b334aa0648a3f149c334853ae80b095b92"
+source = "git+https://github.com/dalek-cryptography/bulletproofs?branch=develop#3239bc9dd562bc8400f9054477c7c26c36974baf"
 dependencies = [
  "byteorder",
  "clear_on_drop",
