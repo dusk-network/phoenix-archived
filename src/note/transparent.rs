@@ -1,5 +1,5 @@
 use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
-use crate::{utils, Db, EdwardsPoint, Error, Nonce, PublicKey};
+use crate::{utils, Db, EdwardsPoint, Error, Nonce, PublicKey, ViewKey};
 
 use serde::{Deserialize, Serialize};
 
@@ -90,7 +90,7 @@ impl Note for TransparentNote {
         self.idx = idx;
     }
 
-    fn value(&self) -> u64 {
+    fn value(&self, _vk: Option<&ViewKey>) -> u64 {
         self.value
     }
 }

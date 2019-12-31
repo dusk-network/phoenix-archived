@@ -9,6 +9,12 @@ pub struct ViewKey {
     pub b_g: EdwardsPoint,
 }
 
+impl Default for ViewKey {
+    fn default() -> Self {
+        SecretKey::default().view_key()
+    }
+}
+
 impl ViewKey {
     pub fn new(a: Scalar, b_g: EdwardsPoint) -> Self {
         ViewKey { a, b_g }

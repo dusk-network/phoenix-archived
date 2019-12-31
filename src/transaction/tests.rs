@@ -20,10 +20,10 @@ fn transactions_with_transparent_notes() {
     receivers.push(generate_keys());
 
     // Store an unspent note
-    let pk = &senders[0].1;
+    let pk = &senders[0].2;
     notes.push(create_and_store_unspent_transparent_note(&db, pk, 100));
     let note = &notes[0].3;
-    let vk = &senders[0].2;
+    let vk = &senders[0].1;
     assert!(note.is_owned_by(vk));
 
     // Assert the new unspent note is not nullified
@@ -36,28 +36,28 @@ fn transactions_with_transparent_notes() {
 
     // Set the first unspent note as the input of the transaction
     let sk = &senders[0].0;
+    let vk = senders[0].1;
     let note = &notes[0].3;
-    let value = notes[0].1;
     let nullifier = note.generate_nullifier(sk);
-    transaction.push(note.clone().to_transaction_input(nullifier, value));
+    transaction.push(note.clone().to_transaction_input(vk, nullifier));
 
     // Set the fee cost
     miner_keys.push(generate_keys());
-    let miner_pk = &miner_keys[0].1;
-    transaction.calculate_fee(miner_pk);
-    let fee_cost = transaction.fee().unwrap().note().value();
+    let miner_vk = miner_keys[0].1;
+    transaction.calculate_fee(&miner_vk);
+    let fee_cost = transaction.fee().unwrap().note().value(None);
 
     // Create two output notes for the transaction
-    let pk = &receivers[0].1;
+    let pk = &receivers[0].2;
     outputs.push(create_transparent_output_note(pk, 50));
-    let pk = &receivers[1].1;
+    let pk = &receivers[1].2;
     outputs.push(create_transparent_output_note(pk, 50 - fee_cost));
     let note = &outputs[0].2;
-    let value = outputs[0].1;
-    transaction.push(note.to_transaction_output(value));
+    let vk = receivers[0].1;
+    transaction.push(note.to_transaction_output(vk));
     let note = &outputs[1].2;
-    let value = outputs[1].1;
-    transaction.push(note.to_transaction_output(value));
+    let vk = receivers[1].1;
+    transaction.push(note.to_transaction_output(vk));
 
     // Execute the transaction
     transaction.prepare(&db).unwrap();
@@ -74,7 +74,7 @@ fn transactions_with_transparent_notes() {
         let note: TransparentNote = db.fetch_note(idx).unwrap();
         let sk = receivers
             .iter()
-            .fold(SecretKey::default(), |sk, (r_sk, _, r_vk)| {
+            .fold(SecretKey::default(), |sk, (r_sk, r_vk, _)| {
                 if note.is_owned_by(r_vk) {
                     r_sk.clone()
                 } else {
@@ -86,12 +86,12 @@ fn transactions_with_transparent_notes() {
     });
 }
 
-fn generate_keys() -> (SecretKey, PublicKey, ViewKey) {
+fn generate_keys() -> (SecretKey, ViewKey, PublicKey) {
     let sk = SecretKey::default();
-    let pk = sk.public_key();
     let vk = sk.view_key();
+    let pk = sk.public_key();
 
-    (sk, pk, vk)
+    (sk, vk, pk)
 }
 
 fn create_and_store_unspent_transparent_note(

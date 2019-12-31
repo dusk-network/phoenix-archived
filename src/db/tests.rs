@@ -7,12 +7,13 @@ fn store_notes() {
     let transaparent_notes: Vec<(Idx, TransparentNote)> = (0..20)
         .map(|i| {
             let sk = SecretKey::default();
+            let vk = sk.view_key();
             let pk = sk.public_key();
             let value = (i * i) as u64;
 
             let note = TransparentNote::output(&pk, value);
             let idx = db
-                .store_transaction_item(&note.to_transaction_output(value))
+                .store_transaction_item(&note.to_transaction_output(vk))
                 .unwrap()
                 .unwrap();
 
@@ -23,12 +24,13 @@ fn store_notes() {
     let obfuscated_notes: Vec<(Idx, ObfuscatedNote)> = (0..20)
         .map(|i| {
             let sk = SecretKey::default();
+            let vk = sk.view_key();
             let pk = sk.public_key();
             let value = (i * i) as u64;
 
             let note = ObfuscatedNote::output(&pk, value);
             let idx = db
-                .store_transaction_item(&note.clone().to_transaction_output(value))
+                .store_transaction_item(&note.clone().to_transaction_output(vk))
                 .unwrap()
                 .unwrap();
 
@@ -41,7 +43,7 @@ fn store_notes() {
 
         assert_eq!(note.utxo(), db_note.utxo());
         assert_eq!(note.note(), db_note.note());
-        assert_eq!(note.value(), db_note.value());
+        assert_eq!(note.value(None), db_note.value(None));
         assert_eq!(idx, db_note.idx());
     });
 

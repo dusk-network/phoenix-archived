@@ -1,7 +1,7 @@
 use crate::{
     utils, zk::gadgets, zk::value::gen_cs_transcript, CompressedRistretto, Db, Error, Note,
-    NoteGenerator, NoteUtxoType, Nullifier, Prover, PublicKey, R1CSProof, TransparentNote,
-    Variable, Verifier,
+    NoteGenerator, NoteUtxoType, Nullifier, Prover, R1CSProof, TransparentNote, Variable, Verifier,
+    ViewKey,
 };
 
 #[cfg(test)]
@@ -10,21 +10,21 @@ mod tests;
 #[derive(Debug)]
 pub struct TransactionItem {
     note: Box<dyn Note>,
+    vk: ViewKey,
     nullifier: Option<Nullifier>,
-    value: Option<u64>,
 }
 
 impl TransactionItem {
-    pub fn new<N: Note>(note: N, nullifier: Option<Nullifier>, value: Option<u64>) -> Self {
+    pub fn new<N: Note>(note: N, vk: ViewKey, nullifier: Option<Nullifier>) -> Self {
         TransactionItem {
             note: note.box_clone(),
+            vk,
             nullifier,
-            value,
         }
     }
 
     pub fn value(&self) -> u64 {
-        self.note.value()
+        self.note.value(Some(&self.vk))
     }
 
     pub fn utxo(&self) -> NoteUtxoType {
@@ -60,9 +60,11 @@ impl Transaction {
         self.items.push(item);
     }
 
-    pub fn calculate_fee(&mut self, miner_pk: &PublicKey) {
+    pub fn calculate_fee(&mut self, miner_vk: &ViewKey) {
         // TODO - Generate the proper fee value
-        self.fee = Some(TransparentNote::output(miner_pk, 1).to_transaction_output(1));
+        self.fee = Some(
+            TransparentNote::output(&miner_vk.public_key(), 1).to_transaction_output(*miner_vk),
+        );
     }
 
     pub fn fee(&self) -> Option<&TransactionItem> {
@@ -85,10 +87,15 @@ impl Transaction {
             .map(|item| {
                 let (y, x) = item.note().zk_preimage();
                 let (c, v) = prover.commit(y, utils::gen_random_scalar());
+
                 gadgets::note_preimage(&mut prover, v.into(), x.into());
+
                 c
             })
             .collect();
+
+        // TODO - Use the blinding factors of obfuscated notes, or commit the values of transparent
+        // notes
 
         let proof = prover.prove(&bp_gens).map_err(Error::from)?;
 
@@ -120,7 +127,7 @@ impl Transaction {
     }
 
     pub fn prepare(&mut self, db: &Db) -> Result<(), Error> {
-        let fee = match &self.fee {
+        let _fee = match &self.fee {
             Some(f) => f,
             None => return Err(Error::FeeOutput),
         };
@@ -136,22 +143,6 @@ impl Transaction {
 
             Ok(())
         })?;
-
-        let mut sum = (0, fee.value());
-        self.items.iter().for_each(|i| match i.utxo() {
-            NoteUtxoType::Input => sum.0 += i.value(),
-            NoteUtxoType::Output => sum.1 += i.value(),
-        });
-        let (input, output) = sum;
-
-        // TODO - Apply a homomorphic sum from input to obfuscated input values
-        // TODO - Apply a homomorphic sum from output to obfuscated output values
-        if output > input {
-            // TODO - Use the homomorphic sums instead
-            return Err(Error::Generic);
-        }
-
-        // TODO - Generate an output with the remainer input - output
 
         Ok(())
     }

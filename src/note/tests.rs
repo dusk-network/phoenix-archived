@@ -14,7 +14,7 @@ fn transparent_note() {
 
     assert_eq!(note.utxo(), NoteUtxoType::Output);
     assert_eq!(note.note(), NoteType::Transparent);
-    assert_eq!(value, note.value());
+    assert_eq!(value, note.value(None));
 }
 
 #[test]

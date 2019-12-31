@@ -27,12 +27,12 @@ pub trait NoteGenerator: Sized + Note {
     fn output(pk: &PublicKey, value: u64) -> Self;
 
     /// Transaction
-    fn to_transaction_input(mut self, nullifier: Nullifier, value: u64) -> TransactionItem {
+    fn to_transaction_input(mut self, vk: ViewKey, nullifier: Nullifier) -> TransactionItem {
         self.set_utxo(NoteUtxoType::Input);
-        TransactionItem::new(self, Some(nullifier), Some(value))
+        TransactionItem::new(self, vk, Some(nullifier))
     }
-    fn to_transaction_output(self, value: u64) -> TransactionItem {
-        TransactionItem::new(self, None, Some(value))
+    fn to_transaction_output(self, vk: ViewKey) -> TransactionItem {
+        TransactionItem::new(self, vk, None)
     }
 
     /// Attributes
@@ -93,14 +93,15 @@ pub trait Note: Debug + Send + Sync {
     fn nonce(&self) -> &Nonce;
     fn r_g(&self) -> &EdwardsPoint;
     fn pk_r(&self) -> &EdwardsPoint;
+    fn set_idx(&mut self, idx: Idx);
+    fn value(&self, vk: Option<&ViewKey>) -> u64;
+    // N/A to transparent notes
+    fn blinding_factors(&self, _vk: &ViewKey) -> Vec<Scalar> {
+        vec![]
+    }
     fn generate_sk_r(&self, _sk: &SecretKey) {
         // TODO - Find the proper Schnorr signature
         unimplemented!()
-    }
-    fn set_idx(&mut self, idx: Idx);
-    // N/A to obfuscated notes
-    fn value(&self) -> u64 {
-        0
     }
 
     /// Validations

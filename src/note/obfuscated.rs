@@ -47,17 +47,6 @@ impl ObfuscatedNote {
         crypto::encrypt(r, pk, nonce, &value.to_le_bytes()[..])
     }
 
-    pub fn decrypt_value(&self, vk: &ViewKey) -> u64 {
-        let decrypt_value =
-            crypto::decrypt(&self.r_g, &vk, &self.nonce, self.encrypted_value.as_slice());
-
-        let mut v = [0x00u8; 8];
-        let chunk = cmp::max(decrypt_value.len(), 8);
-        (&mut v[0..chunk]).copy_from_slice(&decrypt_value.as_slice()[0..chunk]);
-
-        u64::from_le_bytes(v)
-    }
-
     fn encrypt_blinding_factors(
         r: &Scalar,
         pk: &PublicKey,
@@ -72,24 +61,6 @@ impl ObfuscatedNote {
             .collect::<Vec<u8>>();
 
         crypto::encrypt(r, pk, &nonce.increment_le(), blinding_factors)
-    }
-
-    pub fn decrypt_blinding_factors(&self, vk: &ViewKey) -> Vec<Scalar> {
-        crypto::decrypt(
-            &self.r_g,
-            vk,
-            &self.nonce.increment_le(),
-            self.encrypted_blinding_factors.as_slice(),
-        )
-        .as_slice()
-        .chunks(32)
-        .map(|b| {
-            let mut s = [0x00u8; 32];
-            let chunk = cmp::max(b.len(), 32);
-            (&mut s[0..chunk]).copy_from_slice(&b[0..chunk]);
-            Scalar::from_bits(s)
-        })
-        .collect()
     }
 }
 
@@ -165,9 +136,39 @@ impl Note for ObfuscatedNote {
         self.idx = idx;
     }
 
+    fn value(&self, vk: Option<&ViewKey>) -> u64 {
+        let vk = vk.map(|k| *k).unwrap_or(ViewKey::default());
+        let decrypt_value =
+            crypto::decrypt(&self.r_g, &vk, &self.nonce, self.encrypted_value.as_slice());
+
+        let mut v = [0x00u8; 8];
+        let chunk = cmp::max(decrypt_value.len(), 8);
+        (&mut v[0..chunk]).copy_from_slice(&decrypt_value.as_slice()[0..chunk]);
+
+        u64::from_le_bytes(v)
+    }
+
+    fn blinding_factors(&self, vk: &ViewKey) -> Vec<Scalar> {
+        crypto::decrypt(
+            &self.r_g,
+            vk,
+            &self.nonce.increment_le(),
+            self.encrypted_blinding_factors.as_slice(),
+        )
+        .as_slice()
+        .chunks(32)
+        .map(|b| {
+            let mut s = [0x00u8; 32];
+            let chunk = cmp::max(b.len(), 32);
+            (&mut s[0..chunk]).copy_from_slice(&b[0..chunk]);
+            Scalar::from_bits(s)
+        })
+        .collect()
+    }
+
     fn prove_value(&self, vk: &ViewKey) -> Result<R1CSProof, Error> {
-        let value = self.decrypt_value(vk);
-        let blinding_factors = self.decrypt_blinding_factors(vk);
+        let value = self.value(Some(vk));
+        let blinding_factors = self.blinding_factors(vk);
 
         let phoenix_value = Value::with_blinding_factors(self.idx, value, blinding_factors);
 

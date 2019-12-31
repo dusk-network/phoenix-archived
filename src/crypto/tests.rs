@@ -1,4 +1,4 @@
-use crate::{crypto, utils, NoteGenerator, ObfuscatedNote, SecretKey};
+use crate::{crypto, utils, Note, NoteGenerator, ObfuscatedNote, SecretKey};
 
 #[test]
 fn decrypt() {
@@ -44,7 +44,7 @@ fn decrypt_obfuscated_note() {
     let vk = sk.view_key();
 
     let note = ObfuscatedNote::output(&pk, value);
-    let decrypt_value = note.decrypt_value(&vk);
+    let decrypt_value = note.value(Some(&vk));
 
     assert_eq!(decrypt_value, value);
 }

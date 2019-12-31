@@ -9,6 +9,12 @@ pub struct PublicKey {
     pub b_g: EdwardsPoint,
 }
 
+impl Default for PublicKey {
+    fn default() -> Self {
+        SecretKey::default().public_key()
+    }
+}
+
 impl PublicKey {
     pub fn new(a_g: EdwardsPoint, b_g: EdwardsPoint) -> Self {
         PublicKey { a_g, b_g }
