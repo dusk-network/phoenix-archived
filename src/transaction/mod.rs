@@ -1,7 +1,7 @@
 use crate::{
-    utils, zk::gadgets, zk::value::gen_cs_transcript, CompressedRistretto, Db, Error, Note,
-    NoteGenerator, NoteUtxoType, Nullifier, Prover, R1CSProof, TransparentNote, Variable, Verifier,
-    ViewKey,
+    utils, zk::gadgets, zk::value::gen_cs_transcript, CompressedRistretto, ConstraintSystem, Db,
+    Error, LinearCombination, Note, NoteGenerator, NoteUtxoType, Nullifier, Prover, R1CSProof,
+    Scalar, SecretKey, TransparentNote, Variable, Verifier, ViewKey,
 };
 
 #[cfg(test)]
@@ -12,6 +12,15 @@ pub struct TransactionItem {
     note: Box<dyn Note>,
     vk: ViewKey,
     nullifier: Option<Nullifier>,
+}
+
+impl Default for TransactionItem {
+    fn default() -> Self {
+        let note = TransparentNote::default();
+        let vk = ViewKey::default();
+
+        TransactionItem::new(note, vk, None)
+    }
 }
 
 impl TransactionItem {
@@ -75,7 +84,7 @@ impl Transaction {
         &self.items
     }
 
-    // TODO - Generate a proper structure for the proofs
+    // TODO - Generate a proper structure for the proof + commitments
     pub fn prove(&mut self) -> Result<(R1CSProof, Vec<CompressedRistretto>), Error> {
         let (pc_gens, bp_gens, mut transcript) = gen_cs_transcript();
         let mut prover = Prover::new(&pc_gens, &mut transcript);
@@ -94,11 +103,65 @@ impl Transaction {
             })
             .collect();
 
-        // TODO - Use the blinding factors of obfuscated notes, or commit the values of transparent
-        // notes
+        // Set transaction fee to the difference between the sums
+        let (input, output) = self
+            .items()
+            .iter()
+            .fold((0, 0), |(mut input, mut output), item| {
+                let utxo = item.note().utxo();
+
+                match utxo {
+                    NoteUtxoType::Input => input += item.note().value(Some(&item.vk)),
+                    NoteUtxoType::Output => output += item.note().value(Some(&item.vk)),
+                };
+
+                (input, output)
+            });
+        if output > input {
+            return Err(Error::FeeOutput);
+        }
+        let fee_value = input - output;
+        // The miner spending key will be defined later by the block generator
+        let sk = SecretKey::default();
+        // TODO - Miner rewards should always be transparent?
+        let fee = TransparentNote::output(&sk.public_key(), fee_value);
+        let fee = fee.to_transaction_output(sk.view_key());
+        self.fee.replace(fee);
+        let output: LinearCombination = Scalar::from(fee_value).into();
+
+        let (input, output) = self.items().iter().fold(
+            (LinearCombination::default(), output),
+            |(mut input, mut output), item| {
+                let value = item.note().value(Some(&item.vk));
+                let utxo = item.note().utxo();
+
+                let (_, var) = match utxo {
+                    NoteUtxoType::Input => {
+                        prover.commit(Scalar::from(value), utils::gen_random_scalar())
+                    }
+                    NoteUtxoType::Output => prover.commit(
+                        Scalar::from(value),
+                        // TODO - Obfuscated notes produce only one commitment point, should not be
+                        // Vec
+                        item.note().blinding_factors(&item.vk)[0],
+                    ),
+                };
+
+                let var: LinearCombination = var.into();
+
+                // TODO - Very inneficient, maybe redo lc operator handlers in bulletproofs
+                match utxo {
+                    NoteUtxoType::Input => input = input.clone() + var,
+                    NoteUtxoType::Output => output = input.clone() + var,
+                };
+
+                (input, output)
+            },
+        );
+
+        prover.constrain(input - output);
 
         let proof = prover.prove(&bp_gens).map_err(Error::from)?;
-
         Ok((proof, commitments))
     }
 
@@ -120,6 +183,39 @@ impl Transaction {
             let (_, x) = item.note().zk_preimage();
             gadgets::note_preimage(&mut verifier, var.into(), x.into());
         });
+
+        let fee = self.fee.as_ref().map(|f| f.value()).unwrap_or(0);
+        let output: LinearCombination = Scalar::from(fee).into();
+
+        /*
+        let (input, output) = self.items().iter().fold(
+            (LinearCombination::default(), output),
+            |(mut input, mut output), item| {
+                let value = item.note().value(Some(&item.vk));
+                let utxo = item.note().utxo();
+
+                let (_, var) = match utxo {
+                    NoteUtxoType::Input => {
+                        prover.commit(Scalar::from(value), utils::gen_random_scalar())
+                    }
+                    NoteUtxoType::Output => prover.commit(
+                        Scalar::from(value),
+                        item.note().blinding_factors(&item.vk)[0],
+                    ),
+                };
+
+                let var: LinearCombination = var.into();
+
+                // TODO - Very inneficient, maybe redo lc operator handlers in bulletproofs
+                match utxo {
+                    NoteUtxoType::Input => input = input.clone() + var,
+                    NoteUtxoType::Output => output = input.clone() + var,
+                };
+
+                (input, output)
+            },
+        );
+        */
 
         verifier
             .verify(&proof, &pc_gens, &bp_gens)

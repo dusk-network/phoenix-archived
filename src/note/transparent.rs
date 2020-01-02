@@ -13,6 +13,12 @@ pub struct TransparentNote {
     idx: Idx,
 }
 
+impl Default for TransparentNote {
+    fn default() -> Self {
+        TransparentNote::output(&PublicKey::default(), 0)
+    }
+}
+
 impl TransparentNote {
     pub fn new(
         utxo: NoteUtxoType,
