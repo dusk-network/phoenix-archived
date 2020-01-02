@@ -11,35 +11,35 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ObfuscatedNote {
     utxo: NoteUtxoType,
-    pub(crate) commitments: Vec<CompressedRistretto>,
+    pub(crate) commitment: CompressedRistretto,
     nonce: Nonce,
     r_g: EdwardsPoint,
     pk_r: EdwardsPoint,
     idx: Idx,
     pub(crate) encrypted_value: Vec<u8>,
-    pub(crate) encrypted_blinding_factors: Vec<u8>,
+    pub(crate) encrypted_blinding_factor: Vec<u8>,
 }
 
 impl ObfuscatedNote {
     pub fn new(
         utxo: NoteUtxoType,
-        commitments: Vec<CompressedRistretto>,
+        commitment: CompressedRistretto,
         nonce: Nonce,
         r_g: EdwardsPoint,
         pk_r: EdwardsPoint,
         idx: Idx,
         encrypted_value: Vec<u8>,
-        encrypted_blinding_factors: Vec<u8>,
+        encrypted_blinding_factor: Vec<u8>,
     ) -> Self {
         ObfuscatedNote {
             utxo,
-            commitments,
+            commitment,
             nonce,
             r_g,
             pk_r,
             idx,
             encrypted_value,
-            encrypted_blinding_factors,
+            encrypted_blinding_factor,
         }
     }
 
@@ -47,20 +47,13 @@ impl ObfuscatedNote {
         crypto::encrypt(r, pk, nonce, &value.to_le_bytes()[..])
     }
 
-    fn encrypt_blinding_factors(
+    fn encrypt_blinding_factor(
         r: &Scalar,
         pk: &PublicKey,
         nonce: &Nonce,
-        blinding_factors: &[Scalar],
+        blinding_factor: &Scalar,
     ) -> Vec<u8> {
-        let blinding_factors = blinding_factors
-            .iter()
-            .map(|s| &s.as_bytes()[..])
-            .flatten()
-            .map(|b| *b)
-            .collect::<Vec<u8>>();
-
-        crypto::encrypt(r, pk, &nonce.increment_le(), blinding_factors)
+        crypto::encrypt(r, pk, &nonce.increment_le(), blinding_factor.as_bytes())
     }
 }
 
@@ -76,25 +69,25 @@ impl NoteGenerator for ObfuscatedNote {
 
         let idx = Idx::default();
         let phoenix_value = Value::new(idx, Scalar::from(value));
-        let commitments = phoenix_value.commitments().clone();
+        let commitment = phoenix_value.commitments()[0].clone();
 
         let encrypted_value = ObfuscatedNote::encrypt_value(&r, pk, &nonce, value);
-        let encrypted_blinding_factors = ObfuscatedNote::encrypt_blinding_factors(
+        let encrypted_blinding_factor = ObfuscatedNote::encrypt_blinding_factor(
             &r,
             pk,
             &nonce,
-            phoenix_value.blinding_factors(),
+            &phoenix_value.blinding_factors()[0],
         );
 
         ObfuscatedNote::new(
             NoteUtxoType::Output,
-            commitments,
+            commitment,
             nonce,
             r_g,
             pk_r,
             idx,
             encrypted_value,
-            encrypted_blinding_factors,
+            encrypted_blinding_factor,
         )
     }
 }
@@ -153,7 +146,7 @@ impl Note for ObfuscatedNote {
             &self.r_g,
             vk,
             &self.nonce.increment_le(),
-            self.encrypted_blinding_factors.as_slice(),
+            self.encrypted_blinding_factor.as_slice(),
         )
         .as_slice()
         .chunks(32)
@@ -176,7 +169,7 @@ impl Note for ObfuscatedNote {
     }
 
     fn verify_value(&self, proof: &R1CSProof) -> Result<(), Error> {
-        Value::with_commitments(self.commitments.clone())
+        Value::with_commitments(vec![self.commitment.clone()])
             .verify(proof)
             .map_err(Error::generic)
     }
