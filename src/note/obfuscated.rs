@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ObfuscatedNote {
     utxo: NoteUtxoType,
-    pub(crate) commitment: CompressedRistretto,
+    commitment: CompressedRistretto,
     nonce: Nonce,
     r_g: EdwardsPoint,
     pk_r: EdwardsPoint,
@@ -139,6 +139,10 @@ impl Note for ObfuscatedNote {
         (&mut v[0..chunk]).copy_from_slice(&decrypt_value.as_slice()[0..chunk]);
 
         u64::from_le_bytes(v)
+    }
+
+    fn commitment(&self) -> &CompressedRistretto {
+        &self.commitment
     }
 
     fn blinding_factor(&self, vk: &ViewKey) -> Scalar {

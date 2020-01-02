@@ -11,7 +11,7 @@ pub struct Value {
 
 impl Value {
     pub fn new<S: Into<Scalar>>(idx: Idx, value: S) -> Self {
-        Value::with_blinding_factor(idx, value, utils::gen_random_scalar())
+        Value::with_blinding_factor(idx, value, utils::gen_random_clamped_scalar())
     }
 
     pub fn with_blinding_factor<S: Into<Scalar>>(

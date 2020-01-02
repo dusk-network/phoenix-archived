@@ -52,7 +52,7 @@ fn store_notes() {
 
         assert_eq!(note.utxo(), db_note.utxo());
         assert_eq!(note.note(), db_note.note());
-        assert_eq!(note.commitment, db_note.commitment);
+        assert_eq!(note.commitment(), db_note.commitment());
         assert_eq!(note.encrypted_value, db_note.encrypted_value);
         assert_eq!(
             note.encrypted_blinding_factor,

@@ -1,6 +1,6 @@
 use crate::{
-    utils, Db, EdwardsPoint, Error, Nonce, PublicKey, R1CSProof, Scalar, SecretKey,
-    TransactionItem, ViewKey,
+    utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, PublicKey, R1CSProof, Scalar,
+    SecretKey, TransactionItem, ViewKey,
 };
 
 use std::fmt::Debug;
@@ -95,10 +95,8 @@ pub trait Note: Debug + Send + Sync {
     fn pk_r(&self) -> &EdwardsPoint;
     fn set_idx(&mut self, idx: Idx);
     fn value(&self, vk: Option<&ViewKey>) -> u64;
-    // N/A to transparent notes
-    fn blinding_factor(&self, _vk: &ViewKey) -> Scalar {
-        Scalar::one()
-    }
+    fn commitment(&self) -> &CompressedRistretto;
+    fn blinding_factor(&self, vk: &ViewKey) -> Scalar;
     fn generate_sk_r(&self, _sk: &SecretKey) {
         // TODO - Find the proper Schnorr signature
         unimplemented!()

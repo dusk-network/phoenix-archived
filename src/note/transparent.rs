@@ -1,5 +1,7 @@
 use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
-use crate::{utils, Db, EdwardsPoint, Error, Nonce, PublicKey, ViewKey};
+use crate::{
+    utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, PublicKey, Scalar, Value, ViewKey,
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -11,6 +13,8 @@ pub struct TransparentNote {
     r_g: EdwardsPoint,
     pk_r: EdwardsPoint,
     idx: Idx,
+    commitment: CompressedRistretto,
+    blinding_factor: Scalar,
 }
 
 impl Default for TransparentNote {
@@ -27,6 +31,8 @@ impl TransparentNote {
         r_g: EdwardsPoint,
         pk_r: EdwardsPoint,
         idx: Idx,
+        commitment: CompressedRistretto,
+        blinding_factor: Scalar,
     ) -> Self {
         TransparentNote {
             utxo,
@@ -35,6 +41,8 @@ impl TransparentNote {
             r_g,
             pk_r,
             idx,
+            commitment,
+            blinding_factor,
         }
     }
 }
@@ -48,6 +56,15 @@ impl NoteGenerator for TransparentNote {
         let nonce = utils::gen_nonce();
         let (_, r_g, pk_r) = Self::generate_pk_r(pk);
 
+        let idx = Idx::default();
+        // TODO - Check if phoenix value should receive idx
+        let phoenix_value = Value::new(idx, Scalar::from(value));
+        let commitment = phoenix_value.commitment().clone();
+
+        // The blinding factor of the transparent note should never be revealed because no r1cs
+        // proof should ever be generated for it
+        let blinding_factor = Scalar::one().reduce();
+
         TransparentNote::new(
             NoteUtxoType::Output,
             value,
@@ -55,6 +72,8 @@ impl NoteGenerator for TransparentNote {
             r_g,
             pk_r,
             Idx::default(),
+            commitment,
+            blinding_factor,
         )
     }
 }
@@ -98,5 +117,13 @@ impl Note for TransparentNote {
 
     fn value(&self, _vk: Option<&ViewKey>) -> u64 {
         self.value
+    }
+
+    fn commitment(&self) -> &CompressedRistretto {
+        &self.commitment
+    }
+
+    fn blinding_factor(&self, _vk: &ViewKey) -> Scalar {
+        self.blinding_factor
     }
 }
