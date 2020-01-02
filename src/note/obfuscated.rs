@@ -122,7 +122,7 @@ impl Note for ObfuscatedNote {
             crypto::decrypt(&self.r_g, &vk, &self.nonce, self.encrypted_value.as_slice());
 
         let mut v = [0x00u8; 8];
-        let chunk = cmp::max(decrypt_value.len(), 8);
+        let chunk = cmp::min(decrypt_value.len(), 8);
         (&mut v[0..chunk]).copy_from_slice(&decrypt_value.as_slice()[0..chunk]);
 
         u64::from_le_bytes(v)
@@ -141,7 +141,7 @@ impl Note for ObfuscatedNote {
         );
 
         let mut s = [0x00u8; 32];
-        let chunk = cmp::max(blinding_factor.len(), 32);
+        let chunk = cmp::min(blinding_factor.len(), 32);
         (&mut s[0..chunk]).copy_from_slice(&blinding_factor[0..chunk]);
 
         Scalar::from_bits(s)

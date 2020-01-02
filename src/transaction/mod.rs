@@ -133,17 +133,11 @@ impl Transaction {
             (LinearCombination::default(), output),
             |(mut input, mut output), item| {
                 let value = item.note().value(Some(&item.vk));
+                let value = Scalar::from(value);
                 let utxo = item.note().utxo();
+                let blinding_factor = item.note().blinding_factor(&item.vk);
 
-                let (_, var) = match utxo {
-                    NoteUtxoType::Input => {
-                        prover.commit(Scalar::from(value), utils::gen_random_scalar())
-                    }
-                    NoteUtxoType::Output => {
-                        prover.commit(Scalar::from(value), item.note().blinding_factor(&item.vk))
-                    }
-                };
-
+                let (_, var) = prover.commit(value, blinding_factor);
                 let var: LinearCombination = var.into();
 
                 // TODO - Very inneficient, maybe redo lc operator handlers in bulletproofs
@@ -184,23 +178,13 @@ impl Transaction {
         let fee = self.fee.as_ref().map(|f| f.value()).unwrap_or(0);
         let output: LinearCombination = Scalar::from(fee).into();
 
-        /*
         let (input, output) = self.items().iter().fold(
             (LinearCombination::default(), output),
             |(mut input, mut output), item| {
-                let value = item.note().value(Some(&item.vk));
+                let commitment = item.note().commitment().clone();
                 let utxo = item.note().utxo();
 
-                let (_, var) = match utxo {
-                    NoteUtxoType::Input => {
-                        prover.commit(Scalar::from(value), utils::gen_random_scalar())
-                    }
-                    NoteUtxoType::Output => prover.commit(
-                        Scalar::from(value),
-                        item.note().blinding_factors(&item.vk)[0],
-                    ),
-                };
-
+                let var = verifier.commit(commitment);
                 let var: LinearCombination = var.into();
 
                 // TODO - Very inneficient, maybe redo lc operator handlers in bulletproofs
@@ -212,7 +196,8 @@ impl Transaction {
                 (input, output)
             },
         );
-        */
+
+        verifier.constrain(input - output);
 
         verifier
             .verify(&proof, &pc_gens, &bp_gens)
