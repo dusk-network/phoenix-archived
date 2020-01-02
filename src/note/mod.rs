@@ -96,8 +96,8 @@ pub trait Note: Debug + Send + Sync {
     fn set_idx(&mut self, idx: Idx);
     fn value(&self, vk: Option<&ViewKey>) -> u64;
     // N/A to transparent notes
-    fn blinding_factors(&self, _vk: &ViewKey) -> Vec<Scalar> {
-        vec![]
+    fn blinding_factor(&self, _vk: &ViewKey) -> Scalar {
+        Scalar::one()
     }
     fn generate_sk_r(&self, _sk: &SecretKey) {
         // TODO - Find the proper Schnorr signature

@@ -5,43 +5,40 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Value {
-    commitments: Vec<CompressedRistretto>,
-    blinding_factors: Vec<Scalar>,
+    commitment: CompressedRistretto,
+    blinding_factor: Scalar,
 }
 
 impl Value {
     pub fn new<S: Into<Scalar>>(idx: Idx, value: S) -> Self {
-        Value::with_blinding_factors(idx, value, vec![utils::gen_random_scalar()])
+        Value::with_blinding_factor(idx, value, utils::gen_random_scalar())
     }
 
-    pub fn with_blinding_factors<S: Into<Scalar>>(
+    pub fn with_blinding_factor<S: Into<Scalar>>(
         _idx: Idx,
         value: S,
-        blinding_factors: Vec<Scalar>,
+        blinding_factor: Scalar,
     ) -> Self {
         let (pc_gens, _, mut transcript) = gen_cs_transcript();
         let mut prover = Prover::new(&pc_gens, &mut transcript);
 
         let value: Scalar = value.into();
-        let commitments = blinding_factors
-            .iter()
-            .map(|b| prover.commit(value, *b).0)
-            .collect();
+        let commitment = prover.commit(value, blinding_factor).0;
 
-        Value::with_commitments_and_blinding_factors(commitments, blinding_factors)
+        Value::with_commitment_and_blinding_factor(commitment, blinding_factor)
     }
 
-    pub fn with_commitments(commitments: Vec<CompressedRistretto>) -> Self {
-        Value::with_commitments_and_blinding_factors(commitments, vec![])
+    pub fn with_commitment(commitment: CompressedRistretto) -> Self {
+        Value::with_commitment_and_blinding_factor(commitment, Scalar::one())
     }
 
-    pub fn with_commitments_and_blinding_factors(
-        commitments: Vec<CompressedRistretto>,
-        blinding_factors: Vec<Scalar>,
+    pub fn with_commitment_and_blinding_factor(
+        commitment: CompressedRistretto,
+        blinding_factor: Scalar,
     ) -> Self {
         Value {
-            commitments,
-            blinding_factors,
+            commitment,
+            blinding_factor,
         }
     }
 
@@ -51,9 +48,7 @@ impl Value {
         let (pc_gens, bp_gens, mut transcript) = gen_cs_transcript();
         let mut prover = Prover::new(&pc_gens, &mut transcript);
 
-        self.blinding_factors.iter().for_each(|b| {
-            prover.commit(value, *b).0;
-        });
+        prover.commit(value, self.blinding_factor);
 
         prover.prove(&bp_gens).map_err(Error::from)
     }
@@ -62,20 +57,18 @@ impl Value {
         let (pc_gens, bp_gens, mut transcript) = gen_cs_transcript();
         let mut verifier = Verifier::new(&mut transcript);
 
-        self.commitments.iter().for_each(|c| {
-            verifier.commit(*c);
-        });
+        verifier.commit(self.commitment);
 
         verifier
             .verify(&proof, &pc_gens, &bp_gens)
             .map_err(Error::from)
     }
 
-    pub fn commitments(&self) -> &Vec<CompressedRistretto> {
-        &self.commitments
+    pub fn commitment(&self) -> &CompressedRistretto {
+        &self.commitment
     }
 
-    pub fn blinding_factors(&self) -> &Vec<Scalar> {
-        &self.blinding_factors
+    pub fn blinding_factor(&self) -> &Scalar {
+        &self.blinding_factor
     }
 }

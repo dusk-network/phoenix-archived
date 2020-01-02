@@ -139,12 +139,9 @@ impl Transaction {
                     NoteUtxoType::Input => {
                         prover.commit(Scalar::from(value), utils::gen_random_scalar())
                     }
-                    NoteUtxoType::Output => prover.commit(
-                        Scalar::from(value),
-                        // TODO - Obfuscated notes produce only one commitment point, should not be
-                        // Vec
-                        item.note().blinding_factors(&item.vk)[0],
-                    ),
+                    NoteUtxoType::Output => {
+                        prover.commit(Scalar::from(value), item.note().blinding_factor(&item.vk))
+                    }
                 };
 
                 let var: LinearCombination = var.into();

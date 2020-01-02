@@ -69,14 +69,14 @@ impl NoteGenerator for ObfuscatedNote {
 
         let idx = Idx::default();
         let phoenix_value = Value::new(idx, Scalar::from(value));
-        let commitment = phoenix_value.commitments()[0].clone();
+        let commitment = phoenix_value.commitment().clone();
 
         let encrypted_value = ObfuscatedNote::encrypt_value(&r, pk, &nonce, value);
         let encrypted_blinding_factor = ObfuscatedNote::encrypt_blinding_factor(
             &r,
             pk,
             &nonce,
-            &phoenix_value.blinding_factors()[0],
+            phoenix_value.blinding_factor(),
         );
 
         ObfuscatedNote::new(
@@ -141,35 +141,32 @@ impl Note for ObfuscatedNote {
         u64::from_le_bytes(v)
     }
 
-    fn blinding_factors(&self, vk: &ViewKey) -> Vec<Scalar> {
-        crypto::decrypt(
+    fn blinding_factor(&self, vk: &ViewKey) -> Scalar {
+        let blinding_factor = crypto::decrypt(
             &self.r_g,
             vk,
             &self.nonce.increment_le(),
             self.encrypted_blinding_factor.as_slice(),
-        )
-        .as_slice()
-        .chunks(32)
-        .map(|b| {
-            let mut s = [0x00u8; 32];
-            let chunk = cmp::max(b.len(), 32);
-            (&mut s[0..chunk]).copy_from_slice(&b[0..chunk]);
-            Scalar::from_bits(s)
-        })
-        .collect()
+        );
+
+        let mut s = [0x00u8; 32];
+        let chunk = cmp::max(blinding_factor.len(), 32);
+        (&mut s[0..chunk]).copy_from_slice(&blinding_factor[0..chunk]);
+
+        Scalar::from_bits(s)
     }
 
     fn prove_value(&self, vk: &ViewKey) -> Result<R1CSProof, Error> {
         let value = self.value(Some(vk));
-        let blinding_factors = self.blinding_factors(vk);
+        let blinding_factor = self.blinding_factor(vk);
 
-        let phoenix_value = Value::with_blinding_factors(self.idx, value, blinding_factors);
+        let phoenix_value = Value::with_blinding_factor(self.idx, value, blinding_factor);
 
         phoenix_value.prove(value).map_err(Error::generic)
     }
 
     fn verify_value(&self, proof: &R1CSProof) -> Result<(), Error> {
-        Value::with_commitments(vec![self.commitment.clone()])
+        Value::with_commitment(self.commitment.clone())
             .verify(proof)
             .map_err(Error::generic)
     }
