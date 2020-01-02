@@ -13,7 +13,7 @@ fn store_notes() {
 
             let note = TransparentNote::output(&pk, value);
             let idx = db
-                .store_transaction_item(&note.to_transaction_output(vk))
+                .store_transaction_item(&note.clone().to_transaction_output(vk))
                 .unwrap()
                 .unwrap();
 

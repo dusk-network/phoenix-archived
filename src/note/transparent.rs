@@ -1,11 +1,14 @@
 use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
 use crate::{
-    utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, PublicKey, Scalar, Value, ViewKey,
+    crypto, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, PublicKey, Scalar, Value,
+    ViewKey,
 };
+
+use std::cmp;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TransparentNote {
     utxo: NoteUtxoType,
     value: u64,
@@ -14,7 +17,7 @@ pub struct TransparentNote {
     pk_r: EdwardsPoint,
     idx: Idx,
     commitment: CompressedRistretto,
-    blinding_factor: Scalar,
+    pub(crate) encrypted_blinding_factor: Vec<u8>,
 }
 
 impl Default for TransparentNote {
@@ -32,7 +35,7 @@ impl TransparentNote {
         pk_r: EdwardsPoint,
         idx: Idx,
         commitment: CompressedRistretto,
-        blinding_factor: Scalar,
+        encrypted_blinding_factor: Vec<u8>,
     ) -> Self {
         TransparentNote {
             utxo,
@@ -42,7 +45,7 @@ impl TransparentNote {
             pk_r,
             idx,
             commitment,
-            blinding_factor,
+            encrypted_blinding_factor,
         }
     }
 }
@@ -54,16 +57,18 @@ impl NoteGenerator for TransparentNote {
 
     fn output(pk: &PublicKey, value: u64) -> Self {
         let nonce = utils::gen_nonce();
-        let (_, r_g, pk_r) = Self::generate_pk_r(pk);
+        let (r, r_g, pk_r) = Self::generate_pk_r(pk);
 
         let idx = Idx::default();
         // TODO - Check if phoenix value should receive idx
         let phoenix_value = Value::new(idx, Scalar::from(value));
         let commitment = phoenix_value.commitment().clone();
-
-        // The blinding factor of the transparent note should never be revealed because no r1cs
-        // proof should ever be generated for it
-        let blinding_factor = Scalar::one().reduce();
+        let encrypted_blinding_factor = TransparentNote::encrypt_blinding_factor(
+            &r,
+            pk,
+            &nonce,
+            phoenix_value.blinding_factor(),
+        );
 
         TransparentNote::new(
             NoteUtxoType::Output,
@@ -73,7 +78,7 @@ impl NoteGenerator for TransparentNote {
             pk_r,
             Idx::default(),
             commitment,
-            blinding_factor,
+            encrypted_blinding_factor,
         )
     }
 }
@@ -123,7 +128,18 @@ impl Note for TransparentNote {
         &self.commitment
     }
 
-    fn blinding_factor(&self, _vk: &ViewKey) -> Scalar {
-        self.blinding_factor
+    fn blinding_factor(&self, vk: &ViewKey) -> Scalar {
+        let blinding_factor = crypto::decrypt(
+            &self.r_g,
+            vk,
+            &self.nonce.increment_le(),
+            self.encrypted_blinding_factor.as_slice(),
+        );
+
+        let mut s = [0x00u8; 32];
+        let chunk = cmp::max(blinding_factor.len(), 32);
+        (&mut s[0..chunk]).copy_from_slice(&blinding_factor[0..chunk]);
+
+        Scalar::from_bits(s)
     }
 }

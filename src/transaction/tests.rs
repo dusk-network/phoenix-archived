@@ -52,10 +52,10 @@ fn transactions_with_transparent_notes() {
     outputs.push(create_transparent_output_note(pk, 50));
     let pk = &receivers[1].2;
     outputs.push(create_transparent_output_note(pk, 50 - fee_cost));
-    let note = &outputs[0].2;
+    let note = outputs[0].2.clone();
     let vk = receivers[0].1;
     transaction.push(note.to_transaction_output(vk));
-    let note = &outputs[1].2;
+    let note = outputs[1].2.clone();
     let vk = receivers[1].1;
     transaction.push(note.to_transaction_output(vk));
 
