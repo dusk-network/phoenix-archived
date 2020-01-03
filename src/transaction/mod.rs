@@ -14,6 +14,16 @@ pub struct TransactionItem {
     nullifier: Option<Nullifier>,
 }
 
+impl Clone for TransactionItem {
+    fn clone(&self) -> Self {
+        TransactionItem {
+            note: self.note.box_clone(),
+            vk: self.vk,
+            nullifier: self.nullifier.clone(),
+        }
+    }
+}
+
 impl Default for TransactionItem {
     fn default() -> Self {
         let note = TransparentNote::default();
@@ -49,19 +59,10 @@ impl TransactionItem {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Default)]
 pub struct Transaction {
-    fee: Option<TransactionItem>,
+    fee: TransactionItem,
     items: Vec<TransactionItem>,
-}
-
-impl Default for Transaction {
-    fn default() -> Self {
-        Self {
-            fee: None,
-            items: vec![],
-        }
-    }
 }
 
 impl Transaction {
@@ -69,15 +70,8 @@ impl Transaction {
         self.items.push(item);
     }
 
-    pub fn calculate_fee(&mut self, miner_vk: &ViewKey) {
-        // TODO - Generate the proper fee value
-        self.fee = Some(
-            TransparentNote::output(&miner_vk.public_key(), 1).to_transaction_output(*miner_vk),
-        );
-    }
-
-    pub fn fee(&self) -> Option<&TransactionItem> {
-        self.fee.as_ref()
+    pub fn fee(&self) -> &TransactionItem {
+        &self.fee
     }
 
     pub fn items(&self) -> &Vec<TransactionItem> {
@@ -126,9 +120,16 @@ impl Transaction {
         // TODO - Miner rewards should always be transparent?
         let fee = TransparentNote::output(&sk.public_key(), fee_value);
         let fee = fee.to_transaction_output(sk.view_key());
-        self.fee.replace(fee);
-        let output: LinearCombination = Scalar::from(fee_value).into();
 
+        // Commit the fee to the circuit
+        let (_, var) = prover.commit(
+            Scalar::from(fee_value),
+            fee.note().blinding_factor(&sk.view_key()),
+        );
+        let output: LinearCombination = var.into();
+        self.fee = fee;
+
+        // TODO - Refactor into gadgets
         let (input, output) = self.items().iter().fold(
             (LinearCombination::default(), output),
             |(mut input, mut output), item| {
@@ -138,13 +139,20 @@ impl Transaction {
                 let blinding_factor = item.note().blinding_factor(&item.vk);
 
                 let (_, var) = prover.commit(value, blinding_factor);
-                let var: LinearCombination = var.into();
+                let lc: LinearCombination = var.into();
 
-                // TODO - Very inneficient, maybe redo lc operator handlers in bulletproofs
                 match utxo {
-                    NoteUtxoType::Input => input = input.clone() + var,
-                    NoteUtxoType::Output => output = input.clone() + var,
-                };
+                    NoteUtxoType::Input => {
+                        let total = input.clone();
+                        input = input.clone() + lc.clone();
+                        prover.constrain(input.clone() - (total + lc.clone()));
+                    }
+                    NoteUtxoType::Output => {
+                        let total = output.clone();
+                        output = output.clone() + lc.clone();
+                        prover.constrain(output.clone() - (total + lc.clone()));
+                    }
+                }
 
                 (input, output)
             },
@@ -175,9 +183,9 @@ impl Transaction {
             gadgets::note_preimage(&mut verifier, var.into(), x.into());
         });
 
-        let fee = self.fee.as_ref().map(|f| f.value()).unwrap_or(0);
-        let output: LinearCombination = Scalar::from(fee).into();
+        let output: LinearCombination = verifier.commit(*self.fee.note().commitment()).into();
 
+        // TODO - Refactor into gadgets
         let (input, output) = self.items().iter().fold(
             (LinearCombination::default(), output),
             |(mut input, mut output), item| {
@@ -185,13 +193,20 @@ impl Transaction {
                 let utxo = item.note().utxo();
 
                 let var = verifier.commit(commitment);
-                let var: LinearCombination = var.into();
+                let lc: LinearCombination = var.into();
 
-                // TODO - Very inneficient, maybe redo lc operator handlers in bulletproofs
                 match utxo {
-                    NoteUtxoType::Input => input = input.clone() + var,
-                    NoteUtxoType::Output => output = input.clone() + var,
-                };
+                    NoteUtxoType::Input => {
+                        let total = input.clone();
+                        input = input.clone() + lc.clone();
+                        verifier.constrain(input.clone() - (total + lc.clone()));
+                    }
+                    NoteUtxoType::Output => {
+                        let total = output.clone();
+                        output = output.clone() + lc.clone();
+                        verifier.constrain(output.clone() - (total + lc.clone()));
+                    }
+                }
 
                 (input, output)
             },
@@ -205,11 +220,6 @@ impl Transaction {
     }
 
     pub fn prepare(&mut self, db: &Db) -> Result<(), Error> {
-        let _fee = match &self.fee {
-            Some(f) => f,
-            None => return Err(Error::FeeOutput),
-        };
-
         // Grant no nullifier exists for the inputs
         self.items.iter().try_fold((), |_, i| {
             if i.utxo() == NoteUtxoType::Input {

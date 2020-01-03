@@ -20,9 +20,9 @@ impl Db {
         })
     }
 
+    // TODO - Should be able to rollback state in case of failure
     pub fn store(&self, transaction: &Transaction) -> Result<Vec<Idx>, Error> {
-        // TODO - Should be able to rollback state in case of failure
-        let fee = transaction.fee().ok_or(Error::TransactionNotPrepared)?;
+        let fee = transaction.fee();
 
         let fee_idx = self.store_transaction_item(fee)?.ok_or(Error::FeeOutput)?;
         let notes = vec![fee_idx];
