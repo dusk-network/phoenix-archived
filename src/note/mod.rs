@@ -104,15 +104,14 @@ pub trait Note: Debug + Send + Sync {
     fn note(&self) -> NoteType;
     fn idx(&self) -> &Idx;
     fn nonce(&self) -> &Nonce;
-    fn r_g(&self) -> &EdwardsPoint;
-    fn pk_r(&self) -> &EdwardsPoint;
     fn set_idx(&mut self, idx: Idx);
     fn value(&self, vk: Option<&ViewKey>) -> u64;
     fn commitment(&self) -> &CompressedRistretto;
     fn blinding_factor(&self, vk: &ViewKey) -> Scalar;
-    fn generate_sk_r(&self, _sk: &SecretKey) {
-        // TODO - Find the proper Schnorr signature
-        unimplemented!()
+    fn r_g(&self) -> &EdwardsPoint;
+    fn pk_r(&self) -> &EdwardsPoint;
+    fn sk_r(&self, r: &Scalar, sk: &SecretKey) -> Scalar {
+        sk.a * r + sk.b
     }
 
     /// Validations
