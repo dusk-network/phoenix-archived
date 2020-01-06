@@ -117,7 +117,6 @@ impl Transaction {
         let fee_value = input - output;
         // The miner spending key will be defined later by the block generator
         let sk = SecretKey::default();
-        // TODO - Miner rewards should always be transparent?
         let fee = TransparentNote::output(&sk.public_key(), fee_value);
         let fee = fee.to_transaction_output(sk.view_key());
 
