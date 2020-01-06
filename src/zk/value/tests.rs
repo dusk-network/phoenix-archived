@@ -1,12 +1,9 @@
-use crate::{Idx, R1CSProof, Value};
-use curve25519_dalek::ristretto::CompressedRistretto;
-use curve25519_dalek::scalar::Scalar;
+use crate::{CompressedRistretto, R1CSProof, Scalar, Value};
 
-const IDX: Idx = Idx(15);
 const VALUE: u64 = 35;
 const WRONG_VALUE: u64 = 34;
 lazy_static::lazy_static! {
-    static ref PHOENIX_VALUE: Value = Value::new(IDX, VALUE);
+    static ref PHOENIX_VALUE: Value = Value::new(VALUE);
     static ref COMMITMENT: CompressedRistretto = (&*PHOENIX_VALUE).commitment().clone();
     static ref BLINDING_FACTOR: Scalar = (&*PHOENIX_VALUE).blinding_factor().clone();
     static ref PROOF: R1CSProof = (&*PHOENIX_VALUE).prove(VALUE).unwrap();
@@ -21,7 +18,7 @@ fn from_value() {
 #[test]
 fn from_value_with_blinding_factor() {
     // The owner of the note can produce the commitment from previously generated blinding factors
-    let phoenix_value = Value::with_blinding_factor(IDX, VALUE, (&*BLINDING_FACTOR).clone());
+    let phoenix_value = Value::with_blinding_factor(VALUE, (&*BLINDING_FACTOR).clone());
     let proof = phoenix_value.prove(VALUE).unwrap();
     phoenix_value.verify(&proof).unwrap();
 }
@@ -54,7 +51,7 @@ fn error_from_proof_with_wrong_value() {
 #[test]
 fn error_from_proof_with_wrong_commitment() {
     // A valid proof cannot be verified with the wrong commitment
-    let commitment = Value::new(IDX, WRONG_VALUE).commitment().clone();
+    let commitment = Value::new(WRONG_VALUE).commitment().clone();
     let phoenix_value = Value::with_commitment(commitment);
     assert!(phoenix_value.verify(&*PROOF).is_err());
 }
@@ -62,7 +59,7 @@ fn error_from_proof_with_wrong_commitment() {
 #[test]
 fn error_from_proof_with_wrong_blinding_factor() {
     // A valid proof cannot be produced with the wrong blinding factors
-    let phoenix_value = Value::new(IDX, WRONG_VALUE);
+    let phoenix_value = Value::new(WRONG_VALUE);
     let blinding_factor = phoenix_value.blinding_factor().clone();
 
     assert_ne!(blinding_factor, *BLINDING_FACTOR);

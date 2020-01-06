@@ -1,5 +1,5 @@
 use super::gen_cs_transcript;
-use crate::{utils, CompressedRistretto, Error, Idx, Prover, R1CSProof, Scalar, Verifier};
+use crate::{utils, CompressedRistretto, Error, Prover, R1CSProof, Scalar, Verifier};
 
 use serde::{Deserialize, Serialize};
 
@@ -10,15 +10,11 @@ pub struct Value {
 }
 
 impl Value {
-    pub fn new<S: Into<Scalar>>(idx: Idx, value: S) -> Self {
-        Value::with_blinding_factor(idx, value, utils::gen_random_clamped_scalar())
+    pub fn new<S: Into<Scalar>>(value: S) -> Self {
+        Value::with_blinding_factor(value, utils::gen_random_clamped_scalar())
     }
 
-    pub fn with_blinding_factor<S: Into<Scalar>>(
-        _idx: Idx,
-        value: S,
-        blinding_factor: Scalar,
-    ) -> Self {
+    pub fn with_blinding_factor<S: Into<Scalar>>(value: S, blinding_factor: Scalar) -> Self {
         let (pc_gens, _, mut transcript) = gen_cs_transcript();
         let mut prover = Prover::new(&pc_gens, &mut transcript);
 

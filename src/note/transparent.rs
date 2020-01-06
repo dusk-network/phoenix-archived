@@ -59,9 +59,7 @@ impl NoteGenerator for TransparentNote {
         let nonce = utils::gen_nonce();
         let (r, r_g, pk_r) = Self::generate_pk_r(pk);
 
-        let idx = Idx::default();
-        // TODO - Check if phoenix value should receive idx
-        let phoenix_value = Value::new(idx, Scalar::from(value));
+        let phoenix_value = Value::new(Scalar::from(value));
         let commitment = phoenix_value.commitment().clone();
         let encrypted_blinding_factor = TransparentNote::encrypt_blinding_factor(
             &r,
