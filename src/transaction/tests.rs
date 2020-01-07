@@ -64,11 +64,9 @@ fn transaction_zk() {
 
     // Set the 100 unspent note as the input of the transaction
     let sk = &senders[0].0;
-    let vk = senders[0].1;
     let idx = &inputs[0].2;
     let note: TransparentNote = db.fetch_note(idx).unwrap();
-    let nullifier = note.generate_nullifier(sk);
-    transaction.push(note.to_transaction_input(vk, nullifier));
+    transaction.push(note.to_transaction_input(sk));
 
     // Push the 30 output note to the transaction
     let note = Db::note_box_into::<ObfuscatedNote>(outputs[1].2.box_clone());
@@ -92,11 +90,9 @@ fn transaction_zk() {
 
     // Set the 45 unspent note as the input of the malicious transaction
     let sk = &senders[1].0;
-    let vk = senders[1].1;
     let idx = &inputs[2].2;
     let note: ObfuscatedNote = db.fetch_note(idx).unwrap();
-    let nullifier = note.generate_nullifier(sk);
-    malicious_transaction.push(note.to_transaction_input(vk, nullifier));
+    malicious_transaction.push(note.to_transaction_input(sk));
 
     // Push the 92 output note to the malicious transaction
     let note = Db::note_box_into::<TransparentNote>(outputs[3].2.box_clone());
@@ -108,11 +104,9 @@ fn transaction_zk() {
 
     // Set the 50 unspent note as the input of the transaction
     let sk = &senders[1].0;
-    let vk = senders[1].1;
     let idx = &inputs[1].2;
     let note: ObfuscatedNote = db.fetch_note(idx).unwrap();
-    let nullifier = note.generate_nullifier(sk);
-    transaction.push(note.to_transaction_input(vk, nullifier));
+    transaction.push(note.to_transaction_input(sk));
 
     // Grant only transactions with sufficient inputs can be proven
     assert!(insufficient_inputs_transaction.prove().is_err());
@@ -176,11 +170,9 @@ fn transactions_with_transparent_notes() {
 
     // Set the first unspent note as the input of the transaction
     let sk = &senders[0].0;
-    let vk = senders[0].1;
     let idx = &notes[0].2;
     let note: TransparentNote = db.fetch_note(idx).unwrap();
-    let nullifier = note.generate_nullifier(sk);
-    transaction.push(note.to_transaction_input(vk, nullifier));
+    transaction.push(note.to_transaction_input(sk));
 
     // Set the fee cost
     miner_keys.push(generate_keys());

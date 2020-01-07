@@ -26,18 +26,21 @@ pub trait NoteGenerator: Sized + Note {
     fn output(pk: &PublicKey, value: u64) -> (Self, Scalar);
 
     /// Transaction
-    fn to_transaction_input(mut self, vk: ViewKey, nullifier: Nullifier) -> TransactionItem {
+    fn to_transaction_input(mut self, sk: &SecretKey) -> TransactionItem {
+        let vk = sk.view_key();
+
         self.set_utxo(NoteUtxoType::Input);
 
+        let nullifier = self.generate_nullifier(sk);
         let value = self.value(Some(&vk));
         let blinding_factor = self.blinding_factor(&vk);
 
-        TransactionItem::new(self, Some(nullifier), value, blinding_factor)
+        TransactionItem::new(self, nullifier, value, blinding_factor)
     }
     fn to_transaction_output(mut self, value: u64, blinding_factor: Scalar) -> TransactionItem {
         self.set_utxo(NoteUtxoType::Output);
 
-        TransactionItem::new(self, None, value, blinding_factor)
+        TransactionItem::new(self, Nullifier::default(), value, blinding_factor)
     }
 
     /// Attributes

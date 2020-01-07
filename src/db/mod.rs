@@ -42,7 +42,7 @@ impl Db {
     /// If its an unspent output, will return the idx of the stored note.
     pub fn store_transaction_item(&self, item: &TransactionItem) -> Result<Option<Idx>, Error> {
         if item.utxo() == NoteUtxoType::Input {
-            let nullifier = item.nullifier().cloned().ok_or(Error::Generic)?;
+            let nullifier = *item.nullifier();
             item.note().validate_nullifier(&nullifier)?;
 
             let mut nullifiers = self.nullifiers.try_lock()?;

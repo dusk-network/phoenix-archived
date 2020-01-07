@@ -174,7 +174,7 @@ impl Transaction {
         // Grant no nullifier exists for the inputs
         self.items.iter().try_fold((), |_, i| {
             if i.utxo() == NoteUtxoType::Input {
-                let nullifier = i.nullifier().ok_or(Error::Generic)?;
+                let nullifier = i.nullifier();
                 if db.fetch_nullifier(nullifier)?.is_some() {
                     return Err(Error::Generic);
                 }
