@@ -1,63 +1,15 @@
 use crate::{
     utils, zk::gadgets, zk::value::gen_cs_transcript, CompressedRistretto, ConstraintSystem, Db,
-    Error, LinearCombination, Note, NoteGenerator, NoteUtxoType, Nullifier, Prover, R1CSProof,
-    Scalar, SecretKey, TransparentNote, Variable, Verifier, ViewKey,
+    Error, LinearCombination, NoteGenerator, NoteUtxoType, Prover, R1CSProof, Scalar, SecretKey,
+    TransparentNote, Variable, Verifier,
 };
+
+pub use item::TransactionItem;
+
+pub mod item;
 
 #[cfg(test)]
 mod tests;
-
-#[derive(Debug)]
-pub struct TransactionItem {
-    note: Box<dyn Note>,
-    vk: ViewKey,
-    nullifier: Option<Nullifier>,
-}
-
-impl Clone for TransactionItem {
-    fn clone(&self) -> Self {
-        TransactionItem {
-            note: self.note.box_clone(),
-            vk: self.vk,
-            nullifier: self.nullifier.clone(),
-        }
-    }
-}
-
-impl Default for TransactionItem {
-    fn default() -> Self {
-        let note = TransparentNote::default();
-        let vk = ViewKey::default();
-
-        TransactionItem::new(note, vk, None)
-    }
-}
-
-impl TransactionItem {
-    pub fn new<N: Note>(note: N, vk: ViewKey, nullifier: Option<Nullifier>) -> Self {
-        TransactionItem {
-            note: note.box_clone(),
-            vk,
-            nullifier,
-        }
-    }
-
-    pub fn value(&self) -> u64 {
-        self.note.value(Some(&self.vk))
-    }
-
-    pub fn utxo(&self) -> NoteUtxoType {
-        self.note.utxo()
-    }
-
-    pub fn note(&self) -> Box<dyn Note> {
-        self.note.box_clone()
-    }
-
-    pub fn nullifier(&self) -> Option<&Nullifier> {
-        self.nullifier.as_ref()
-    }
-}
 
 #[derive(Debug, Clone, Default)]
 pub struct Transaction {
@@ -105,8 +57,8 @@ impl Transaction {
                 let utxo = item.note().utxo();
 
                 match utxo {
-                    NoteUtxoType::Input => input += item.note().value(Some(&item.vk)),
-                    NoteUtxoType::Output => output += item.note().value(Some(&item.vk)),
+                    NoteUtxoType::Input => input += item.value(),
+                    NoteUtxoType::Output => output += item.value(),
                 };
 
                 (input, output)
@@ -117,8 +69,8 @@ impl Transaction {
         let fee_value = input - output;
         // The miner spending key will be defined later by the block generator
         let sk = SecretKey::default();
-        let fee = TransparentNote::output(&sk.public_key(), fee_value);
-        let fee = fee.to_transaction_output(sk.view_key());
+        let (fee, blinding_factor) = TransparentNote::output(&sk.public_key(), fee_value);
+        let fee = fee.to_transaction_output(fee_value, blinding_factor);
 
         // Commit the fee to the circuit
         let (_, var) = prover.commit(
@@ -132,10 +84,10 @@ impl Transaction {
         let (input, output) = self.items().iter().fold(
             (LinearCombination::default(), output),
             |(mut input, mut output), item| {
-                let value = item.note().value(Some(&item.vk));
+                let value = item.value();
                 let value = Scalar::from(value);
                 let utxo = item.note().utxo();
-                let blinding_factor = item.note().blinding_factor(&item.vk);
+                let blinding_factor = *item.blinding_factor();
 
                 let (_, var) = prover.commit(value, blinding_factor);
                 let lc: LinearCombination = var.into();

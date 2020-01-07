@@ -43,7 +43,7 @@ fn decrypt_obfuscated_note() {
     let pk = sk.public_key();
     let vk = sk.view_key();
 
-    let note = ObfuscatedNote::output(&pk, value);
+    let (note, _) = ObfuscatedNote::output(&pk, value);
     let decrypt_value = note.value(Some(&vk));
 
     assert_eq!(decrypt_value, value);

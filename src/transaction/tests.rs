@@ -1,14 +1,14 @@
 use crate::{
-    Db, Idx, Note, NoteGenerator, ObfuscatedNote, PublicKey, SecretKey, Transaction,
+    Db, Idx, Note, NoteGenerator, ObfuscatedNote, PublicKey, Scalar, SecretKey, Transaction,
     TransparentNote, ViewKey,
 };
 
 #[test]
 fn transaction_items() {
-    let (_, vk, pk) = generate_keys();
+    let (_, _, pk) = generate_keys();
     let value = 25;
-    let note = ObfuscatedNote::output(&pk, value);
-    let item = note.to_transaction_output(vk);
+    let (note, blinding_factor) = ObfuscatedNote::output(&pk, value);
+    let item = note.to_transaction_output(value, blinding_factor);
     assert_eq!(value, item.value());
 }
 
@@ -72,20 +72,23 @@ fn transaction_zk() {
 
     // Push the 30 output note to the transaction
     let note = Db::note_box_into::<ObfuscatedNote>(outputs[1].2.box_clone());
-    let vk = receivers[1].1;
-    transaction.push(note.to_transaction_output(vk));
+    let blinding_factor = outputs[1].3;
+    let value = outputs[1].1;
+    transaction.push(note.to_transaction_output(value, blinding_factor));
 
     // Push the 20 output note to the transaction
     let note = Db::note_box_into::<ObfuscatedNote>(outputs[2].2.box_clone());
-    let vk = receivers[2].1;
-    transaction.push(note.to_transaction_output(vk));
+    let blinding_factor = outputs[2].3;
+    let value = outputs[2].1;
+    transaction.push(note.to_transaction_output(value, blinding_factor));
 
     let mut malicious_transaction = transaction.clone();
 
     // Push the 97 output note to the transaction
     let note = Db::note_box_into::<TransparentNote>(outputs[0].2.box_clone());
-    let vk = receivers[0].1;
-    transaction.push(note.to_transaction_output(vk));
+    let blinding_factor = outputs[0].3;
+    let value = outputs[0].1;
+    transaction.push(note.to_transaction_output(value, blinding_factor));
 
     // Set the 45 unspent note as the input of the malicious transaction
     let sk = &senders[1].0;
@@ -97,8 +100,9 @@ fn transaction_zk() {
 
     // Push the 92 output note to the malicious transaction
     let note = Db::note_box_into::<TransparentNote>(outputs[3].2.box_clone());
-    let vk = receivers[0].1;
-    malicious_transaction.push(note.to_transaction_output(vk));
+    let blinding_factor = outputs[3].3;
+    let value = outputs[3].1;
+    malicious_transaction.push(note.to_transaction_output(value, blinding_factor));
 
     let mut insufficient_inputs_transaction = transaction.clone();
 
@@ -188,11 +192,13 @@ fn transactions_with_transparent_notes() {
     let pk = &receivers[1].2;
     outputs.push(create_output_note::<TransparentNote>(pk, 50 - fee_cost));
     let note = Db::note_box_into::<TransparentNote>(outputs[0].2.box_clone());
-    let vk = receivers[0].1;
-    transaction.push(note.to_transaction_output(vk));
+    let blinding_factor = outputs[0].3;
+    let value = outputs[0].1;
+    transaction.push(note.to_transaction_output(value, blinding_factor));
     let note = Db::note_box_into::<TransparentNote>(outputs[1].2.box_clone());
-    let vk = receivers[1].1;
-    transaction.push(note.to_transaction_output(vk));
+    let blinding_factor = outputs[1].3;
+    let value = outputs[1].1;
+    transaction.push(note.to_transaction_output(value, blinding_factor));
 
     // Execute the transaction
     transaction.prepare(&db).unwrap();
@@ -234,20 +240,22 @@ fn create_and_store_unspent_note<N: Note + NoteGenerator>(
     db: &Db,
     pk: &PublicKey,
     value: u64,
-) -> (PublicKey, u64, Idx, Box<dyn Note>) {
-    let note: Box<dyn Note> = N::output(pk, value).box_clone();
+) -> (PublicKey, u64, Idx, Box<dyn Note>, Scalar) {
+    let (note, blinding_factor) = N::output(pk, value);
+    let note = note.box_clone();
 
     let idx = db.store_unspent_note(note.box_clone()).unwrap();
     let note: N = db.fetch_note(&idx).unwrap();
 
-    (pk.clone(), value, idx, note.box_clone())
+    (pk.clone(), value, idx, note.box_clone(), blinding_factor)
 }
 
 fn create_output_note<N: Note + NoteGenerator>(
     pk: &PublicKey,
     value: u64,
-) -> (PublicKey, u64, Box<dyn Note>) {
-    let note = N::output(pk, value).box_clone();
+) -> (PublicKey, u64, Box<dyn Note>, Scalar) {
+    let (note, blinding_factor) = N::output(pk, value);
+    let note = note.box_clone();
 
-    (pk.clone(), value, note)
+    (pk.clone(), value, note, blinding_factor)
 }

@@ -23,15 +23,21 @@ pub use transparent::TransparentNote;
 pub trait NoteGenerator: Sized + Note {
     /// Create a new phoenix note
     fn input(db: &Db, idx: &Idx) -> Result<Self, Error>;
-    fn output(pk: &PublicKey, value: u64) -> Self;
+    fn output(pk: &PublicKey, value: u64) -> (Self, Scalar);
 
     /// Transaction
     fn to_transaction_input(mut self, vk: ViewKey, nullifier: Nullifier) -> TransactionItem {
         self.set_utxo(NoteUtxoType::Input);
-        TransactionItem::new(self, vk, Some(nullifier))
+
+        let value = self.value(Some(&vk));
+        let blinding_factor = self.blinding_factor(&vk);
+
+        TransactionItem::new(self, Some(nullifier), value, blinding_factor)
     }
-    fn to_transaction_output(self, vk: ViewKey) -> TransactionItem {
-        TransactionItem::new(self, vk, None)
+    fn to_transaction_output(mut self, value: u64, blinding_factor: Scalar) -> TransactionItem {
+        self.set_utxo(NoteUtxoType::Output);
+
+        TransactionItem::new(self, None, value, blinding_factor)
     }
 
     /// Attributes

@@ -7,13 +7,12 @@ fn store_notes() {
     let transaparent_notes: Vec<(Idx, TransparentNote)> = (0..20)
         .map(|i| {
             let sk = SecretKey::default();
-            let vk = sk.view_key();
             let pk = sk.public_key();
             let value = (i * i) as u64;
 
-            let note = TransparentNote::output(&pk, value);
+            let (note, blinding_factor) = TransparentNote::output(&pk, value);
             let idx = db
-                .store_transaction_item(&note.clone().to_transaction_output(vk))
+                .store_transaction_item(&note.clone().to_transaction_output(value, blinding_factor))
                 .unwrap()
                 .unwrap();
 
@@ -24,13 +23,12 @@ fn store_notes() {
     let obfuscated_notes: Vec<(Idx, ObfuscatedNote)> = (0..20)
         .map(|i| {
             let sk = SecretKey::default();
-            let vk = sk.view_key();
             let pk = sk.public_key();
             let value = (i * i) as u64;
 
-            let note = ObfuscatedNote::output(&pk, value);
+            let (note, blinding_factor) = ObfuscatedNote::output(&pk, value);
             let idx = db
-                .store_transaction_item(&note.clone().to_transaction_output(vk))
+                .store_transaction_item(&note.clone().to_transaction_output(value, blinding_factor))
                 .unwrap()
                 .unwrap();
 

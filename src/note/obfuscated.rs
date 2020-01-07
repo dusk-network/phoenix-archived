@@ -50,24 +50,22 @@ impl NoteGenerator for ObfuscatedNote {
         db.fetch_note(idx)
     }
 
-    fn output(pk: &PublicKey, value: u64) -> Self {
+    fn output(pk: &PublicKey, value: u64) -> (Self, Scalar) {
         let idx = Idx::default();
         let nonce = utils::gen_nonce();
 
         let (r, r_g, pk_r) = Self::generate_pk_r(pk);
 
         let phoenix_value = Value::new(Scalar::from(value));
+
+        let blinding_factor = phoenix_value.blinding_factor().clone();
         let commitment = phoenix_value.commitment().clone();
 
         let encrypted_value = ObfuscatedNote::encrypt_value(&r, pk, &nonce, value);
-        let encrypted_blinding_factor = ObfuscatedNote::encrypt_blinding_factor(
-            &r,
-            pk,
-            &nonce,
-            phoenix_value.blinding_factor(),
-        );
+        let encrypted_blinding_factor =
+            ObfuscatedNote::encrypt_blinding_factor(&r, pk, &nonce, &blinding_factor);
 
-        ObfuscatedNote::new(
+        let note = ObfuscatedNote::new(
             NoteUtxoType::Output,
             commitment,
             nonce,
@@ -76,7 +74,9 @@ impl NoteGenerator for ObfuscatedNote {
             idx,
             encrypted_value,
             encrypted_blinding_factor,
-        )
+        );
+
+        (note, blinding_factor)
     }
 }
 

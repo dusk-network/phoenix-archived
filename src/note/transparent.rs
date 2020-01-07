@@ -23,7 +23,7 @@ pub struct TransparentNote {
 
 impl Default for TransparentNote {
     fn default() -> Self {
-        TransparentNote::output(&PublicKey::default(), 0)
+        TransparentNote::output(&PublicKey::default(), 0).0
     }
 }
 
@@ -56,20 +56,19 @@ impl NoteGenerator for TransparentNote {
         db.fetch_note(idx)
     }
 
-    fn output(pk: &PublicKey, value: u64) -> Self {
+    fn output(pk: &PublicKey, value: u64) -> (Self, Scalar) {
         let nonce = utils::gen_nonce();
         let (r, r_g, pk_r) = Self::generate_pk_r(pk);
 
         let phoenix_value = Value::new(Scalar::from(value));
-        let commitment = phoenix_value.commitment().clone();
-        let encrypted_blinding_factor = TransparentNote::encrypt_blinding_factor(
-            &r,
-            pk,
-            &nonce,
-            phoenix_value.blinding_factor(),
-        );
 
-        TransparentNote::new(
+        let blinding_factor = phoenix_value.blinding_factor().clone();
+        let commitment = phoenix_value.commitment().clone();
+
+        let encrypted_blinding_factor =
+            TransparentNote::encrypt_blinding_factor(&r, pk, &nonce, &blinding_factor);
+
+        let note = TransparentNote::new(
             NoteUtxoType::Output,
             value,
             nonce,
@@ -78,7 +77,9 @@ impl NoteGenerator for TransparentNote {
             Idx::default(),
             commitment,
             encrypted_blinding_factor,
-        )
+        );
+
+        (note, blinding_factor)
     }
 }
 

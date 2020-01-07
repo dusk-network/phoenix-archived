@@ -24,7 +24,7 @@ fn obfuscated_note() {
     let vk = sk.view_key();
     let value = 25;
 
-    let note = ObfuscatedNote::output(&pk, value);
+    let (note, _) = ObfuscatedNote::output(&pk, value);
 
     assert_eq!(note.utxo(), NoteUtxoType::Output);
     assert_eq!(note.note(), NoteType::Obfuscated);
@@ -48,7 +48,7 @@ fn note_keys_consistency() {
     assert_ne!(sk, wrong_sk);
     assert_ne!(vk, wrong_vk);
 
-    let note = ObfuscatedNote::output(&pk, value);
+    let (note, _) = ObfuscatedNote::output(&pk, value);
 
     assert!(!note.is_owned_by(&wrong_vk));
     assert!(note.is_owned_by(&vk));
