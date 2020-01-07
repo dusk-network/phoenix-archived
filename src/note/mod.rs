@@ -5,7 +5,6 @@ use crate::{
 
 use std::fmt::Debug;
 
-use hades252::scalar;
 use serde::{Deserialize, Serialize};
 
 pub mod idx;
@@ -40,7 +39,12 @@ pub trait NoteGenerator: Sized + Note {
         let r = utils::gen_random_clamped_scalar();
         let r_g = utils::mul_by_basepoint_edwards(&r);
 
-        let pk_r = &pk.a_g * &r + &pk.b_g;
+        let r_a_g = &pk.a_g * &r;
+        let r_a_g = utils::edwards_to_scalar(r_a_g);
+        let r_a_g = crypto::hash_scalar(&r_a_g);
+        let r_a_g = utils::mul_by_basepoint_edwards(&r_a_g);
+
+        let pk_r = &r_a_g + &pk.b_g;
 
         (r, r_g, pk_r)
     }
@@ -86,19 +90,16 @@ pub trait Note: Debug + Send + Sync {
         }
     }
 
-    /// Attributes
-    fn hash(&self) -> Scalar {
-        // TODO - Hash the entire note
-        Scalar::from_bits(self.pk_r().compress().to_bytes())
-    }
     /// Generate y, x for the zero-knowledge pre-image
     fn zk_preimage(&self) -> (Scalar, Scalar) {
         let y = self.hash();
-        // TODO - Update hades252 to a never-fail scalar hash
-        let x = scalar::hash(&[y]).unwrap();
+        let x = crypto::hash_scalar(&y);
 
         (y, x)
     }
+
+    /// Attributes
+    fn hash(&self) -> Scalar;
     fn utxo(&self) -> NoteUtxoType;
     fn set_utxo(&mut self, utxo: NoteUtxoType);
     fn note(&self) -> NoteType;
@@ -110,13 +111,23 @@ pub trait Note: Debug + Send + Sync {
     fn blinding_factor(&self, vk: &ViewKey) -> Scalar;
     fn r_g(&self) -> &EdwardsPoint;
     fn pk_r(&self) -> &EdwardsPoint;
-    fn sk_r(&self, r: &Scalar, sk: &SecretKey) -> Scalar {
-        sk.a * r + sk.b
+    fn sk_r(&self, sk: &SecretKey) -> Scalar {
+        let r_a_g = &sk.a * self.r_g();
+        let r_a_g = utils::edwards_to_scalar(r_a_g);
+        let r_a_g = crypto::hash_scalar(&r_a_g);
+
+        r_a_g + sk.b
     }
 
     /// Validations
     fn is_owned_by(&self, vk: &ViewKey) -> bool {
-        let pk_r = &vk.a * self.r_g() + &vk.b_g;
+        let r_a_g = &vk.a * self.r_g();
+        let r_a_g = utils::edwards_to_scalar(r_a_g);
+        let r_a_g = crypto::hash_scalar(&r_a_g);
+        let r_a_g = utils::mul_by_basepoint_edwards(&r_a_g);
+
+        let pk_r = &r_a_g + &vk.b_g;
+
         self.pk_r() == &pk_r
     }
 }
@@ -130,6 +141,15 @@ pub enum NoteUtxoType {
 impl Default for NoteUtxoType {
     fn default() -> Self {
         NoteUtxoType::Input
+    }
+}
+
+impl Into<u8> for NoteUtxoType {
+    fn into(self) -> u8 {
+        match self {
+            NoteUtxoType::Input => 0,
+            NoteUtxoType::Output => 1,
+        }
     }
 }
 

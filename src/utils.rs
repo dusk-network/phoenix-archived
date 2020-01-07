@@ -26,6 +26,10 @@ pub fn mul_by_basepoint_edwards(s: &Scalar) -> EdwardsPoint {
     (&constants::ED25519_BASEPOINT_TABLE * s)
 }
 
+pub fn edwards_to_scalar(p: EdwardsPoint) -> Scalar {
+    Scalar::from_bits(p.compress().to_bytes())
+}
+
 pub fn gen_nonce() -> Nonce {
     box_::gen_nonce()
 }

@@ -7,6 +7,7 @@ use crate::{
 use std::cmp;
 
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha512};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ObfuscatedNote {
@@ -80,6 +81,22 @@ impl NoteGenerator for ObfuscatedNote {
 }
 
 impl Note for ObfuscatedNote {
+    fn hash(&self) -> Scalar {
+        // TODO - Use poseidon sponge, when available
+        let mut hasher = Sha512::default();
+
+        hasher.input(&[self.utxo.into()]);
+        hasher.input(self.commitment.as_bytes());
+        hasher.input(&self.nonce);
+        hasher.input(self.r_g.compress().as_bytes());
+        hasher.input(self.pk_r.compress().as_bytes());
+        hasher.input(self.idx.to_vec());
+        hasher.input(&self.encrypted_value);
+        hasher.input(&self.encrypted_blinding_factor);
+
+        Scalar::from_hash(hasher)
+    }
+
     fn box_clone(&self) -> Box<dyn Note> {
         Box::new(self.clone())
     }

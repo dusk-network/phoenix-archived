@@ -1,5 +1,5 @@
 use crate::{
-    Note, NoteGenerator, NoteType, NoteUtxoType, ObfuscatedNote, SecretKey, TransparentNote,
+    utils, Note, NoteGenerator, NoteType, NoteUtxoType, ObfuscatedNote, SecretKey, TransparentNote,
 };
 
 #[test]
@@ -37,16 +37,30 @@ fn obfuscated_note() {
 }
 
 #[test]
-fn note_ownership() {
+fn note_keys_consistency() {
     let sk = SecretKey::default();
     let pk = sk.public_key();
     let vk = sk.view_key();
     let value = 25;
-    let wrong_vk = SecretKey::default().view_key();
+    let wrong_sk = SecretKey::default();
+    let wrong_vk = wrong_sk.view_key();
+
+    assert_ne!(sk, wrong_sk);
+    assert_ne!(vk, wrong_vk);
 
     let note = ObfuscatedNote::output(&pk, value);
 
-    assert_ne!(vk, wrong_vk);
     assert!(!note.is_owned_by(&wrong_vk));
     assert!(note.is_owned_by(&vk));
+
+    let pk_r = note.pk_r();
+    let sk_r = note.sk_r(&sk);
+    let sk_r_g = utils::mul_by_basepoint_edwards(&sk_r);
+
+    assert_eq!(pk_r, &sk_r_g);
+
+    let wrong_sk_r = note.sk_r(&wrong_sk);
+    let wrong_sk_r_g = utils::mul_by_basepoint_edwards(&wrong_sk_r);
+
+    assert_ne!(pk_r, &wrong_sk_r_g);
 }
