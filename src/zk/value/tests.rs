@@ -1,80 +1,73 @@
-use crate::PhoenixValue;
-use bulletproofs::r1cs::R1CSProof;
-use curve25519_dalek::ristretto::CompressedRistretto;
-use curve25519_dalek::scalar::Scalar;
+use crate::{CompressedRistretto, R1CSProof, Scalar, Value};
 
-const IDX: u64 = 15;
+const VALUE: u64 = 35;
+const WRONG_VALUE: u64 = 34;
 lazy_static::lazy_static! {
-    static ref VALUE: Scalar = Scalar::from(35u64);
-    static ref WRONG_VALUE: Scalar = Scalar::from(34u64);
-    static ref PHOENIX_VALUE: PhoenixValue<u64> = PhoenixValue::new(IDX, *VALUE);
-    static ref COMMITMENTS: Vec<CompressedRistretto> = (&*PHOENIX_VALUE).commitments().clone();
-    static ref BLINDING_FACTORS: Vec<Scalar> = (&*PHOENIX_VALUE).blinding_factors().clone();
-    static ref PROOF: R1CSProof = (&*PHOENIX_VALUE).prove(&*VALUE).unwrap();
+    static ref PHOENIX_VALUE: Value = Value::new(VALUE);
+    static ref COMMITMENT: CompressedRistretto = (&*PHOENIX_VALUE).commitment().clone();
+    static ref BLINDING_FACTOR: Scalar = (&*PHOENIX_VALUE).blinding_factor().clone();
+    static ref PROOF: R1CSProof = (&*PHOENIX_VALUE).prove(VALUE).unwrap();
 }
 
 #[test]
 fn from_value() {
-    // The owner of the note can produce the blinding factors and the commitments
+    // The owner of the note can produce the blinding factors and the commitment
     (&*PHOENIX_VALUE).verify(&*PROOF).unwrap();
 }
 
 #[test]
-fn from_value_with_blinding_factors() {
-    // The owner of the note can produce the commitments from previously generated blinding factors
-    let phoenix_value =
-        PhoenixValue::with_blinding_factors(IDX, *VALUE, (&*BLINDING_FACTORS).clone());
-    let proof = phoenix_value.prove(&*VALUE).unwrap();
+fn from_value_with_blinding_factor() {
+    // The owner of the note can produce the commitment from previously generated blinding factors
+    let phoenix_value = Value::with_blinding_factor(VALUE, (&*BLINDING_FACTOR).clone());
+    let proof = phoenix_value.prove(VALUE).unwrap();
     phoenix_value.verify(&proof).unwrap();
 }
 
 #[test]
-fn from_commitments_with_blinding_factors() {
-    // Anyone with the public commitments and the decrypted blinding factors can produce a proof
-    let phoenix_value: PhoenixValue<()> = PhoenixValue::with_commitments_and_blinding_factors(
-        (&*COMMITMENTS).clone(),
-        (&*BLINDING_FACTORS).clone(),
+fn from_commitment_with_blinding_factor() {
+    // Anyone with the public commitment and the decrypted blinding factors can produce a proof
+    let phoenix_value = Value::with_commitment_and_blinding_factor(
+        (&*COMMITMENT).clone(),
+        (&*BLINDING_FACTOR).clone(),
     );
-    let proof = phoenix_value.prove(&*VALUE).unwrap();
+    let proof = phoenix_value.prove(VALUE).unwrap();
     phoenix_value.verify(&proof).unwrap();
 }
 
 #[test]
-fn from_proof_with_commitments() {
-    // Anyone with a proof and the public commitments can verify the proof
-    let phoenix_value: PhoenixValue<()> = PhoenixValue::with_commitments((&*COMMITMENTS).clone());
+fn from_proof_with_commitment() {
+    // Anyone with a proof and the public commitment can verify the proof
+    let phoenix_value = Value::with_commitment((&*COMMITMENT).clone());
     phoenix_value.verify(&*PROOF).unwrap();
 }
 
 #[test]
 fn error_from_proof_with_wrong_value() {
     // A proof produced with a wrong value cannot be verified
-    let proof = (&*PHOENIX_VALUE).prove(&*WRONG_VALUE).unwrap();
+    let proof = (&*PHOENIX_VALUE).prove(WRONG_VALUE).unwrap();
     assert!((&*PHOENIX_VALUE).verify(&proof).is_err());
 }
 
 #[test]
-fn error_from_proof_with_wrong_commitments() {
-    // A valid proof cannot be verified with the wrong commitments
-    let commitments = PhoenixValue::new(IDX, *WRONG_VALUE).commitments().clone();
-    let phoenix_value: PhoenixValue<()> = PhoenixValue::with_commitments(commitments);
+fn error_from_proof_with_wrong_commitment() {
+    // A valid proof cannot be verified with the wrong commitment
+    let commitment = Value::new(WRONG_VALUE).commitment().clone();
+    let phoenix_value = Value::with_commitment(commitment);
     assert!(phoenix_value.verify(&*PROOF).is_err());
 }
 
 #[test]
-fn error_from_proof_with_wrong_blinding_factors() {
+fn error_from_proof_with_wrong_blinding_factor() {
     // A valid proof cannot be produced with the wrong blinding factors
-    let phoenix_value = PhoenixValue::new(IDX, *WRONG_VALUE);
-    let blinding_factors = phoenix_value.blinding_factors().clone();
+    let phoenix_value = Value::new(WRONG_VALUE);
+    let blinding_factor = phoenix_value.blinding_factor().clone();
 
-    assert_ne!(blinding_factors, *BLINDING_FACTORS);
-    assert_ne!(phoenix_value.commitments(), &*COMMITMENTS);
+    assert_ne!(blinding_factor, *BLINDING_FACTOR);
+    assert_ne!(phoenix_value.commitment(), &*COMMITMENT);
 
-    let phoenix_value: PhoenixValue<()> = PhoenixValue::with_commitments_and_blinding_factors(
-        (&*COMMITMENTS).clone(),
-        blinding_factors.clone(),
-    );
+    let phoenix_value =
+        Value::with_commitment_and_blinding_factor((&*COMMITMENT).clone(), blinding_factor.clone());
 
-    let proof = phoenix_value.prove(&*VALUE).unwrap();
+    let proof = phoenix_value.prove(VALUE).unwrap();
     assert!(phoenix_value.verify(&proof).is_err());
 }
