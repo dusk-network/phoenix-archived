@@ -2,7 +2,7 @@ use std::hash::{Hash, Hasher};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, Eq, Serialize, Deserialize)]
 pub struct Idx(pub u64);
 
 impl Idx {
@@ -32,5 +32,11 @@ impl Into<Vec<u8>> for Idx {
 impl Hash for Idx {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.0.hash(state);
+    }
+}
+
+impl PartialEq for Idx {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
     }
 }

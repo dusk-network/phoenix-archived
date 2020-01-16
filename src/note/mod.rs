@@ -22,6 +22,7 @@ pub use transparent::TransparentNote;
 
 pub trait NoteGenerator: Sized + Note {
     /// Create a new phoenix note
+    #[allow(clippy::trivially_copy_pass_by_ref)]
     fn input(db: &Db, idx: &Idx) -> Result<Self, Error>;
     fn output(pk: &PublicKey, value: u64) -> (Self, Scalar);
 
@@ -80,12 +81,12 @@ pub trait NoteGenerator: Sized + Note {
         let r = utils::gen_random_clamped_scalar();
         let r_g = utils::mul_by_basepoint_edwards(&r);
 
-        let r_a_g = &pk.a_g * &r;
+        let r_a_g = pk.a_g * r;
         let r_a_g = utils::edwards_to_scalar(r_a_g);
         let r_a_g = crypto::hash_scalar(&r_a_g);
         let r_a_g = utils::mul_by_basepoint_edwards(&r_a_g);
 
-        let pk_r = &r_a_g + &pk.b_g;
+        let pk_r = r_a_g + pk.b_g;
 
         (r, r_g, pk_r)
     }
@@ -122,6 +123,8 @@ pub trait Note: Debug + Send + Sync {
         // TODO - Create a secure nullifier
         Nullifier::new(self.idx().0)
     }
+
+    #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
     fn validate_nullifier(&self, nullifier: &Nullifier) -> Result<(), Error> {
         // TODO - Validate the nullifier securely
         if nullifier.point() == self.idx().0 {
@@ -153,7 +156,7 @@ pub trait Note: Debug + Send + Sync {
     fn r_g(&self) -> &EdwardsPoint;
     fn pk_r(&self) -> &EdwardsPoint;
     fn sk_r(&self, sk: &SecretKey) -> Scalar {
-        let r_a_g = &sk.a * self.r_g();
+        let r_a_g = sk.a * self.r_g();
         let r_a_g = utils::edwards_to_scalar(r_a_g);
         let r_a_g = crypto::hash_scalar(&r_a_g);
 
@@ -162,12 +165,12 @@ pub trait Note: Debug + Send + Sync {
 
     /// Validations
     fn is_owned_by(&self, vk: &ViewKey) -> bool {
-        let r_a_g = &vk.a * self.r_g();
+        let r_a_g = vk.a * self.r_g();
         let r_a_g = utils::edwards_to_scalar(r_a_g);
         let r_a_g = crypto::hash_scalar(&r_a_g);
         let r_a_g = utils::mul_by_basepoint_edwards(&r_a_g);
 
-        let pk_r = &r_a_g + &vk.b_g;
+        let pk_r = r_a_g + vk.b_g;
 
         self.pk_r() == &pk_r
     }

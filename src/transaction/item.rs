@@ -12,9 +12,9 @@ impl Clone for TransactionItem {
     fn clone(&self) -> Self {
         TransactionItem {
             note: self.note.box_clone(),
-            nullifier: self.nullifier.clone(),
+            nullifier: self.nullifier,
             value: self.value,
-            blinding_factor: self.blinding_factor.clone(),
+            blinding_factor: self.blinding_factor,
         }
     }
 }
