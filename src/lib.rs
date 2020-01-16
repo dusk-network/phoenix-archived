@@ -1,6 +1,7 @@
 pub use bulletproofs::r1cs::{
     ConstraintSystem, LinearCombination, Prover, R1CSProof, Variable, Verifier,
 };
+pub use curve25519_dalek::edwards::CompressedEdwardsY;
 pub use curve25519_dalek::edwards::EdwardsPoint;
 pub use curve25519_dalek::montgomery::MontgomeryPoint;
 pub use curve25519_dalek::ristretto::{CompressedRistretto, RistrettoPoint};
@@ -21,6 +22,7 @@ pub mod db;
 pub mod error;
 pub mod keys;
 pub mod note;
+pub mod rpc;
 pub mod transaction;
 pub mod utils;
 pub mod zk;

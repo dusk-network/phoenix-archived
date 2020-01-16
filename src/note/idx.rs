@@ -17,6 +17,12 @@ impl From<u64> for Idx {
     }
 }
 
+impl Into<u64> for Idx {
+    fn into(self) -> u64 {
+        self.0
+    }
+}
+
 impl Into<Vec<u8>> for Idx {
     fn into(self) -> Vec<u8> {
         self.0.to_le_bytes().to_vec()

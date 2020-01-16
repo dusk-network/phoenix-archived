@@ -1,5 +1,5 @@
 use crate::{
-    crypto, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, PublicKey, R1CSProof,
+    crypto, rpc, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, PublicKey, R1CSProof,
     Scalar, SecretKey, TransactionItem, ViewKey,
 };
 
@@ -42,6 +42,38 @@ pub trait NoteGenerator: Sized + Note {
         self.set_utxo(NoteUtxoType::Output);
 
         TransactionItem::new(self, Nullifier::default(), value, blinding_factor)
+    }
+
+    /// RPC
+    fn from_rpc_note(note: rpc::Note) -> Result<Self, Error>
+    where
+        Self: for<'a> Deserialize<'a>,
+    {
+        Ok(bincode::deserialize(note.raw.as_slice())?)
+    }
+    fn to_rpc_note(
+        self,
+        db: Option<&Db>,
+        vk: Option<&ViewKey>,
+        nullifier: Option<&Nullifier>,
+    ) -> Result<rpc::Note, Error>
+    where
+        Self: Serialize,
+    {
+        let note_type: rpc::NoteType = self.note().into();
+        let pos = (*self.idx()).into();
+        let value = self.value(vk);
+        let unspent = if db.is_some() || nullifier.is_some() {
+            let db = db.ok_or(Error::InvalidParameters)?;
+            let nullifier = nullifier.ok_or(Error::InvalidParameters)?;
+
+            db.fetch_nullifier(nullifier)?.is_none()
+        } else {
+            false
+        };
+        let raw = bincode::serialize(&self)?;
+
+        Ok(rpc::Note::new(note_type.into(), pos, value, unspent, raw))
     }
 
     /// Attributes
@@ -169,4 +201,13 @@ impl Into<u8> for NoteUtxoType {
 pub enum NoteType {
     Transparent,
     Obfuscated,
+}
+
+impl From<rpc::NoteType> for NoteType {
+    fn from(t: rpc::NoteType) -> Self {
+        match t {
+            rpc::NoteType::TRANSPARENT => NoteType::Transparent,
+            rpc::NoteType::OBFUSCATED => NoteType::Obfuscated,
+        }
+    }
 }
