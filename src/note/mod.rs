@@ -61,7 +61,7 @@ pub trait NoteGenerator: Sized + Note {
         Self: Serialize,
     {
         let note_type: rpc::NoteType = self.note().into();
-        let pos: u64 = (*self.idx()).into();
+        let pos = (*self.idx()).into();
         let value = self.value(vk);
         let unspent = if db.is_some() || nullifier.is_some() {
             let db = db.ok_or(Error::InvalidParameters)?;

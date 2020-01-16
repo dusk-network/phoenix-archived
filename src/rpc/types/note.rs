@@ -1,10 +1,4 @@
-use crate::{
-    Db, Error, Note as BaseNote, NoteType as BaseNoteType, Nullifier, ObfuscatedNote,
-    TransparentNote, ViewKey,
-};
-
-use std::cmp;
-use std::convert::TryFrom;
+use crate::{Idx as BaseIdx, NoteType as BaseNoteType};
 
 use prost::{Enumeration, Message};
 
@@ -24,11 +18,29 @@ impl From<BaseNoteType> for NoteType {
 }
 
 #[derive(Clone, PartialEq, Message)]
+pub struct Idx {
+    #[prost(uint64, required, tag = "1")]
+    pub pos: u64,
+}
+
+impl From<BaseIdx> for Idx {
+    fn from(i: BaseIdx) -> Self {
+        Self { pos: i.0 }
+    }
+}
+
+impl Into<BaseIdx> for Idx {
+    fn into(self) -> BaseIdx {
+        BaseIdx::from(self.pos)
+    }
+}
+
+#[derive(Clone, PartialEq, Message)]
 pub struct Note {
     #[prost(enumeration = "NoteType", required, tag = "1")]
     pub note_type: i32,
-    #[prost(uint64, required, tag = "2")]
-    pub pos: u64,
+    #[prost(message, required, tag = "2")]
+    pub pos: Idx,
     #[prost(uint64, required, tag = "3")]
     pub value: u64,
     #[prost(bool, required, tag = "4")]
@@ -38,7 +50,7 @@ pub struct Note {
 }
 
 impl Note {
-    pub fn new(note_type: i32, pos: u64, value: u64, unspent: bool, raw: Vec<u8>) -> Self {
+    pub fn new(note_type: i32, pos: Idx, value: u64, unspent: bool, raw: Vec<u8>) -> Self {
         Self {
             note_type,
             pos,
