@@ -96,12 +96,12 @@ impl Transaction {
                     NoteUtxoType::Input => {
                         let total = input.clone();
                         input = input.clone() + lc.clone();
-                        prover.constrain(input.clone() - (total + lc.clone()));
+                        prover.constrain(input.clone() - (total + lc));
                     }
                     NoteUtxoType::Output => {
                         let total = output.clone();
                         output = output.clone() + lc.clone();
-                        prover.constrain(output.clone() - (total + lc.clone()));
+                        prover.constrain(output.clone() - (total + lc));
                     }
                 }
 
@@ -118,7 +118,7 @@ impl Transaction {
     pub fn verify(
         &self,
         proof: &R1CSProof,
-        commitments: &Vec<CompressedRistretto>,
+        commitments: &[CompressedRistretto],
     ) -> Result<(), Error> {
         let (pc_gens, bp_gens, mut transcript) = gen_cs_transcript();
         let mut verifier = Verifier::new(&mut transcript);
@@ -140,7 +140,7 @@ impl Transaction {
         let (input, output) = self.items().iter().fold(
             (LinearCombination::default(), output),
             |(mut input, mut output), item| {
-                let commitment = item.note().commitment().clone();
+                let commitment = *item.note().commitment();
                 let utxo = item.note().utxo();
 
                 let var = verifier.commit(commitment);
@@ -150,12 +150,12 @@ impl Transaction {
                     NoteUtxoType::Input => {
                         let total = input.clone();
                         input = input.clone() + lc.clone();
-                        verifier.constrain(input.clone() - (total + lc.clone()));
+                        verifier.constrain(input.clone() - (total + lc));
                     }
                     NoteUtxoType::Output => {
                         let total = output.clone();
                         output = output.clone() + lc.clone();
-                        verifier.constrain(output.clone() - (total + lc.clone()));
+                        verifier.constrain(output.clone() - (total + lc));
                     }
                 }
 
