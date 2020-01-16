@@ -58,8 +58,8 @@ impl NoteGenerator for ObfuscatedNote {
 
         let phoenix_value = Value::new(Scalar::from(value));
 
-        let blinding_factor = phoenix_value.blinding_factor().clone();
-        let commitment = phoenix_value.commitment().clone();
+        let blinding_factor = *phoenix_value.blinding_factor();
+        let commitment = *phoenix_value.commitment();
 
         let encrypted_value = ObfuscatedNote::encrypt_value(&r, pk, &nonce, value);
         let encrypted_blinding_factor =
@@ -174,7 +174,7 @@ impl Note for ObfuscatedNote {
     }
 
     fn verify_value(&self, proof: &R1CSProof) -> Result<(), Error> {
-        Value::with_commitment(self.commitment.clone())
+        Value::with_commitment(*self.commitment())
             .verify(proof)
             .map_err(Error::generic)
     }

@@ -140,7 +140,7 @@ impl Transaction {
         let (input, output) = self.items().iter().fold(
             (LinearCombination::default(), output),
             |(mut input, mut output), item| {
-                let commitment = item.note().commitment().clone();
+                let commitment = *item.note().commitment();
                 let utxo = item.note().utxo();
 
                 let var = verifier.commit(commitment);

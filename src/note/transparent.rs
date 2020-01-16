@@ -62,8 +62,8 @@ impl NoteGenerator for TransparentNote {
 
         let phoenix_value = Value::new(Scalar::from(value));
 
-        let blinding_factor = phoenix_value.blinding_factor().clone();
-        let commitment = phoenix_value.commitment().clone();
+        let blinding_factor = *phoenix_value.blinding_factor();
+        let commitment = *phoenix_value.commitment();
 
         let encrypted_blinding_factor =
             TransparentNote::encrypt_blinding_factor(&r, pk, &nonce, &blinding_factor);
