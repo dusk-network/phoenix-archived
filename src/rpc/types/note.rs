@@ -1,4 +1,6 @@
-use crate::{Idx as BaseIdx, NoteType as BaseNoteType};
+use crate::{Error, Idx as BaseIdx, NoteType as BaseNoteType};
+
+use std::convert::TryFrom;
 
 use prost::{Enumeration, Message};
 
@@ -13,6 +15,18 @@ impl From<BaseNoteType> for NoteType {
         match t {
             BaseNoteType::Transparent => NoteType::TRANSPARENT,
             BaseNoteType::Obfuscated => NoteType::OBFUSCATED,
+        }
+    }
+}
+
+impl TryFrom<i32> for NoteType {
+    type Error = Error;
+
+    fn try_from(t: i32) -> Result<Self, Self::Error> {
+        match t {
+            0 => Ok(NoteType::TRANSPARENT),
+            1 => Ok(NoteType::OBFUSCATED),
+            _ => Err(Error::InvalidParameters),
         }
     }
 }

@@ -65,15 +65,14 @@ impl Db {
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
-    pub fn fetch_note<N: Note>(&self, idx: &Idx) -> Result<N, Error> {
+    pub fn fetch_box_note(&self, idx: &Idx) -> Result<Box<dyn Note>, Error> {
         let notes = self.notes.try_lock()?;
-        let note = notes
-            .get(idx)
-            .map(|n| n.box_clone())
-            .ok_or(Error::Generic)?;
+        notes.get(idx).map(|n| n.box_clone()).ok_or(Error::Generic)
+    }
 
-        // TODO - As a temporary solution until Kelvin is implemented, using very unsafe code
-        Ok(Db::note_box_into(note))
+    #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
+    pub fn fetch_note<N: Note>(&self, idx: &Idx) -> Result<N, Error> {
+        self.fetch_box_note(idx).map(Db::note_box_into)
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier

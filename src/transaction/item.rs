@@ -1,4 +1,4 @@
-use crate::{Note, NoteUtxoType, Nullifier, Scalar, TransparentNote};
+use crate::{Idx, Note, NoteType, NoteUtxoType, Nullifier, Scalar, TransparentNote};
 
 #[derive(Debug)]
 pub struct TransactionItem {
@@ -49,8 +49,16 @@ impl TransactionItem {
         self.value
     }
 
+    pub fn idx(&self) -> &Idx {
+        self.note.idx()
+    }
+
     pub fn blinding_factor(&self) -> &Scalar {
         &self.blinding_factor
+    }
+
+    pub fn note_type(&self) -> NoteType {
+        self.note.note()
     }
 
     pub fn utxo(&self) -> NoteUtxoType {
