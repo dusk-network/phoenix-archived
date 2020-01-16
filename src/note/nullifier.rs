@@ -18,6 +18,7 @@ impl Nullifier {
         Self { point }
     }
 
+    #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
     pub fn point(&self) -> u64 {
         self.point
     }

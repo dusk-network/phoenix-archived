@@ -22,6 +22,7 @@ pub use transparent::TransparentNote;
 
 pub trait NoteGenerator: Sized + Note {
     /// Create a new phoenix note
+    #[allow(clippy::trivially_copy_pass_by_ref)]
     fn input(db: &Db, idx: &Idx) -> Result<Self, Error>;
     fn output(pk: &PublicKey, value: u64) -> (Self, Scalar);
 
@@ -90,6 +91,8 @@ pub trait Note: Debug + Send + Sync {
         // TODO - Create a secure nullifier
         Nullifier::new(self.idx().0)
     }
+
+    #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
     fn validate_nullifier(&self, nullifier: &Nullifier) -> Result<(), Error> {
         // TODO - Validate the nullifier securely
         if nullifier.point() == self.idx().0 {
