@@ -50,7 +50,7 @@ impl Db {
 
             Ok(None)
         } else {
-            self.store_unspent_note(item.note()).map(|idx| Some(idx))
+            self.store_unspent_note(item.note()).map(Some)
         }
     }
 
@@ -64,6 +64,7 @@ impl Db {
         Ok(idx)
     }
 
+    #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
     pub fn fetch_note<N: Note>(&self, idx: &Idx) -> Result<N, Error> {
         let notes = self.notes.try_lock()?;
         let note = notes
@@ -75,6 +76,7 @@ impl Db {
         Ok(Db::note_box_into(note))
     }
 
+    #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
     pub fn fetch_nullifier(&self, nullifier: &Nullifier) -> Result<Option<()>, Error> {
         let nullifiers = self.nullifiers.try_lock()?;
         Ok(if nullifiers.contains(nullifier) {

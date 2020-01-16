@@ -12,5 +12,5 @@ pub fn note_preimage(
     //
     // x = H(y)
     let x = linear_combination::hash(cs, &[note_pre_image]).unwrap();
-    cs.constrain(x_lc - x.clone());
+    cs.constrain(x_lc - x);
 }

@@ -3,6 +3,7 @@ use merlin::Transcript;
 
 pub use value::Value;
 
+#[allow(clippy::module_inception)] // TODO
 mod value;
 
 #[cfg(test)]

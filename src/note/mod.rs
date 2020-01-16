@@ -48,12 +48,12 @@ pub trait NoteGenerator: Sized + Note {
         let r = utils::gen_random_clamped_scalar();
         let r_g = utils::mul_by_basepoint_edwards(&r);
 
-        let r_a_g = &pk.a_g * &r;
+        let r_a_g = pk.a_g * r;
         let r_a_g = utils::edwards_to_scalar(r_a_g);
         let r_a_g = crypto::hash_scalar(&r_a_g);
         let r_a_g = utils::mul_by_basepoint_edwards(&r_a_g);
 
-        let pk_r = &r_a_g + &pk.b_g;
+        let pk_r = r_a_g + pk.b_g;
 
         (r, r_g, pk_r)
     }
@@ -121,7 +121,7 @@ pub trait Note: Debug + Send + Sync {
     fn r_g(&self) -> &EdwardsPoint;
     fn pk_r(&self) -> &EdwardsPoint;
     fn sk_r(&self, sk: &SecretKey) -> Scalar {
-        let r_a_g = &sk.a * self.r_g();
+        let r_a_g = sk.a * self.r_g();
         let r_a_g = utils::edwards_to_scalar(r_a_g);
         let r_a_g = crypto::hash_scalar(&r_a_g);
 
@@ -130,12 +130,12 @@ pub trait Note: Debug + Send + Sync {
 
     /// Validations
     fn is_owned_by(&self, vk: &ViewKey) -> bool {
-        let r_a_g = &vk.a * self.r_g();
+        let r_a_g = vk.a * self.r_g();
         let r_a_g = utils::edwards_to_scalar(r_a_g);
         let r_a_g = crypto::hash_scalar(&r_a_g);
         let r_a_g = utils::mul_by_basepoint_edwards(&r_a_g);
 
-        let pk_r = &r_a_g + &vk.b_g;
+        let pk_r = r_a_g + vk.b_g;
 
         self.pk_r() == &pk_r
     }
