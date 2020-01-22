@@ -1,8 +1,10 @@
 use crate::{
-    utils, zk::gadgets, zk::value::gen_cs_transcript, CompressedRistretto, ConstraintSystem, Db,
-    Error, LinearCombination, NoteGenerator, NoteUtxoType, Prover, R1CSProof, Scalar, SecretKey,
-    TransparentNote, Variable, Verifier,
+    rpc, utils, zk::gadgets, zk::value::gen_cs_transcript, CompressedRistretto, ConstraintSystem,
+    Db, Error, LinearCombination, NoteGenerator, NoteUtxoType, Prover, R1CSProof, Scalar,
+    SecretKey, TransparentNote, Variable, Verifier,
 };
+
+use std::convert::TryFrom;
 
 pub use item::TransactionItem;
 
@@ -184,5 +186,18 @@ impl Transaction {
         })?;
 
         Ok(())
+    }
+
+    pub fn try_from_rpc_transaction(db: &Db, tx: rpc::Transaction) -> Result<Self, Error> {
+        let mut transaction = Transaction::default();
+
+        for i in tx.inputs {
+            transaction.push(TransactionItem::try_from_rpc_transaction_input(db, i)?);
+        }
+        for o in tx.outputs {
+            transaction.push(TransactionItem::try_from(o)?);
+        }
+
+        Ok(transaction)
     }
 }

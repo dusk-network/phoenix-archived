@@ -1,5 +1,7 @@
 use super::{PublicKey, SecretKey};
-use crate::{utils, EdwardsPoint, Scalar};
+use crate::{rpc, utils, EdwardsPoint, Error, Scalar};
+
+use std::convert::{TryFrom, TryInto};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ViewKey {
@@ -34,5 +36,28 @@ impl From<SecretKey> for ViewKey {
 impl From<&SecretKey> for ViewKey {
     fn from(secret: &SecretKey) -> Self {
         secret.view_key()
+    }
+}
+
+impl TryFrom<rpc::ViewKey> for ViewKey {
+    type Error = Error;
+
+    fn try_from(k: rpc::ViewKey) -> Result<Self, Self::Error> {
+        let a: Scalar = k.a.ok_or(Error::InvalidPoint)?.into();
+        let b_g: EdwardsPoint = k
+            .b_g
+            .ok_or(Error::InvalidPoint)
+            .and_then(|p| p.try_into())?;
+
+        Ok(Self::new(a, b_g))
+    }
+}
+
+impl From<ViewKey> for rpc::ViewKey {
+    fn from(k: ViewKey) -> Self {
+        Self {
+            a: Some(rpc::Scalar::from(k.a)),
+            b_g: Some(rpc::CompressedPoint::from(k.b_g)),
+        }
     }
 }

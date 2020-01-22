@@ -3,7 +3,7 @@ use crate::{
     PublicKey, R1CSProof, Scalar, SecretKey, TransactionItem, ViewKey,
 };
 
-use std::fmt::Debug;
+use std::{convert::TryFrom, fmt::Debug};
 
 pub mod idx;
 pub mod nullifier;
@@ -193,6 +193,18 @@ impl Into<u8> for NoteUtxoType {
         match self {
             NoteUtxoType::Input => 0,
             NoteUtxoType::Output => 1,
+        }
+    }
+}
+
+impl TryFrom<i32> for NoteType {
+    type Error = Error;
+
+    fn try_from(note_type: i32) -> Result<Self, Self::Error> {
+        match note_type {
+            0 => Ok(NoteType::Transparent),
+            1 => Ok(NoteType::Obfuscated),
+            _ => Err(Error::InvalidParameters),
         }
     }
 }

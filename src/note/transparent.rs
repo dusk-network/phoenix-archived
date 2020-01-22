@@ -4,8 +4,6 @@ use crate::{
     Scalar, Value, ViewKey,
 };
 
-use std::cmp;
-
 use sha2::{Digest, Sha512};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -151,10 +149,6 @@ impl Note for TransparentNote {
             self.encrypted_blinding_factor.as_slice(),
         );
 
-        let mut s = [0x00u8; 32];
-        let chunk = cmp::min(blinding_factor.len(), 32);
-        (&mut s[0..chunk]).copy_from_slice(&blinding_factor[0..chunk]);
-
-        Scalar::from_bits(s)
+        Scalar::from_bits(utils::safe_32_chunk(blinding_factor.as_slice()))
     }
 }

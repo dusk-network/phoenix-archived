@@ -22,6 +22,7 @@ pub mod error;
 pub mod keys;
 pub mod note;
 pub mod transaction;
+pub mod types;
 pub mod utils;
 pub mod zk;
 

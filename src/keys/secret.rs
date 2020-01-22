@@ -1,5 +1,5 @@
 use super::{PublicKey, ViewKey};
-use crate::{utils, Scalar};
+use crate::{rpc, utils, Scalar};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SecretKey {
@@ -32,5 +32,21 @@ impl SecretKey {
         let b_g = utils::mul_by_basepoint_edwards(&self.b);
 
         ViewKey::new(self.a, b_g)
+    }
+}
+
+impl From<rpc::SecretKey> for SecretKey {
+    fn from(k: rpc::SecretKey) -> Self {
+        // TODO - Tonic is generating Option attributes for syntax = proto3, wait for fix
+        Self::new(k.a.unwrap().into(), k.b.unwrap().into())
+    }
+}
+
+impl From<SecretKey> for rpc::SecretKey {
+    fn from(k: SecretKey) -> Self {
+        Self {
+            a: Some(rpc::Scalar::from(k.a)),
+            b: Some(rpc::Scalar::from(k.b)),
+        }
     }
 }
