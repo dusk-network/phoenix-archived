@@ -8,9 +8,7 @@ fn transparent_note() {
     let pk = sk.public_key();
     let value = 25;
 
-    let note = TransparentNote::output(&pk, value);
-    let note = bincode::serialize(&note).unwrap();
-    let note: TransparentNote = bincode::deserialize(note.as_slice()).unwrap();
+    let (note, _) = TransparentNote::output(&pk, value);
 
     assert_eq!(note.utxo(), NoteUtxoType::Output);
     assert_eq!(note.note(), NoteType::Transparent);
@@ -31,8 +29,6 @@ fn obfuscated_note() {
 
     let proof = note.prove_value(&vk).unwrap();
 
-    let note = bincode::serialize(&note).unwrap();
-    let note: ObfuscatedNote = bincode::deserialize(note.as_slice()).unwrap();
     note.verify_value(&proof).unwrap();
 }
 

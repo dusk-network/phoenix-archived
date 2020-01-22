@@ -57,9 +57,9 @@ impl Db {
     pub fn store_unspent_note(&self, mut note: Box<dyn Note>) -> Result<Idx, Error> {
         let mut notes = self.notes.try_lock()?;
 
-        let idx = Idx(notes.len() as u64);
-        note.set_idx(idx);
-        notes.insert(idx, note);
+        let idx: Idx = (notes.len() as u64).into();
+        note.set_idx(idx.clone());
+        notes.insert(idx.clone(), note);
 
         Ok(idx)
     }

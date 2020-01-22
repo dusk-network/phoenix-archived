@@ -1,11 +1,9 @@
 use crate::{
-    crypto, rpc, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, PublicKey, R1CSProof,
-    Scalar, SecretKey, TransactionItem, ViewKey,
+    crypto, rpc, utils, CompressedRistretto, Db, EdwardsPoint, Error, Idx, Nonce, NoteType,
+    PublicKey, R1CSProof, Scalar, SecretKey, TransactionItem, ViewKey,
 };
 
 use std::fmt::Debug;
-
-use serde::{Deserialize, Serialize};
 
 pub mod idx;
 pub mod nullifier;
@@ -15,7 +13,6 @@ pub mod transparent;
 #[cfg(test)]
 mod tests;
 
-pub use idx::Idx;
 pub use nullifier::Nullifier;
 pub use obfuscated::ObfuscatedNote;
 pub use transparent::TransparentNote;
@@ -45,23 +42,15 @@ pub trait NoteGenerator: Sized + Note {
     }
 
     /// RPC
-    fn from_rpc_note(note: rpc::Note) -> Result<Self, Error>
-    where
-        Self: for<'a> Deserialize<'a>,
-    {
-        Ok(bincode::deserialize(note.raw.as_slice())?)
+    fn from_rpc_note(_note: rpc::Note) -> Result<Self, Error> {
+        unimplemented!()
     }
     fn to_rpc_note(
         self,
         db: Option<&Db>,
         vk: Option<&ViewKey>,
         nullifier: Option<&Nullifier>,
-    ) -> Result<rpc::Note, Error>
-    where
-        Self: Serialize,
-    {
-        let note_type: rpc::NoteType = self.note().into();
-        let pos = (*self.idx()).into();
+    ) -> Result<rpc::Note, Error> {
         let value = self.value(vk);
         let unspent = if db.is_some() || nullifier.is_some() {
             let db = db.ok_or(Error::InvalidParameters)?;
@@ -71,9 +60,20 @@ pub trait NoteGenerator: Sized + Note {
         } else {
             false
         };
-        let raw = bincode::serialize(&self)?;
 
-        Ok(rpc::Note::new(note_type.into(), pos, value, unspent, raw))
+        let note_type = self.note().into();
+        let pos = Some(self.idx().clone());
+
+        // TODO - Define a strategy for non-rpc reconstruction of the note
+        let raw = vec![];
+
+        Ok(rpc::Note {
+            note_type,
+            pos,
+            value,
+            unspent,
+            raw,
+        })
     }
 
     /// Attributes
@@ -121,13 +121,13 @@ pub trait Note: Debug + Send + Sync {
     /// Nullifier handle
     fn generate_nullifier(&self, _sk_r: &SecretKey) -> Nullifier {
         // TODO - Create a secure nullifier
-        Nullifier::new(self.idx().0)
+        Nullifier::new(self.idx().pos)
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
     fn validate_nullifier(&self, nullifier: &Nullifier) -> Result<(), Error> {
         // TODO - Validate the nullifier securely
-        if nullifier.point() == self.idx().0 {
+        if nullifier.point() == self.idx().pos {
             Ok(())
         } else {
             Err(Error::Generic)
@@ -176,7 +176,7 @@ pub trait Note: Debug + Send + Sync {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NoteUtxoType {
     Input,
     Output,
@@ -193,21 +193,6 @@ impl Into<u8> for NoteUtxoType {
         match self {
             NoteUtxoType::Input => 0,
             NoteUtxoType::Output => 1,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum NoteType {
-    Transparent,
-    Obfuscated,
-}
-
-impl From<rpc::NoteType> for NoteType {
-    fn from(t: rpc::NoteType) -> Self {
-        match t {
-            rpc::NoteType::TRANSPARENT => NoteType::Transparent,
-            rpc::NoteType::OBFUSCATED => NoteType::Obfuscated,
         }
     }
 }

@@ -1,8 +1,6 @@
 use std::hash::{Hash, Hasher};
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Copy, Default, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, Eq)]
 // Will be
 // r - b * H(R || idx)
 //

@@ -1,9 +1,7 @@
 use super::SecretKey;
 use crate::EdwardsPoint;
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct PublicKey {
     pub a_g: EdwardsPoint,
     pub b_g: EdwardsPoint,

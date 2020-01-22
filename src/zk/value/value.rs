@@ -1,9 +1,7 @@
 use super::gen_cs_transcript;
 use crate::{utils, CompressedRistretto, Error, Prover, R1CSProof, Scalar, Verifier};
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct Value {
     commitment: CompressedRistretto,
     blinding_factor: Scalar,

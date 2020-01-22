@@ -1,15 +1,14 @@
-use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
+use super::{Idx, Note, NoteGenerator, NoteUtxoType};
 use crate::{
-    crypto, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, PublicKey, Scalar, Value,
-    ViewKey,
+    crypto, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
+    Scalar, Value, ViewKey,
 };
 
 use std::cmp;
 
-use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha512};
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TransparentNote {
     utxo: NoteUtxoType,
     value: u64,
@@ -93,7 +92,7 @@ impl Note for TransparentNote {
         hasher.input(&self.nonce);
         hasher.input(self.r_g.compress().as_bytes());
         hasher.input(self.pk_r.compress().as_bytes());
-        hasher.input(&self.idx.to_vec());
+        hasher.input(&self.idx.clone().to_vec());
         hasher.input(&self.commitment.as_bytes());
         hasher.input(&self.encrypted_blinding_factor);
 

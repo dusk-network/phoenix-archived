@@ -1,15 +1,14 @@
-use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
+use super::{Idx, Note, NoteGenerator, NoteUtxoType};
 use crate::{
-    crypto, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, PublicKey, R1CSProof,
-    Scalar, Value, ViewKey,
+    crypto, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
+    R1CSProof, Scalar, Value, ViewKey,
 };
 
 use std::cmp;
 
-use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha512};
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ObfuscatedNote {
     utxo: NoteUtxoType,
     commitment: CompressedRistretto,
@@ -90,7 +89,7 @@ impl Note for ObfuscatedNote {
         hasher.input(&self.nonce);
         hasher.input(self.r_g.compress().as_bytes());
         hasher.input(self.pk_r.compress().as_bytes());
-        hasher.input(self.idx.to_vec());
+        hasher.input(self.idx.clone().to_vec());
         hasher.input(&self.encrypted_value);
         hasher.input(&self.encrypted_blinding_factor);
 
