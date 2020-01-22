@@ -1,0 +1,21 @@
+syntax = "proto3";
+package phoenix;
+
+import "keys.proto";
+import "note.proto";
+
+message TransactionInput {
+  Idx pos = 1;
+  SecretKey sk = 2;
+}
+
+message TransactionOutput {
+  NoteType note_type = 1;
+  PublicKey pk = 2;
+  uint64 value = 3;
+}
+
+message Transaction {
+  repeated TransactionInput inputs = 1;
+  repeated TransactionOutput outputs = 2;
+}
