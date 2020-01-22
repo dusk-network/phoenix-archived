@@ -1,0 +1,17 @@
+syntax = "proto3";
+package phoenix;
+
+enum NoteType {
+  TRANSPARENT = 0;
+  OBFUSCATED = 1;
+}
+
+message Idx { uint64 pos = 1; }
+
+message Note {
+  NoteType note_type = 1;
+  Idx pos = 2;
+  uint64 value = 3;
+  bool unspent = 4;
+  bytes raw = 5;
+}
