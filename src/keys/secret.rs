@@ -37,8 +37,10 @@ impl SecretKey {
 
 impl From<rpc::SecretKey> for SecretKey {
     fn from(k: rpc::SecretKey) -> Self {
-        // TODO - Tonic is generating Option attributes for syntax = proto3, wait for fix
-        Self::new(k.a.unwrap().into(), k.b.unwrap().into())
+        Self::new(
+            k.a.unwrap_or_default().into(),
+            k.b.unwrap_or_default().into(),
+        )
     }
 }
 
