@@ -1,9 +1,17 @@
 use crate::{
     rpc::{self, phoenix_server::Phoenix},
-    Scalar, SecretKey,
+    Db, Error, Idx, Note, NoteGenerator, PublicKey, Scalar, SecretKey, Transaction, ViewKey,
 };
 
-pub struct Server {}
+use std::convert::TryInto;
+
+fn error_to_tonic(e: Error) -> tonic::Status {
+    e.into()
+}
+
+pub struct Server {
+    db: Db,
+}
 
 #[tonic::async_trait]
 impl Phoenix for Server {
@@ -31,15 +39,36 @@ impl Phoenix for Server {
     async fn fetch_note(
         &self,
         request: tonic::Request<rpc::Idx>,
-    ) -> Result<tonic::Response<rpc::FetchNoteResponse>, tonic::Status> {
-        unimplemented!()
+    ) -> Result<tonic::Response<rpc::Note>, tonic::Status> {
+        let idx: Idx = request.into_inner().into();
+        let note = self
+            .db
+            .fetch_box_note(&idx)
+            .and_then(|note| note.rpc_note(Some(&self.db), None, None))
+            .map_err(error_to_tonic)?;
+
+        Ok(tonic::Response::new(note))
     }
 
     async fn fetch_decrypted_note(
         &self,
         request: tonic::Request<rpc::FetchDecryptedNoteRequest>,
-    ) -> Result<tonic::Response<rpc::FetchNoteResponse>, tonic::Status> {
-        unimplemented!()
+    ) -> Result<tonic::Response<rpc::Note>, tonic::Status> {
+        let request = request.into_inner();
+        let idx: Idx = request.pos.unwrap_or_default().into();
+        let vk: ViewKey = request
+            .vk
+            .unwrap_or_default()
+            .try_into()
+            .map_err(error_to_tonic)?;
+
+        let note = self
+            .db
+            .fetch_box_note(&idx)
+            .and_then(|note| note.rpc_note(Some(&self.db), Some(&vk), None))
+            .map_err(error_to_tonic)?;
+
+        Ok(tonic::Response::new(note))
     }
 
     async fn verify_transaction(
@@ -59,7 +88,7 @@ impl Phoenix for Server {
     async fn store_transactions(
         &self,
         request: tonic::Request<rpc::StoreTransactionsRequest>,
-    ) -> Result<tonic::Response<rpc::StoreTransactionsResponse>, tonic::Status> {
+    ) -> Result<tonic::Response<rpc::Scalar>, tonic::Status> {
         unimplemented!()
     }
 
@@ -67,13 +96,33 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::Transaction>,
     ) -> Result<tonic::Response<rpc::GetFeeResponse>, tonic::Status> {
-        unimplemented!()
+        let fee = Transaction::try_from_rpc_transaction(&self.db, request.into_inner())
+            .map(|tx| rpc::GetFeeResponse {
+                fee: tx.fee().value(),
+            })
+            .map_err(error_to_tonic)?;
+
+        Ok(tonic::Response::new(fee))
     }
 
     async fn set_fee_pk(
         &self,
         request: tonic::Request<rpc::SetFeePkRequest>,
-    ) -> Result<tonic::Response<rpc::SetFeePkResponse>, tonic::Status> {
+    ) -> Result<tonic::Response<rpc::Transaction>, tonic::Status> {
+        let request = request.into_inner();
+
+        let transaction = request.transaction.unwrap_or_default();
+        let mut transaction =
+            Transaction::try_from_rpc_transaction(&self.db, transaction).map_err(error_to_tonic)?;
+
+        let pk: PublicKey = request
+            .pk
+            .unwrap_or_default()
+            .try_into()
+            .map_err(error_to_tonic)?;
+
+        transaction.set_fee_pk(&pk);
+
         unimplemented!()
     }
 }

@@ -11,6 +11,8 @@ pub struct TransactionItem {
     nullifier: Nullifier,
     value: u64,
     blinding_factor: Scalar,
+    sk: Option<SecretKey>,
+    pk: PublicKey,
 }
 
 impl Clone for TransactionItem {
@@ -20,6 +22,8 @@ impl Clone for TransactionItem {
             nullifier: self.nullifier,
             value: self.value,
             blinding_factor: self.blinding_factor,
+            sk: None,
+            pk: self.pk,
         }
     }
 }
@@ -30,8 +34,10 @@ impl Default for TransactionItem {
         let nullifier = Nullifier::default();
         let value = 0;
         let blinding_factor = Scalar::one();
+        let sk = Some(SecretKey::default());
+        let pk = PublicKey::default();
 
-        TransactionItem::new(note, nullifier, value, blinding_factor)
+        TransactionItem::new(note, nullifier, value, blinding_factor, sk, pk)
     }
 }
 
@@ -41,12 +47,16 @@ impl TransactionItem {
         nullifier: Nullifier,
         value: u64,
         blinding_factor: Scalar,
+        sk: Option<SecretKey>,
+        pk: PublicKey,
     ) -> Self {
         TransactionItem {
             note: note.box_clone(),
             nullifier,
             value,
             blinding_factor,
+            sk,
+            pk,
         }
     }
 
@@ -87,29 +97,14 @@ impl TransactionItem {
 
         let item = match note.note() {
             NoteType::Transparent => {
-                Db::note_box_into::<TransparentNote>(note).to_transaction_input(&sk)
+                Db::note_box_into::<TransparentNote>(note).to_transaction_input(sk)
             }
             NoteType::Obfuscated => {
-                Db::note_box_into::<ObfuscatedNote>(note).to_transaction_input(&sk)
+                Db::note_box_into::<ObfuscatedNote>(note).to_transaction_input(sk)
             }
         };
 
         Ok(item)
-    }
-
-    pub fn rpc_transaction_input(&self, sk: SecretKey) -> rpc::TransactionInput {
-        rpc::TransactionInput {
-            pos: Some(self.note().idx().clone()),
-            sk: Some(sk.into()),
-        }
-    }
-
-    pub fn rpc_transaction_output(&self, pk: PublicKey) -> rpc::TransactionOutput {
-        rpc::TransactionOutput {
-            note_type: self.note().note().into(),
-            pk: Some(pk.into()),
-            value: self.value,
-        }
     }
 }
 
@@ -126,12 +121,31 @@ impl TryFrom<rpc::TransactionOutput> for TransactionItem {
         match note_type {
             NoteType::Transparent => {
                 let (note, blinding_factor) = TransparentNote::output(&pk, item.value);
-                Ok(note.to_transaction_output(item.value, blinding_factor))
+                Ok(note.to_transaction_output(item.value, blinding_factor, pk))
             }
             NoteType::Obfuscated => {
                 let (note, blinding_factor) = ObfuscatedNote::output(&pk, item.value);
-                Ok(note.to_transaction_output(item.value, blinding_factor))
+                Ok(note.to_transaction_output(item.value, blinding_factor, pk))
             }
+        }
+    }
+}
+
+impl Into<rpc::TransactionInput> for TransactionItem {
+    fn into(self) -> rpc::TransactionInput {
+        rpc::TransactionInput {
+            pos: Some(self.note().idx().clone()),
+            sk: self.sk.map(|sk| sk.into()),
+        }
+    }
+}
+
+impl Into<rpc::TransactionOutput> for TransactionItem {
+    fn into(self) -> rpc::TransactionOutput {
+        rpc::TransactionOutput {
+            note_type: self.note().note().into(),
+            pk: Some(self.pk.into()),
+            value: self.value,
         }
     }
 }

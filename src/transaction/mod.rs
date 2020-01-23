@@ -1,7 +1,7 @@
 use crate::{
     rpc, utils, zk::gadgets, zk::value::gen_cs_transcript, CompressedRistretto, ConstraintSystem,
-    Db, Error, LinearCombination, NoteGenerator, NoteUtxoType, Prover, R1CSProof, Scalar,
-    SecretKey, TransparentNote, Variable, Verifier,
+    Db, Error, LinearCombination, NoteGenerator, NoteUtxoType, Prover, PublicKey, R1CSProof,
+    Scalar, SecretKey, TransparentNote, Variable, Verifier,
 };
 
 use std::convert::TryFrom;
@@ -22,6 +22,10 @@ pub struct Transaction {
 impl Transaction {
     pub fn push(&mut self, item: TransactionItem) {
         self.items.push(item);
+    }
+
+    pub fn set_fee_pk(&mut self, _pk: &PublicKey) {
+        // TODO - Set the PK of the miner
     }
 
     pub fn fee(&self) -> &TransactionItem {
@@ -71,8 +75,9 @@ impl Transaction {
         let fee_value = input - output;
         // The miner spending key will be defined later by the block generator
         let sk = SecretKey::default();
+        let pk = sk.public_key();
         let (fee, blinding_factor) = TransparentNote::output(&sk.public_key(), fee_value);
-        let fee = fee.to_transaction_output(fee_value, blinding_factor);
+        let fee = fee.to_transaction_output(fee_value, blinding_factor, pk);
 
         // Commit the fee to the circuit
         let (_, var) = prover.commit(
@@ -190,6 +195,8 @@ impl Transaction {
 
     pub fn try_from_rpc_transaction(db: &Db, tx: rpc::Transaction) -> Result<Self, Error> {
         let mut transaction = Transaction::default();
+
+        // TODO - Define a strategy to reconstruct the fee
 
         for i in tx.inputs {
             transaction.push(TransactionItem::try_from_rpc_transaction_input(db, i)?);

@@ -24,21 +24,27 @@ pub trait NoteGenerator: Sized + Note {
     fn output(pk: &PublicKey, value: u64) -> (Self, Scalar);
 
     /// Transaction
-    fn to_transaction_input(mut self, sk: &SecretKey) -> TransactionItem {
+    fn to_transaction_input(mut self, sk: SecretKey) -> TransactionItem {
         let vk = sk.view_key();
+        let pk = sk.public_key();
 
         self.set_utxo(NoteUtxoType::Input);
 
-        let nullifier = self.generate_nullifier(sk);
+        let nullifier = self.generate_nullifier(&sk);
         let value = self.value(Some(&vk));
         let blinding_factor = self.blinding_factor(&vk);
 
-        TransactionItem::new(self, nullifier, value, blinding_factor)
+        TransactionItem::new(self, nullifier, value, blinding_factor, Some(sk), pk)
     }
-    fn to_transaction_output(mut self, value: u64, blinding_factor: Scalar) -> TransactionItem {
+    fn to_transaction_output(
+        mut self,
+        value: u64,
+        blinding_factor: Scalar,
+        pk: PublicKey,
+    ) -> TransactionItem {
         self.set_utxo(NoteUtxoType::Output);
 
-        TransactionItem::new(self, Nullifier::default(), value, blinding_factor)
+        TransactionItem::new(self, Nullifier::default(), value, blinding_factor, None, pk)
     }
 
     /// RPC
@@ -140,6 +146,38 @@ pub trait Note: Debug + Send + Sync {
         let x = crypto::hash_scalar(&y);
 
         (y, x)
+    }
+
+    /// RPC
+    fn rpc_note(
+        &self,
+        db: Option<&Db>,
+        vk: Option<&ViewKey>,
+        nullifier: Option<&Nullifier>,
+    ) -> Result<rpc::Note, Error> {
+        let value = self.value(vk);
+        let unspent = if db.is_some() || nullifier.is_some() {
+            let db = db.ok_or(Error::InvalidParameters)?;
+            let nullifier = nullifier.ok_or(Error::InvalidParameters)?;
+
+            db.fetch_nullifier(nullifier)?.is_none()
+        } else {
+            false
+        };
+
+        let note_type = self.note().into();
+        let pos = Some(self.idx().clone());
+
+        // TODO - Define a strategy for non-rpc reconstruction of the note
+        let raw = vec![];
+
+        Ok(rpc::Note {
+            note_type,
+            pos,
+            value,
+            unspent,
+            raw,
+        })
     }
 
     /// Attributes

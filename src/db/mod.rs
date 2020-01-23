@@ -1,4 +1,4 @@
-use crate::{Error, Idx, Note, NoteUtxoType, Nullifier, Transaction, TransactionItem};
+use crate::{Error, Idx, Note, NoteUtxoType, Nullifier, Scalar, Transaction, TransactionItem};
 
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
@@ -35,6 +35,23 @@ impl Db {
 
             Ok(v)
         })
+    }
+
+    // TODO - Should be able to rollback state in case of failure
+    pub fn store_bulk(&self, transactions: &[Transaction]) -> Result<Vec<Idx>, Error> {
+        let mut idx = vec![];
+
+        for t in transactions {
+            idx.extend(self.store(t)?);
+        }
+
+        Ok(idx)
+    }
+
+    /// Return the current merkle root
+    pub fn root(&self) -> Scalar {
+        // TODO - Fetch the merkle root of the current db state
+        Scalar::default()
     }
 
     /// Attempt to store a given transaction item.

@@ -8,7 +8,7 @@ fn transaction_items() {
     let (_, _, pk) = generate_keys();
     let value = 25;
     let (note, blinding_factor) = ObfuscatedNote::output(&pk, value);
-    let item = note.to_transaction_output(value, blinding_factor);
+    let item = note.to_transaction_output(value, blinding_factor, pk);
     assert_eq!(value, item.value());
 }
 
@@ -63,7 +63,7 @@ fn transaction_zk() {
     let mut transaction = Transaction::default();
 
     // Set the 100 unspent note as the input of the transaction
-    let sk = &senders[0].0;
+    let sk = senders[0].0;
     let idx = &inputs[0].2;
     let note: TransparentNote = db.fetch_note(idx).unwrap();
     transaction.push(note.to_transaction_input(sk));
@@ -71,25 +71,28 @@ fn transaction_zk() {
     // Push the 30 output note to the transaction
     let note = Db::note_box_into::<ObfuscatedNote>(outputs[1].2.box_clone());
     let blinding_factor = outputs[1].3;
+    let pk = outputs[1].0;
     let value = outputs[1].1;
-    transaction.push(note.to_transaction_output(value, blinding_factor));
+    transaction.push(note.to_transaction_output(value, blinding_factor, pk));
 
     // Push the 20 output note to the transaction
     let note = Db::note_box_into::<ObfuscatedNote>(outputs[2].2.box_clone());
     let blinding_factor = outputs[2].3;
+    let pk = outputs[2].0;
     let value = outputs[2].1;
-    transaction.push(note.to_transaction_output(value, blinding_factor));
+    transaction.push(note.to_transaction_output(value, blinding_factor, pk));
 
     let mut malicious_transaction = transaction.clone();
 
     // Push the 97 output note to the transaction
     let note = Db::note_box_into::<TransparentNote>(outputs[0].2.box_clone());
     let blinding_factor = outputs[0].3;
+    let pk = outputs[0].0;
     let value = outputs[0].1;
-    transaction.push(note.to_transaction_output(value, blinding_factor));
+    transaction.push(note.to_transaction_output(value, blinding_factor, pk));
 
     // Set the 45 unspent note as the input of the malicious transaction
-    let sk = &senders[1].0;
+    let sk = senders[1].0;
     let idx = &inputs[2].2;
     let note: ObfuscatedNote = db.fetch_note(idx).unwrap();
     malicious_transaction.push(note.to_transaction_input(sk));
@@ -97,13 +100,14 @@ fn transaction_zk() {
     // Push the 92 output note to the malicious transaction
     let note = Db::note_box_into::<TransparentNote>(outputs[3].2.box_clone());
     let blinding_factor = outputs[3].3;
+    let pk = outputs[3].0;
     let value = outputs[3].1;
-    malicious_transaction.push(note.to_transaction_output(value, blinding_factor));
+    malicious_transaction.push(note.to_transaction_output(value, blinding_factor, pk));
 
     let mut insufficient_inputs_transaction = transaction.clone();
 
     // Set the 50 unspent note as the input of the transaction
-    let sk = &senders[1].0;
+    let sk = senders[1].0;
     let idx = &inputs[1].2;
     let note: ObfuscatedNote = db.fetch_note(idx).unwrap();
     transaction.push(note.to_transaction_input(sk));
@@ -169,7 +173,7 @@ fn transactions_with_transparent_notes() {
     let mut transaction = Transaction::default();
 
     // Set the first unspent note as the input of the transaction
-    let sk = &senders[0].0;
+    let sk = senders[0].0;
     let idx = &notes[0].2;
     let note: TransparentNote = db.fetch_note(idx).unwrap();
     transaction.push(note.to_transaction_input(sk));
@@ -185,12 +189,14 @@ fn transactions_with_transparent_notes() {
     outputs.push(create_output_note::<TransparentNote>(pk, 50 - fee_cost));
     let note = Db::note_box_into::<TransparentNote>(outputs[0].2.box_clone());
     let blinding_factor = outputs[0].3;
+    let pk = outputs[0].0;
     let value = outputs[0].1;
-    transaction.push(note.to_transaction_output(value, blinding_factor));
+    transaction.push(note.to_transaction_output(value, blinding_factor, pk));
     let note = Db::note_box_into::<TransparentNote>(outputs[1].2.box_clone());
     let blinding_factor = outputs[1].3;
+    let pk = outputs[1].0;
     let value = outputs[1].1;
-    transaction.push(note.to_transaction_output(value, blinding_factor));
+    transaction.push(note.to_transaction_output(value, blinding_factor, pk));
 
     // Execute the transaction
     transaction.prepare(&db).unwrap();
