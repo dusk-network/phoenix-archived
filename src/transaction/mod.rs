@@ -24,12 +24,16 @@ impl Transaction {
         self.items.push(item);
     }
 
-    pub fn set_fee_pk(&mut self, _pk: &PublicKey) {
-        // TODO - Set the PK of the miner
-    }
-
     pub fn fee(&self) -> &TransactionItem {
         &self.fee
+    }
+
+    pub fn set_fee(&mut self, fee: TransactionItem) {
+        self.fee = fee;
+    }
+
+    pub fn set_fee_pk(&mut self, _pk: &PublicKey) {
+        // TODO - Set the PK of the miner
     }
 
     pub fn items(&self) -> &Vec<TransactionItem> {
@@ -196,7 +200,7 @@ impl Transaction {
     pub fn try_from_rpc_transaction(db: &Db, tx: rpc::Transaction) -> Result<Self, Error> {
         let mut transaction = Transaction::default();
 
-        // TODO - Define a strategy to reconstruct the fee
+        transaction.set_fee(TransactionItem::try_from(tx.fee.unwrap_or_default())?);
 
         for i in tx.inputs {
             transaction.push(TransactionItem::try_from_rpc_transaction_input(db, i)?);
@@ -206,5 +210,24 @@ impl Transaction {
         }
 
         Ok(transaction)
+    }
+}
+
+impl Into<rpc::Transaction> for Transaction {
+    fn into(self) -> rpc::Transaction {
+        let mut inputs = vec![];
+        let mut outputs = vec![];
+        let fee = Some(self.fee.into());
+
+        self.items.into_iter().for_each(|item| match item.utxo() {
+            NoteUtxoType::Input => inputs.push(item.into()),
+            NoteUtxoType::Output => outputs.push(item.into()),
+        });
+
+        rpc::Transaction {
+            inputs,
+            outputs,
+            fee,
+        }
     }
 }

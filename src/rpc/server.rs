@@ -92,19 +92,6 @@ impl Phoenix for Server {
         unimplemented!()
     }
 
-    async fn get_fee(
-        &self,
-        request: tonic::Request<rpc::Transaction>,
-    ) -> Result<tonic::Response<rpc::GetFeeResponse>, tonic::Status> {
-        let fee = Transaction::try_from_rpc_transaction(&self.db, request.into_inner())
-            .map(|tx| rpc::GetFeeResponse {
-                fee: tx.fee().value(),
-            })
-            .map_err(error_to_tonic)?;
-
-        Ok(tonic::Response::new(fee))
-    }
-
     async fn set_fee_pk(
         &self,
         request: tonic::Request<rpc::SetFeePkRequest>,
@@ -123,6 +110,6 @@ impl Phoenix for Server {
 
         transaction.set_fee_pk(&pk);
 
-        unimplemented!()
+        Ok(tonic::Response::new(transaction.into()))
     }
 }
