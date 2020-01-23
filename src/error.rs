@@ -86,6 +86,13 @@ impl Into<io::Error> for Error {
     }
 }
 
+impl Into<tonic::Status> for Error {
+    fn into(self) -> tonic::Status {
+        // TODO - Improve the error mapping to tonic codes
+        tonic::Status::new(tonic::Code::Internal, format!("{}", self))
+    }
+}
+
 from_error!(io::Error, Io);
 from_error!(R1CSError, R1CS);
 from_error_unit!(
