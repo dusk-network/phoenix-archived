@@ -22,8 +22,6 @@ message VerifyTransactionRootResponse {}
 
 message StoreTransactionsRequest { repeated Transaction transactions = 1; }
 
-message GetFeeResponse { uint64 fee = 1; }
-
 message SetFeePkRequest {
   Transaction transaction = 1;
   PublicKey pk = 2;
@@ -44,7 +42,5 @@ service Phoenix {
   rpc VerifyTransactionRoot(VerifyTransactionRootRequest)
       returns (VerifyTransactionRootResponse) {}
   rpc StoreTransactions(StoreTransactionsRequest) returns (Scalar) {}
-
-  rpc GetFee(Transaction) returns (GetFeeResponse) {}
   rpc SetFeePk(SetFeePkRequest) returns (Transaction) {}
 }

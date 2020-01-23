@@ -18,4 +18,5 @@ message TransactionOutput {
 message Transaction {
   repeated TransactionInput inputs = 1;
   repeated TransactionOutput outputs = 2;
+  TransactionOutput fee = 3;
 }
