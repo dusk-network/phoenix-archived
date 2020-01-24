@@ -17,6 +17,8 @@ mod tests;
 pub struct Transaction {
     fee: TransactionItem,
     items: Vec<TransactionItem>,
+    r1cs: Option<R1CSProof>,
+    commitments: Vec<CompressedRistretto>,
 }
 
 impl Transaction {
@@ -40,8 +42,23 @@ impl Transaction {
         &self.items
     }
 
-    // TODO - Generate a proper structure for the proof + commitments
-    pub fn prove(&mut self) -> Result<(R1CSProof, Vec<CompressedRistretto>), Error> {
+    pub fn r1cs(&self) -> Option<&R1CSProof> {
+        self.r1cs.as_ref()
+    }
+
+    pub fn set_r1cs(&mut self, r1cs: R1CSProof) {
+        self.r1cs.replace(r1cs);
+    }
+
+    pub fn commitments(&self) -> &Vec<CompressedRistretto> {
+        &self.commitments
+    }
+
+    pub fn set_commitments(&mut self, commitments: Vec<CompressedRistretto>) {
+        self.commitments = commitments;
+    }
+
+    pub fn prove(&mut self) -> Result<(), Error> {
         let (pc_gens, bp_gens, mut transcript) = gen_cs_transcript();
         let mut prover = Prover::new(&pc_gens, &mut transcript);
 
@@ -123,18 +140,20 @@ impl Transaction {
         prover.constrain(input - output);
 
         let proof = prover.prove(&bp_gens).map_err(Error::from)?;
-        Ok((proof, commitments))
+
+        self.r1cs = Some(proof);
+        self.commitments = commitments;
+
+        Ok(())
     }
 
-    pub fn verify(
-        &self,
-        proof: &R1CSProof,
-        commitments: &[CompressedRistretto],
-    ) -> Result<(), Error> {
+    pub fn verify(&self) -> Result<(), Error> {
+        let proof = self.r1cs.as_ref().ok_or(Error::TransactionNotPrepared)?;
+
         let (pc_gens, bp_gens, mut transcript) = gen_cs_transcript();
         let mut verifier = Verifier::new(&mut transcript);
 
-        let mut commits = commitments.iter();
+        let mut commits = self.commitments.iter();
         self.items().iter().for_each(|item| {
             let var = commits
                 .next()
@@ -177,7 +196,7 @@ impl Transaction {
         verifier.constrain(input - output);
 
         verifier
-            .verify(&proof, &pc_gens, &bp_gens)
+            .verify(proof, &pc_gens, &bp_gens)
             .map_err(Error::from)
     }
 
@@ -200,7 +219,9 @@ impl Transaction {
     pub fn try_from_rpc_transaction(db: &Db, tx: rpc::Transaction) -> Result<Self, Error> {
         let mut transaction = Transaction::default();
 
-        transaction.set_fee(TransactionItem::try_from(tx.fee.unwrap_or_default())?);
+        if let Some(f) = tx.fee {
+            transaction.set_fee(TransactionItem::try_from(f)?);
+        }
 
         for i in tx.inputs {
             transaction.push(TransactionItem::try_from_rpc_transaction_input(db, i)?);

@@ -116,21 +116,30 @@ fn transaction_zk() {
     assert!(insufficient_inputs_transaction.prove().is_err());
 
     // Proof and verify the main transaction
-    let (proof, commitments) = transaction.prove().unwrap();
-    transaction.verify(&proof, &commitments).unwrap();
+    transaction.prove().unwrap();
+    transaction.verify().unwrap();
+
+    let proof = transaction.r1cs().cloned().unwrap();
+    let commitments = transaction.commitments().clone();
 
     // The malicious transaction should be consistent by itself
-    let (malicious_proof, malicious_commitments) = malicious_transaction.prove().unwrap();
-    malicious_transaction
-        .verify(&malicious_proof, &malicious_commitments)
-        .unwrap();
+    malicious_transaction.prove().unwrap();
+    let malicious_proof = malicious_transaction.r1cs().cloned().unwrap();
+    let malicious_commitments = malicious_transaction.commitments().clone();
+    malicious_transaction.verify().unwrap();
 
     // Validate no malicious proof or commitments could be verified successfully
-    assert!(transaction.verify(&malicious_proof, &commitments).is_err());
-    assert!(transaction.verify(&proof, &malicious_commitments).is_err());
-    assert!(transaction
-        .verify(&malicious_proof, &malicious_commitments)
-        .is_err());
+    transaction.set_r1cs(malicious_proof.clone());
+    transaction.set_commitments(commitments);
+    assert!(transaction.verify().is_err());
+
+    transaction.set_r1cs(proof);
+    transaction.set_commitments(malicious_commitments.clone());
+    assert!(transaction.verify().is_err());
+
+    transaction.set_r1cs(malicious_proof);
+    transaction.set_commitments(malicious_commitments);
+    assert!(transaction.verify().is_err());
 
     // The fee should be the difference between the input and output
     assert_eq!(3, transaction.fee().value());
@@ -276,8 +285,8 @@ fn rpc_transaction() {
 
     let mut transaction = Transaction::try_from_rpc_transaction(&db, transaction).unwrap();
 
-    let (proof, commitments) = transaction.prove().unwrap();
-    transaction.verify(&proof, &commitments).unwrap();
+    transaction.prove().unwrap();
+    transaction.verify().unwrap();
 
     assert_eq!(3, transaction.fee().value());
 }
