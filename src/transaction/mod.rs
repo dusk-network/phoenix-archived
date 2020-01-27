@@ -230,6 +230,13 @@ impl Transaction {
             transaction.push(TransactionItem::try_from(o)?);
         }
 
+        transaction.r1cs = if tx.r1cs.is_empty() {
+            None
+        } else {
+            Some(R1CSProof::from_bytes(tx.r1cs.as_slice())?)
+        };
+        transaction.commitments = tx.commitments.into_iter().map(|p| p.into()).collect();
+
         Ok(transaction)
     }
 }
@@ -245,10 +252,15 @@ impl Into<rpc::Transaction> for Transaction {
             NoteUtxoType::Output => outputs.push(item.into()),
         });
 
+        let r1cs = self.r1cs.map(|p| p.to_bytes()).unwrap_or_default();
+        let commitments = self.commitments.iter().map(|p| (*p).into()).collect();
+
         rpc::Transaction {
             inputs,
             outputs,
             fee,
+            r1cs,
+            commitments,
         }
     }
 }

@@ -265,13 +265,13 @@ fn rpc_transaction() {
         &db, sk, 50,
     ));
 
-    // Create an output of 100
+    // Create an output of 97
     let pk = &receivers[0].2;
-    outputs.push(create_output_rpc_note::<TransparentNote>(pk, 100));
+    outputs.push(create_output_rpc_note::<TransparentNote>(pk, 97));
 
-    // Create an output of 47
+    // Create an output of 50
     let pk = &receivers[1].2;
-    outputs.push(create_output_rpc_note::<ObfuscatedNote>(pk, 47));
+    outputs.push(create_output_rpc_note::<ObfuscatedNote>(pk, 50));
 
     let mut transaction = rpc::Transaction::default();
 
@@ -285,7 +285,28 @@ fn rpc_transaction() {
 
     let mut transaction = Transaction::try_from_rpc_transaction(&db, transaction).unwrap();
 
+    // It is not possible to verify an unproven transaction
+    assert!(transaction.verify().is_err());
+
     transaction.prove().unwrap();
+    transaction.verify().unwrap();
+
+    assert_eq!(3, transaction.fee().value());
+
+    let proof = transaction.r1cs().cloned().unwrap();
+    let commitments = transaction.commitments().clone();
+
+    let original_transaction = transaction.clone();
+    let transaction: rpc::Transaction = transaction.into();
+    let transaction = Transaction::try_from_rpc_transaction(&db, transaction).unwrap();
+
+    let deserialized_proof = transaction.r1cs().cloned().unwrap();
+    let deserialized_commitments = transaction.commitments().clone();
+
+    assert!(!commitments.is_empty());
+    assert_eq!(commitments, deserialized_commitments);
+    assert_eq!(proof.to_bytes(), deserialized_proof.to_bytes());
+
     transaction.verify().unwrap();
 
     assert_eq!(3, transaction.fee().value());
