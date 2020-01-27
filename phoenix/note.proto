@@ -1,6 +1,8 @@
 syntax = "proto3";
 package phoenix;
 
+import "field.proto";
+
 enum NoteType {
   TRANSPARENT = 0;
   OBFUSCATED = 1;
@@ -13,5 +15,9 @@ message Note {
   Idx pos = 2;
   uint64 value = 3;
   bool unspent = 4;
-  bytes raw = 5;
+  Nonce nonce = 5;
+  CompressedPoint r_g = 6;
+  CompressedPoint pk_r = 7;
+  CompressedPoint commitment = 8;
+  bytes blinding_factor = 9;
 }
