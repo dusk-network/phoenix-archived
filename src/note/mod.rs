@@ -17,7 +17,7 @@ pub use nullifier::Nullifier;
 pub use obfuscated::ObfuscatedNote;
 pub use transparent::TransparentNote;
 
-pub trait NoteGenerator: Sized + Note {
+pub trait NoteGenerator: Sized + Note + TryFrom<rpc::Note> {
     /// Create a new phoenix note
     #[allow(clippy::trivially_copy_pass_by_ref)]
     fn input(db: &Db, idx: &Idx) -> Result<Self, Error>;
@@ -48,9 +48,7 @@ pub trait NoteGenerator: Sized + Note {
     }
 
     /// RPC
-    fn from_rpc_note(_note: rpc::Note) -> Result<Self, Error> {
-        unimplemented!()
-    }
+    fn from_rpc_note(note: rpc::Note) -> Result<Box<dyn Note>, Error>;
     fn to_rpc_note(
         self,
         db: Option<&Db>,
@@ -69,16 +67,22 @@ pub trait NoteGenerator: Sized + Note {
 
         let note_type = self.note().into();
         let pos = Some(self.idx().clone());
-
-        // TODO - Define a strategy for non-rpc reconstruction of the note
-        let raw = vec![];
+        let nonce = Some((*self.nonce()).into());
+        let r_g = Some((*self.r_g()).into());
+        let pk_r = Some((*self.pk_r()).into());
+        let commitment = Some((*self.commitment()).into());
+        let blinding_factor = self.raw_blinding_factor().clone();
 
         Ok(rpc::Note {
             note_type,
             pos,
             value,
             unspent,
-            raw,
+            nonce,
+            r_g,
+            pk_r,
+            commitment,
+            blinding_factor,
         })
     }
 
@@ -167,16 +171,22 @@ pub trait Note: Debug + Send + Sync {
 
         let note_type = self.note().into();
         let pos = Some(self.idx().clone());
-
-        // TODO - Define a strategy for non-rpc reconstruction of the note
-        let raw = vec![];
+        let nonce = Some((*self.nonce()).into());
+        let r_g = Some((*self.r_g()).into());
+        let pk_r = Some((*self.pk_r()).into());
+        let commitment = Some((*self.commitment()).into());
+        let blinding_factor = self.raw_blinding_factor().clone();
 
         Ok(rpc::Note {
             note_type,
             pos,
             value,
             unspent,
-            raw,
+            nonce,
+            r_g,
+            pk_r,
+            commitment,
+            blinding_factor,
         })
     }
 
@@ -191,6 +201,7 @@ pub trait Note: Debug + Send + Sync {
     fn value(&self, vk: Option<&ViewKey>) -> u64;
     fn commitment(&self) -> &CompressedRistretto;
     fn blinding_factor(&self, vk: &ViewKey) -> Scalar;
+    fn raw_blinding_factor(&self) -> &Vec<u8>;
     fn r_g(&self) -> &EdwardsPoint;
     fn pk_r(&self) -> &EdwardsPoint;
     fn sk_r(&self, sk: &SecretKey) -> Scalar {

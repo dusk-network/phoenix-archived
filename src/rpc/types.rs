@@ -1,9 +1,10 @@
 use crate::{
-    rpc, utils, CompressedEdwardsY, CompressedRistretto, EdwardsPoint, Error, RistrettoPoint,
-    Scalar,
+    rpc, utils, CompressedEdwardsY, CompressedRistretto, EdwardsPoint, Error, Nonce,
+    RistrettoPoint, Scalar,
 };
 
-use std::convert::TryInto;
+use std::cmp;
+use std::convert::{TryFrom, TryInto};
 
 impl From<Scalar> for rpc::Scalar {
     fn from(s: Scalar) -> Self {
@@ -78,5 +79,21 @@ impl TryInto<RistrettoPoint> for rpc::CompressedPoint {
     fn try_into(self) -> Result<RistrettoPoint, Self::Error> {
         let y: CompressedRistretto = self.into();
         y.decompress().ok_or(Error::InvalidPoint)
+    }
+}
+
+impl Into<rpc::Nonce> for Nonce {
+    fn into(self) -> rpc::Nonce {
+        rpc::Nonce {
+            bs: self.0.to_vec(),
+        }
+    }
+}
+
+impl TryFrom<rpc::Nonce> for Nonce {
+    type Error = Error;
+
+    fn try_from(nonce: rpc::Nonce) -> Result<Self, Self::Error> {
+        Nonce::from_slice(nonce.bs.as_slice()).ok_or(Error::InvalidParameters)
     }
 }

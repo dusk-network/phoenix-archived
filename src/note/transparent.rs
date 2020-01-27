@@ -1,8 +1,10 @@
 use super::{Idx, Note, NoteGenerator, NoteUtxoType};
 use crate::{
-    crypto, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
+    crypto, rpc, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
     Scalar, Value, ViewKey,
 };
+
+use std::convert::TryFrom;
 
 use sha2::{Digest, Sha512};
 
@@ -78,6 +80,13 @@ impl NoteGenerator for TransparentNote {
 
         (note, blinding_factor)
     }
+
+    fn from_rpc_note(note: rpc::Note) -> Result<Box<dyn Note>, Error> {
+        let note = TransparentNote::try_from(note)?;
+        let note = Box::new(note);
+
+        Ok(note)
+    }
 }
 
 impl Note for TransparentNote {
@@ -150,5 +159,35 @@ impl Note for TransparentNote {
         );
 
         Scalar::from_bits(utils::safe_32_chunk(blinding_factor.as_slice()))
+    }
+
+    fn raw_blinding_factor(&self) -> &Vec<u8> {
+        &self.encrypted_blinding_factor
+    }
+}
+
+impl TryFrom<rpc::Note> for TransparentNote {
+    type Error = Error;
+
+    fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
+        let utxo = unimplemented!();
+        let value = unimplemented!();
+        let nonce = unimplemented!();
+        let r_g = unimplemented!();
+        let pk_r = unimplemented!();
+        let idx = unimplemented!();
+        let commitment = unimplemented!();
+        let encrypted_blinding_factor = unimplemented!();
+
+        Ok(Self::new(
+            utxo,
+            value,
+            nonce,
+            r_g,
+            pk_r,
+            idx,
+            commitment,
+            encrypted_blinding_factor,
+        ))
     }
 }

@@ -1,10 +1,11 @@
 use super::{Idx, Note, NoteGenerator, NoteUtxoType};
 use crate::{
-    crypto, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
+    crypto, rpc, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
     R1CSProof, Scalar, Value, ViewKey,
 };
 
 use std::cmp;
+use std::convert::TryFrom;
 
 use sha2::{Digest, Sha512};
 
@@ -76,6 +77,13 @@ impl NoteGenerator for ObfuscatedNote {
         );
 
         (note, blinding_factor)
+    }
+
+    fn from_rpc_note(note: rpc::Note) -> Result<Box<dyn Note>, Error> {
+        let note = ObfuscatedNote::try_from(note)?;
+        let note = Box::new(note);
+
+        Ok(note)
     }
 }
 
@@ -159,6 +167,10 @@ impl Note for ObfuscatedNote {
         Scalar::from_bits(utils::safe_32_chunk(blinding_factor.as_slice()))
     }
 
+    fn raw_blinding_factor(&self) -> &Vec<u8> {
+        &self.encrypted_blinding_factor
+    }
+
     fn prove_value(&self, vk: &ViewKey) -> Result<R1CSProof, Error> {
         let value = self.value(Some(vk));
         let blinding_factor = self.blinding_factor(vk);
@@ -172,5 +184,13 @@ impl Note for ObfuscatedNote {
         Value::with_commitment(*self.commitment())
             .verify(proof)
             .map_err(Error::generic)
+    }
+}
+
+impl TryFrom<rpc::Note> for ObfuscatedNote {
+    type Error = Error;
+
+    fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
+        unimplemented!()
     }
 }
