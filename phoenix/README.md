@@ -4,6 +4,7 @@
 
 - [field.proto](#field.proto)
     - [CompressedPoint](#phoenix.CompressedPoint)
+    - [Nonce](#phoenix.Nonce)
     - [Scalar](#phoenix.Scalar)
 
 - [keys.proto](#keys.proto)
@@ -18,17 +19,12 @@
 
 - [phoenix.proto](#phoenix.proto)
     - [FetchDecryptedNoteRequest](#phoenix.FetchDecryptedNoteRequest)
-    - [FetchNoteResponse](#phoenix.FetchNoteResponse)
-    - [GetFeeResponse](#phoenix.GetFeeResponse)
     - [KeysResponse](#phoenix.KeysResponse)
     - [SetFeePkRequest](#phoenix.SetFeePkRequest)
-    - [SetFeePkResponse](#phoenix.SetFeePkResponse)
     - [StoreTransactionsRequest](#phoenix.StoreTransactionsRequest)
-    - [StoreTransactionsResponse](#phoenix.StoreTransactionsResponse)
     - [VerifyTransactionResponse](#phoenix.VerifyTransactionResponse)
     - [VerifyTransactionRootRequest](#phoenix.VerifyTransactionRootRequest)
     - [VerifyTransactionRootResponse](#phoenix.VerifyTransactionRootResponse)
-    - [Status](#phoenix.Status)
     - [Phoenix](#phoenix.Phoenix)
 
 - [transaction.proto](#transaction.proto)
@@ -45,6 +41,12 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | y | [bytes](#bytes) |  |  |
+
+### Nonce
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bs | [bytes](#bytes) |  |  |
 
 ### Scalar
 
@@ -79,6 +81,8 @@
 
 ### Idx
 
+
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | pos | [uint64](#uint64) |  |  |
@@ -91,7 +95,11 @@
 | pos | [Idx](#phoenix.Idx) |  |  |
 | value | [uint64](#uint64) |  |  |
 | unspent | [bool](#bool) |  |  |
-| raw | [bytes](#bytes) |  |  |
+| nonce | [Nonce](#phoenix.Nonce) |  |  |
+| r_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
+| pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
+| commitment | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
+| blinding_factor | [bytes](#bytes) |  |  |
 
 ### NoteType
 
@@ -109,19 +117,6 @@
 | pos | [Idx](#phoenix.Idx) |  |  |
 | vk | [ViewKey](#phoenix.ViewKey) |  |  |
 
-### FetchNoteResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| status | [Status](#phoenix.Status) |  |  |
-| note | [Note](#phoenix.Note) |  |  |
-
-### GetFeeResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| fee | [uint64](#uint64) |  |  |
-
 ### KeysResponse
 
 | Field | Type | Label | Description |
@@ -136,31 +131,13 @@
 | transaction | [Transaction](#phoenix.Transaction) |  |  |
 | pk | [PublicKey](#phoenix.PublicKey) |  |  |
 
-### SetFeePkResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| status | [Status](#phoenix.Status) |  |  |
-| transaction | [Transaction](#phoenix.Transaction) |  |  |
-
 ### StoreTransactionsRequest
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | transactions | [Transaction](#phoenix.Transaction) | repeated |  |
 
-### StoreTransactionsResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| status | [Status](#phoenix.Status) |  |  |
-| root | [Scalar](#phoenix.Scalar) |  |  |
-
 ### VerifyTransactionResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| status | [Status](#phoenix.Status) |  |  |
 
 ### VerifyTransactionRootRequest
 
@@ -171,29 +148,17 @@
 
 ### VerifyTransactionRootResponse
 
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| status | [Status](#phoenix.Status) |  |  |
-
-### Status
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| OK | 0 |  |
-| ERROR | 1 |  |
-
 ### Phoenix
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | Keys | [SecretKey](#phoenix.SecretKey) | [KeysResponse](#phoenix.KeysResponse) |  |
-| FetchNote | [Idx](#phoenix.Idx) | [FetchNoteResponse](#phoenix.FetchNoteResponse) |  |
-| FetchDecryptedNote | [FetchDecryptedNoteRequest](#phoenix.FetchDecryptedNoteRequest) | [FetchNoteResponse](#phoenix.FetchNoteResponse) |  |
+| FetchNote | [Idx](#phoenix.Idx) | [Note](#phoenix.Note) |  |
+| FetchDecryptedNote | [FetchDecryptedNoteRequest](#phoenix.FetchDecryptedNoteRequest) | [Note](#phoenix.Note) |  |
 | VerifyTransaction | [Transaction](#phoenix.Transaction) | [VerifyTransactionResponse](#phoenix.VerifyTransactionResponse) |  |
 | VerifyTransactionRoot | [VerifyTransactionRootRequest](#phoenix.VerifyTransactionRootRequest) | [VerifyTransactionRootResponse](#phoenix.VerifyTransactionRootResponse) |  |
-| StoreTransactions | [StoreTransactionsRequest](#phoenix.StoreTransactionsRequest) | [StoreTransactionsResponse](#phoenix.StoreTransactionsResponse) |  |
-| GetFee | [Transaction](#phoenix.Transaction) | [GetFeeResponse](#phoenix.GetFeeResponse) |  |
-| SetFeePk | [SetFeePkRequest](#phoenix.SetFeePkRequest) | [SetFeePkResponse](#phoenix.SetFeePkResponse) |  |
+| StoreTransactions | [StoreTransactionsRequest](#phoenix.StoreTransactionsRequest) | [Scalar](#phoenix.Scalar) |  |
+| SetFeePk | [SetFeePkRequest](#phoenix.SetFeePkRequest) | [Transaction](#phoenix.Transaction) |  |
 
 ## transaction.proto
 
@@ -203,6 +168,9 @@
 | ----- | ---- | ----- | ----------- |
 | inputs | [TransactionInput](#phoenix.TransactionInput) | repeated |  |
 | outputs | [TransactionOutput](#phoenix.TransactionOutput) | repeated |  |
+| fee | [TransactionOutput](#phoenix.TransactionOutput) |  |  |
+| r1cs | [bytes](#bytes) |  |  |
+| commitments | [CompressedPoint](#phoenix.CompressedPoint) | repeated |  |
 
 ### TransactionInput
 
@@ -218,23 +186,3 @@
 | note_type | [NoteType](#phoenix.NoteType) |  |  |
 | pk | [PublicKey](#phoenix.PublicKey) |  |  |
 | value | [uint64](#uint64) |  |  |
-
-## Scalar Value Types
-
-| .proto Type | Notes | C++ Type | Java Type | Python Type |
-| ----------- | ----- | -------- | --------- | ----------- |
-| double |  | double | double | float |
-| float |  | float | float | float |
-| int32 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead. | int32 | int | int |
-| int64 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead. | int64 | long | int/long |
-| uint32 | Uses variable-length encoding. | uint32 | int | int/long |
-| uint64 | Uses variable-length encoding. | uint64 | long | int/long |
-| sint32 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s. | int32 | int | int |
-| sint64 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s. | int64 | long | int/long |
-| fixed32 | Always four bytes. More efficient than uint32 if values are often greater than 2^28. | uint32 | int | int |
-| fixed64 | Always eight bytes. More efficient than uint64 if values are often greater than 2^56. | uint64 | long | int/long |
-| sfixed32 | Always four bytes. | int32 | int | int |
-| sfixed64 | Always eight bytes. | int64 | long | int/long |
-| bool |  | bool | boolean | boolean |
-| string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String | str/unicode |
-| bytes | May contain any arbitrary sequence of bytes. | string | ByteString | str |
