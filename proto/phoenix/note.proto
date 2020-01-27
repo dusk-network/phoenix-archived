@@ -8,13 +8,20 @@ enum NoteType {
   OBFUSCATED = 1;
 }
 
+enum InputOutput {
+  INPUT = 0;
+  OUTPUT = 1;
+}
+
 message Idx { uint64 pos = 1; }
+
+message Nullifier { Scalar h = 1; }
 
 message Note {
   NoteType note_type = 1;
   Idx pos = 2;
   uint64 value = 3;
-  bool unspent = 4;
+  InputOutput io = 4;
   Nonce nonce = 5;
   CompressedPoint r_g = 6;
   CompressedPoint pk_r = 7;

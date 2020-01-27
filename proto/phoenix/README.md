@@ -15,11 +15,17 @@
 - [note.proto](#note.proto)
     - [Idx](#phoenix.Idx)
     - [Note](#phoenix.Note)
+    - [Nullifier](#phoenix.Nullifier)
+    - [InputOutput](#phoenix.InputOutput)
     - [NoteType](#phoenix.NoteType)
 
 - [phoenix.proto](#phoenix.proto)
     - [FetchDecryptedNoteRequest](#phoenix.FetchDecryptedNoteRequest)
     - [KeysResponse](#phoenix.KeysResponse)
+    - [NullifierRequest](#phoenix.NullifierRequest)
+    - [NullifierResponse](#phoenix.NullifierResponse)
+    - [NullifierStatusRequest](#phoenix.NullifierStatusRequest)
+    - [NullifierStatusResponse](#phoenix.NullifierStatusResponse)
     - [SetFeePkRequest](#phoenix.SetFeePkRequest)
     - [StoreTransactionsRequest](#phoenix.StoreTransactionsRequest)
     - [VerifyTransactionResponse](#phoenix.VerifyTransactionResponse)
@@ -81,8 +87,6 @@
 
 ### Idx
 
-
-
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | pos | [uint64](#uint64) |  |  |
@@ -94,12 +98,25 @@
 | note_type | [NoteType](#phoenix.NoteType) |  |  |
 | pos | [Idx](#phoenix.Idx) |  |  |
 | value | [uint64](#uint64) |  |  |
-| unspent | [bool](#bool) |  |  |
+| io | [InputOutput](#phoenix.InputOutput) |  |  |
 | nonce | [Nonce](#phoenix.Nonce) |  |  |
 | r_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | commitment | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | blinding_factor | [bytes](#bytes) |  |  |
+
+### Nullifier
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| h | [Scalar](#phoenix.Scalar) |  |  |
+
+### InputOutput
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| INPUT | 0 |  |
+| OUTPUT | 1 |  |
 
 ### NoteType
 
@@ -123,6 +140,31 @@
 | ----- | ---- | ----- | ----------- |
 | vk | [ViewKey](#phoenix.ViewKey) |  |  |
 | pk | [PublicKey](#phoenix.PublicKey) |  |  |
+
+### NullifierRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| note | [Note](#phoenix.Note) |  |  |
+| sk | [SecretKey](#phoenix.SecretKey) |  |  |
+
+### NullifierResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| nullifier | [Nullifier](#phoenix.Nullifier) |  |  |
+
+### NullifierStatusRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| nullifier | [Nullifier](#phoenix.Nullifier) |  |  |
+
+### NullifierStatusResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| unspent | [bool](#bool) |  |  |
 
 ### SetFeePkRequest
 
@@ -153,6 +195,8 @@
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | Keys | [SecretKey](#phoenix.SecretKey) | [KeysResponse](#phoenix.KeysResponse) |  |
+| Nullifier | [NullifierRequest](#phoenix.NullifierRequest) | [NullifierResponse](#phoenix.NullifierResponse) |  |
+| NullifierStatus | [NullifierStatusRequest](#phoenix.NullifierStatusRequest) | [NullifierStatusResponse](#phoenix.NullifierStatusResponse) |  |
 | FetchNote | [Idx](#phoenix.Idx) | [Note](#phoenix.Note) |  |
 | FetchDecryptedNote | [FetchDecryptedNoteRequest](#phoenix.FetchDecryptedNoteRequest) | [Note](#phoenix.Note) |  |
 | VerifyTransaction | [Transaction](#phoenix.Transaction) | [VerifyTransactionResponse](#phoenix.VerifyTransactionResponse) |  |
