@@ -41,5 +41,5 @@ message DecryptedNote {
   CompressedPoint r_g = 6;
   CompressedPoint pk_r = 7;
   CompressedPoint commitment = 8;
-  CompressedPoint blinding_factor = 9;
+  Scalar blinding_factor = 9;
 }

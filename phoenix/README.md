@@ -98,7 +98,7 @@
 | r_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | commitment | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
-| blinding_factor | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
+| blinding_factor | [Scalar](#phoenix.Scalar) |  |  |
 
 ### Idx
 
@@ -246,4 +246,4 @@
 | note | [Note](#phoenix.Note) |  |  |
 | pk | [PublicKey](#phoenix.PublicKey) |  |  |
 | value | [uint64](#uint64) |  |  |
-| blinding_factor | [Scalar](#uint64) |  |  |
+| blinding_factor | [Scalar](#phoenix.Scalar) |  |  |
