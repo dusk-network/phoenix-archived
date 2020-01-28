@@ -243,6 +243,6 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| note_type | [NoteType](#phoenix.NoteType) |  |  |
+| note | [Note](#phoenix.Note) |  |  |
 | pk | [PublicKey](#phoenix.PublicKey) |  |  |
 | value | [uint64](#uint64) |  |  |
