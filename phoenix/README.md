@@ -13,6 +13,7 @@
     - [ViewKey](#phoenix.ViewKey)
 
 - [note.proto](#note.proto)
+    - [DecryptedNote](#phoenix.DecryptedNote)
     - [Idx](#phoenix.Idx)
     - [Note](#phoenix.Note)
     - [Nullifier](#phoenix.Nullifier)
@@ -20,7 +21,7 @@
     - [NoteType](#phoenix.NoteType)
 
 - [phoenix.proto](#phoenix.proto)
-    - [FetchDecryptedNoteRequest](#phoenix.FetchDecryptedNoteRequest)
+    - [DecryptNoteRequest](#phoenix.DecryptNoteRequest)
     - [KeysResponse](#phoenix.KeysResponse)
     - [NullifierRequest](#phoenix.NullifierRequest)
     - [NullifierResponse](#phoenix.NullifierResponse)
@@ -85,6 +86,20 @@
 
 ## note.proto
 
+### DecryptedNote
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| note_type | [NoteType](#phoenix.NoteType) |  |  |
+| pos | [Idx](#phoenix.Idx) |  |  |
+| value | [uint64](#uint64) |  |  |
+| io | [InputOutput](#phoenix.InputOutput) |  |  |
+| nonce | [Nonce](#phoenix.Nonce) |  |  |
+| r_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
+| pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
+| commitment | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
+| blinding_factor | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
+
 ### Idx
 
 | Field | Type | Label | Description |
@@ -97,13 +112,13 @@
 | ----- | ---- | ----- | ----------- |
 | note_type | [NoteType](#phoenix.NoteType) |  |  |
 | pos | [Idx](#phoenix.Idx) |  |  |
-| value | [uint64](#uint64) |  |  |
 | io | [InputOutput](#phoenix.InputOutput) |  |  |
 | nonce | [Nonce](#phoenix.Nonce) |  |  |
 | r_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | commitment | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
-| blinding_factor | [bytes](#bytes) |  |  |
+| encrypted_blinding_factor | [bytes](#bytes) |  |  |
+| transparent_value | [uint64](#uint64) |  |  |
 | encrypted_value | [bytes](#bytes) |  |  |
 
 ### Nullifier
@@ -128,11 +143,11 @@
 
 ## phoenix.proto
 
-### FetchDecryptedNoteRequest
+### DecryptNoteRequest
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| pos | [Idx](#phoenix.Idx) |  |  |
+| note | [Note](#phoenix.Note) |  |  |
 | vk | [ViewKey](#phoenix.ViewKey) |  |  |
 
 ### KeysResponse
@@ -199,7 +214,7 @@
 | Nullifier | [NullifierRequest](#phoenix.NullifierRequest) | [NullifierResponse](#phoenix.NullifierResponse) |  |
 | NullifierStatus | [NullifierStatusRequest](#phoenix.NullifierStatusRequest) | [NullifierStatusResponse](#phoenix.NullifierStatusResponse) |  |
 | FetchNote | [Idx](#phoenix.Idx) | [Note](#phoenix.Note) |  |
-| FetchDecryptedNote | [FetchDecryptedNoteRequest](#phoenix.FetchDecryptedNoteRequest) | [Note](#phoenix.Note) |  |
+| DecryptNote | [DecryptNoteRequest](#phoenix.DecryptNoteRequest) | [DecryptedNote](#phoenix.DecryptedNote) |  |
 | VerifyTransaction | [Transaction](#phoenix.Transaction) | [VerifyTransactionResponse](#phoenix.VerifyTransactionResponse) |  |
 | VerifyTransactionRoot | [VerifyTransactionRootRequest](#phoenix.VerifyTransactionRootRequest) | [VerifyTransactionRootResponse](#phoenix.VerifyTransactionRootResponse) |  |
 | StoreTransactions | [StoreTransactionsRequest](#phoenix.StoreTransactionsRequest) | [Scalar](#phoenix.Scalar) |  |
