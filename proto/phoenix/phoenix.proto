@@ -15,8 +15,8 @@ message NullifierResponse { Nullifier nullifier = 1; }
 message NullifierStatusRequest { Nullifier nullifier = 1; }
 message NullifierStatusResponse { bool unspent = 1; }
 
-message FetchDecryptedNoteRequest {
-  Idx pos = 1;
+message DecryptNoteRequest {
+  Note note = 1;
   ViewKey vk = 2;
 }
 
@@ -47,7 +47,7 @@ service Phoenix {
   rpc NullifierStatus(NullifierStatusRequest)
       returns (NullifierStatusResponse) {}
   rpc FetchNote(Idx) returns (Note) {}
-  rpc FetchDecryptedNote(FetchDecryptedNoteRequest) returns (Note) {}
+  rpc DecryptNote(DecryptNoteRequest) returns (DecryptedNote) {}
 
   rpc VerifyTransaction(Transaction) returns (VerifyTransactionResponse) {}
   rpc VerifyTransactionRoot(VerifyTransactionRootRequest)
