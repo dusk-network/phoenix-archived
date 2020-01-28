@@ -21,6 +21,21 @@ pub struct Transaction {
     commitments: Vec<CompressedRistretto>,
 }
 
+impl PartialEq for Transaction {
+    fn eq(&self, other: &Self) -> bool {
+        self.fee == other.fee
+            && self.items == other.items
+            && self.commitments == other.commitments
+            && self.r1cs.as_ref().map(|r| r.to_bytes()).unwrap_or_default()
+                == other
+                    .r1cs
+                    .as_ref()
+                    .map(|r| r.to_bytes())
+                    .unwrap_or_default()
+    }
+}
+impl Eq for Transaction {}
+
 impl Transaction {
     pub fn push(&mut self, item: TransactionItem) {
         self.items.push(item);

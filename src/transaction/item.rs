@@ -15,6 +15,18 @@ pub struct TransactionItem {
     pk: PublicKey,
 }
 
+impl PartialEq for TransactionItem {
+    fn eq(&self, other: &Self) -> bool {
+        self.value == other.value
+            && self.nullifier == other.nullifier
+            && self.blinding_factor == other.blinding_factor
+            && self.sk == other.sk
+            && self.pk == other.pk
+            && self.note.hash() == other.note.hash()
+    }
+}
+impl Eq for TransactionItem {}
+
 impl Clone for TransactionItem {
     fn clone(&self) -> Self {
         TransactionItem {
@@ -84,6 +96,10 @@ impl TransactionItem {
         &self.blinding_factor
     }
 
+    pub fn set_blinding_factor(&mut self, blinding_factor: Scalar) {
+        self.blinding_factor = blinding_factor;
+    }
+
     pub fn note_type(&self) -> NoteType {
         self.note.note()
     }
@@ -127,39 +143,41 @@ impl TransactionItem {
 impl TryFrom<rpc::TransactionOutput> for TransactionItem {
     type Error = Error;
 
-    fn try_from(item: rpc::TransactionOutput) -> Result<Self, Self::Error> {
-        let pk: PublicKey = item
+    fn try_from(txo: rpc::TransactionOutput) -> Result<Self, Self::Error> {
+        let pk: PublicKey = txo
             .pk
             .ok_or(Error::InvalidParameters)
             .and_then(|k| k.try_into())?;
 
-        let note: Box<dyn Note> = item.note.ok_or(Error::InvalidParameters)?.try_into()?;
+        let note: Box<dyn Note> = txo.note.ok_or(Error::InvalidParameters)?.try_into()?;
 
         let mut item = TransactionItem::default();
 
-        item.set_value(item.value);
+        item.set_value(txo.value);
         item.set_pk(pk);
         item.set_note(note);
+        item.set_blinding_factor(txo.blinding_factor.ok_or(Error::InvalidParameters)?.into());
 
         Ok(item)
     }
 }
 
-impl Into<rpc::TransactionInput> for TransactionItem {
-    fn into(self) -> rpc::TransactionInput {
+impl From<TransactionItem> for rpc::TransactionInput {
+    fn from(item: TransactionItem) -> rpc::TransactionInput {
         rpc::TransactionInput {
-            pos: Some(self.note().idx().clone()),
-            sk: self.sk.map(|sk| sk.into()),
+            pos: Some(item.note().idx().clone()),
+            sk: item.sk.map(|sk| sk.into()),
         }
     }
 }
 
-impl Into<rpc::TransactionOutput> for TransactionItem {
-    fn into(self) -> rpc::TransactionOutput {
+impl From<TransactionItem> for rpc::TransactionOutput {
+    fn from(item: TransactionItem) -> rpc::TransactionOutput {
         rpc::TransactionOutput {
-            note: Some(self.note().into()),
-            pk: Some(self.pk.into()),
-            value: self.value,
+            note: Some(item.note().into()),
+            pk: Some(item.pk.into()),
+            value: item.value,
+            blinding_factor: Some((*item.blinding_factor()).into()),
         }
     }
 }

@@ -296,7 +296,6 @@ fn rpc_transaction() {
     let proof = transaction.r1cs().cloned().unwrap();
     let commitments = transaction.commitments().clone();
 
-    let original_transaction = transaction.clone();
     let transaction: rpc::Transaction = transaction.into();
     let transaction = Transaction::try_from_rpc_transaction(&db, transaction).unwrap();
 
@@ -307,7 +306,7 @@ fn rpc_transaction() {
     assert_eq!(commitments, deserialized_commitments);
     assert_eq!(proof.to_bytes(), deserialized_proof.to_bytes());
 
-    //transaction.verify().unwrap();
+    transaction.verify().unwrap();
 
     assert_eq!(3, transaction.fee().value());
 }
@@ -363,8 +362,15 @@ fn create_output_rpc_note<N: Note + NoteGenerator>(
     pk: &PublicKey,
     value: u64,
 ) -> rpc::TransactionOutput {
-    let note = Some(N::output(pk, value).0.into());
+    let (note, blinding_factor) = N::output(pk, value);
+    let note = Some(note.into());
+    let blinding_factor = Some(blinding_factor.into());
     let pk = Some((*pk).into());
 
-    rpc::TransactionOutput { note, pk, value }
+    rpc::TransactionOutput {
+        note,
+        pk,
+        value,
+        blinding_factor,
+    }
 }
