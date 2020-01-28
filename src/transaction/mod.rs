@@ -231,6 +231,25 @@ impl Transaction {
         Ok(())
     }
 
+    pub fn try_from_rpc_io(
+        db: &Db,
+        inputs: Vec<rpc::TransactionInput>,
+        outputs: Vec<rpc::TransactionOutput>,
+    ) -> Result<Self, Error> {
+        let mut transaction = Transaction::default();
+
+        for i in inputs {
+            transaction.push(TransactionItem::try_from_rpc_transaction_input(db, i)?);
+        }
+        for o in outputs {
+            transaction.push(TransactionItem::try_from(o)?);
+        }
+
+        transaction.prove()?;
+
+        Ok(transaction)
+    }
+
     pub fn try_from_rpc_transaction(db: &Db, tx: rpc::Transaction) -> Result<Self, Error> {
         let mut transaction = Transaction::default();
 

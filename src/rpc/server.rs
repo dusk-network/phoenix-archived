@@ -14,6 +14,12 @@ pub struct Server {
     db: Db,
 }
 
+impl Server {
+    pub fn new(db: Db) -> Self {
+        Self { db }
+    }
+}
+
 #[tonic::async_trait]
 impl Phoenix for Server {
     async fn keys(
@@ -179,6 +185,20 @@ impl Phoenix for Server {
 
         let txo: rpc::TransactionOutput = txo.into();
         Ok(tonic::Response::new(txo))
+    }
+
+    async fn new_transaction(
+        &self,
+        request: tonic::Request<rpc::NewTransactionRequest>,
+    ) -> Result<tonic::Response<rpc::Transaction>, tonic::Status> {
+        let request = request.into_inner();
+
+        let transaction: rpc::Transaction =
+            Transaction::try_from_rpc_io(&self.db, request.inputs, request.outputs)
+                .map_err(error_to_tonic)?
+                .into();
+
+        Ok(tonic::Response::new(transaction))
     }
 
     async fn verify_transaction(
