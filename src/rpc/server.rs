@@ -54,7 +54,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::Idx>,
     ) -> Result<tonic::Response<rpc::Note>, tonic::Status> {
-        let idx: Idx = request.into_inner().into();
+        let idx: Idx = request.into_inner();
         let note = self
             .db
             .fetch_box_note(&idx)
