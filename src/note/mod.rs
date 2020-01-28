@@ -3,7 +3,10 @@ use crate::{
     PublicKey, R1CSProof, Scalar, SecretKey, TransactionItem, ViewKey,
 };
 
-use std::{convert::TryFrom, fmt::Debug};
+use std::{
+    convert::{TryFrom, TryInto},
+    fmt::Debug,
+};
 
 pub mod idx;
 pub mod nullifier;
@@ -182,11 +185,22 @@ impl TryFrom<i32> for NoteType {
     }
 }
 
-impl Into<rpc::Note> for Box<dyn Note> {
-    fn into(self) -> rpc::Note {
-        match self.note() {
-            NoteType::Transparent => Db::note_box_into::<TransparentNote>(self).into(),
-            NoteType::Obfuscated => Db::note_box_into::<ObfuscatedNote>(self).into(),
+impl From<Box<dyn Note>> for rpc::Note {
+    fn from(note: Box<dyn Note>) -> Self {
+        match note.note() {
+            NoteType::Transparent => Db::note_box_into::<TransparentNote>(note).into(),
+            NoteType::Obfuscated => Db::note_box_into::<ObfuscatedNote>(note).into(),
+        }
+    }
+}
+
+impl TryFrom<rpc::Note> for Box<dyn Note> {
+    type Error = Error;
+
+    fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
+        match note.note_type.try_into()? {
+            rpc::NoteType::Transparent => Ok(Box::new(TransparentNote::try_from(note)?)),
+            rpc::NoteType::Obfuscated => Ok(Box::new(ObfuscatedNote::try_from(note)?)),
         }
     }
 }

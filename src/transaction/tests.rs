@@ -363,12 +363,8 @@ fn create_output_rpc_note<N: Note + NoteGenerator>(
     pk: &PublicKey,
     value: u64,
 ) -> rpc::TransactionOutput {
-    let note_type = N::output(pk, value).0.note().into();
+    let note = Some(N::output(pk, value).0.into());
     let pk = Some((*pk).into());
 
-    rpc::TransactionOutput {
-        note_type,
-        pk,
-        value,
-    }
+    rpc::TransactionOutput { note, pk, value }
 }

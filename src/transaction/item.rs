@@ -64,6 +64,18 @@ impl TransactionItem {
         self.value
     }
 
+    pub fn set_value(&mut self, value: u64) {
+        self.value = value;
+    }
+
+    pub fn pk(&self) -> &PublicKey {
+        &self.pk
+    }
+
+    pub fn set_pk(&mut self, pk: PublicKey) {
+        self.pk = pk;
+    }
+
     pub fn idx(&self) -> &Idx {
         self.note.idx()
     }
@@ -82,6 +94,10 @@ impl TransactionItem {
 
     pub fn note(&self) -> Box<dyn Note> {
         self.note.box_clone()
+    }
+
+    pub fn set_note(&mut self, note: Box<dyn Note>) {
+        self.note = note;
     }
 
     pub fn nullifier(&self) -> &Nullifier {
@@ -116,18 +132,16 @@ impl TryFrom<rpc::TransactionOutput> for TransactionItem {
             .pk
             .ok_or(Error::InvalidParameters)
             .and_then(|k| k.try_into())?;
-        let note_type = NoteType::try_from(item.note_type)?;
 
-        match note_type {
-            NoteType::Transparent => {
-                let (note, blinding_factor) = TransparentNote::output(&pk, item.value);
-                Ok(note.to_transaction_output(item.value, blinding_factor, pk))
-            }
-            NoteType::Obfuscated => {
-                let (note, blinding_factor) = ObfuscatedNote::output(&pk, item.value);
-                Ok(note.to_transaction_output(item.value, blinding_factor, pk))
-            }
-        }
+        let note: Box<dyn Note> = item.note.ok_or(Error::InvalidParameters)?.try_into()?;
+
+        let mut item = TransactionItem::default();
+
+        item.set_value(item.value);
+        item.set_pk(pk);
+        item.set_note(note);
+
+        Ok(item)
     }
 }
 
@@ -143,7 +157,7 @@ impl Into<rpc::TransactionInput> for TransactionItem {
 impl Into<rpc::TransactionOutput> for TransactionItem {
     fn into(self) -> rpc::TransactionOutput {
         rpc::TransactionOutput {
-            note_type: self.note().note().into(),
+            note: Some(self.note().into()),
             pk: Some(self.pk.into()),
             value: self.value,
         }
