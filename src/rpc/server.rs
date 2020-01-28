@@ -1,6 +1,6 @@
 use crate::{
     rpc::{self, phoenix_server::Phoenix},
-    Db, Error, Idx, Note, NoteGenerator, PublicKey, Scalar, SecretKey, Transaction, ViewKey,
+    Db, Error, Idx, PublicKey, Scalar, SecretKey, Transaction, ViewKey,
 };
 
 use std::convert::TryInto;
@@ -36,6 +36,20 @@ impl Phoenix for Server {
         Ok(tonic::Response::new(keys))
     }
 
+    async fn nullifier(
+        &self,
+        request: tonic::Request<rpc::NullifierRequest>,
+    ) -> Result<tonic::Response<rpc::NullifierResponse>, tonic::Status> {
+        unimplemented!()
+    }
+
+    async fn nullifier_status(
+        &self,
+        request: tonic::Request<super::NullifierStatusRequest>,
+    ) -> Result<tonic::Response<super::NullifierStatusResponse>, tonic::Status> {
+        unimplemented!()
+    }
+
     async fn fetch_note(
         &self,
         request: tonic::Request<rpc::Idx>,
@@ -44,7 +58,7 @@ impl Phoenix for Server {
         let note = self
             .db
             .fetch_box_note(&idx)
-            .and_then(|note| note.rpc_note(Some(&self.db), None, None))
+            .and_then(|note| note.rpc_note(None))
             .map_err(error_to_tonic)?;
 
         Ok(tonic::Response::new(note))
@@ -65,7 +79,7 @@ impl Phoenix for Server {
         let note = self
             .db
             .fetch_box_note(&idx)
-            .and_then(|note| note.rpc_note(Some(&self.db), Some(&vk), None))
+            .and_then(|note| note.rpc_note(Some(&vk)))
             .map_err(error_to_tonic)?;
 
         Ok(tonic::Response::new(note))

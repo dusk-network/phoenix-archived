@@ -49,22 +49,10 @@ pub trait NoteGenerator: Sized + Note + TryFrom<rpc::Note> {
 
     /// RPC
     fn from_rpc_note(note: rpc::Note) -> Result<Box<dyn Note>, Error>;
-    fn to_rpc_note(
-        self,
-        db: Option<&Db>,
-        vk: Option<&ViewKey>,
-        nullifier: Option<&Nullifier>,
-    ) -> Result<rpc::Note, Error> {
+    fn to_rpc_note(self, vk: Option<&ViewKey>) -> Result<rpc::Note, Error> {
         let value = self.value(vk);
-        let unspent = if db.is_some() || nullifier.is_some() {
-            let db = db.ok_or(Error::InvalidParameters)?;
-            let nullifier = nullifier.ok_or(Error::InvalidParameters)?;
-
-            db.fetch_nullifier(nullifier)?.is_none()
-        } else {
-            false
-        };
-
+        let io: rpc::InputOutput = self.utxo().into();
+        let io = io.into();
         let note_type = self.note().into();
         let pos = Some(self.idx().clone());
         let nonce = Some((*self.nonce()).into());
@@ -77,7 +65,7 @@ pub trait NoteGenerator: Sized + Note + TryFrom<rpc::Note> {
             note_type,
             pos,
             value,
-            unspent,
+            io,
             nonce,
             r_g,
             pk_r,
@@ -153,22 +141,10 @@ pub trait Note: Debug + Send + Sync {
     }
 
     /// RPC
-    fn rpc_note(
-        &self,
-        db: Option<&Db>,
-        vk: Option<&ViewKey>,
-        nullifier: Option<&Nullifier>,
-    ) -> Result<rpc::Note, Error> {
+    fn rpc_note(&self, vk: Option<&ViewKey>) -> Result<rpc::Note, Error> {
         let value = self.value(vk);
-        let unspent = if db.is_some() || nullifier.is_some() {
-            let db = db.ok_or(Error::InvalidParameters)?;
-            let nullifier = nullifier.ok_or(Error::InvalidParameters)?;
-
-            db.fetch_nullifier(nullifier)?.is_none()
-        } else {
-            false
-        };
-
+        let io: rpc::InputOutput = self.utxo().into();
+        let io = io.into();
         let note_type = self.note().into();
         let pos = Some(self.idx().clone());
         let nonce = Some((*self.nonce()).into());
@@ -181,7 +157,7 @@ pub trait Note: Debug + Send + Sync {
             note_type,
             pos,
             value,
-            unspent,
+            io,
             nonce,
             r_g,
             pk_r,

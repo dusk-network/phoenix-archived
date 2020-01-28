@@ -4,7 +4,7 @@ use crate::{
     Scalar, Value, ViewKey,
 };
 
-use std::convert::TryFrom;
+use std::convert::{TryFrom, TryInto};
 
 use sha2::{Digest, Sha512};
 
@@ -170,14 +170,14 @@ impl TryFrom<rpc::Note> for TransparentNote {
     type Error = Error;
 
     fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
-        let utxo = unimplemented!();
-        let value = unimplemented!();
-        let nonce = unimplemented!();
-        let r_g = unimplemented!();
-        let pk_r = unimplemented!();
-        let idx = unimplemented!();
-        let commitment = unimplemented!();
-        let encrypted_blinding_factor = unimplemented!();
+        let utxo = rpc::InputOutput::try_from(note.io)?.into();
+        let value = note.value;
+        let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
+        let r_g = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
+        let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
+        let idx = note.pos.ok_or(Error::InvalidParameters)?.into();
+        let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
+        let encrypted_blinding_factor = note.blinding_factor;
 
         Ok(Self::new(
             utxo,

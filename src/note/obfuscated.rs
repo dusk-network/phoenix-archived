@@ -5,7 +5,7 @@ use crate::{
 };
 
 use std::cmp;
-use std::convert::TryFrom;
+use std::convert::{TryFrom, TryInto};
 
 use sha2::{Digest, Sha512};
 
@@ -191,6 +191,24 @@ impl TryFrom<rpc::Note> for ObfuscatedNote {
     type Error = Error;
 
     fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
-        unimplemented!()
+        let utxo = rpc::InputOutput::try_from(note.io)?.into();
+        let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
+        let r_g = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
+        let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
+        let idx = note.pos.ok_or(Error::InvalidParameters)?.into();
+        let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
+        let encrypted_value = unimplemented!();
+        let encrypted_blinding_factor = note.blinding_factor;
+
+        Ok(ObfuscatedNote::new(
+            utxo,
+            commitment,
+            nonce,
+            r_g,
+            pk_r,
+            idx,
+            encrypted_value,
+            encrypted_blinding_factor,
+        ))
     }
 }
