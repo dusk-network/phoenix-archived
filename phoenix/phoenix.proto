@@ -20,6 +20,17 @@ message DecryptNoteRequest {
   ViewKey vk = 2;
 }
 
+message NewTransactionInputRequest {
+  Idx pos = 1;
+  SecretKey sk = 2;
+}
+
+message NewTransactionOutputRequest {
+  NoteType note_type = 1;
+  PublicKey pk = 2;
+  uint64 value = 3;
+}
+
 message VerifyTransactionResponse {}
 
 message VerifyTransactionRootRequest {
@@ -48,6 +59,11 @@ service Phoenix {
       returns (NullifierStatusResponse) {}
   rpc FetchNote(Idx) returns (Note) {}
   rpc DecryptNote(DecryptNoteRequest) returns (DecryptedNote) {}
+
+  rpc NewTransactionInput(NewTransactionInputRequest)
+      returns (TransactionInput) {}
+  rpc NewTransactionOutput(NewTransactionOutputRequest)
+      returns (TransactionOutput) {}
 
   rpc VerifyTransaction(Transaction) returns (VerifyTransactionResponse) {}
   rpc VerifyTransactionRoot(VerifyTransactionRootRequest)
