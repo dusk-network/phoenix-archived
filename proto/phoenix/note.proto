@@ -27,4 +27,5 @@ message Note {
   CompressedPoint pk_r = 7;
   CompressedPoint commitment = 8;
   bytes blinding_factor = 9;
+  bytes encrypted_value = 10;
 }
