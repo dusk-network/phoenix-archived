@@ -23,6 +23,8 @@
 - [phoenix.proto](#phoenix.proto)
     - [DecryptNoteRequest](#phoenix.DecryptNoteRequest)
     - [KeysResponse](#phoenix.KeysResponse)
+    - [NewTransactionInputRequest](#phoenix.NewTransactionInputRequest)
+    - [NewTransactionOutputRequest](#phoenix.NewTransactionOutputRequest)
     - [NullifierRequest](#phoenix.NullifierRequest)
     - [NullifierResponse](#phoenix.NullifierResponse)
     - [NullifierStatusRequest](#phoenix.NullifierStatusRequest)
@@ -157,6 +159,21 @@
 | vk | [ViewKey](#phoenix.ViewKey) |  |  |
 | pk | [PublicKey](#phoenix.PublicKey) |  |  |
 
+### NewTransactionInputRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pos | [Idx](#phoenix.Idx) |  |  |
+| sk | [SecretKey](#phoenix.SecretKey) |  |  |
+
+### NewTransactionOutputRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| note_type | [NoteType](#phoenix.NoteType) |  |  |
+| pk | [PublicKey](#phoenix.PublicKey) |  |  |
+| value | [uint64](#uint64) |  |  |
+
 ### NullifierRequest
 
 | Field | Type | Label | Description |
@@ -215,6 +232,8 @@
 | NullifierStatus | [NullifierStatusRequest](#phoenix.NullifierStatusRequest) | [NullifierStatusResponse](#phoenix.NullifierStatusResponse) |  |
 | FetchNote | [Idx](#phoenix.Idx) | [Note](#phoenix.Note) |  |
 | DecryptNote | [DecryptNoteRequest](#phoenix.DecryptNoteRequest) | [DecryptedNote](#phoenix.DecryptedNote) |  |
+| NewTransactionInput | [NewTransactionInputRequest](#phoenix.NewTransactionInputRequest) | [TransactionInput](#phoenix.TransactionInput) |  |
+| NewTransactionOutput | [NewTransactionOutputRequest](#phoenix.NewTransactionOutputRequest) | [TransactionOutput](#phoenix.TransactionOutput) |  |
 | VerifyTransaction | [Transaction](#phoenix.Transaction) | [VerifyTransactionResponse](#phoenix.VerifyTransactionResponse) |  |
 | VerifyTransactionRoot | [VerifyTransactionRootRequest](#phoenix.VerifyTransactionRootRequest) | [VerifyTransactionRootResponse](#phoenix.VerifyTransactionRootResponse) |  |
 | StoreTransactions | [StoreTransactionsRequest](#phoenix.StoreTransactionsRequest) | [Scalar](#phoenix.Scalar) |  |
