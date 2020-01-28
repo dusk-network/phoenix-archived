@@ -1,6 +1,6 @@
 use crate::{
     rpc::{self, phoenix_server::Phoenix},
-    Db, Error, Idx, PublicKey, Scalar, SecretKey, Transaction, ViewKey,
+    Db, Error, Idx, PublicKey, Scalar, SecretKey, Transaction,
 };
 
 use std::convert::TryInto;
@@ -58,12 +58,20 @@ impl Phoenix for Server {
         let note = self
             .db
             .fetch_box_note(&idx)
-            .and_then(|note| note.rpc_note(None))
+            .map(|note| note.into())
             .map_err(error_to_tonic)?;
 
         Ok(tonic::Response::new(note))
     }
 
+    async fn decrypt_note(
+        &self,
+        _request: tonic::Request<rpc::DecryptNoteRequest>,
+    ) -> Result<tonic::Response<rpc::DecryptedNote>, tonic::Status> {
+        unimplemented!()
+    }
+
+    /*
     async fn fetch_decrypted_note(
         &self,
         request: tonic::Request<rpc::FetchDecryptedNoteRequest>,
@@ -84,6 +92,7 @@ impl Phoenix for Server {
 
         Ok(tonic::Response::new(note))
     }
+    */
 
     async fn verify_transaction(
         &self,

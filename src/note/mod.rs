@@ -17,7 +17,7 @@ pub use nullifier::Nullifier;
 pub use obfuscated::ObfuscatedNote;
 pub use transparent::TransparentNote;
 
-pub trait NoteGenerator: Sized + Note + TryFrom<rpc::Note> {
+pub trait NoteGenerator: Sized + Note + TryFrom<rpc::Note> + Into<rpc::Note> {
     /// Create a new phoenix note
     #[allow(clippy::trivially_copy_pass_by_ref)]
     fn input(db: &Db, idx: &Idx) -> Result<Self, Error>;
@@ -45,35 +45,6 @@ pub trait NoteGenerator: Sized + Note + TryFrom<rpc::Note> {
         self.set_utxo(NoteUtxoType::Output);
 
         TransactionItem::new(self, Nullifier::default(), value, blinding_factor, None, pk)
-    }
-
-    /// RPC
-    fn from_rpc_note(note: rpc::Note) -> Result<Box<dyn Note>, Error>;
-    fn to_rpc_note(self, vk: Option<&ViewKey>) -> Result<rpc::Note, Error> {
-        let value = self.value(vk);
-        let io: rpc::InputOutput = self.utxo().into();
-        let io = io.into();
-        let note_type = self.note().into();
-        let pos = Some(self.idx().clone());
-        let nonce = Some((*self.nonce()).into());
-        let r_g = Some((*self.r_g()).into());
-        let pk_r = Some((*self.pk_r()).into());
-        let commitment = Some((*self.commitment()).into());
-        let blinding_factor = self.raw_blinding_factor().clone();
-        let encrypted_value = self.encrypted_value().cloned().unwrap_or_default();
-
-        Ok(rpc::Note {
-            note_type,
-            pos,
-            value,
-            io,
-            nonce,
-            r_g,
-            pk_r,
-            commitment,
-            blinding_factor,
-            encrypted_value,
-        })
     }
 
     /// Attributes
@@ -142,34 +113,6 @@ pub trait Note: Debug + Send + Sync {
         (y, x)
     }
 
-    /// RPC
-    fn rpc_note(&self, vk: Option<&ViewKey>) -> Result<rpc::Note, Error> {
-        let value = self.value(vk);
-        let io: rpc::InputOutput = self.utxo().into();
-        let io = io.into();
-        let note_type = self.note().into();
-        let pos = Some(self.idx().clone());
-        let nonce = Some((*self.nonce()).into());
-        let r_g = Some((*self.r_g()).into());
-        let pk_r = Some((*self.pk_r()).into());
-        let commitment = Some((*self.commitment()).into());
-        let blinding_factor = self.raw_blinding_factor().clone();
-        let encrypted_value = self.encrypted_value().cloned().unwrap_or_default();
-
-        Ok(rpc::Note {
-            note_type,
-            pos,
-            value,
-            io,
-            nonce,
-            r_g,
-            pk_r,
-            commitment,
-            blinding_factor,
-            encrypted_value,
-        })
-    }
-
     /// Attributes
     fn hash(&self) -> Scalar;
     fn utxo(&self) -> NoteUtxoType;
@@ -182,7 +125,7 @@ pub trait Note: Debug + Send + Sync {
     fn encrypted_value(&self) -> Option<&Vec<u8>>;
     fn commitment(&self) -> &CompressedRistretto;
     fn blinding_factor(&self, vk: &ViewKey) -> Scalar;
-    fn raw_blinding_factor(&self) -> &Vec<u8>;
+    fn encrypted_blinding_factor(&self) -> &Vec<u8>;
     fn r_g(&self) -> &EdwardsPoint;
     fn pk_r(&self) -> &EdwardsPoint;
     fn sk_r(&self, sk: &SecretKey) -> Scalar {
@@ -235,6 +178,15 @@ impl TryFrom<i32> for NoteType {
             0 => Ok(NoteType::Transparent),
             1 => Ok(NoteType::Obfuscated),
             _ => Err(Error::InvalidParameters),
+        }
+    }
+}
+
+impl Into<rpc::Note> for Box<dyn Note> {
+    fn into(self) -> rpc::Note {
+        match self.note() {
+            NoteType::Transparent => Db::note_box_into::<TransparentNote>(self).into(),
+            NoteType::Obfuscated => Db::note_box_into::<ObfuscatedNote>(self).into(),
         }
     }
 }

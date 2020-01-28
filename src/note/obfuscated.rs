@@ -78,13 +78,6 @@ impl NoteGenerator for ObfuscatedNote {
 
         (note, blinding_factor)
     }
-
-    fn from_rpc_note(note: rpc::Note) -> Result<Box<dyn Note>, Error> {
-        let note = ObfuscatedNote::try_from(note)?;
-        let note = Box::new(note);
-
-        Ok(note)
-    }
 }
 
 impl Note for ObfuscatedNote {
@@ -171,7 +164,7 @@ impl Note for ObfuscatedNote {
         Scalar::from_bits(utils::safe_32_chunk(blinding_factor.as_slice()))
     }
 
-    fn raw_blinding_factor(&self) -> &Vec<u8> {
+    fn encrypted_blinding_factor(&self) -> &Vec<u8> {
         &self.encrypted_blinding_factor
     }
 
@@ -195,26 +188,24 @@ impl From<ObfuscatedNote> for rpc::Note {
     fn from(note: ObfuscatedNote) -> rpc::Note {
         let note_type = rpc::NoteType::Obfuscated.into();
         let pos = note.idx.into();
-        let value = 0;
         let io = rpc::InputOutput::from(note.utxo).into();
         let nonce = Some(note.nonce.into());
         let r_g = Some(note.r_g.into());
         let pk_r = Some(note.pk_r.into());
         let commitment = Some(note.commitment.into());
-        let blinding_factor = note.encrypted_blinding_factor;
-        let encrypted_value = note.encrypted_value;
+        let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        let value = Some(rpc::note::Value::EncryptedValue(note.encrypted_value));
 
         rpc::Note {
             note_type,
             pos,
-            value,
             io,
             nonce,
             r_g,
             pk_r,
             commitment,
-            blinding_factor,
-            encrypted_value,
+            encrypted_blinding_factor,
+            value,
         }
     }
 }
@@ -233,8 +224,12 @@ impl TryFrom<rpc::Note> for ObfuscatedNote {
         let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
         let idx = note.pos.ok_or(Error::InvalidParameters)?.into();
         let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
-        let encrypted_value = note.encrypted_value;
-        let encrypted_blinding_factor = note.blinding_factor;
+        let encrypted_blinding_factor = note.encrypted_blinding_factor;
+
+        let encrypted_value = match note.value.ok_or(Error::InvalidParameters)? {
+            rpc::note::Value::TransparentValue(_) => Err(Error::InvalidParameters),
+            rpc::note::Value::EncryptedValue(v) => Ok(v),
+        }?;
 
         Ok(ObfuscatedNote::new(
             utxo,

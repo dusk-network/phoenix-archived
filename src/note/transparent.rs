@@ -80,13 +80,6 @@ impl NoteGenerator for TransparentNote {
 
         (note, blinding_factor)
     }
-
-    fn from_rpc_note(note: rpc::Note) -> Result<Box<dyn Note>, Error> {
-        let note = TransparentNote::try_from(note)?;
-        let note = Box::new(note);
-
-        Ok(note)
-    }
 }
 
 impl Note for TransparentNote {
@@ -165,7 +158,7 @@ impl Note for TransparentNote {
         Scalar::from_bits(utils::safe_32_chunk(blinding_factor.as_slice()))
     }
 
-    fn raw_blinding_factor(&self) -> &Vec<u8> {
+    fn encrypted_blinding_factor(&self) -> &Vec<u8> {
         &self.encrypted_blinding_factor
     }
 }
@@ -174,26 +167,24 @@ impl From<TransparentNote> for rpc::Note {
     fn from(note: TransparentNote) -> rpc::Note {
         let note_type = rpc::NoteType::Transparent.into();
         let pos = note.idx.into();
-        let value = note.value;
         let io = rpc::InputOutput::from(note.utxo).into();
         let nonce = Some(note.nonce.into());
         let r_g = Some(note.r_g.into());
         let pk_r = Some(note.pk_r.into());
         let commitment = Some(note.commitment.into());
-        let blinding_factor = note.encrypted_blinding_factor;
-        let encrypted_value = vec![];
+        let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        let value = Some(rpc::note::Value::TransparentValue(note.value));
 
         rpc::Note {
             note_type,
             pos,
-            value,
             io,
             nonce,
             r_g,
             pk_r,
             commitment,
-            blinding_factor,
-            encrypted_value,
+            encrypted_blinding_factor,
+            value,
         }
     }
 }
@@ -207,13 +198,17 @@ impl TryFrom<rpc::Note> for TransparentNote {
         }
 
         let utxo = rpc::InputOutput::try_from(note.io)?.into();
-        let value = note.value;
         let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
         let r_g = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
         let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
         let idx = note.pos.ok_or(Error::InvalidParameters)?.into();
         let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
-        let encrypted_blinding_factor = note.blinding_factor;
+        let encrypted_blinding_factor = note.encrypted_blinding_factor;
+
+        let value = match note.value.ok_or(Error::InvalidParameters)? {
+            rpc::note::Value::TransparentValue(v) => Ok(v),
+            rpc::note::Value::EncryptedValue(_) => Err(Error::InvalidParameters),
+        }?;
 
         Ok(Self::new(
             utxo,
