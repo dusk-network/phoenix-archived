@@ -115,37 +115,18 @@ impl Phoenix for Server {
             .and_then(|vk| vk.try_into())
             .map_err(error_to_tonic)?;
 
-        unimplemented!()
-    }
-
-    /*
-    async fn fetch_decrypted_note(
-        &self,
-        request: tonic::Request<rpc::FetchDecryptedNoteRequest>,
-    ) -> Result<tonic::Response<rpc::Note>, tonic::Status> {
-        let request = request.into_inner();
-        let idx: Idx = request.pos.unwrap_or_default().into();
-        let vk: ViewKey = request
-            .vk
-            .unwrap_or_default()
-            .try_into()
-            .map_err(error_to_tonic)?;
-
-        let note = self
-            .db
-            .fetch_box_note(&idx)
-            .and_then(|note| note.rpc_note(Some(&vk)))
-            .map_err(error_to_tonic)?;
-
+        let note = note.rpc_decrypted_note(&vk);
         Ok(tonic::Response::new(note))
     }
-    */
 
     async fn verify_transaction(
         &self,
-        _request: tonic::Request<rpc::Transaction>,
+        request: tonic::Request<rpc::Transaction>,
     ) -> Result<tonic::Response<rpc::VerifyTransactionResponse>, tonic::Status> {
-        unimplemented!()
+        Transaction::try_from_rpc_transaction(&self.db, request.into_inner())
+            .and_then(|tx| tx.verify())
+            .map(|_| tonic::Response::new(rpc::VerifyTransactionResponse {}))
+            .map_err(error_to_tonic)
     }
 
     async fn verify_transaction_root(

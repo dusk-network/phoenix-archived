@@ -119,7 +119,7 @@ pub trait Note: Debug + Send + Sync {
         let r_g = Some((*self.r_g()).into());
         let pk_r = Some((*self.pk_r()).into());
         let commitment = Some((*self.commitment()).into());
-        let blinding_factor = unimplemented!(); //Some(self.blinding_factor(vk).into());
+        let blinding_factor = Some(self.blinding_factor(vk).into());
 
         rpc::DecryptedNote {
             note_type,
