@@ -152,6 +152,10 @@ impl Note for ObfuscatedNote {
         u64::from_le_bytes(v)
     }
 
+    fn encrypted_value(&self) -> Option<&Vec<u8>> {
+        Some(&self.encrypted_value)
+    }
+
     fn commitment(&self) -> &CompressedRistretto {
         &self.commitment
     }
@@ -187,17 +191,49 @@ impl Note for ObfuscatedNote {
     }
 }
 
+impl From<ObfuscatedNote> for rpc::Note {
+    fn from(note: ObfuscatedNote) -> rpc::Note {
+        let note_type = rpc::NoteType::Obfuscated.into();
+        let pos = note.idx.into();
+        let value = 0;
+        let io = rpc::InputOutput::from(note.utxo).into();
+        let nonce = Some(note.nonce.into());
+        let r_g = Some(note.r_g.into());
+        let pk_r = Some(note.pk_r.into());
+        let commitment = Some(note.commitment.into());
+        let blinding_factor = note.encrypted_blinding_factor;
+        let encrypted_value = note.encrypted_value;
+
+        rpc::Note {
+            note_type,
+            pos,
+            value,
+            io,
+            nonce,
+            r_g,
+            pk_r,
+            commitment,
+            blinding_factor,
+            encrypted_value,
+        }
+    }
+}
+
 impl TryFrom<rpc::Note> for ObfuscatedNote {
     type Error = Error;
 
     fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
+        if rpc::NoteType::try_from(note.note_type)? != NoteType::Obfuscated {
+            return Err(Error::InvalidParameters);
+        }
+
         let utxo = rpc::InputOutput::try_from(note.io)?.into();
         let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
         let r_g = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
         let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
         let idx = note.pos.ok_or(Error::InvalidParameters)?.into();
         let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
-        let encrypted_value = unimplemented!();
+        let encrypted_value = note.encrypted_value;
         let encrypted_blinding_factor = note.blinding_factor;
 
         Ok(ObfuscatedNote::new(

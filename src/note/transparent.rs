@@ -146,6 +146,10 @@ impl Note for TransparentNote {
         self.value
     }
 
+    fn encrypted_value(&self) -> Option<&Vec<u8>> {
+        None
+    }
+
     fn commitment(&self) -> &CompressedRistretto {
         &self.commitment
     }
@@ -166,10 +170,42 @@ impl Note for TransparentNote {
     }
 }
 
+impl From<TransparentNote> for rpc::Note {
+    fn from(note: TransparentNote) -> rpc::Note {
+        let note_type = rpc::NoteType::Transparent.into();
+        let pos = note.idx.into();
+        let value = note.value;
+        let io = rpc::InputOutput::from(note.utxo).into();
+        let nonce = Some(note.nonce.into());
+        let r_g = Some(note.r_g.into());
+        let pk_r = Some(note.pk_r.into());
+        let commitment = Some(note.commitment.into());
+        let blinding_factor = note.encrypted_blinding_factor;
+        let encrypted_value = vec![];
+
+        rpc::Note {
+            note_type,
+            pos,
+            value,
+            io,
+            nonce,
+            r_g,
+            pk_r,
+            commitment,
+            blinding_factor,
+            encrypted_value,
+        }
+    }
+}
+
 impl TryFrom<rpc::Note> for TransparentNote {
     type Error = Error;
 
     fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
+        if rpc::NoteType::try_from(note.note_type)? != NoteType::Transparent {
+            return Err(Error::InvalidParameters);
+        }
+
         let utxo = rpc::InputOutput::try_from(note.io)?.into();
         let value = note.value;
         let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;

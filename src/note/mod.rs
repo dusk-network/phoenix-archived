@@ -60,6 +60,7 @@ pub trait NoteGenerator: Sized + Note + TryFrom<rpc::Note> {
         let pk_r = Some((*self.pk_r()).into());
         let commitment = Some((*self.commitment()).into());
         let blinding_factor = self.raw_blinding_factor().clone();
+        let encrypted_value = self.encrypted_value().cloned().unwrap_or_default();
 
         Ok(rpc::Note {
             note_type,
@@ -71,6 +72,7 @@ pub trait NoteGenerator: Sized + Note + TryFrom<rpc::Note> {
             pk_r,
             commitment,
             blinding_factor,
+            encrypted_value,
         })
     }
 
@@ -152,6 +154,7 @@ pub trait Note: Debug + Send + Sync {
         let pk_r = Some((*self.pk_r()).into());
         let commitment = Some((*self.commitment()).into());
         let blinding_factor = self.raw_blinding_factor().clone();
+        let encrypted_value = self.encrypted_value().cloned().unwrap_or_default();
 
         Ok(rpc::Note {
             note_type,
@@ -163,6 +166,7 @@ pub trait Note: Debug + Send + Sync {
             pk_r,
             commitment,
             blinding_factor,
+            encrypted_value,
         })
     }
 
@@ -175,6 +179,7 @@ pub trait Note: Debug + Send + Sync {
     fn nonce(&self) -> &Nonce;
     fn set_idx(&mut self, idx: Idx);
     fn value(&self, vk: Option<&ViewKey>) -> u64;
+    fn encrypted_value(&self) -> Option<&Vec<u8>>;
     fn commitment(&self) -> &CompressedRistretto;
     fn blinding_factor(&self, vk: &ViewKey) -> Scalar;
     fn raw_blinding_factor(&self) -> &Vec<u8>;

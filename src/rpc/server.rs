@@ -38,14 +38,14 @@ impl Phoenix for Server {
 
     async fn nullifier(
         &self,
-        request: tonic::Request<rpc::NullifierRequest>,
+        _request: tonic::Request<rpc::NullifierRequest>,
     ) -> Result<tonic::Response<rpc::NullifierResponse>, tonic::Status> {
         unimplemented!()
     }
 
     async fn nullifier_status(
         &self,
-        request: tonic::Request<super::NullifierStatusRequest>,
+        _request: tonic::Request<super::NullifierStatusRequest>,
     ) -> Result<tonic::Response<super::NullifierStatusResponse>, tonic::Status> {
         unimplemented!()
     }
@@ -87,21 +87,21 @@ impl Phoenix for Server {
 
     async fn verify_transaction(
         &self,
-        request: tonic::Request<rpc::Transaction>,
+        _request: tonic::Request<rpc::Transaction>,
     ) -> Result<tonic::Response<rpc::VerifyTransactionResponse>, tonic::Status> {
         unimplemented!()
     }
 
     async fn verify_transaction_root(
         &self,
-        request: tonic::Request<rpc::VerifyTransactionRootRequest>,
+        _request: tonic::Request<rpc::VerifyTransactionRootRequest>,
     ) -> Result<tonic::Response<rpc::VerifyTransactionRootResponse>, tonic::Status> {
         unimplemented!()
     }
 
     async fn store_transactions(
         &self,
-        request: tonic::Request<rpc::StoreTransactionsRequest>,
+        _request: tonic::Request<rpc::StoreTransactionsRequest>,
     ) -> Result<tonic::Response<rpc::Scalar>, tonic::Status> {
         unimplemented!()
     }
