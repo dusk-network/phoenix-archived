@@ -31,6 +31,11 @@ message NewTransactionOutputRequest {
   uint64 value = 3;
 }
 
+message NewTransactionRequest {
+  repeated TransactionInput inputs = 1;
+  repeated TransactionOutput outputs = 2;
+}
+
 message VerifyTransactionResponse {}
 
 message VerifyTransactionRootRequest {
@@ -64,6 +69,7 @@ service Phoenix {
       returns (TransactionInput) {}
   rpc NewTransactionOutput(NewTransactionOutputRequest)
       returns (TransactionOutput) {}
+  rpc NewTransaction(NewTransactionRequest) returns (Transaction) {}
 
   rpc VerifyTransaction(Transaction) returns (VerifyTransactionResponse) {}
   rpc VerifyTransactionRoot(VerifyTransactionRootRequest)
