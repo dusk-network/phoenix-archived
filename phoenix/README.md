@@ -246,3 +246,4 @@
 | note | [Note](#phoenix.Note) |  |  |
 | pk | [PublicKey](#phoenix.PublicKey) |  |  |
 | value | [uint64](#uint64) |  |  |
+| blinding_factor | [Scalar](#uint64) |  |  |
