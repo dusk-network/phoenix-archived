@@ -11,7 +11,7 @@ message TransactionInput {
 }
 
 message TransactionOutput {
-  NoteType note_type = 1;
+  Note note = 1;
   PublicKey pk = 2;
   uint64 value = 3;
 }
