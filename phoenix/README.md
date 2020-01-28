@@ -25,6 +25,7 @@
     - [KeysResponse](#phoenix.KeysResponse)
     - [NewTransactionInputRequest](#phoenix.NewTransactionInputRequest)
     - [NewTransactionOutputRequest](#phoenix.NewTransactionOutputRequest)
+    - [NewTransactionRequest](#phoenix.NewTransactionRequest)
     - [NullifierRequest](#phoenix.NullifierRequest)
     - [NullifierResponse](#phoenix.NullifierResponse)
     - [NullifierStatusRequest](#phoenix.NullifierStatusRequest)
@@ -174,6 +175,13 @@
 | pk | [PublicKey](#phoenix.PublicKey) |  |  |
 | value | [uint64](#uint64) |  |  |
 
+### NewTransactionRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| inputs | [TransactionInput](#phoenix.TransactionInput) | repeated |  |
+| outputs | [TransactionOutput](#phoenix.TransactionOutput) | repeated |  |
+
 ### NullifierRequest
 
 | Field | Type | Label | Description |
@@ -234,6 +242,7 @@
 | DecryptNote | [DecryptNoteRequest](#phoenix.DecryptNoteRequest) | [DecryptedNote](#phoenix.DecryptedNote) |  |
 | NewTransactionInput | [NewTransactionInputRequest](#phoenix.NewTransactionInputRequest) | [TransactionInput](#phoenix.TransactionInput) |  |
 | NewTransactionOutput | [NewTransactionOutputRequest](#phoenix.NewTransactionOutputRequest) | [TransactionOutput](#phoenix.TransactionOutput) |  |
+| NewTransaction | [NewTransactionRequest](#phoenix.NewTransactionRequest) | [Transaction](#phoenix.Transaction) |  |
 | VerifyTransaction | [Transaction](#phoenix.Transaction) | [VerifyTransactionResponse](#phoenix.VerifyTransactionResponse) |  |
 | VerifyTransactionRoot | [VerifyTransactionRootRequest](#phoenix.VerifyTransactionRootRequest) | [VerifyTransactionRootResponse](#phoenix.VerifyTransactionRootResponse) |  |
 | StoreTransactions | [StoreTransactionsRequest](#phoenix.StoreTransactionsRequest) | [Scalar](#phoenix.Scalar) |  |
