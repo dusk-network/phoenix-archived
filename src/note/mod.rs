@@ -93,18 +93,44 @@ pub trait Note: Debug + Send + Sync {
     }
 
     /// Nullifier handle
-    fn generate_nullifier(&self, _sk_r: &SecretKey) -> Nullifier {
+    fn generate_nullifier(&self, _sk: &SecretKey) -> Nullifier {
         // TODO - Create a secure nullifier
-        Nullifier::new(self.idx().pos)
+        Nullifier::new(self.idx().pos.into())
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
     fn validate_nullifier(&self, nullifier: &Nullifier) -> Result<(), Error> {
         // TODO - Validate the nullifier securely
-        if nullifier.point() == self.idx().pos {
+        if nullifier.x == self.idx().pos.into() {
             Ok(())
         } else {
             Err(Error::Generic)
+        }
+    }
+
+    fn rpc_decrypted_note(&self, vk: &ViewKey) -> rpc::DecryptedNote {
+        let note_type: rpc::NoteType = self.note().into();
+        let note_type = note_type.into();
+        let pos = Some((self.idx().clone()).into());
+        let value = self.value(Some(vk));
+        let io: rpc::InputOutput = self.utxo().into();
+        let io = io.into();
+        let nonce = Some((*self.nonce()).into());
+        let r_g = Some((*self.r_g()).into());
+        let pk_r = Some((*self.pk_r()).into());
+        let commitment = Some((*self.commitment()).into());
+        let blinding_factor = unimplemented!(); //Some(self.blinding_factor(vk).into());
+
+        rpc::DecryptedNote {
+            note_type,
+            pos,
+            value,
+            io,
+            nonce,
+            r_g,
+            pk_r,
+            commitment,
+            blinding_factor,
         }
     }
 

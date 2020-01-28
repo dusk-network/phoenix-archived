@@ -1,6 +1,6 @@
 use crate::{
     rpc::{self, phoenix_server::Phoenix},
-    Db, Error, Idx, PublicKey, Scalar, SecretKey, Transaction,
+    Db, Error, Idx, Note, Nullifier, PublicKey, Scalar, SecretKey, Transaction, ViewKey,
 };
 
 use std::convert::TryInto;
@@ -38,16 +38,49 @@ impl Phoenix for Server {
 
     async fn nullifier(
         &self,
-        _request: tonic::Request<rpc::NullifierRequest>,
+        request: tonic::Request<rpc::NullifierRequest>,
     ) -> Result<tonic::Response<rpc::NullifierResponse>, tonic::Status> {
-        unimplemented!()
+        let request = request.into_inner();
+
+        let sk: SecretKey = request
+            .sk
+            .ok_or(Error::InvalidParameters)
+            .map_err(error_to_tonic)?
+            .into();
+        let note: Box<dyn Note> = request
+            .note
+            .ok_or(Error::InvalidParameters)
+            .and_then(|note| note.try_into())
+            .map_err(error_to_tonic)?;
+
+        let nullifier = note.generate_nullifier(&sk);
+        let response = rpc::NullifierResponse {
+            nullifier: Some(nullifier.into()),
+        };
+
+        Ok(tonic::Response::new(response))
     }
 
     async fn nullifier_status(
         &self,
-        _request: tonic::Request<super::NullifierStatusRequest>,
+        request: tonic::Request<super::NullifierStatusRequest>,
     ) -> Result<tonic::Response<super::NullifierStatusResponse>, tonic::Status> {
-        unimplemented!()
+        let request = request.into_inner();
+
+        let nullifier: Nullifier = request
+            .nullifier
+            .ok_or(Error::InvalidParameters)
+            .and_then(|n| n.try_into())
+            .map_err(error_to_tonic)?;
+
+        let unspent = self
+            .db
+            .fetch_nullifier(&nullifier)
+            .map(|r| r.is_none())
+            .map_err(error_to_tonic)?;
+
+        let response = rpc::NullifierStatusResponse { unspent };
+        Ok(tonic::Response::new(response))
     }
 
     async fn fetch_note(
@@ -66,8 +99,22 @@ impl Phoenix for Server {
 
     async fn decrypt_note(
         &self,
-        _request: tonic::Request<rpc::DecryptNoteRequest>,
+        request: tonic::Request<rpc::DecryptNoteRequest>,
     ) -> Result<tonic::Response<rpc::DecryptedNote>, tonic::Status> {
+        let request = request.into_inner();
+
+        let note: Box<dyn Note> = request
+            .note
+            .ok_or(Error::InvalidParameters)
+            .and_then(|note| note.try_into())
+            .map_err(error_to_tonic)?;
+
+        let vk: ViewKey = request
+            .vk
+            .ok_or(Error::InvalidParameters)
+            .and_then(|vk| vk.try_into())
+            .map_err(error_to_tonic)?;
+
         unimplemented!()
     }
 

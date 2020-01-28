@@ -1,6 +1,6 @@
 use crate::{
     rpc, utils, CompressedEdwardsY, CompressedRistretto, EdwardsPoint, Error, Nonce, NoteUtxoType,
-    RistrettoPoint, Scalar,
+    Nullifier, RistrettoPoint, Scalar,
 };
 
 use std::convert::{TryFrom, TryInto};
@@ -123,6 +123,25 @@ impl TryFrom<i32> for rpc::InputOutput {
             0 => Ok(rpc::InputOutput::Input),
             1 => Ok(rpc::InputOutput::Output),
             _ => Err(Error::InvalidParameters),
+        }
+    }
+}
+
+impl TryFrom<rpc::Nullifier> for Nullifier {
+    type Error = Error;
+
+    fn try_from(nullifier: rpc::Nullifier) -> Result<Self, Self::Error> {
+        nullifier
+            .h
+            .ok_or(Error::InvalidParameters)
+            .map(|x| Nullifier::new(x.into()))
+    }
+}
+
+impl From<Nullifier> for rpc::Nullifier {
+    fn from(nullifier: Nullifier) -> rpc::Nullifier {
+        rpc::Nullifier {
+            h: Some(nullifier.x.into()),
         }
     }
 }
