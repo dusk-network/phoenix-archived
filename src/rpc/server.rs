@@ -1,6 +1,7 @@
 use crate::{
     rpc::{self, phoenix_server::Phoenix},
-    Db, Error, Idx, Note, Nullifier, PublicKey, Scalar, SecretKey, Transaction, ViewKey,
+    Db, Error, Idx, Note, NoteGenerator, NoteType, Nullifier, ObfuscatedNote, PublicKey, Scalar,
+    SecretKey, Transaction, TransparentNote, ViewKey,
 };
 
 use std::convert::TryInto;
@@ -117,6 +118,67 @@ impl Phoenix for Server {
 
         let note = note.rpc_decrypted_note(&vk);
         Ok(tonic::Response::new(note))
+    }
+
+    async fn new_transaction_input(
+        &self,
+        request: tonic::Request<rpc::NewTransactionInputRequest>,
+    ) -> Result<tonic::Response<rpc::TransactionInput>, tonic::Status> {
+        let request = request.into_inner();
+
+        let idx: Idx = request
+            .pos
+            .ok_or(Error::InvalidParameters)
+            .map_err(error_to_tonic)?
+            .into();
+
+        let sk: SecretKey = request
+            .sk
+            .ok_or(Error::InvalidParameters)
+            .map_err(error_to_tonic)?
+            .into();
+
+        let note = self.db.fetch_box_note(&idx).map_err(error_to_tonic)?;
+        let txi = match note.note() {
+            NoteType::Transparent => {
+                Db::note_box_into::<TransparentNote>(note).to_transaction_input(sk)
+            }
+            NoteType::Obfuscated => {
+                Db::note_box_into::<ObfuscatedNote>(note).to_transaction_input(sk)
+            }
+        };
+
+        let txi: rpc::TransactionInput = txi.into();
+        Ok(tonic::Response::new(txi))
+    }
+
+    async fn new_transaction_output(
+        &self,
+        request: tonic::Request<rpc::NewTransactionOutputRequest>,
+    ) -> Result<tonic::Response<rpc::TransactionOutput>, tonic::Status> {
+        let request = request.into_inner();
+
+        let pk: PublicKey = request
+            .pk
+            .ok_or(Error::InvalidParameters)
+            .and_then(|pk| pk.try_into())
+            .map_err(error_to_tonic)?;
+
+        let note_type: rpc::NoteType = request.note_type.try_into().map_err(error_to_tonic)?;
+
+        let txo = match note_type.into() {
+            NoteType::Transparent => {
+                let (note, blinding_factor) = TransparentNote::output(&pk, request.value);
+                note.to_transaction_output(request.value, blinding_factor, pk)
+            }
+            NoteType::Obfuscated => {
+                let (note, blinding_factor) = ObfuscatedNote::output(&pk, request.value);
+                note.to_transaction_output(request.value, blinding_factor, pk)
+            }
+        };
+
+        let txo: rpc::TransactionOutput = txo.into();
+        Ok(tonic::Response::new(txo))
     }
 
     async fn verify_transaction(

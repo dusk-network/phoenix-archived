@@ -144,6 +144,7 @@ pub trait Note: Debug + Send + Sync {
 
     /// Attributes
     fn hash(&self) -> Scalar;
+    // TODO - This is not really a property of the note, but of the transaction item. Remove it.
     fn utxo(&self) -> NoteUtxoType;
     fn set_utxo(&mut self, utxo: NoteUtxoType);
     fn note(&self) -> NoteType;
