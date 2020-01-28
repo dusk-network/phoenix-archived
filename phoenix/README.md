@@ -104,6 +104,7 @@
 | pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | commitment | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | blinding_factor | [bytes](#bytes) |  |  |
+| encrypted_value | [bytes](#bytes) |  |  |
 
 ### Nullifier
 
