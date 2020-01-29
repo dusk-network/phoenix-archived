@@ -106,4 +106,14 @@ impl Db {
         // TODO - As a temporary solution until Kelvin is implemented, using very unsafe code
         unsafe { Box::into_raw(note).cast::<N>().read() }
     }
+
+    pub fn filter_all_notes(
+        &self,
+        filter: impl FnMut(&Box<dyn Note>) -> Option<Box<dyn Note>>,
+    ) -> Result<Vec<Box<dyn Note>>, Error> {
+        self.notes
+            .try_lock()
+            .map(|notes| notes.values().filter_map(filter).collect())
+            .map_err(|e| e.into())
+    }
 }

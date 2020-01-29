@@ -70,8 +70,8 @@ impl Phoenix for Server {
 
     async fn nullifier_status(
         &self,
-        request: tonic::Request<super::NullifierStatusRequest>,
-    ) -> Result<tonic::Response<super::NullifierStatusResponse>, tonic::Status> {
+        request: tonic::Request<rpc::NullifierStatusRequest>,
+    ) -> Result<tonic::Response<rpc::NullifierStatusResponse>, tonic::Status> {
         let request = request.into_inner();
 
         let nullifier: Nullifier = request
@@ -124,6 +124,58 @@ impl Phoenix for Server {
 
         let note = note.rpc_decrypted_note(&vk);
         Ok(tonic::Response::new(note))
+    }
+
+    async fn owned_notes(
+        &self,
+        request: tonic::Request<rpc::OwnedNotesRequest>,
+    ) -> Result<tonic::Response<rpc::OwnedNotesResponse>, tonic::Status> {
+        let request = request.into_inner();
+
+        let vk: ViewKey = request
+            .vk
+            .ok_or(Error::InvalidParameters)
+            .and_then(|vk| vk.try_into())
+            .map_err(error_to_tonic)?;
+
+        let notes: Vec<rpc::Note> = request
+            .notes
+            .into_iter()
+            .try_fold(vec![], |mut notes, note| {
+                let note: Box<dyn Note> = note.try_into()?;
+
+                if note.is_owned_by(&vk) {
+                    notes.push(note.into());
+                }
+
+                Ok(notes)
+            })
+            .map_err(error_to_tonic)?;
+
+        Ok(tonic::Response::new(rpc::OwnedNotesResponse { notes }))
+    }
+
+    async fn full_scan_owned_notes(
+        &self,
+        request: tonic::Request<rpc::ViewKey>,
+    ) -> Result<tonic::Response<rpc::OwnedNotesResponse>, tonic::Status> {
+        let vk: ViewKey = request.into_inner().try_into().map_err(error_to_tonic)?;
+
+        let notes: Vec<rpc::Note> = self
+            .db
+            .filter_all_notes(|note| {
+                if note.is_owned_by(&vk) {
+                    Some(note.box_clone())
+                } else {
+                    None
+                }
+            })
+            .map_err(error_to_tonic)?
+            .into_iter()
+            .map(|n| n.into())
+            .collect();
+
+        Ok(tonic::Response::new(rpc::OwnedNotesResponse { notes }))
     }
 
     async fn new_transaction_input(
@@ -220,9 +272,36 @@ impl Phoenix for Server {
 
     async fn store_transactions(
         &self,
-        _request: tonic::Request<rpc::StoreTransactionsRequest>,
-    ) -> Result<tonic::Response<rpc::Scalar>, tonic::Status> {
-        unimplemented!()
+        request: tonic::Request<rpc::StoreTransactionsRequest>,
+    ) -> Result<tonic::Response<rpc::StoreTransactionsResponse>, tonic::Status> {
+        let request = request.into_inner();
+        let mut transactions = vec![];
+
+        for tx in request.transactions {
+            transactions
+                .push(Transaction::try_from_rpc_transaction(&self.db, tx).map_err(error_to_tonic)?);
+        }
+
+        for tx in &transactions {
+            tx.verify().map_err(error_to_tonic)?;
+        }
+
+        let notes: Vec<rpc::Note> = self
+            .db
+            .store_bulk_transactions(transactions.as_slice())
+            .map_err(error_to_tonic)?
+            .iter()
+            .try_fold(vec![], |mut v, idx| {
+                v.push(self.db.fetch_box_note(idx)?.into());
+                Ok(v)
+            })
+            .map_err(error_to_tonic)?;
+
+        let root: rpc::Scalar = self.db.root().into();
+        let root = Some(root);
+
+        let response = rpc::StoreTransactionsResponse { notes, root };
+        Ok(tonic::Response::new(response))
     }
 
     async fn set_fee_pk(
