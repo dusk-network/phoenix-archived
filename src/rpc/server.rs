@@ -266,7 +266,7 @@ impl Phoenix for Server {
         let request = request.into_inner();
 
         let transaction: rpc::Transaction =
-            Transaction::try_from_rpc_io(&self.db, request.inputs, request.outputs)
+            Transaction::try_from_rpc_io(&self.db, request.fee, request.inputs, request.outputs)
                 .map_err(error_to_tonic)?
                 .into();
 

@@ -434,6 +434,7 @@ fn rpc_server_transaction_api() {
             rpc::NewTransactionRequest {
                 inputs: inputs.clone(),
                 outputs: outputs.clone(),
+                fee: 3,
             }
             .into_request(),
         ),
@@ -462,7 +463,14 @@ fn rpc_server_transaction_api() {
 
     // Outputs exceeds inputs, should fail
     assert!(block_on(
-        server.new_transaction(rpc::NewTransactionRequest { inputs, outputs }.into_request()),
+        server.new_transaction(
+            rpc::NewTransactionRequest {
+                inputs,
+                outputs,
+                fee: 3
+            }
+            .into_request()
+        ),
     )
     .is_err());
 }
