@@ -29,6 +29,15 @@ impl Phoenix for Server {
         Ok(tonic::Response::new(request.into_inner()))
     }
 
+    async fn generate_secret_key(
+        &self,
+        request: tonic::Request<rpc::GenerateSecretKeyRequest>,
+    ) -> Result<tonic::Response<rpc::SecretKey>, tonic::Status> {
+        let sk = SecretKey::from(request.into_inner().b);
+        let sk = rpc::SecretKey::from(sk);
+        Ok(tonic::Response::new(sk))
+    }
+
     async fn keys(
         &self,
         request: tonic::Request<rpc::SecretKey>,
