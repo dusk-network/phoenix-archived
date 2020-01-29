@@ -23,6 +23,7 @@
 - [phoenix.proto](#phoenix.proto)
     - [DecryptNoteRequest](#phoenix.DecryptNoteRequest)
     - [EchoMethod](#phoenix.EchoMethod)
+    - [GenerateSecretKeyRequest](#phoenix.GenerateSecretKeyRequest)
     - [KeysResponse](#phoenix.KeysResponse)
     - [NewTransactionInputRequest](#phoenix.NewTransactionInputRequest)
     - [NewTransactionOutputRequest](#phoenix.NewTransactionOutputRequest)
@@ -163,6 +164,12 @@
 | ----- | ---- | ----- | ----------- |
 | m | [string](#string) |  |  |
 
+### GenerateSecretKeyRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| b | [bytes](#bytes) |  |  |
+
 ### KeysResponse
 
 | Field | Type | Label | Description |
@@ -267,6 +274,7 @@
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | Echo | [EchoMethod](#phoenix.EchoMethod) | [EchoMethod](#phoenix.EchoMethod) |  |
+| GenerateSecretKey | [GenerateSecretKeyRequest](#phoenix.GenerateSecretKeyRequest) | [SecretKey](#phoenix.SecretKey) |  |
 | Keys | [SecretKey](#phoenix.SecretKey) | [KeysResponse](#phoenix.KeysResponse) |  |
 | Nullifier | [NullifierRequest](#phoenix.NullifierRequest) | [NullifierResponse](#phoenix.NullifierResponse) |  |
 | NullifierStatus | [NullifierStatusRequest](#phoenix.NullifierStatusRequest) | [NullifierStatusResponse](#phoenix.NullifierStatusResponse) |  |
