@@ -191,6 +191,7 @@
 | ----- | ---- | ----- | ----------- |
 | inputs | [TransactionInput](#phoenix.TransactionInput) | repeated |  |
 | outputs | [TransactionOutput](#phoenix.TransactionOutput) | repeated |  |
+| fee | [uint64](#uint64) |  |  |
 
 ### NullifierRequest
 
@@ -228,7 +229,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| notes | [Note](#phoenix.DecryptedNote) | repeated |  |
+| notes | [DecryptedNote](#phoenix.DecryptedNote) | repeated |  |
 
 ### SetFeePkRequest
 
