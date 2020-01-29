@@ -6,6 +6,8 @@ import "keys.proto";
 import "note.proto";
 import "transaction.proto";
 
+message EchoMethod { string m = 1; }
+
 message NullifierRequest {
   Note note = 1;
   SecretKey sk = 2;
@@ -68,6 +70,8 @@ message KeysResponse {
 }
 
 service Phoenix {
+  rpc Echo(EchoMethod) returns (EchoMethod) {}
+
   rpc Keys(SecretKey) returns (KeysResponse) {}
 
   rpc Nullifier(NullifierRequest) returns (NullifierResponse) {}

@@ -22,6 +22,7 @@
 
 - [phoenix.proto](#phoenix.proto)
     - [DecryptNoteRequest](#phoenix.DecryptNoteRequest)
+    - [EchoMethod](#phoenix.EchoMethod)
     - [KeysResponse](#phoenix.KeysResponse)
     - [NewTransactionInputRequest](#phoenix.NewTransactionInputRequest)
     - [NewTransactionOutputRequest](#phoenix.NewTransactionOutputRequest)
@@ -156,6 +157,12 @@
 | note | [Note](#phoenix.Note) |  |  |
 | vk | [ViewKey](#phoenix.ViewKey) |  |  |
 
+### EchoMethod
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| m | [string](#string) |  |  |
+
 ### KeysResponse
 
 | Field | Type | Label | Description |
@@ -258,6 +265,7 @@
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
+| Echo | [EchoMethod](#phoenix.EchoMethod) | [EchoMethod](#phoenix.EchoMethod) |  |
 | Keys | [SecretKey](#phoenix.SecretKey) | [KeysResponse](#phoenix.KeysResponse) |  |
 | Nullifier | [NullifierRequest](#phoenix.NullifierRequest) | [NullifierResponse](#phoenix.NullifierResponse) |  |
 | NullifierStatus | [NullifierStatusRequest](#phoenix.NullifierStatusRequest) | [NullifierStatusResponse](#phoenix.NullifierStatusResponse) |  |
