@@ -20,6 +20,13 @@ message DecryptNoteRequest {
   ViewKey vk = 2;
 }
 
+message OwnedNotesRequest {
+  ViewKey vk = 1;
+  repeated Note notes = 2;
+}
+
+message OwnedNotesResponse { repeated Note notes = 1; }
+
 message NewTransactionInputRequest {
   Idx pos = 1;
   SecretKey sk = 2;
@@ -45,6 +52,10 @@ message VerifyTransactionRootRequest {
 message VerifyTransactionRootResponse {}
 
 message StoreTransactionsRequest { repeated Transaction transactions = 1; }
+message StoreTransactionsResponse {
+  repeated Note notes = 1;
+  Scalar root = 2;
+}
 
 message SetFeePkRequest {
   Transaction transaction = 1;
@@ -64,16 +75,19 @@ service Phoenix {
       returns (NullifierStatusResponse) {}
   rpc FetchNote(Idx) returns (Note) {}
   rpc DecryptNote(DecryptNoteRequest) returns (DecryptedNote) {}
+  rpc OwnedNotes(OwnedNotesRequest) returns (OwnedNotesResponse) {}
+  rpc FullScanOwnedNotes(ViewKey) returns (OwnedNotesResponse) {}
 
   rpc NewTransactionInput(NewTransactionInputRequest)
       returns (TransactionInput) {}
   rpc NewTransactionOutput(NewTransactionOutputRequest)
       returns (TransactionOutput) {}
   rpc NewTransaction(NewTransactionRequest) returns (Transaction) {}
+  rpc SetFeePk(SetFeePkRequest) returns (Transaction) {}
 
   rpc VerifyTransaction(Transaction) returns (VerifyTransactionResponse) {}
   rpc VerifyTransactionRoot(VerifyTransactionRootRequest)
       returns (VerifyTransactionRootResponse) {}
-  rpc StoreTransactions(StoreTransactionsRequest) returns (Scalar) {}
-  rpc SetFeePk(SetFeePkRequest) returns (Transaction) {}
+  rpc StoreTransactions(StoreTransactionsRequest)
+      returns (StoreTransactionsResponse) {}
 }
