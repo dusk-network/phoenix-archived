@@ -238,14 +238,32 @@ impl Transaction {
     ) -> Result<Self, Error> {
         let mut transaction = Transaction::default();
 
+        let mut inputs_sum = 0;
+        let mut outputs_sum = 0;
+
         for i in inputs {
-            transaction.push(TransactionItem::try_from_rpc_transaction_input(db, i)?);
+            let input = TransactionItem::try_from_rpc_transaction_input(db, i)?;
+            inputs_sum += input.value();
+            transaction.push(input);
         }
         for o in outputs {
-            transaction.push(TransactionItem::try_from(o)?);
+            let output = TransactionItem::try_from(o)?;
+            outputs_sum += output.value();
+            transaction.push(output);
         }
 
+        if outputs_sum >= inputs_sum {
+            return Err(Error::InvalidParameters);
+        }
+
+        let pk = PublicKey::default();
+        let fee_value = inputs_sum - outputs_sum;
+        let (fee, blinding_factor) = TransparentNote::output(&PublicKey::default(), fee_value);
+        let fee = fee.to_transaction_output(fee_value, blinding_factor, pk);
+        transaction.set_fee(fee);
+
         transaction.prove()?;
+        transaction.verify()?;
 
         Ok(transaction)
     }
