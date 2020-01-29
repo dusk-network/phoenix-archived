@@ -30,8 +30,11 @@
     - [NullifierResponse](#phoenix.NullifierResponse)
     - [NullifierStatusRequest](#phoenix.NullifierStatusRequest)
     - [NullifierStatusResponse](#phoenix.NullifierStatusResponse)
+    - [OwnedNotesRequest](#phoenix.OwnedNotesRequest)
+    - [OwnedNotesResponse](#phoenix.OwnedNotesResponse)
     - [SetFeePkRequest](#phoenix.SetFeePkRequest)
     - [StoreTransactionsRequest](#phoenix.StoreTransactionsRequest)
+    - [StoreTransactionsResponse](#phoenix.StoreTransactionsResponse)
     - [VerifyTransactionResponse](#phoenix.VerifyTransactionResponse)
     - [VerifyTransactionRootRequest](#phoenix.VerifyTransactionRootRequest)
     - [VerifyTransactionRootResponse](#phoenix.VerifyTransactionRootResponse)
@@ -207,6 +210,19 @@
 | ----- | ---- | ----- | ----------- |
 | unspent | [bool](#bool) |  |  |
 
+### OwnedNotesRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vk | [ViewKey](#phoenix.ViewKey) |  |  |
+| notes | [Note](#phoenix.Note) | repeated |  |
+
+### OwnedNotesResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| notes | [Note](#phoenix.Note) | repeated |  |
+
 ### SetFeePkRequest
 
 | Field | Type | Label | Description |
@@ -219,6 +235,13 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | transactions | [Transaction](#phoenix.Transaction) | repeated |  |
+
+### StoreTransactionsResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| notes | [Note](#phoenix.Note) | repeated |  |
+| root | [Scalar](#phoenix.Scalar) |  |  |
 
 ### VerifyTransactionResponse
 
@@ -240,14 +263,15 @@
 | NullifierStatus | [NullifierStatusRequest](#phoenix.NullifierStatusRequest) | [NullifierStatusResponse](#phoenix.NullifierStatusResponse) |  |
 | FetchNote | [Idx](#phoenix.Idx) | [Note](#phoenix.Note) |  |
 | DecryptNote | [DecryptNoteRequest](#phoenix.DecryptNoteRequest) | [DecryptedNote](#phoenix.DecryptedNote) |  |
+| OwnedNotes | [OwnedNotesRequest](#phoenix.OwnedNotesRequest) | [OwnedNotesResponse](#phoenix.OwnedNotesResponse) |  |
+| FullScanOwnedNotes | [ViewKey](#phoenix.ViewKey) | [OwnedNotesResponse](#phoenix.OwnedNotesResponse) |  |
 | NewTransactionInput | [NewTransactionInputRequest](#phoenix.NewTransactionInputRequest) | [TransactionInput](#phoenix.TransactionInput) |  |
 | NewTransactionOutput | [NewTransactionOutputRequest](#phoenix.NewTransactionOutputRequest) | [TransactionOutput](#phoenix.TransactionOutput) |  |
 | NewTransaction | [NewTransactionRequest](#phoenix.NewTransactionRequest) | [Transaction](#phoenix.Transaction) |  |
+| SetFeePk | [SetFeePkRequest](#phoenix.SetFeePkRequest) | [Transaction](#phoenix.Transaction) |  |
 | VerifyTransaction | [Transaction](#phoenix.Transaction) | [VerifyTransactionResponse](#phoenix.VerifyTransactionResponse) |  |
 | VerifyTransactionRoot | [VerifyTransactionRootRequest](#phoenix.VerifyTransactionRootRequest) | [VerifyTransactionRootResponse](#phoenix.VerifyTransactionRootResponse) |  |
-| StoreTransactions | [StoreTransactionsRequest](#phoenix.StoreTransactionsRequest) | [Scalar](#phoenix.Scalar) |  |
-| SetFeePk | [SetFeePkRequest](#phoenix.SetFeePkRequest) | [Transaction](#phoenix.Transaction) |  |
-
+| StoreTransactions | [StoreTransactionsRequest](#phoenix.StoreTransactionsRequest) | [StoreTransactionsResponse](#phoenix.StoreTransactionsResponse) |  |
 ## transaction.proto
 
 ### Transaction
