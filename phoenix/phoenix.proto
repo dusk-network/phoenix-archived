@@ -27,7 +27,7 @@ message OwnedNotesRequest {
   repeated Note notes = 2;
 }
 
-message OwnedNotesResponse { repeated Note notes = 1; }
+message OwnedNotesResponse { repeated DecryptedNote notes = 1; }
 
 message NewTransactionInputRequest {
   Idx pos = 1;
