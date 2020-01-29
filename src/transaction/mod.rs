@@ -6,6 +6,8 @@ use crate::{
 
 use std::convert::TryFrom;
 
+use tracing::trace;
+
 pub use item::TransactionItem;
 
 pub mod item;
@@ -233,17 +235,31 @@ impl Transaction {
 
     pub fn try_from_rpc_io(
         db: &Db,
+        fee_value: u64,
         inputs: Vec<rpc::TransactionInput>,
         outputs: Vec<rpc::TransactionOutput>,
     ) -> Result<Self, Error> {
         let mut transaction = Transaction::default();
 
         for i in inputs {
-            transaction.push(TransactionItem::try_from_rpc_transaction_input(db, i)?);
+            let input = TransactionItem::try_from_rpc_transaction_input(db, i)?;
+            trace!("Pushing {} dusk as input to the transaction", input.value());
+            transaction.push(input);
         }
         for o in outputs {
-            transaction.push(TransactionItem::try_from(o)?);
+            let output = TransactionItem::try_from(o)?;
+            trace!(
+                "Pushing {} dusk as output to the transaction",
+                output.value()
+            );
+            transaction.push(output);
         }
+
+        let pk = PublicKey::default();
+        trace!("Pushing {} dusk as fee to the transaction", fee_value);
+        let (fee, blinding_factor) = TransparentNote::output(&PublicKey::default(), fee_value);
+        let fee = fee.to_transaction_output(fee_value, blinding_factor, pk);
+        transaction.set_fee(fee);
 
         transaction.prove()?;
 
