@@ -228,7 +228,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| notes | [Note](#phoenix.Note) | repeated |  |
+| notes | [Note](#phoenix.DecryptedNote) | repeated |  |
 
 ### SetFeePkRequest
 
