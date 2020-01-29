@@ -38,7 +38,7 @@ impl Db {
     }
 
     // TODO - Should be able to rollback state in case of failure
-    pub fn store_bulk(&self, transactions: &[Transaction]) -> Result<Vec<Idx>, Error> {
+    pub fn store_bulk_transactions(&self, transactions: &[Transaction]) -> Result<Vec<Idx>, Error> {
         let mut idx = vec![];
 
         for t in transactions {
