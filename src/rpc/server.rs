@@ -22,6 +22,13 @@ impl Server {
 
 #[tonic::async_trait]
 impl Phoenix for Server {
+    async fn echo(
+        &self,
+        request: tonic::Request<rpc::EchoMethod>,
+    ) -> Result<tonic::Response<rpc::EchoMethod>, tonic::Status> {
+        Ok(tonic::Response::new(request.into_inner()))
+    }
+
     async fn keys(
         &self,
         request: tonic::Request<rpc::SecretKey>,
