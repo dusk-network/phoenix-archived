@@ -145,14 +145,14 @@ impl Phoenix for Server {
             .and_then(|vk| vk.try_into())
             .map_err(error_to_tonic)?;
 
-        let notes: Vec<rpc::Note> = request
+        let notes: Vec<rpc::DecryptedNote> = request
             .notes
             .into_iter()
             .try_fold(vec![], |mut notes, note| {
                 let note: Box<dyn Note> = note.try_into()?;
 
                 if note.is_owned_by(&vk) {
-                    notes.push(note.into());
+                    notes.push(note.rpc_decrypted_note(&vk));
                 }
 
                 Ok(notes)
@@ -168,7 +168,7 @@ impl Phoenix for Server {
     ) -> Result<tonic::Response<rpc::OwnedNotesResponse>, tonic::Status> {
         let vk: ViewKey = request.into_inner().try_into().map_err(error_to_tonic)?;
 
-        let notes: Vec<rpc::Note> = self
+        let notes: Vec<rpc::DecryptedNote> = self
             .db
             .filter_all_notes(|note| {
                 if note.is_owned_by(&vk) {
@@ -179,7 +179,7 @@ impl Phoenix for Server {
             })
             .map_err(error_to_tonic)?
             .into_iter()
-            .map(|n| n.into())
+            .map(|n| n.rpc_decrypted_note(&vk))
             .collect();
 
         Ok(tonic::Response::new(rpc::OwnedNotesResponse { notes }))
