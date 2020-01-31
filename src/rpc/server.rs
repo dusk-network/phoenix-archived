@@ -6,6 +6,8 @@ use crate::{
 
 use std::convert::TryInto;
 
+use tracing::trace;
+
 fn error_to_tonic(e: Error) -> tonic::Status {
     e.into()
 }
@@ -26,6 +28,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::EchoMethod>,
     ) -> Result<tonic::Response<rpc::EchoMethod>, tonic::Status> {
+        trace!("Icoming echo request");
         Ok(tonic::Response::new(request.into_inner()))
     }
 
@@ -42,6 +45,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::SecretKey>,
     ) -> Result<tonic::Response<rpc::KeysResponse>, tonic::Status> {
+        trace!("Icoming keys request");
         let sk = request.into_inner();
 
         let a: Scalar = sk.a.unwrap_or_default().into();
@@ -63,6 +67,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::NullifierRequest>,
     ) -> Result<tonic::Response<rpc::NullifierResponse>, tonic::Status> {
+        trace!("Icoming nullifier request");
         let request = request.into_inner();
 
         let sk: SecretKey = request
@@ -88,6 +93,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::NullifierStatusRequest>,
     ) -> Result<tonic::Response<rpc::NullifierStatusResponse>, tonic::Status> {
+        trace!("Icoming nullifier status request");
         let request = request.into_inner();
 
         let nullifier: Nullifier = request
@@ -110,6 +116,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::Idx>,
     ) -> Result<tonic::Response<rpc::Note>, tonic::Status> {
+        trace!("Icoming fetch note request");
         let idx: Idx = request.into_inner();
         let note = self
             .db
@@ -124,6 +131,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::DecryptNoteRequest>,
     ) -> Result<tonic::Response<rpc::DecryptedNote>, tonic::Status> {
+        trace!("Icoming decrypt note request");
         let request = request.into_inner();
 
         let note: Box<dyn Note> = request
@@ -146,6 +154,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::OwnedNotesRequest>,
     ) -> Result<tonic::Response<rpc::OwnedNotesResponse>, tonic::Status> {
+        trace!("Icoming owned notes request");
         let request = request.into_inner();
 
         let vk: ViewKey = request
@@ -175,6 +184,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::ViewKey>,
     ) -> Result<tonic::Response<rpc::OwnedNotesResponse>, tonic::Status> {
+        trace!("Icoming full scan owned notes request");
         let vk: ViewKey = request.into_inner().try_into().map_err(error_to_tonic)?;
 
         let notes: Vec<rpc::DecryptedNote> = self
@@ -198,6 +208,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::NewTransactionInputRequest>,
     ) -> Result<tonic::Response<rpc::TransactionInput>, tonic::Status> {
+        trace!("Icoming new transaction input request");
         let request = request.into_inner();
 
         let idx: Idx = request
@@ -230,6 +241,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::NewTransactionOutputRequest>,
     ) -> Result<tonic::Response<rpc::TransactionOutput>, tonic::Status> {
+        trace!("Icoming new transaction output request");
         let request = request.into_inner();
 
         let pk: PublicKey = request
@@ -259,6 +271,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::NewTransactionRequest>,
     ) -> Result<tonic::Response<rpc::Transaction>, tonic::Status> {
+        trace!("Icoming new transaction request");
         let request = request.into_inner();
 
         let transaction: rpc::Transaction =
@@ -273,6 +286,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::Transaction>,
     ) -> Result<tonic::Response<rpc::VerifyTransactionResponse>, tonic::Status> {
+        trace!("Icoming verify transaction request");
         Transaction::try_from_rpc_transaction(&self.db, request.into_inner())
             .and_then(|tx| tx.verify())
             .map(|_| tonic::Response::new(rpc::VerifyTransactionResponse {}))
@@ -283,6 +297,7 @@ impl Phoenix for Server {
         &self,
         _request: tonic::Request<rpc::VerifyTransactionRootRequest>,
     ) -> Result<tonic::Response<rpc::VerifyTransactionRootResponse>, tonic::Status> {
+        trace!("Icoming verify transaction root request");
         unimplemented!()
     }
 
@@ -290,6 +305,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::StoreTransactionsRequest>,
     ) -> Result<tonic::Response<rpc::StoreTransactionsResponse>, tonic::Status> {
+        trace!("Icoming store transactions request");
         let request = request.into_inner();
         let mut transactions = vec![];
 
@@ -324,6 +340,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::SetFeePkRequest>,
     ) -> Result<tonic::Response<rpc::Transaction>, tonic::Status> {
+        trace!("Icoming set fee pk request");
         let request = request.into_inner();
 
         let transaction = request.transaction.unwrap_or_default();

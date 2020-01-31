@@ -262,6 +262,7 @@ impl Transaction {
         transaction.set_fee(fee);
 
         transaction.prove()?;
+        transaction.verify()?;
 
         Ok(transaction)
     }
