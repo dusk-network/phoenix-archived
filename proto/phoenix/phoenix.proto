@@ -8,6 +8,8 @@ import "transaction.proto";
 
 message EchoMethod { string m = 1; }
 
+message GenerateSecretKeyRequest { bytes b = 1; }
+
 message NullifierRequest {
   Note note = 1;
   SecretKey sk = 2;
@@ -27,7 +29,7 @@ message OwnedNotesRequest {
   repeated Note notes = 2;
 }
 
-message OwnedNotesResponse { repeated Note notes = 1; }
+message OwnedNotesResponse { repeated DecryptedNote notes = 1; }
 
 message NewTransactionInputRequest {
   Idx pos = 1;
@@ -43,6 +45,7 @@ message NewTransactionOutputRequest {
 message NewTransactionRequest {
   repeated TransactionInput inputs = 1;
   repeated TransactionOutput outputs = 2;
+  uint64 fee = 3;
 }
 
 message VerifyTransactionResponse {}
@@ -72,6 +75,7 @@ message KeysResponse {
 service Phoenix {
   rpc Echo(EchoMethod) returns (EchoMethod) {}
 
+  rpc GenerateSecretKey(GenerateSecretKeyRequest) returns (SecretKey) {}
   rpc Keys(SecretKey) returns (KeysResponse) {}
 
   rpc Nullifier(NullifierRequest) returns (NullifierResponse) {}
