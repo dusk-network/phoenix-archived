@@ -1,39 +1,97 @@
-use phoenix::{rpc, Db, NoteGenerator, Scalar, SecretKey, TransparentNote};
+use phoenix::{rpc, Db, NoteGenerator, ObfuscatedNote, SecretKey};
+
+use clap::{App, Arg, SubCommand};
 use tonic::transport::Server;
 use tracing::{info, warn};
 
+const NAME: Option<&'static str> = option_env!("CARGO_PKG_NAME");
+const VERSION: Option<&'static str> = option_env!("CARGO_PKG_VERSION");
+const AUTHORS: Option<&'static str> = option_env!("CARGO_PKG_AUTHORS");
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "127.0.0.1:8051".parse().unwrap();
+    let matches = App::new(NAME.unwrap())
+        .version(VERSION.unwrap())
+        .author(AUTHORS.unwrap())
+        .arg(
+            Arg::with_name("bind")
+                .short("b")
+                .long("bind")
+                .value_name("BIND")
+                .help("Bind the server to listen on the specified address")
+                .default_value("0.0.0.0:8051")
+                .takes_value(true)
+                .display_order(1),
+        )
+        .arg(
+            Arg::with_name("log-level")
+                .short("l")
+                .long("log-level")
+                .value_name("LOG")
+                .possible_values(&["error", "warn", "info", "debug", "trace"])
+                .default_value("info")
+                .help("Output log level")
+                .takes_value(true),
+        )
+        .subcommand(
+            SubCommand::with_name("note")
+                .about("Create a new unspent note on initialization. Usage: note <SEED> <VALUE>")
+                .arg(
+                    Arg::with_name("seed")
+                        .help("Seed of the secret key")
+                        .required(true),
+                )
+                .arg(
+                    Arg::with_name("value")
+                        .help("Value of the unspent note")
+                        .required(true),
+                ),
+        )
+        .get_matches();
+
+    let bind = matches.value_of("bind").unwrap();
+    let addr = bind.parse().unwrap();
+
+    let log = match matches
+        .value_of("log-level")
+        .expect("Failed parsing log-level arg")
+    {
+        "error" => tracing::Level::ERROR,
+        "warn" => tracing::Level::WARN,
+        "info" => tracing::Level::INFO,
+        "debug" => tracing::Level::DEBUG,
+        "trace" => tracing::Level::TRACE,
+        _ => unreachable!(),
+    };
 
     let subscriber = tracing_subscriber::fmt::Subscriber::builder()
-        .with_max_level(tracing::Level::TRACE)
+        .with_max_level(log)
         .finish();
     tracing::subscriber::set_global_default(subscriber)?;
 
     let db = Db::new().unwrap();
 
-    // TODO - Note only for demo, remove this
-    let a = Scalar::from_bits([
-        127, 113, 230, 186, 76, 5, 242, 4, 214, 165, 11, 193, 150, 170, 233, 197, 161, 206, 191,
-        18, 20, 173, 101, 155, 122, 232, 56, 121, 66, 172, 49, 6,
-    ]);
-    let b = Scalar::from_bits([
-        253, 185, 198, 145, 54, 108, 119, 39, 67, 127, 254, 81, 183, 79, 15, 80, 160, 16, 27, 123,
-        114, 84, 23, 103, 147, 151, 232, 207, 121, 6, 16, 12,
-    ]);
-    let value = 100;
-    let sk = SecretKey::new(a, b);
-    let pk = sk.public_key();
-    let note = Box::new(TransparentNote::output(&pk, value).0);
-    warn!("{} dusk note created for 'dusk'", value);
-    db.store_unspent_note(note).unwrap();
+    if let Some(matches) = matches.subcommand_matches("note") {
+        let seed = matches
+            .value_of("seed")
+            .expect("The seed for the secret key is mandatory to create a new note");
+        let pk = SecretKey::from(seed.as_bytes().to_vec()).public_key();
+
+        let value: u64 = matches
+            .value_of("value")
+            .expect("The seed for the secret key is mandatory to create a new note")
+            .parse()
+            .unwrap();
+
+        let note = Box::new(ObfuscatedNote::output(&pk, value).0);
+
+        warn!("Note created for '{}' with {}", seed, value);
+        db.store_unspent_note(note).unwrap();
+    }
 
     let phoenix = rpc::Server::new(db);
 
     info!("Listening on {}...", addr);
-
-    // TODO - Check why tonic isnt submitting logs to tracing subscribed handler
     Server::builder()
         .add_service(rpc::phoenix_server::PhoenixServer::new(phoenix))
         .serve(addr)
