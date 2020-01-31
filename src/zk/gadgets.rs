@@ -20,19 +20,19 @@ pub fn transaction_balance(
     items: Vec<(&TransactionItem, LinearCombination)>,
     output: LinearCombination,
 ) {
-    let (input, output) = items.iter().fold(
+    let (input, output) = items.into_iter().fold(
         (LinearCombination::default(), output),
         |(mut input, mut output), (item, value_commitment)| {
             match item.note().utxo() {
                 NoteUtxoType::Input => {
                     let total = input.clone();
                     input = input.clone() + value_commitment.clone();
-                    cs.constrain(input.clone() - (total + value_commitment.clone()));
+                    cs.constrain(input.clone() - (total + value_commitment));
                 }
                 NoteUtxoType::Output => {
                     let total = output.clone();
                     output = output.clone() + value_commitment.clone();
-                    cs.constrain(output.clone() - (total + value_commitment.clone()));
+                    cs.constrain(output.clone() - (total + value_commitment));
                 }
             }
 
