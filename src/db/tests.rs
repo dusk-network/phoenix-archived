@@ -12,7 +12,11 @@ fn store_notes() {
 
             let (note, blinding_factor) = TransparentNote::output(&pk, value);
             let idx = db
-                .store_transaction_item(&note.clone().to_transaction_output(value, blinding_factor))
+                .store_transaction_item(&note.clone().to_transaction_output(
+                    value,
+                    blinding_factor,
+                    pk,
+                ))
                 .unwrap()
                 .unwrap();
 
@@ -28,7 +32,11 @@ fn store_notes() {
 
             let (note, blinding_factor) = ObfuscatedNote::output(&pk, value);
             let idx = db
-                .store_transaction_item(&note.clone().to_transaction_output(value, blinding_factor))
+                .store_transaction_item(&note.clone().to_transaction_output(
+                    value,
+                    blinding_factor,
+                    pk,
+                ))
                 .unwrap()
                 .unwrap();
 

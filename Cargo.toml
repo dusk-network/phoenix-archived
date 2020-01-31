@@ -5,18 +5,25 @@ authors = ["Victor Lopez <vhrlopes@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-bincode = "1.2"
 curve25519-dalek = { version = "2.0", features = ["serde"] }
 merlin = "2.0"
 rand = "^0.7"
-serde = { version = "1.0", features = ["derive"] }
+tonic = "^0.1"
 sodiumoxide = "0.2"
 sha2 = "0.8"
 prost = "0.6"
+# TODO - Dependencies only of phoenix binary
+tokio = { version = "0.2", features = ["rt-threaded", "time", "stream", "fs", "macros", "uds"] }
+tracing = "0.1"
+tracing-subscriber = "0.1"
+clap = "2.33"
 
 [dev-dependencies]
-bincode = "1.2"
 lazy_static = "1.4"
+futures = "0.3"
+
+[build-dependencies]
+tonic-build = "0.1"
 
 [dependencies.bulletproofs]
 git = "https://github.com/dusk-network/bulletproofs.git"

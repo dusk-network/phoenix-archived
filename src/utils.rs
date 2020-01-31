@@ -1,5 +1,7 @@
 use crate::{EdwardsPoint, Nonce, Scalar};
 
+use std::cmp;
+
 use curve25519_dalek::constants;
 use rand::rngs::OsRng;
 use rand::RngCore;
@@ -32,4 +34,13 @@ pub fn edwards_to_scalar(p: EdwardsPoint) -> Scalar {
 
 pub fn gen_nonce() -> Nonce {
     box_::gen_nonce()
+}
+
+pub fn safe_32_chunk(bytes: &[u8]) -> [u8; 32] {
+    let mut s = [0x00u8; 32];
+    let chunk = cmp::min(bytes.len(), 32);
+
+    (&mut s[0..chunk]).copy_from_slice(&bytes[0..chunk]);
+
+    s
 }

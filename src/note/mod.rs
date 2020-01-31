@@ -1,11 +1,12 @@
 use crate::{
-    crypto, rpc, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, PublicKey, R1CSProof,
-    Scalar, SecretKey, TransactionItem, ViewKey,
+    crypto, rpc, utils, CompressedRistretto, Db, EdwardsPoint, Error, Idx, Nonce, NoteType,
+    PublicKey, R1CSProof, Scalar, SecretKey, TransactionItem, ViewKey,
 };
 
-use std::fmt::Debug;
-
-use serde::{Deserialize, Serialize};
+use std::{
+    convert::{TryFrom, TryInto},
+    fmt::Debug,
+};
 
 pub mod idx;
 pub mod nullifier;
@@ -15,65 +16,38 @@ pub mod transparent;
 #[cfg(test)]
 mod tests;
 
-pub use idx::Idx;
 pub use nullifier::Nullifier;
 pub use obfuscated::ObfuscatedNote;
 pub use transparent::TransparentNote;
 
-pub trait NoteGenerator: Sized + Note {
+pub trait NoteGenerator: Sized + Note + TryFrom<rpc::Note> + Into<rpc::Note> {
     /// Create a new phoenix note
     #[allow(clippy::trivially_copy_pass_by_ref)]
     fn input(db: &Db, idx: &Idx) -> Result<Self, Error>;
     fn output(pk: &PublicKey, value: u64) -> (Self, Scalar);
 
     /// Transaction
-    fn to_transaction_input(mut self, sk: &SecretKey) -> TransactionItem {
+    fn to_transaction_input(mut self, sk: SecretKey) -> TransactionItem {
         let vk = sk.view_key();
+        let pk = sk.public_key();
 
         self.set_utxo(NoteUtxoType::Input);
 
-        let nullifier = self.generate_nullifier(sk);
+        let nullifier = self.generate_nullifier(&sk);
         let value = self.value(Some(&vk));
         let blinding_factor = self.blinding_factor(&vk);
 
-        TransactionItem::new(self, nullifier, value, blinding_factor)
+        TransactionItem::new(self, nullifier, value, blinding_factor, Some(sk), pk)
     }
-    fn to_transaction_output(mut self, value: u64, blinding_factor: Scalar) -> TransactionItem {
+    fn to_transaction_output(
+        mut self,
+        value: u64,
+        blinding_factor: Scalar,
+        pk: PublicKey,
+    ) -> TransactionItem {
         self.set_utxo(NoteUtxoType::Output);
 
-        TransactionItem::new(self, Nullifier::default(), value, blinding_factor)
-    }
-
-    /// RPC
-    fn from_rpc_note(note: rpc::Note) -> Result<Self, Error>
-    where
-        Self: for<'a> Deserialize<'a>,
-    {
-        Ok(bincode::deserialize(note.raw.as_slice())?)
-    }
-    fn to_rpc_note(
-        self,
-        db: Option<&Db>,
-        vk: Option<&ViewKey>,
-        nullifier: Option<&Nullifier>,
-    ) -> Result<rpc::Note, Error>
-    where
-        Self: Serialize,
-    {
-        let note_type: rpc::NoteType = self.note().into();
-        let pos = (*self.idx()).into();
-        let value = self.value(vk);
-        let unspent = if db.is_some() || nullifier.is_some() {
-            let db = db.ok_or(Error::InvalidParameters)?;
-            let nullifier = nullifier.ok_or(Error::InvalidParameters)?;
-
-            db.fetch_nullifier(nullifier)?.is_none()
-        } else {
-            false
-        };
-        let raw = bincode::serialize(&self)?;
-
-        Ok(rpc::Note::new(note_type.into(), pos, value, unspent, raw))
+        TransactionItem::new(self, Nullifier::default(), value, blinding_factor, None, pk)
     }
 
     /// Attributes
@@ -119,18 +93,44 @@ pub trait Note: Debug + Send + Sync {
     }
 
     /// Nullifier handle
-    fn generate_nullifier(&self, _sk_r: &SecretKey) -> Nullifier {
+    fn generate_nullifier(&self, _sk: &SecretKey) -> Nullifier {
         // TODO - Create a secure nullifier
-        Nullifier::new(self.idx().0)
+        Nullifier::new(self.idx().pos.into())
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
     fn validate_nullifier(&self, nullifier: &Nullifier) -> Result<(), Error> {
         // TODO - Validate the nullifier securely
-        if nullifier.point() == self.idx().0 {
+        if nullifier.x == self.idx().pos.into() {
             Ok(())
         } else {
             Err(Error::Generic)
+        }
+    }
+
+    fn rpc_decrypted_note(&self, vk: &ViewKey) -> rpc::DecryptedNote {
+        let note_type: rpc::NoteType = self.note().into();
+        let note_type = note_type.into();
+        let pos = Some((self.idx().clone()).into());
+        let value = self.value(Some(vk));
+        let io: rpc::InputOutput = self.utxo().into();
+        let io = io.into();
+        let nonce = Some((*self.nonce()).into());
+        let r_g = Some((*self.r_g()).into());
+        let pk_r = Some((*self.pk_r()).into());
+        let commitment = Some((*self.commitment()).into());
+        let blinding_factor = Some(self.blinding_factor(vk).into());
+
+        rpc::DecryptedNote {
+            note_type,
+            pos,
+            value,
+            io,
+            nonce,
+            r_g,
+            pk_r,
+            commitment,
+            blinding_factor,
         }
     }
 
@@ -144,6 +144,7 @@ pub trait Note: Debug + Send + Sync {
 
     /// Attributes
     fn hash(&self) -> Scalar;
+    // TODO - This is not really a property of the note, but of the transaction item. Remove it.
     fn utxo(&self) -> NoteUtxoType;
     fn set_utxo(&mut self, utxo: NoteUtxoType);
     fn note(&self) -> NoteType;
@@ -151,8 +152,10 @@ pub trait Note: Debug + Send + Sync {
     fn nonce(&self) -> &Nonce;
     fn set_idx(&mut self, idx: Idx);
     fn value(&self, vk: Option<&ViewKey>) -> u64;
+    fn encrypted_value(&self) -> Option<&Vec<u8>>;
     fn commitment(&self) -> &CompressedRistretto;
     fn blinding_factor(&self, vk: &ViewKey) -> Scalar;
+    fn encrypted_blinding_factor(&self) -> &Vec<u8>;
     fn r_g(&self) -> &EdwardsPoint;
     fn pk_r(&self) -> &EdwardsPoint;
     fn sk_r(&self, sk: &SecretKey) -> Scalar {
@@ -176,7 +179,7 @@ pub trait Note: Debug + Send + Sync {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NoteUtxoType {
     Input,
     Output,
@@ -197,17 +200,34 @@ impl Into<u8> for NoteUtxoType {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum NoteType {
-    Transparent,
-    Obfuscated,
+impl TryFrom<i32> for NoteType {
+    type Error = Error;
+
+    fn try_from(note_type: i32) -> Result<Self, Self::Error> {
+        match note_type {
+            0 => Ok(NoteType::Transparent),
+            1 => Ok(NoteType::Obfuscated),
+            _ => Err(Error::InvalidParameters),
+        }
+    }
 }
 
-impl From<rpc::NoteType> for NoteType {
-    fn from(t: rpc::NoteType) -> Self {
-        match t {
-            rpc::NoteType::TRANSPARENT => NoteType::Transparent,
-            rpc::NoteType::OBFUSCATED => NoteType::Obfuscated,
+impl From<Box<dyn Note>> for rpc::Note {
+    fn from(note: Box<dyn Note>) -> Self {
+        match note.note() {
+            NoteType::Transparent => Db::note_box_into::<TransparentNote>(note).into(),
+            NoteType::Obfuscated => Db::note_box_into::<ObfuscatedNote>(note).into(),
+        }
+    }
+}
+
+impl TryFrom<rpc::Note> for Box<dyn Note> {
+    type Error = Error;
+
+    fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
+        match note.note_type.try_into()? {
+            rpc::NoteType::Transparent => Ok(Box::new(TransparentNote::try_from(note)?)),
+            rpc::NoteType::Obfuscated => Ok(Box::new(ObfuscatedNote::try_from(note)?)),
         }
     }
 }

@@ -1,4 +1,4 @@
-use crate::{Error, Idx, Note, NoteUtxoType, Nullifier, Transaction, TransactionItem};
+use crate::{Error, Idx, Note, NoteUtxoType, Nullifier, Scalar, Transaction, TransactionItem};
 
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
@@ -37,6 +37,23 @@ impl Db {
         })
     }
 
+    // TODO - Should be able to rollback state in case of failure
+    pub fn store_bulk_transactions(&self, transactions: &[Transaction]) -> Result<Vec<Idx>, Error> {
+        let mut idx = vec![];
+
+        for t in transactions {
+            idx.extend(self.store(t)?);
+        }
+
+        Ok(idx)
+    }
+
+    /// Return the current merkle root
+    pub fn root(&self) -> Scalar {
+        // TODO - Fetch the merkle root of the current db state
+        Scalar::default()
+    }
+
     /// Attempt to store a given transaction item.
     ///
     /// If its an unspent output, will return the idx of the stored note.
@@ -57,23 +74,22 @@ impl Db {
     pub fn store_unspent_note(&self, mut note: Box<dyn Note>) -> Result<Idx, Error> {
         let mut notes = self.notes.try_lock()?;
 
-        let idx = Idx(notes.len() as u64);
-        note.set_idx(idx);
-        notes.insert(idx, note);
+        let idx: Idx = (notes.len() as u64).into();
+        note.set_idx(idx.clone());
+        notes.insert(idx.clone(), note);
 
         Ok(idx)
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
-    pub fn fetch_note<N: Note>(&self, idx: &Idx) -> Result<N, Error> {
+    pub fn fetch_box_note(&self, idx: &Idx) -> Result<Box<dyn Note>, Error> {
         let notes = self.notes.try_lock()?;
-        let note = notes
-            .get(idx)
-            .map(|n| n.box_clone())
-            .ok_or(Error::Generic)?;
+        notes.get(idx).map(|n| n.box_clone()).ok_or(Error::Generic)
+    }
 
-        // TODO - As a temporary solution until Kelvin is implemented, using very unsafe code
-        Ok(Db::note_box_into(note))
+    #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
+    pub fn fetch_note<N: Note>(&self, idx: &Idx) -> Result<N, Error> {
+        self.fetch_box_note(idx).map(Db::note_box_into)
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
@@ -89,5 +105,15 @@ impl Db {
     pub fn note_box_into<N>(note: Box<dyn Note>) -> N {
         // TODO - As a temporary solution until Kelvin is implemented, using very unsafe code
         unsafe { Box::into_raw(note).cast::<N>().read() }
+    }
+
+    pub fn filter_all_notes(
+        &self,
+        filter: impl FnMut(&Box<dyn Note>) -> Option<Box<dyn Note>>,
+    ) -> Result<Vec<Box<dyn Note>>, Error> {
+        self.notes
+            .try_lock()
+            .map(|notes| notes.values().filter_map(filter).collect())
+            .map_err(|e| e.into())
     }
 }

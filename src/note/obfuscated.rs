@@ -1,15 +1,15 @@
-use super::{Idx, Note, NoteGenerator, NoteType, NoteUtxoType};
+use super::{Idx, Note, NoteGenerator, NoteUtxoType};
 use crate::{
-    crypto, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, PublicKey, R1CSProof,
-    Scalar, Value, ViewKey,
+    crypto, rpc, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
+    R1CSProof, Scalar, Value, ViewKey,
 };
 
 use std::cmp;
+use std::convert::{TryFrom, TryInto};
 
-use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha512};
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ObfuscatedNote {
     utxo: NoteUtxoType,
     commitment: CompressedRistretto,
@@ -90,7 +90,7 @@ impl Note for ObfuscatedNote {
         hasher.input(&self.nonce);
         hasher.input(self.r_g.compress().as_bytes());
         hasher.input(self.pk_r.compress().as_bytes());
-        hasher.input(self.idx.to_vec());
+        hasher.input(self.idx.clone().as_vec());
         hasher.input(&self.encrypted_value);
         hasher.input(&self.encrypted_blinding_factor);
 
@@ -145,6 +145,10 @@ impl Note for ObfuscatedNote {
         u64::from_le_bytes(v)
     }
 
+    fn encrypted_value(&self) -> Option<&Vec<u8>> {
+        Some(&self.encrypted_value)
+    }
+
     fn commitment(&self) -> &CompressedRistretto {
         &self.commitment
     }
@@ -157,11 +161,11 @@ impl Note for ObfuscatedNote {
             self.encrypted_blinding_factor.as_slice(),
         );
 
-        let mut s = [0x00u8; 32];
-        let chunk = cmp::min(blinding_factor.len(), 32);
-        (&mut s[0..chunk]).copy_from_slice(&blinding_factor[0..chunk]);
+        Scalar::from_bits(utils::safe_32_chunk(blinding_factor.as_slice()))
+    }
 
-        Scalar::from_bits(s)
+    fn encrypted_blinding_factor(&self) -> &Vec<u8> {
+        &self.encrypted_blinding_factor
     }
 
     fn prove_value(&self, vk: &ViewKey) -> Result<R1CSProof, Error> {
@@ -177,5 +181,65 @@ impl Note for ObfuscatedNote {
         Value::with_commitment(*self.commitment())
             .verify(proof)
             .map_err(Error::generic)
+    }
+}
+
+impl From<ObfuscatedNote> for rpc::Note {
+    fn from(note: ObfuscatedNote) -> rpc::Note {
+        let note_type = rpc::NoteType::Obfuscated.into();
+        let pos = note.idx.into();
+        let io = rpc::InputOutput::from(note.utxo).into();
+        let nonce = Some(note.nonce.into());
+        let r_g = Some(note.r_g.into());
+        let pk_r = Some(note.pk_r.into());
+        let commitment = Some(note.commitment.into());
+        let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        let value = Some(rpc::note::Value::EncryptedValue(note.encrypted_value));
+
+        rpc::Note {
+            note_type,
+            pos,
+            io,
+            nonce,
+            r_g,
+            pk_r,
+            commitment,
+            encrypted_blinding_factor,
+            value,
+        }
+    }
+}
+
+impl TryFrom<rpc::Note> for ObfuscatedNote {
+    type Error = Error;
+
+    fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
+        if rpc::NoteType::try_from(note.note_type)? != NoteType::Obfuscated {
+            return Err(Error::InvalidParameters);
+        }
+
+        let utxo = rpc::InputOutput::try_from(note.io)?.into();
+        let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
+        let r_g = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
+        let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
+        let idx = note.pos.ok_or(Error::InvalidParameters)?;
+        let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
+        let encrypted_blinding_factor = note.encrypted_blinding_factor;
+
+        let encrypted_value = match note.value.ok_or(Error::InvalidParameters)? {
+            rpc::note::Value::TransparentValue(_) => Err(Error::InvalidParameters),
+            rpc::note::Value::EncryptedValue(v) => Ok(v),
+        }?;
+
+        Ok(ObfuscatedNote::new(
+            utxo,
+            commitment,
+            nonce,
+            r_g,
+            pk_r,
+            idx,
+            encrypted_value,
+            encrypted_blinding_factor,
+        ))
     }
 }

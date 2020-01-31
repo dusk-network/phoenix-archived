@@ -1,8 +1,12 @@
 use crate::{
-    utils, zk::gadgets, zk::value::gen_cs_transcript, CompressedRistretto, ConstraintSystem, Db,
-    Error, LinearCombination, NoteGenerator, NoteUtxoType, Prover, R1CSProof, Scalar, SecretKey,
-    TransparentNote, Variable, Verifier,
+    rpc, utils, zk::gadgets, zk::value::gen_cs_transcript, CompressedRistretto, ConstraintSystem,
+    Db, Error, LinearCombination, NoteGenerator, NoteUtxoType, Prover, PublicKey, R1CSProof,
+    Scalar, SecretKey, TransparentNote, Variable, Verifier,
 };
+
+use std::convert::TryFrom;
+
+use tracing::trace;
 
 pub use item::TransactionItem;
 
@@ -15,7 +19,24 @@ mod tests;
 pub struct Transaction {
     fee: TransactionItem,
     items: Vec<TransactionItem>,
+    r1cs: Option<R1CSProof>,
+    commitments: Vec<CompressedRistretto>,
 }
+
+impl PartialEq for Transaction {
+    fn eq(&self, other: &Self) -> bool {
+        self.fee == other.fee
+            && self.items == other.items
+            && self.commitments == other.commitments
+            && self.r1cs.as_ref().map(|r| r.to_bytes()).unwrap_or_default()
+                == other
+                    .r1cs
+                    .as_ref()
+                    .map(|r| r.to_bytes())
+                    .unwrap_or_default()
+    }
+}
+impl Eq for Transaction {}
 
 impl Transaction {
     pub fn push(&mut self, item: TransactionItem) {
@@ -26,12 +47,35 @@ impl Transaction {
         &self.fee
     }
 
+    pub fn set_fee(&mut self, fee: TransactionItem) {
+        self.fee = fee;
+    }
+
+    pub fn set_fee_pk(&mut self, _pk: &PublicKey) {
+        // TODO - Set the PK of the miner
+    }
+
     pub fn items(&self) -> &Vec<TransactionItem> {
         &self.items
     }
 
-    // TODO - Generate a proper structure for the proof + commitments
-    pub fn prove(&mut self) -> Result<(R1CSProof, Vec<CompressedRistretto>), Error> {
+    pub fn r1cs(&self) -> Option<&R1CSProof> {
+        self.r1cs.as_ref()
+    }
+
+    pub fn set_r1cs(&mut self, r1cs: R1CSProof) {
+        self.r1cs.replace(r1cs);
+    }
+
+    pub fn commitments(&self) -> &Vec<CompressedRistretto> {
+        &self.commitments
+    }
+
+    pub fn set_commitments(&mut self, commitments: Vec<CompressedRistretto>) {
+        self.commitments = commitments;
+    }
+
+    pub fn prove(&mut self) -> Result<(), Error> {
         let (pc_gens, bp_gens, mut transcript) = gen_cs_transcript();
         let mut prover = Prover::new(&pc_gens, &mut transcript);
 
@@ -69,8 +113,9 @@ impl Transaction {
         let fee_value = input - output;
         // The miner spending key will be defined later by the block generator
         let sk = SecretKey::default();
+        let pk = sk.public_key();
         let (fee, blinding_factor) = TransparentNote::output(&sk.public_key(), fee_value);
-        let fee = fee.to_transaction_output(fee_value, blinding_factor);
+        let fee = fee.to_transaction_output(fee_value, blinding_factor, pk);
 
         // Commit the fee to the circuit
         let (_, var) = prover.commit(
@@ -112,18 +157,20 @@ impl Transaction {
         prover.constrain(input - output);
 
         let proof = prover.prove(&bp_gens).map_err(Error::from)?;
-        Ok((proof, commitments))
+
+        self.r1cs = Some(proof);
+        self.commitments = commitments;
+
+        Ok(())
     }
 
-    pub fn verify(
-        &self,
-        proof: &R1CSProof,
-        commitments: &[CompressedRistretto],
-    ) -> Result<(), Error> {
+    pub fn verify(&self) -> Result<(), Error> {
+        let proof = self.r1cs.as_ref().ok_or(Error::TransactionNotPrepared)?;
+
         let (pc_gens, bp_gens, mut transcript) = gen_cs_transcript();
         let mut verifier = Verifier::new(&mut transcript);
 
-        let mut commits = commitments.iter();
+        let mut commits = self.commitments.iter();
         self.items().iter().for_each(|item| {
             let var = commits
                 .next()
@@ -166,7 +213,7 @@ impl Transaction {
         verifier.constrain(input - output);
 
         verifier
-            .verify(&proof, &pc_gens, &bp_gens)
+            .verify(proof, &pc_gens, &bp_gens)
             .map_err(Error::from)
     }
 
@@ -184,5 +231,87 @@ impl Transaction {
         })?;
 
         Ok(())
+    }
+
+    pub fn try_from_rpc_io(
+        db: &Db,
+        fee_value: u64,
+        inputs: Vec<rpc::TransactionInput>,
+        outputs: Vec<rpc::TransactionOutput>,
+    ) -> Result<Self, Error> {
+        let mut transaction = Transaction::default();
+
+        for i in inputs {
+            let input = TransactionItem::try_from_rpc_transaction_input(db, i)?;
+            trace!("Pushing {} dusk as input to the transaction", input.value());
+            transaction.push(input);
+        }
+        for o in outputs {
+            let output = TransactionItem::try_from(o)?;
+            trace!(
+                "Pushing {} dusk as output to the transaction",
+                output.value()
+            );
+            transaction.push(output);
+        }
+
+        let pk = PublicKey::default();
+        trace!("Pushing {} dusk as fee to the transaction", fee_value);
+        let (fee, blinding_factor) = TransparentNote::output(&PublicKey::default(), fee_value);
+        let fee = fee.to_transaction_output(fee_value, blinding_factor, pk);
+        transaction.set_fee(fee);
+
+        transaction.prove()?;
+        transaction.verify()?;
+
+        Ok(transaction)
+    }
+
+    pub fn try_from_rpc_transaction(db: &Db, tx: rpc::Transaction) -> Result<Self, Error> {
+        let mut transaction = Transaction::default();
+
+        if let Some(f) = tx.fee {
+            transaction.set_fee(TransactionItem::try_from(f)?);
+        }
+
+        for i in tx.inputs {
+            transaction.push(TransactionItem::try_from_rpc_transaction_input(db, i)?);
+        }
+        for o in tx.outputs {
+            transaction.push(TransactionItem::try_from(o)?);
+        }
+
+        transaction.r1cs = if tx.r1cs.is_empty() {
+            None
+        } else {
+            Some(R1CSProof::from_bytes(tx.r1cs.as_slice())?)
+        };
+        transaction.commitments = tx.commitments.into_iter().map(|p| p.into()).collect();
+
+        Ok(transaction)
+    }
+}
+
+impl Into<rpc::Transaction> for Transaction {
+    fn into(self) -> rpc::Transaction {
+        let mut inputs = vec![];
+        let mut outputs = vec![];
+        let fee = Some(self.fee.into());
+
+        self.items.into_iter().for_each(|item| match item.utxo() {
+            NoteUtxoType::Input => inputs.push(item.into()),
+            NoteUtxoType::Output => outputs.push(item.into()),
+        });
+
+        let r1cs = self.r1cs.map(|p| p.to_bytes()).unwrap_or_default();
+        let commitments = self.commitments.iter().map(|p| (*p).into()).collect();
+
+        rpc::Transaction {
+            inputs,
+            outputs,
+            fee,
+            r1cs,
+            commitments,
+        }
     }
 }
