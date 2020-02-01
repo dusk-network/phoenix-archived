@@ -80,31 +80,6 @@ impl NoteGenerator for TransparentNote {
 
         (note, blinding_factor)
     }
-
-    fn try_from_rpc_decrypted_note(
-        note: rpc::DecryptedNote,
-        pk: &PublicKey,
-    ) -> Result<Self, Error> {
-        let utxo = NoteUtxoType::Output;
-        let value = note.value;
-        let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
-        let r_g = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
-        let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
-        let idx = note.pos.ok_or(Error::InvalidParameters)?.into();
-        let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
-        let encrypted_blinding_factor = unimplemented!();
-
-        Ok(TransparentNote::new(
-            utxo,
-            value,
-            nonce,
-            r_g,
-            pk_r,
-            idx,
-            commitment,
-            encrypted_blinding_factor,
-        ))
-    }
 }
 
 impl Note for TransparentNote {
@@ -236,6 +211,32 @@ impl TryFrom<rpc::Note> for TransparentNote {
         }?;
 
         Ok(Self::new(
+            utxo,
+            value,
+            nonce,
+            r_g,
+            pk_r,
+            idx,
+            commitment,
+            encrypted_blinding_factor,
+        ))
+    }
+}
+
+impl TryFrom<rpc::DecryptedNote> for TransparentNote {
+    type Error = Error;
+
+    fn try_from(note: rpc::DecryptedNote) -> Result<Self, Self::Error> {
+        let utxo = NoteUtxoType::Output;
+        let value = note.value;
+        let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
+        let r_g = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
+        let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
+        let idx = note.pos.ok_or(Error::InvalidParameters)?.into();
+        let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
+        let encrypted_blinding_factor = note.encrypted_blinding_factor;
+
+        Ok(TransparentNote::new(
             utxo,
             value,
             nonce,

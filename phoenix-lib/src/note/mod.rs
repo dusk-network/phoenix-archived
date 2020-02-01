@@ -20,7 +20,9 @@ pub use nullifier::Nullifier;
 pub use obfuscated::ObfuscatedNote;
 pub use transparent::TransparentNote;
 
-pub trait NoteGenerator: Sized + Note + TryFrom<rpc::Note> + Into<rpc::Note> {
+pub trait NoteGenerator:
+    Sized + Note + TryFrom<rpc::Note> + TryFrom<rpc::DecryptedNote> + Into<rpc::Note>
+{
     /// Create a new phoenix note
     #[allow(clippy::trivially_copy_pass_by_ref)]
     fn input(db: &Db, idx: &Idx) -> Result<Self, Error>;
@@ -64,9 +66,6 @@ pub trait NoteGenerator: Sized + Note + TryFrom<rpc::Note> + Into<rpc::Note> {
 
         (r, r_g, pk_r)
     }
-
-    fn try_from_rpc_decrypted_note(note: rpc::DecryptedNote, pk: &PublicKey)
-        -> Result<Self, Error>;
 
     fn encrypt_value(r: &Scalar, pk: &PublicKey, nonce: &Nonce, value: u64) -> Vec<u8> {
         crypto::encrypt(r, pk, nonce, &value.to_le_bytes()[..])
@@ -123,6 +122,12 @@ pub trait Note: Debug + Send + Sync {
         let pk_r = Some((*self.pk_r()).into());
         let commitment = Some((*self.commitment()).into());
         let blinding_factor = Some(self.blinding_factor(vk).into());
+        let encrypted_blinding_factor = self.encrypted_blinding_factor().clone();
+        let raw_value = self
+            .encrypted_value()
+            .map(|ev| rpc::decrypted_note::RawValue::EncryptedValue(ev.clone()))
+            .unwrap_or(rpc::decrypted_note::RawValue::TransparentValue(value));
+        let raw_value = Some(raw_value);
 
         rpc::DecryptedNote {
             note_type,
@@ -134,6 +139,8 @@ pub trait Note: Debug + Send + Sync {
             pk_r,
             commitment,
             blinding_factor,
+            encrypted_blinding_factor,
+            raw_value,
         }
     }
 
