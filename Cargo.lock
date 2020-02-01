@@ -786,7 +786,6 @@ name = "phoenix"
 version = "0.1.0"
 dependencies = [
  "bulletproofs",
- "clap",
  "curve25519-dalek",
  "futures",
  "hades252",
@@ -796,9 +795,19 @@ dependencies = [
  "rand",
  "sha2",
  "sodiumoxide",
- "tokio",
  "tonic",
  "tonic-build",
+ "tracing",
+]
+
+[[package]]
+name = "phoenix-server"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "phoenix",
+ "tokio",
+ "tonic",
  "tracing",
  "tracing-subscriber",
 ]
