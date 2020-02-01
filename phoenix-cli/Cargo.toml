@@ -1,0 +1,14 @@
+[package]
+name = "phoenix-cli"
+version = "0.1.0"
+authors = ["Victor Lopez <victor@dusk.network>"]
+edition = "2018"
+
+[dependencies]
+phoenix-lib = { path = "../phoenix-lib" }
+tonic = "^0.1"
+dialoguer = "^0.5"
+console = "^0.9"
+lazy_static = "^1.4"
+futures = "^0.3"
+hex = "^0.4"

@@ -1,6 +1,8 @@
 use super::{PublicKey, ViewKey};
 use crate::{rpc, utils, Scalar};
 
+use std::fmt;
+
 use rand::rngs::StdRng;
 use rand::{RngCore, SeedableRng};
 use sha2::{Digest, Sha512};
@@ -75,5 +77,35 @@ impl From<Vec<u8>> for SecretKey {
         let b = Scalar::from_bits(b);
 
         SecretKey::new(a, b)
+    }
+}
+
+impl From<String> for SecretKey {
+    fn from(s: String) -> Self {
+        Self::from(s.into_bytes())
+    }
+}
+
+impl fmt::LowerHex for SecretKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let a = hex::encode(self.a.as_bytes());
+        let b = hex::encode(self.b.as_bytes());
+
+        write!(f, "{}{}", a, b)
+    }
+}
+
+impl fmt::UpperHex for SecretKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let a = hex::encode_upper(self.a.as_bytes());
+        let b = hex::encode_upper(self.b.as_bytes());
+
+        write!(f, "{}{}", a, b)
+    }
+}
+
+impl fmt::Display for SecretKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:x}", self)
     }
 }
