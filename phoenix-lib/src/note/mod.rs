@@ -65,6 +65,9 @@ pub trait NoteGenerator: Sized + Note + TryFrom<rpc::Note> + Into<rpc::Note> {
         (r, r_g, pk_r)
     }
 
+    fn try_from_rpc_decrypted_note(note: rpc::DecryptedNote, pk: &PublicKey)
+        -> Result<Self, Error>;
+
     fn encrypt_value(r: &Scalar, pk: &PublicKey, nonce: &Nonce, value: u64) -> Vec<u8> {
         crypto::encrypt(r, pk, nonce, &value.to_le_bytes()[..])
     }

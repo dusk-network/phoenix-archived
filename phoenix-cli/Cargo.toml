@@ -9,6 +9,8 @@ phoenix-lib = { path = "../phoenix-lib" }
 tonic = "^0.1"
 dialoguer = "^0.5"
 console = "^0.9"
+indicatif = "^0.14"
 lazy_static = "^1.4"
 futures = "^0.3"
 hex = "^0.4"
+tokio = { version = "0.2", features = ["rt-threaded", "time", "stream", "fs", "macros", "uds"] }

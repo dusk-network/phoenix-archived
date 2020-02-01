@@ -78,6 +78,31 @@ impl NoteGenerator for ObfuscatedNote {
 
         (note, blinding_factor)
     }
+
+    fn try_from_rpc_decrypted_note(
+        note: rpc::DecryptedNote,
+        pk: &PublicKey,
+    ) -> Result<Self, Error> {
+        let utxo = unimplemented!();
+        let commitment = unimplemented!();
+        let nonce = unimplemented!();
+        let r_g = unimplemented!();
+        let pk_r = unimplemented!();
+        let idx = unimplemented!();
+        let encrypted_value = unimplemented!();
+        let encrypted_blinding_factor = unimplemented!();
+
+        Ok(ObfuscatedNote::new(
+            utxo,
+            commitment,
+            nonce,
+            r_g,
+            pk_r,
+            idx,
+            encrypted_value,
+            encrypted_blinding_factor,
+        ))
+    }
 }
 
 impl Note for ObfuscatedNote {

@@ -12,6 +12,7 @@ fn error_to_tonic(e: Error) -> tonic::Status {
     e.into()
 }
 
+// TODO - Move this struct to phoenix-server workspace item and implement test cases directly on it
 pub struct Server {
     db: Db,
 }
@@ -36,6 +37,7 @@ impl Phoenix for Server {
         &self,
         request: tonic::Request<rpc::GenerateSecretKeyRequest>,
     ) -> Result<tonic::Response<rpc::SecretKey>, tonic::Status> {
+        trace!("Icoming generate secret key request");
         let sk = SecretKey::from(request.into_inner().b);
         let sk = rpc::SecretKey::from(sk);
         Ok(tonic::Response::new(sk))

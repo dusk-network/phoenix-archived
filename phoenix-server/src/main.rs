@@ -85,7 +85,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         let note = Box::new(ObfuscatedNote::output(&pk, value).0);
 
-        warn!("Note created for '{}' with {}", seed, value);
+        warn!("Note created for '{}' with {}", pk, value);
         db.store_unspent_note(note).unwrap();
     }
 
