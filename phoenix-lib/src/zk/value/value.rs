@@ -1,6 +1,8 @@
 use super::gen_cs_transcript;
 use crate::{utils, CompressedRistretto, Error, Prover, R1CSProof, Scalar, Verifier};
 
+use rand::rngs::OsRng;
+
 #[derive(Debug, Clone)]
 pub struct Value {
     commitment: CompressedRistretto,
@@ -54,7 +56,7 @@ impl Value {
         verifier.commit(self.commitment);
 
         verifier
-            .verify(&proof, &pc_gens, &bp_gens)
+            .verify(&proof, &pc_gens, &bp_gens, &mut OsRng)
             .map_err(Error::from)
     }
 

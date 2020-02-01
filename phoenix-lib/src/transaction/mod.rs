@@ -6,6 +6,7 @@ use crate::{
 
 use std::convert::TryFrom;
 
+use rand::rngs::OsRng;
 use tracing::trace;
 
 pub use item::TransactionItem;
@@ -185,7 +186,7 @@ impl Transaction {
         gadgets::transaction_balance(&mut verifier, items_with_value_commitments, output);
 
         verifier
-            .verify(proof, &pc_gens, &bp_gens)
+            .verify(proof, &pc_gens, &bp_gens, &mut OsRng)
             .map_err(Error::from)
     }
 

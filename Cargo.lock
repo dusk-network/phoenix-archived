@@ -118,7 +118,7 @@ dependencies = [
 [[package]]
 name = "bulletproofs"
 version = "1.0.4"
-source = "git+https://github.com/dusk-network/bulletproofs.git?branch=dalek-v2#b21ba8b66dd4275ab644807a326ae5c66a6473b5"
+source = "git+https://github.com/dusk-network/bulletproofs.git?branch=dalek-v2#568975caeefd7f60bacf3a062599ef5679277d8c"
 dependencies = [
  "byteorder",
  "clear_on_drop",
