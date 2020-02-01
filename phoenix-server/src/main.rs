@@ -1,4 +1,4 @@
-use phoenix::{rpc, Db, NoteGenerator, ObfuscatedNote, SecretKey};
+use phoenix_lib::{rpc, Db, NoteGenerator, ObfuscatedNote, SecretKey};
 
 use clap::{App, Arg, SubCommand};
 use tonic::transport::Server;

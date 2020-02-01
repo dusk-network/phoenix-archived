@@ -782,7 +782,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "phoenix"
+name = "phoenix-lib"
 version = "0.1.0"
 dependencies = [
  "bulletproofs",
@@ -805,7 +805,7 @@ name = "phoenix-server"
 version = "0.1.0"
 dependencies = [
  "clap",
- "phoenix",
+ "phoenix-lib",
  "tokio",
  "tonic",
  "tracing",

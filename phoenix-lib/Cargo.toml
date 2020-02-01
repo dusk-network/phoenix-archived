@@ -1,5 +1,5 @@
 [package]
-name = "phoenix"
+name = "phoenix-lib"
 version = "0.1.0"
 authors = ["Victor Lopez <vhrlopes@gmail.com>"]
 edition = "2018"
