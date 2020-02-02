@@ -49,6 +49,8 @@ pub enum Error {
     InvalidPoint,
     /// Invalid parameters provided to the function
     InvalidParameters,
+    /// Maximum number of notes per transaction exceeded
+    MaximumNotes,
 }
 
 impl Error {
