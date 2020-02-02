@@ -5,7 +5,7 @@ use console::Style;
 use console::{style, Emoji};
 use dialoguer::{theme::ColorfulTheme, Input, OrderList, PasswordInput};
 use indicatif::{MultiProgress, ProgressBar};
-use phoenix_lib::{rpc, SecretKey};
+use phoenix_lib::{rpc, Note, Nullifier, ObfuscatedNote, SecretKey, TransparentNote, ViewKey};
 use tonic::transport::Channel;
 use tonic::IntoRequest;
 
@@ -61,9 +61,11 @@ pub async fn scan() -> Result<Flow, Error> {
 
     println!(
         "{} {}Querying Phoenix server...",
-        style("[1/2]").bold().dim(),
+        style("[1/3]").bold().dim(),
         LOOKING_GLASS
     );
+
+    println!("VK: {}", ViewKey::try_from(vk.clone()).unwrap());
 
     let mut client = client().await?;
     let notes = client
@@ -72,38 +74,81 @@ pub async fn scan() -> Result<Flow, Error> {
         .into_inner()
         .notes;
 
-    println!("{} {}Parsing notes...", style("[2/2]").bold().dim(), PAPER);
+    println!("{} {}Parsing notes...", style("[2/3]").bold().dim(), PAPER);
 
     let mb = MultiProgress::new();
 
     let pb_notes = mb.add(ProgressBar::new(notes.len() as u64));
     let pb_nullifiers = mb.add(ProgressBar::new(notes.len() as u64));
 
-    let notes = notes.into_iter().try_fold(vec![], |mut v, note| {
-        let note_type = match rpc::NoteType::try_from(note.note_type) {
-            Ok(n) => n,
-            Err(e) => return Err(Error::from(e)),
+    let notes: Vec<Result<(String, Nullifier, u64), Error>> = notes
+        .into_iter()
+        .map(|note| {
+            let note_type = match rpc::NoteType::try_from(note.note_type) {
+                Ok(n) => n,
+                Err(e) => return Err(Error::from(e)),
+            };
+
+            let pos = note
+                .pos
+                .as_ref()
+                .cloned()
+                .ok_or(Error::UnexpectedResponse(
+                    "The provided note doesn't contain its position".to_owned(),
+                ))?
+                .pos;
+
+            let value = note.value;
+
+            let nullifier = match note_type {
+                rpc::NoteType::Transparent => {
+                    TransparentNote::try_from(note)?.generate_nullifier(&sk)
+                }
+                rpc::NoteType::Obfuscated => {
+                    ObfuscatedNote::try_from(note)?.generate_nullifier(&sk)
+                }
+            };
+
+            pb_notes.inc(1);
+
+            Ok((
+                format!("{:?}, position {}, value {}", note_type, pos, value),
+                nullifier,
+                value,
+            ))
+        })
+        .collect();
+
+    println!(
+        "{} {}Querying nullifiers status...",
+        style("[3/3]").bold().dim(),
+        LOOKING_GLASS
+    );
+
+    let mut items = vec![];
+    let mut balance = 0;
+    for result in notes {
+        let (note, nullifier, value) = result?;
+
+        let nullifier = rpc::NullifierStatusRequest {
+            nullifier: Some(nullifier.into()),
         };
+        let status = client
+            .nullifier_status(nullifier.into_request())
+            .await?
+            .into_inner();
 
-        let pos = note
-            .pos
-            .ok_or(Error::UnexpectedResponse(
-                "The provided note doesn't contain its position".to_owned(),
-            ))?
-            .pos;
+        if status.unspent {
+            items.push(note);
+            balance += value;
+        }
 
-        v.push(format!(
-            "{:?}, position {}, value {}",
-            note_type, pos, note.value
-        ));
+        pb_nullifiers.inc(1);
+    }
 
-        pb_notes.inc(1);
-
-        Ok(v)
-    })?;
-
+    println!("Balance: {}", balance);
     OrderList::with_theme(&ColorfulTheme::default())
-        .items(&notes[..])
+        .items(&items[..])
         .interact()
         .unwrap();
 
