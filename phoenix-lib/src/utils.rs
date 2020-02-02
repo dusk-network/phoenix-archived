@@ -17,11 +17,15 @@ pub fn gen_random_clamped_scalar() -> Scalar {
     let mut s = [0x00u8; 32];
     OsRng.fill_bytes(&mut s);
 
-    s[0] &= 248;
-    s[31] &= 127;
-    s[31] |= 64;
+    clamp_bytes(&mut s);
 
     Scalar::from_bits(s)
+}
+
+pub fn clamp_bytes(b: &mut [u8; 32]) {
+    b[0] &= 248;
+    b[31] &= 127;
+    b[31] |= 64;
 }
 
 pub fn mul_by_basepoint_edwards(s: &Scalar) -> EdwardsPoint {

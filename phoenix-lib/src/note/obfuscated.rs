@@ -135,6 +135,7 @@ impl Note for ObfuscatedNote {
 
     fn value(&self, vk: Option<&ViewKey>) -> u64 {
         let vk = vk.copied().unwrap_or_default();
+
         let decrypt_value =
             crypto::decrypt(&self.r_g, &vk, &self.nonce, self.encrypted_value.as_slice());
 

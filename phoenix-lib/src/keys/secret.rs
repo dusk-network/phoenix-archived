@@ -70,10 +70,12 @@ impl From<Vec<u8>> for SecretKey {
 
         let mut a = [0x00u8; 32];
         rng.fill_bytes(&mut a);
+        utils::clamp_bytes(&mut a);
         let a = Scalar::from_bits(a);
 
         let mut b = [0x00u8; 32];
         rng.fill_bytes(&mut b);
+        utils::clamp_bytes(&mut b);
         let b = Scalar::from_bits(b);
 
         SecretKey::new(a, b)
