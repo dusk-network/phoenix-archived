@@ -60,6 +60,12 @@ impl Transaction {
         &self.items
     }
 
+    pub fn remove_item(&mut self, index: usize) {
+        if index < self.items.len() {
+            self.items.remove(index);
+        }
+    }
+
     pub fn r1cs(&self) -> Option<&R1CSProof> {
         self.r1cs.as_ref()
     }
@@ -254,12 +260,16 @@ impl Transaction {
             transaction.push(TransactionItem::try_from(o)?);
         }
 
+        transaction.commitments = tx.commitments.into_iter().map(|p| p.into()).collect();
         transaction.r1cs = if tx.r1cs.is_empty() {
             None
         } else {
             Some(R1CSProof::from_bytes(tx.r1cs.as_slice())?)
         };
-        transaction.commitments = tx.commitments.into_iter().map(|p| p.into()).collect();
+
+        if transaction.r1cs.is_some() {
+            transaction.verify()?;
+        }
 
         Ok(transaction)
     }

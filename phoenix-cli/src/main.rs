@@ -1,4 +1,4 @@
-use phoenix_cli::{connect, scan, show_pk_from_sk, theme, Flow};
+use phoenix_cli::{connect, scan, show_pk_from_sk, theme, transaction, Flow};
 
 use dialoguer::Select;
 
@@ -18,7 +18,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .interact()
             .expect("Failed to render root menu")
         {
-            0 => Ok(Flow::Continue),
+            0 => transaction().await,
             1 => scan().await,
             2 => show_pk_from_sk(),
             3 => connect().await,

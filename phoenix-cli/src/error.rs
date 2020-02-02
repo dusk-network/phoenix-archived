@@ -43,6 +43,8 @@ pub enum Error {
     UnexpectedResponse(String),
     /// [`PoisonError`]
     MutexPoison,
+    /// Invalid input provided
+    InvalidInput,
 }
 
 impl fmt::Display for Error {

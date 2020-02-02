@@ -124,7 +124,7 @@ impl TransactionItem {
         db: &Db,
         item: rpc::TransactionInput,
     ) -> Result<Self, Error> {
-        let sk: SecretKey = item.sk.ok_or(Error::InvalidParameters).map(|k| k.into())?;
+        let sk: SecretKey = item.sk.map(|k| k.into()).unwrap_or_default();
         let note = db.fetch_box_note(&item.pos.ok_or(Error::InvalidParameters)?)?;
 
         let item = match note.note() {
