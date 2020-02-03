@@ -1,7 +1,8 @@
 use phoenix_lib::{rpc, Db, Note, NoteGenerator, ObfuscatedNote, SecretKey};
+use phoenix_server::PhoenixServer;
 
 use clap::{App, Arg, SubCommand};
-use tonic::transport::Server;
+use tonic::transport::Server as TonicServer;
 use tracing::{info, warn};
 
 const NAME: Option<&'static str> = option_env!("CARGO_PKG_NAME");
@@ -96,10 +97,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         })
         .unwrap_or(());
 
-    let phoenix = rpc::Server::new(db);
+    let phoenix = PhoenixServer::new(db);
 
     info!("Listening on {}...", addr);
-    Server::builder()
+    TonicServer::builder()
         .add_service(rpc::phoenix_server::PhoenixServer::new(phoenix))
         .serve(addr)
         .await?;

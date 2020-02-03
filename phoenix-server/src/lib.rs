@@ -1,4 +1,4 @@
-use crate::{
+use phoenix_lib::{
     rpc::{self, phoenix_server::Phoenix},
     Db, Error, Idx, Note, NoteGenerator, NoteType, Nullifier, ObfuscatedNote, PublicKey, Scalar,
     SecretKey, Transaction, TransparentNote, ViewKey,
@@ -8,23 +8,25 @@ use std::convert::TryInto;
 
 use tracing::trace;
 
+#[cfg(test)]
+mod tests;
+
 fn error_to_tonic(e: Error) -> tonic::Status {
     e.into()
 }
 
-// TODO - Move this struct to phoenix-server workspace item and implement test cases directly on it
-pub struct Server {
+pub struct PhoenixServer {
     db: Db,
 }
 
-impl Server {
+impl PhoenixServer {
     pub fn new(db: Db) -> Self {
         Self { db }
     }
 }
 
 #[tonic::async_trait]
-impl Phoenix for Server {
+impl Phoenix for PhoenixServer {
     async fn echo(
         &self,
         request: tonic::Request<rpc::EchoMethod>,
