@@ -1,17 +1,16 @@
 [package]
-name = "phoenix-server"
+name = "phoenix-cli"
 version = "0.1.0"
 authors = ["Victor Lopez <victor@dusk.network>"]
 edition = "2018"
 
 [dependencies]
-tonic = "^0.1"
-tokio = { version = "0.2", features = ["rt-threaded", "time", "stream", "fs", "macros", "uds"] }
-tracing = "0.1"
-tracing-subscriber = "0.1"
-clap = "2.33"
 phoenix-lib = { path = "../phoenix-lib" }
-
-[dev-dependencies]
-lazy_static = "1.4"
-futures = "0.3"
+tonic = "^0.1"
+dialoguer = "^0.5"
+console = "^0.9"
+indicatif = "^0.14"
+lazy_static = "^1.4"
+futures = "^0.3"
+hex = "^0.4"
+tokio = { version = "0.2", features = ["rt-threaded", "time", "stream", "fs", "macros", "uds"] }

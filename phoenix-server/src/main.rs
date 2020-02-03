@@ -1,7 +1,8 @@
-use phoenix_lib::{rpc, Db, NoteGenerator, ObfuscatedNote, SecretKey};
+use phoenix_lib::{rpc, Db, Note, NoteGenerator, ObfuscatedNote, SecretKey};
+use phoenix_server::PhoenixServer;
 
 use clap::{App, Arg, SubCommand};
-use tonic::transport::Server;
+use tonic::transport::Server as TonicServer;
 use tracing::{info, warn};
 
 const NAME: Option<&'static str> = option_env!("CARGO_PKG_NAME");
@@ -71,28 +72,35 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let db = Db::new().unwrap();
 
-    if let Some(matches) = matches.subcommand_matches("note") {
-        let seed = matches
-            .value_of("seed")
-            .expect("The seed for the secret key is mandatory to create a new note");
-        let pk = SecretKey::from(seed.as_bytes().to_vec()).public_key();
+    matches
+        .subcommand_matches("note")
+        .map(|matches| {
+            let seed = matches
+                .value_of("seed")
+                .expect("The seed for the secret key is mandatory to create a new note");
 
-        let value: u64 = matches
-            .value_of("value")
-            .expect("The seed for the secret key is mandatory to create a new note")
-            .parse()
-            .unwrap();
+            let value: u64 = matches
+                .value_of("value")
+                .expect("The seed for the secret key is mandatory to create a new note")
+                .parse()
+                .unwrap();
 
-        let note = Box::new(ObfuscatedNote::output(&pk, value).0);
+            let sk = SecretKey::from(seed.as_bytes().to_vec());
+            let vk = sk.view_key();
+            let pk = sk.public_key();
 
-        warn!("Note created for '{}' with {}", seed, value);
-        db.store_unspent_note(note).unwrap();
-    }
+            let note = ObfuscatedNote::output(&pk, value).0;
+            let note = Box::new(note);
 
-    let phoenix = rpc::Server::new(db);
+            warn!("Note created for '{}' with {}", pk, note.value(Some(&vk)));
+            db.store_unspent_note(note).unwrap();
+        })
+        .unwrap_or(());
+
+    let phoenix = PhoenixServer::new(db);
 
     info!("Listening on {}...", addr);
-    Server::builder()
+    TonicServer::builder()
         .add_service(rpc::phoenix_server::PhoenixServer::new(phoenix))
         .serve(addr)
         .await?;

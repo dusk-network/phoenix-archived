@@ -107,6 +107,9 @@
 | pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | commitment | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | blinding_factor | [Scalar](#phoenix.Scalar) |  |  |
+| encrypted_blinding_factor | [bytes](#bytes) |  |  |
+| transparent_value | [uint64](#uint64) |  |  |
+| encrypted_value | [bytes](#bytes) |  |  |
 
 ### Idx
 

@@ -1,6 +1,9 @@
 use crate::{
-    utils, Note, NoteGenerator, NoteType, NoteUtxoType, ObfuscatedNote, SecretKey, TransparentNote,
+    rpc, utils, Note, NoteGenerator, NoteType, NoteUtxoType, ObfuscatedNote, SecretKey,
+    TransparentNote,
 };
+
+use std::convert::TryFrom;
 
 #[test]
 fn transparent_note() {
@@ -28,8 +31,17 @@ fn obfuscated_note() {
     assert_eq!(note.note(), NoteType::Obfuscated);
 
     let proof = note.prove_value(&vk).unwrap();
-
     note.verify_value(&proof).unwrap();
+
+    let rpc_note = rpc::Note::from(note.clone());
+    let deserialized_note = ObfuscatedNote::try_from(rpc_note).unwrap();
+    assert_eq!(deserialized_note, note);
+
+    let rpc_decrypted_note = note.clone().rpc_decrypted_note(&vk);
+    let deserialized_note = ObfuscatedNote::try_from(rpc_decrypted_note).unwrap();
+    assert_eq!(deserialized_note, note);
+
+    assert_eq!(value, note.value(Some(&vk)));
 }
 
 #[test]
