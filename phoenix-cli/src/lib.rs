@@ -19,6 +19,9 @@ pub use error::Error;
 
 pub mod error;
 
+#[cfg(test)]
+mod tests;
+
 lazy_static::lazy_static! {
     static ref THEME: ColorfulTheme = ColorfulTheme {
         values_style: Style::new().yellow().dim(),
@@ -99,8 +102,7 @@ pub fn show_pk_from_sk() -> Result<Flow, Error> {
     Ok(Flow::Continue)
 }
 
-pub async fn query_inputs() -> Result<Vec<TransactionItem>, Error> {
-    let sk = input_sk()?;
+pub async fn query_inputs(sk: SecretKey) -> Result<Vec<TransactionItem>, Error> {
     let vk: rpc::ViewKey = sk.view_key().into();
 
     println!(
@@ -179,7 +181,7 @@ pub async fn query_inputs() -> Result<Vec<TransactionItem>, Error> {
 }
 
 pub async fn scan() -> Result<Flow, Error> {
-    let (items, values): (Vec<String>, Vec<u64>) = query_inputs()
+    let (items, values): (Vec<String>, Vec<u64>) = query_inputs(input_sk()?)
         .await?
         .into_iter()
         .map(|item| {
@@ -350,21 +352,22 @@ pub async fn transaction() -> Result<Flow, Error> {
                 }
             }
             2 => {
-                let (descriptions, items): (Vec<String>, Vec<TransactionItem>) = query_inputs()
-                    .await?
-                    .into_iter()
-                    .map(|item| {
-                        (
-                            format!(
-                                "{:?}, position {}, value {}",
-                                item.note_type(),
-                                item.idx().pos,
-                                item.value()
-                            ),
-                            item,
-                        )
-                    })
-                    .unzip();
+                let (descriptions, items): (Vec<String>, Vec<TransactionItem>) =
+                    query_inputs(input_sk()?)
+                        .await?
+                        .into_iter()
+                        .map(|item| {
+                            (
+                                format!(
+                                    "{:?}, position {}, value {}",
+                                    item.note_type(),
+                                    item.idx().pos,
+                                    item.value()
+                                ),
+                                item,
+                            )
+                        })
+                        .unzip();
 
                 let defaults: Vec<bool> = items.iter().map(|_| false).collect();
 

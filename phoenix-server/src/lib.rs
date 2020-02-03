@@ -218,8 +218,7 @@ impl Phoenix for PhoenixServer {
         let idx: Idx = request
             .pos
             .ok_or(Error::InvalidParameters)
-            .map_err(error_to_tonic)?
-            .into();
+            .map_err(error_to_tonic)?;
 
         let sk: SecretKey = request
             .sk
@@ -256,7 +255,7 @@ impl Phoenix for PhoenixServer {
 
         let note_type: rpc::NoteType = request.note_type.try_into().map_err(error_to_tonic)?;
 
-        let txo = match note_type.into() {
+        let txo = match note_type {
             NoteType::Transparent => {
                 let (note, blinding_factor) = TransparentNote::output(&pk, request.value);
                 note.to_transaction_output(request.value, blinding_factor, pk)
