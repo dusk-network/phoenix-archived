@@ -129,36 +129,22 @@ impl Transaction {
         let output: LinearCombination = var.into();
         self.fee = fee;
 
-        // TODO - Refactor into gadgets
-        let (input, output) = self.items().iter().fold(
-            (LinearCombination::default(), output),
-            |(mut input, mut output), item| {
+        let items_with_value_commitments = self
+            .items()
+            .iter()
+            .map(|item| {
                 let value = item.value();
                 let value = Scalar::from(value);
-                let utxo = item.note().utxo();
                 let blinding_factor = *item.blinding_factor();
 
                 let (_, var) = prover.commit(value, blinding_factor);
                 let lc: LinearCombination = var.into();
 
-                match utxo {
-                    NoteUtxoType::Input => {
-                        let total = input.clone();
-                        input = input.clone() + lc.clone();
-                        prover.constrain(input.clone() - (total + lc));
-                    }
-                    NoteUtxoType::Output => {
-                        let total = output.clone();
-                        output = output.clone() + lc.clone();
-                        prover.constrain(output.clone() - (total + lc));
-                    }
-                }
+                (item, lc)
+            })
+            .collect::<Vec<(&TransactionItem, LinearCombination)>>();
 
-                (input, output)
-            },
-        );
-
-        prover.constrain(input - output);
+        gadgets::transaction_balance(&mut prover, items_with_value_commitments, output);
 
         let proof = prover.prove(&bp_gens).map_err(Error::from)?;
 
@@ -187,34 +173,20 @@ impl Transaction {
 
         let output: LinearCombination = verifier.commit(*self.fee.note().commitment()).into();
 
-        // TODO - Refactor into gadgets
-        let (input, output) = self.items().iter().fold(
-            (LinearCombination::default(), output),
-            |(mut input, mut output), item| {
+        let items_with_value_commitments = self
+            .items()
+            .iter()
+            .map(|item| {
                 let commitment = *item.note().commitment();
-                let utxo = item.note().utxo();
 
                 let var = verifier.commit(commitment);
                 let lc: LinearCombination = var.into();
 
-                match utxo {
-                    NoteUtxoType::Input => {
-                        let total = input.clone();
-                        input = input.clone() + lc.clone();
-                        verifier.constrain(input.clone() - (total + lc));
-                    }
-                    NoteUtxoType::Output => {
-                        let total = output.clone();
-                        output = output.clone() + lc.clone();
-                        verifier.constrain(output.clone() - (total + lc));
-                    }
-                }
+                (item, lc)
+            })
+            .collect::<Vec<(&TransactionItem, LinearCombination)>>();
 
-                (input, output)
-            },
-        );
-
-        verifier.constrain(input - output);
+        gadgets::transaction_balance(&mut verifier, items_with_value_commitments, output);
 
         verifier
             .verify(proof, &pc_gens, &bp_gens)
