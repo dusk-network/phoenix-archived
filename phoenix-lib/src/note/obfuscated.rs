@@ -10,6 +10,7 @@ use std::convert::{TryFrom, TryInto};
 use sha2::{Digest, Sha512};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+/// A note that hides its value and blinding factor
 pub struct ObfuscatedNote {
     utxo: NoteUtxoType,
     commitment: CompressedRistretto,
@@ -22,6 +23,7 @@ pub struct ObfuscatedNote {
 }
 
 impl ObfuscatedNote {
+    /// [`ObfuscatedNote`] constructor
     pub fn new(
         utxo: NoteUtxoType,
         commitment: CompressedRistretto,

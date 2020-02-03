@@ -12,12 +12,14 @@ use tracing::trace;
 
 pub use item::TransactionItem;
 
+/// Transaction item definitions
 pub mod item;
 
 #[cfg(test)]
 mod tests;
 
 #[derive(Debug, Clone, Default)]
+/// A phoenix transaction
 pub struct Transaction {
     fee: TransactionItem,
     items: Vec<TransactionItem>,
@@ -41,6 +43,7 @@ impl PartialEq for Transaction {
 impl Eq for Transaction {}
 
 impl Transaction {
+    /// Hash the transaction to a [`Scalar`]
     pub fn hash(&self) -> Scalar {
         let mut hasher = Sha512::default();
 
@@ -67,48 +70,73 @@ impl Transaction {
         Scalar::from_hash(hasher)
     }
 
+    /// Append a transaction item to the transaction.
+    ///
+    /// No validation is performed
     pub fn push(&mut self, item: TransactionItem) {
         self.items.push(item);
     }
 
+    /// Return the fee value.
+    ///
+    /// A transaction is created with a random public key for the fee. The pre-image of the fee
+    /// note is not validated on the r1cs circuit, so the public key can later be changed by a
+    /// block generator
     pub fn fee(&self) -> &TransactionItem {
         &self.fee
     }
 
+    /// Set the fee value.
     pub fn set_fee(&mut self, fee: TransactionItem) {
         self.fee = fee;
     }
 
+    /// Set the public key of a block generator. This will not affect the r1cs proof
     pub fn set_fee_pk(&mut self, _pk: &PublicKey) {
         // TODO - Set the PK of the miner
     }
 
+    /// Reference to the transaction items
     pub fn items(&self) -> &Vec<TransactionItem> {
         &self.items
     }
 
+    /// Remove a specific item from the transaction. Internally calls the `Vec::remove` method
     pub fn remove_item(&mut self, index: usize) {
         if index < self.items.len() {
             self.items.remove(index);
         }
     }
 
+    /// R1cs proof circuit. The circuit is created with [`Transaction::prove`], and depends on the
+    /// correct secrets set on the transaction items.
+    ///
+    /// These secrets are obfuscate on propagation
     pub fn r1cs(&self) -> Option<&R1CSProof> {
         self.r1cs.as_ref()
     }
 
+    /// Replace the r1cs proof circuit
     pub fn set_r1cs(&mut self, r1cs: R1CSProof) {
         self.r1cs.replace(r1cs);
     }
 
+    /// Commitment points of the proved transaction. Created by [`Transaction::prove`]
     pub fn commitments(&self) -> &Vec<CompressedRistretto> {
         &self.commitments
     }
 
+    /// Commitment points of the r1cs circuit
     pub fn set_commitments(&mut self, commitments: Vec<CompressedRistretto>) {
         self.commitments = commitments;
     }
 
+    /// Perform the zk proof, and save internally the created r1cs circuit and the commitment
+    /// points.
+    ///
+    /// Depends on the secret data of the transaction items
+    ///
+    /// The transaction items will be sorted for verification correctness
     pub fn prove(&mut self) -> Result<(), Error> {
         if self.items().len() > MAX_NOTES_PER_TRANSACTION {
             return Err(Error::MaximumNotes);
@@ -190,6 +218,12 @@ impl Transaction {
         Ok(())
     }
 
+    /// Verify a previously proven transaction with [`Transaction::prove`].
+    ///
+    /// Doesn't depend on the transaction items secret data. Depends only on the constructed
+    /// circuit and commitment points.
+    ///
+    /// The transaction items will be sorted for verification correctness
     pub fn verify(&mut self) -> Result<(), Error> {
         let proof = self.r1cs.as_ref().ok_or(Error::TransactionNotPrepared)?;
 
@@ -231,22 +265,9 @@ impl Transaction {
             .map_err(Error::from)
     }
 
-    pub fn prepare(&mut self, db: &Db) -> Result<(), Error> {
-        // Grant no nullifier exists for the inputs
-        self.items.iter().try_fold((), |_, i| {
-            if i.utxo() == NoteUtxoType::Input {
-                let nullifier = i.nullifier();
-                if db.fetch_nullifier(nullifier)?.is_some() {
-                    return Err(Error::Generic);
-                }
-            }
-
-            Ok(())
-        })?;
-
-        Ok(())
-    }
-
+    /// Create a new transaction from a set of inputs/outputs defined by a rpc source.
+    ///
+    /// Will prove and verify the created transaction.
     pub fn try_from_rpc_io(
         db: &Db,
         fee_value: u64,
@@ -281,6 +302,10 @@ impl Transaction {
         Ok(transaction)
     }
 
+    /// Attempt to create a transaction from a rpc request.
+    ///
+    /// If there is a r1cs proof present on the request, will attempt to verify it against the
+    /// proof.
     pub fn try_from_rpc_transaction(db: &Db, tx: rpc::Transaction) -> Result<Self, Error> {
         let mut transaction = Transaction::default();
 

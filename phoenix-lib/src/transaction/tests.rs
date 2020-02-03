@@ -208,7 +208,7 @@ fn transactions_with_transparent_notes() {
     transaction.push(note.to_transaction_output(value, blinding_factor, pk));
 
     // Execute the transaction
-    transaction.prepare(&db).unwrap();
+    transaction.prove().unwrap();
     let unspent_outputs = db.store(&transaction).unwrap();
 
     // Assert the spent note is nullified

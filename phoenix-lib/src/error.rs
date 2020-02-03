@@ -28,8 +28,8 @@ macro_rules! from_error_unit {
     };
 }
 
-/// Standard error for the interface
 #[derive(Debug)]
+/// Standard error for the interface
 pub enum Error {
     /// [`R1CSError`]
     R1CS(R1CSError),
@@ -54,6 +54,7 @@ pub enum Error {
 }
 
 impl Error {
+    /// Return a generic error from any type. Represents a cryptographic bottom
     pub fn generic<T>(_e: T) -> Error {
         Error::Generic
     }

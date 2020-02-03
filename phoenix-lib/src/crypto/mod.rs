@@ -11,6 +11,7 @@ use sodiumoxide::crypto::box_::curve25519xsalsa20poly1305::{
 #[cfg(test)]
 mod tests;
 
+/// Encrypt a message using `r` as secret for the sender, and `pk` as public for the receiver
 pub fn encrypt<V: AsRef<[u8]>>(r: &Scalar, pk: &PublicKey, nonce: &Nonce, value: V) -> Vec<u8> {
     let a_g = SodiumPk(pk.a_g.to_montgomery().to_bytes());
     let r = SodiumSk(r.to_bytes());
@@ -18,6 +19,7 @@ pub fn encrypt<V: AsRef<[u8]>>(r: &Scalar, pk: &PublicKey, nonce: &Nonce, value:
     box_::seal(value.as_ref(), nonce, &a_g, &r)
 }
 
+/// Decrypt a message using `r_g` as public of the sender, and `vk` as secret for the receiver
 pub fn decrypt(r_g: &EdwardsPoint, vk: &ViewKey, nonce: &Nonce, value: &[u8]) -> Vec<u8> {
     let r_g = SodiumPk(r_g.to_montgomery().to_bytes());
     let a = SodiumSk(vk.a.to_bytes());
@@ -29,6 +31,7 @@ pub fn decrypt(r_g: &EdwardsPoint, vk: &ViewKey, nonce: &Nonce, value: &[u8]) ->
     })
 }
 
+/// Hash an arbitrary long message to a [`Scalar`]
 pub fn sponge_hash(s: &[Scalar]) -> Scalar {
     // TODO - Update hades252 to a never-fail scalar hash
     // TODO - This is not truly a sponge function; scalar::hash will fail if the input width is
@@ -36,6 +39,7 @@ pub fn sponge_hash(s: &[Scalar]) -> Scalar {
     scalar::hash(s).unwrap()
 }
 
+/// Hash a [`Scalar`]
 pub fn hash_scalar(s: &Scalar) -> Scalar {
     sponge_hash(&[*s])
 }

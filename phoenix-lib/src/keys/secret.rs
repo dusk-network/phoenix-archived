@@ -8,8 +8,13 @@ use rand::{RngCore, SeedableRng};
 use sha2::{Digest, Sha512};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// Secret pair of a and b
+///
+/// It is used to create a note nullifier via secret b
 pub struct SecretKey {
+    /// Secret scalar
     pub a: Scalar,
+    /// Secret scalar
     pub b: Scalar,
 }
 
@@ -23,10 +28,12 @@ impl Default for SecretKey {
 }
 
 impl SecretKey {
+    /// [`SecretKey`] constructor
     pub fn new(a: Scalar, b: Scalar) -> Self {
         SecretKey { a, b }
     }
 
+    /// Derive the secret to deterministically construct a [`PublicKey`]
     pub fn public_key(&self) -> PublicKey {
         let a_g = utils::mul_by_basepoint_edwards(&self.a);
         let b_g = utils::mul_by_basepoint_edwards(&self.b);
@@ -34,6 +41,7 @@ impl SecretKey {
         PublicKey::new(a_g, b_g)
     }
 
+    /// Derive the secret to deterministically construct a [`ViewKey`]
     pub fn view_key(&self) -> ViewKey {
         let b_g = utils::mul_by_basepoint_edwards(&self.b);
 
