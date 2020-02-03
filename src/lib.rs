@@ -25,3 +25,6 @@ pub mod rpc;
 pub mod transaction;
 pub mod utils;
 pub mod zk;
+
+pub const GENERATORS_CAPACITY: usize = 4096;
+pub const MAX_NOTES_PER_TRANSACTION: usize = 10;
