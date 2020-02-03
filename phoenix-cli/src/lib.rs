@@ -147,7 +147,7 @@ pub async fn query_inputs(sk: SecretKey) -> Result<Vec<TransactionItem>, Error> 
         })
         .collect();
 
-    pb_notes.finish();
+    pb_notes.finish_and_clear();
 
     println!(
         "{} {}Querying nullifiers status...",
@@ -175,7 +175,7 @@ pub async fn query_inputs(sk: SecretKey) -> Result<Vec<TransactionItem>, Error> 
         pb_nullifiers.inc(1);
     }
 
-    pb_nullifiers.finish();
+    pb_nullifiers.finish_and_clear();
 
     Ok(items)
 }
@@ -274,7 +274,7 @@ pub async fn transaction() -> Result<Flow, Error> {
     let mut tx = Transaction::default();
     pb_tx.inc(1);
 
-    pb_tx.finish();
+    pb_tx.finish_and_clear();
 
     loop {
         let fee = tx.fee().value();
@@ -491,10 +491,10 @@ pub async fn transaction() -> Result<Flow, Error> {
                         println!("The transaction was stored on the server.");
 
                         pb_tx.inc(1);
-                        pb_tx.finish();
+                        pb_tx.finish_and_clear();
                         break;
                     }
-                    pb_tx.finish();
+                    pb_tx.finish_and_clear();
                 }
             }
             _ => break,
