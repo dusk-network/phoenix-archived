@@ -92,7 +92,7 @@ impl Note for TransparentNote {
         hasher.input(&self.nonce);
         hasher.input(self.r_g.compress().as_bytes());
         hasher.input(self.pk_r.compress().as_bytes());
-        hasher.input(&self.idx.clone().to_vec());
+        hasher.input(&self.idx.clone().into_vec());
         hasher.input(&self.commitment.as_bytes());
         hasher.input(&self.encrypted_blinding_factor);
 

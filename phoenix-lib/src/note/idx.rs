@@ -5,7 +5,7 @@ use std::hash::{Hash, Hasher};
 use rpc::Idx;
 
 impl Idx {
-    pub fn to_vec(self) -> Vec<u8> {
+    pub fn into_vec(self) -> Vec<u8> {
         self.into()
     }
 }

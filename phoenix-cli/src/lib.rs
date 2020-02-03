@@ -475,7 +475,7 @@ pub async fn transaction() -> Result<Flow, Error> {
 
                     let addr = (&*ADDR).lock().map(|a| String::from(&*a))?;
                     if Confirmation::new()
-                        .with_text(format!("The transaction will be sent to the following Phoenix server: {}. Confirm?", addr).as_str())
+                        .with_text(format!("The transaction {} will be sent to the following Phoenix server: {}. Confirm?", hex::encode(tx.hash().as_bytes()), addr).as_str())
                         .interact()?
                     {
                         pb_tx.inc(1);

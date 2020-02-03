@@ -3,6 +3,8 @@ use crate::{Error, Idx, Note, NoteUtxoType, Nullifier, Scalar, Transaction, Tran
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
 
+use tracing::trace;
+
 #[cfg(test)]
 mod tests;
 
@@ -42,6 +44,7 @@ impl Db {
         let mut idx = vec![];
 
         for t in transactions {
+            trace!("Storing tx {}", hex::encode(t.hash().as_bytes()));
             idx.extend(self.store(t)?);
         }
 

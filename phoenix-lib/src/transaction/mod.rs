@@ -7,6 +7,7 @@ use crate::{
 use std::convert::TryFrom;
 
 use rand::rngs::OsRng;
+use sha2::{Digest, Sha512};
 use tracing::trace;
 
 pub use item::TransactionItem;
@@ -40,6 +41,32 @@ impl PartialEq for Transaction {
 impl Eq for Transaction {}
 
 impl Transaction {
+    pub fn hash(&self) -> Scalar {
+        let mut hasher = Sha512::default();
+
+        hasher.input(&self.fee.value().to_le_bytes()[..]);
+
+        self.items
+            .iter()
+            .for_each(|i| hasher.input(i.hash().as_bytes()));
+        (self.items.len()..MAX_NOTES_PER_TRANSACTION)
+            .for_each(|_| hasher.input(Scalar::one().as_bytes()));
+
+        if let Some(proof) = self.r1cs.as_ref() {
+            hasher.input(proof.to_bytes());
+        } else {
+            hasher.input(Scalar::one().as_bytes());
+        }
+
+        self.commitments
+            .iter()
+            .for_each(|c| hasher.input(c.as_bytes()));
+        (self.commitments.len()..MAX_NOTES_PER_TRANSACTION)
+            .for_each(|_| hasher.input(Scalar::one().as_bytes()));
+
+        Scalar::from_hash(hasher)
+    }
+
     pub fn push(&mut self, item: TransactionItem) {
         self.items.push(item);
     }
@@ -86,6 +113,8 @@ impl Transaction {
         if self.items().len() > MAX_NOTES_PER_TRANSACTION {
             return Err(Error::MaximumNotes);
         }
+
+        self.items.sort();
 
         let (pc_gens, bp_gens, mut transcript) = gen_cs_transcript();
         let mut prover = Prover::new(&pc_gens, &mut transcript);
@@ -161,8 +190,10 @@ impl Transaction {
         Ok(())
     }
 
-    pub fn verify(&self) -> Result<(), Error> {
+    pub fn verify(&mut self) -> Result<(), Error> {
         let proof = self.r1cs.as_ref().ok_or(Error::TransactionNotPrepared)?;
+
+        self.items.sort();
 
         let (pc_gens, bp_gens, mut transcript) = gen_cs_transcript();
         let mut verifier = Verifier::new(&mut transcript);
@@ -270,6 +301,11 @@ impl Transaction {
         } else {
             Some(R1CSProof::from_bytes(tx.r1cs.as_slice())?)
         };
+
+        trace!(
+            "Transaction {} parsed",
+            hex::encode(transaction.hash().as_bytes())
+        );
 
         if transaction.r1cs.is_some() {
             transaction.verify()?;
