@@ -29,7 +29,7 @@ pub fn clamp_bytes(b: &mut [u8; 32]) {
 }
 
 pub fn mul_by_basepoint_edwards(s: &Scalar) -> EdwardsPoint {
-    (&constants::ED25519_BASEPOINT_TABLE * s)
+    &constants::ED25519_BASEPOINT_TABLE * s
 }
 
 pub fn edwards_to_scalar(p: EdwardsPoint) -> Scalar {

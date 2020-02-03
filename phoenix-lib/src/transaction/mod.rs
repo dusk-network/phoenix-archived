@@ -1,5 +1,5 @@
 use crate::{
-    rpc, utils, zk::gadgets, zk::value::gen_cs_transcript, CompressedRistretto, ConstraintSystem,
+    rpc, utils, zk::gadgets, zk::value::gen_cs_transcript, CompressedRistretto,
     Db, Error, LinearCombination, NoteGenerator, NoteUtxoType, Prover, PublicKey, R1CSProof,
     Scalar, SecretKey, TransparentNote, Variable, Verifier, MAX_NOTES_PER_TRANSACTION,
 };
