@@ -2,6 +2,9 @@ use crate::{ConstraintSystem, LinearCombination, NoteUtxoType, TransactionItem};
 
 use hades252::linear_combination;
 
+// The gadgets cannot be tested individually; they are tested within the circuit proving /
+// verification
+
 pub fn note_preimage(
     cs: &mut dyn ConstraintSystem,
     note_pre_image: LinearCombination,
