@@ -111,9 +111,9 @@ pub trait Note: Debug + Send + Sync {
     }
 
     fn rpc_decrypted_note(&self, vk: &ViewKey) -> rpc::DecryptedNote {
-        let note_type: rpc::NoteType = self.note().into();
+        let note_type: rpc::NoteType = self.note();
         let note_type = note_type.into();
-        let pos = Some((self.idx().clone()).into());
+        let pos = Some(self.idx().clone());
         let value = self.value(Some(vk));
         let io: rpc::InputOutput = self.utxo().into();
         let io = io.into();
