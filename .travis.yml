@@ -14,5 +14,8 @@ matrix:
           # Send a notification to the Dusk build Status Telegram channel once the CI build completes
         - bash <(curl -s https://raw.githubusercontent.com/dusk-network/tools/master/bash/telegram_ci_notifications.sh)
 
+before_script:
+  - cargo install --force rustfmt-nightly
+
 script:
   - cargo test --release
