@@ -69,7 +69,7 @@ fn rpc_transaction() {
     let commitments = transaction.commitments().clone();
 
     let transaction: rpc::Transaction = transaction.into();
-    let transaction = Transaction::try_from_rpc_transaction(&db, transaction).unwrap();
+    let mut transaction = Transaction::try_from_rpc_transaction(&db, transaction).unwrap();
 
     let deserialized_proof = transaction.r1cs().cloned().unwrap();
     let deserialized_commitments = transaction.commitments().clone();

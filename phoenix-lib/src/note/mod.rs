@@ -4,6 +4,7 @@ use crate::{
 };
 
 use std::{
+    cmp::Ordering,
     convert::{TryFrom, TryInto},
     fmt::Debug,
 };
@@ -198,6 +199,30 @@ pub enum NoteUtxoType {
 impl Default for NoteUtxoType {
     fn default() -> Self {
         NoteUtxoType::Input
+    }
+}
+
+impl Ord for NoteUtxoType {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if self == other {
+            Ordering::Equal
+        } else if self == &NoteUtxoType::Input {
+            Ordering::Less
+        } else {
+            Ordering::Greater
+        }
+    }
+}
+
+impl PartialOrd for NoteUtxoType {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        if self == other {
+            Some(Ordering::Equal)
+        } else if self == &NoteUtxoType::Input {
+            Some(Ordering::Less)
+        } else {
+            Some(Ordering::Greater)
+        }
     }
 }
 

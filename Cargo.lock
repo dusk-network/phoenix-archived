@@ -861,6 +861,7 @@ dependencies = [
  "indicatif",
  "lazy_static",
  "phoenix-lib",
+ "phoenix-server",
  "tokio",
  "tonic",
 ]

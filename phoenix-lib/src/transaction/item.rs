@@ -3,7 +3,10 @@ use crate::{
     PublicKey, Scalar, SecretKey, TransparentNote,
 };
 
+use std::cmp::Ordering;
 use std::convert::{TryFrom, TryInto};
+
+use sha2::{Digest, Sha512};
 
 #[derive(Debug)]
 pub struct TransactionItem {
@@ -26,6 +29,36 @@ impl PartialEq for TransactionItem {
     }
 }
 impl Eq for TransactionItem {}
+
+impl Ord for TransactionItem {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if self.note.utxo() != other.note.utxo() {
+            self.note.utxo().cmp(&other.note.utxo())
+        } else if self.value != other.value {
+            self.value.cmp(&other.value)
+        } else {
+            self.note
+                .hash()
+                .as_bytes()
+                .cmp(other.note.hash().as_bytes())
+        }
+    }
+}
+
+impl PartialOrd for TransactionItem {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        if self.note.utxo() != other.note.utxo() {
+            self.note.utxo().partial_cmp(&other.note.utxo())
+        } else if self.value != other.value {
+            self.value.partial_cmp(&other.value)
+        } else {
+            self.note
+                .hash()
+                .as_bytes()
+                .partial_cmp(other.note.hash().as_bytes())
+        }
+    }
+}
 
 impl Clone for TransactionItem {
     fn clone(&self) -> Self {
@@ -70,6 +103,27 @@ impl TransactionItem {
             sk,
             pk,
         }
+    }
+
+    pub fn hash(&self) -> Scalar {
+        // TODO - Use poseidon sponge, when available
+        let mut hasher = Sha512::default();
+
+        hasher.input(self.note.hash().as_bytes());
+        hasher.input(self.nullifier.x.as_bytes());
+        hasher.input(&self.value.to_le_bytes()[..]);
+        hasher.input(self.blinding_factor.as_bytes());
+        if let Some(sk) = self.sk.as_ref() {
+            hasher.input(sk.a.as_bytes());
+            hasher.input(sk.b.as_bytes());
+        } else {
+            hasher.input(Scalar::one().as_bytes());
+            hasher.input(Scalar::one().as_bytes());
+        }
+        hasher.input(self.pk.a_g.compress().as_bytes());
+        hasher.input(self.pk.b_g.compress().as_bytes());
+
+        Scalar::from_hash(hasher)
     }
 
     pub fn value(&self) -> u64 {

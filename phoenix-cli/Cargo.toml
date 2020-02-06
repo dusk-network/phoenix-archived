@@ -14,3 +14,6 @@ lazy_static = "^1.4"
 futures = "^0.3"
 hex = "^0.4"
 tokio = { version = "0.2", features = ["rt-threaded", "time", "stream", "fs", "macros", "uds"] }
+
+[dev-dependencies]
+phoenix-server = { path = "../phoenix-server" }

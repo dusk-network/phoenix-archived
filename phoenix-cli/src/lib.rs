@@ -19,6 +19,9 @@ pub use error::Error;
 
 pub mod error;
 
+#[cfg(test)]
+mod tests;
+
 lazy_static::lazy_static! {
     static ref THEME: ColorfulTheme = ColorfulTheme {
         values_style: Style::new().yellow().dim(),
@@ -99,8 +102,7 @@ pub fn show_pk_from_sk() -> Result<Flow, Error> {
     Ok(Flow::Continue)
 }
 
-pub async fn query_inputs() -> Result<Vec<TransactionItem>, Error> {
-    let sk = input_sk()?;
+pub async fn query_inputs(sk: SecretKey) -> Result<Vec<TransactionItem>, Error> {
     let vk: rpc::ViewKey = sk.view_key().into();
 
     println!(
@@ -145,7 +147,7 @@ pub async fn query_inputs() -> Result<Vec<TransactionItem>, Error> {
         })
         .collect();
 
-    pb_notes.finish();
+    pb_notes.finish_and_clear();
 
     println!(
         "{} {}Querying nullifiers status...",
@@ -173,13 +175,13 @@ pub async fn query_inputs() -> Result<Vec<TransactionItem>, Error> {
         pb_nullifiers.inc(1);
     }
 
-    pb_nullifiers.finish();
+    pb_nullifiers.finish_and_clear();
 
     Ok(items)
 }
 
 pub async fn scan() -> Result<Flow, Error> {
-    let (items, values): (Vec<String>, Vec<u64>) = query_inputs()
+    let (items, values): (Vec<String>, Vec<u64>) = query_inputs(input_sk()?)
         .await?
         .into_iter()
         .map(|item| {
@@ -272,7 +274,7 @@ pub async fn transaction() -> Result<Flow, Error> {
     let mut tx = Transaction::default();
     pb_tx.inc(1);
 
-    pb_tx.finish();
+    pb_tx.finish_and_clear();
 
     loop {
         let fee = tx.fee().value();
@@ -350,21 +352,22 @@ pub async fn transaction() -> Result<Flow, Error> {
                 }
             }
             2 => {
-                let (descriptions, items): (Vec<String>, Vec<TransactionItem>) = query_inputs()
-                    .await?
-                    .into_iter()
-                    .map(|item| {
-                        (
-                            format!(
-                                "{:?}, position {}, value {}",
-                                item.note_type(),
-                                item.idx().pos,
-                                item.value()
-                            ),
-                            item,
-                        )
-                    })
-                    .unzip();
+                let (descriptions, items): (Vec<String>, Vec<TransactionItem>) =
+                    query_inputs(input_sk()?)
+                        .await?
+                        .into_iter()
+                        .map(|item| {
+                            (
+                                format!(
+                                    "{:?}, position {}, value {}",
+                                    item.note_type(),
+                                    item.idx().pos,
+                                    item.value()
+                                ),
+                                item,
+                            )
+                        })
+                        .unzip();
 
                 let defaults: Vec<bool> = items.iter().map(|_| false).collect();
 
@@ -472,7 +475,7 @@ pub async fn transaction() -> Result<Flow, Error> {
 
                     let addr = (&*ADDR).lock().map(|a| String::from(&*a))?;
                     if Confirmation::new()
-                        .with_text(format!("The transaction will be sent to the following Phoenix server: {}. Confirm?", addr).as_str())
+                        .with_text(format!("The transaction {} will be sent to the following Phoenix server: {}. Confirm?", hex::encode(tx.hash().as_bytes()), addr).as_str())
                         .interact()?
                     {
                         pb_tx.inc(1);
@@ -488,10 +491,10 @@ pub async fn transaction() -> Result<Flow, Error> {
                         println!("The transaction was stored on the server.");
 
                         pb_tx.inc(1);
-                        pb_tx.finish();
+                        pb_tx.finish_and_clear();
                         break;
                     }
-                    pb_tx.finish();
+                    pb_tx.finish_and_clear();
                 }
             }
             _ => break,
