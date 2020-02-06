@@ -9,6 +9,10 @@ use std::convert::{TryFrom, TryInto};
 use sha2::{Digest, Sha512};
 
 #[derive(Debug)]
+/// A transaction item constains sensitive data for a proof creation, and must be obfuscated before
+/// network propagation.
+///
+/// The secret is required on this structure for the proof generation
 pub struct TransactionItem {
     note: Box<dyn Note>,
     nullifier: Nullifier,
@@ -87,6 +91,7 @@ impl Default for TransactionItem {
 }
 
 impl TransactionItem {
+    /// [`TransactionItem`] constructor
     pub fn new<N: Note>(
         note: N,
         nullifier: Nullifier,
@@ -105,6 +110,7 @@ impl TransactionItem {
         }
     }
 
+    /// Deterministically hash the tx item to a [`Scalar`]
     pub fn hash(&self) -> Scalar {
         // TODO - Use poseidon sponge, when available
         let mut hasher = Sha512::default();
@@ -126,54 +132,68 @@ impl TransactionItem {
         Scalar::from_hash(hasher)
     }
 
+    /// The note value of the tx item
     pub fn value(&self) -> u64 {
         self.value
     }
 
+    /// Set the note value. Doesn't change the note, for it can be either obfuscated or transparent
     pub fn set_value(&mut self, value: u64) {
         self.value = value;
     }
 
+    /// Public key used to construct the tx output
     pub fn pk(&self) -> &PublicKey {
         &self.pk
     }
 
+    /// Set the public key used to construct the tx output
     pub fn set_pk(&mut self, pk: PublicKey) {
         self.pk = pk;
     }
 
+    /// Position of the input on the notes tree
     pub fn idx(&self) -> &Idx {
         self.note.idx()
     }
 
+    /// Blinding factor used to construct the i/o value
     pub fn blinding_factor(&self) -> &Scalar {
         &self.blinding_factor
     }
 
+    /// Set the blinding factor used to construct the i/o value
     pub fn set_blinding_factor(&mut self, blinding_factor: Scalar) {
         self.blinding_factor = blinding_factor;
     }
 
+    /// Type of the note
     pub fn note_type(&self) -> NoteType {
         self.note.note()
     }
 
+    /// Direction of the transaction item
     pub fn utxo(&self) -> NoteUtxoType {
         self.note.utxo()
     }
 
+    /// Inner implementation of the note
     pub fn note(&self) -> Box<dyn Note> {
         self.note.box_clone()
     }
 
+    /// Set the inner implementation of the note. Will update only the note attribute
     pub fn set_note(&mut self, note: Box<dyn Note>) {
         self.note = note;
     }
 
+    /// Nullifier generated on the transaction input creation process
     pub fn nullifier(&self) -> &Nullifier {
         &self.nullifier
     }
 
+    /// Attempt to generate a transaction input from a provided database and rpc item with the
+    /// position of the note and its secret
     pub fn try_from_rpc_transaction_input(
         db: &Db,
         item: rpc::TransactionInput,

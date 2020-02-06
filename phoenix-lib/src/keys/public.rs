@@ -5,8 +5,11 @@ use std::convert::{TryFrom, TryInto};
 use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// Public pair of a·G and b·G
 pub struct PublicKey {
+    /// Public field element
     pub a_g: EdwardsPoint,
+    /// Public field element
     pub b_g: EdwardsPoint,
 }
 
@@ -17,6 +20,7 @@ impl Default for PublicKey {
 }
 
 impl PublicKey {
+    /// [`PublicKey`] constructor
     pub fn new(a_g: EdwardsPoint, b_g: EdwardsPoint) -> Self {
         PublicKey { a_g, b_g }
     }

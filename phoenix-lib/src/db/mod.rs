@@ -8,6 +8,7 @@ use tracing::trace;
 #[cfg(test)]
 mod tests;
 
+/// Database structure for the notes and nullifiers storage
 pub struct Db {
     // TODO - HashMap and HashSet implementation to emulate KVS. Use Kelvin?
     notes: Arc<Mutex<HashMap<Idx, Box<dyn Note>>>>,
@@ -15,6 +16,7 @@ pub struct Db {
 }
 
 impl Db {
+    /// [`Db`] constructor
     pub fn new() -> Result<Self, Error> {
         Ok(Db {
             notes: Arc::new(Mutex::new(HashMap::new())),
@@ -23,6 +25,7 @@ impl Db {
     }
 
     // TODO - Should be able to rollback state in case of failure
+    /// Store a provided [`Transaction`]. Return the position of the note on the tree.
     pub fn store(&self, transaction: &Transaction) -> Result<Vec<Idx>, Error> {
         let fee = transaction.fee();
 
@@ -40,6 +43,7 @@ impl Db {
     }
 
     // TODO - Should be able to rollback state in case of failure
+    /// Store a set of [`Transaction`]. Return a set of positions of the included notes.
     pub fn store_bulk_transactions(&self, transactions: &[Transaction]) -> Result<Vec<Idx>, Error> {
         let mut idx = vec![];
 
@@ -74,6 +78,7 @@ impl Db {
         }
     }
 
+    /// Store a note. Return the position of the stored note on the tree.
     pub fn store_unspent_note(&self, mut note: Box<dyn Note>) -> Result<Idx, Error> {
         let mut notes = self.notes.try_lock()?;
 
@@ -85,17 +90,20 @@ impl Db {
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
+    /// Provided a position, return a note from the database
     pub fn fetch_box_note(&self, idx: &Idx) -> Result<Box<dyn Note>, Error> {
         let notes = self.notes.try_lock()?;
         notes.get(idx).map(|n| n.box_clone()).ok_or(Error::Generic)
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
+    /// Provided a position, return a strong typed note from the database
     pub fn fetch_note<N: Note>(&self, idx: &Idx) -> Result<N, Error> {
         self.fetch_box_note(idx).map(Db::note_box_into)
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
+    /// Verify the existence of a provided nullifier on the set
     pub fn fetch_nullifier(&self, nullifier: &Nullifier) -> Result<Option<()>, Error> {
         let nullifiers = self.nullifiers.try_lock()?;
         Ok(if nullifiers.contains(nullifier) {
@@ -105,11 +113,15 @@ impl Db {
         })
     }
 
+    /// Convert a `Box<dyn Note>` to a concrete type
     pub fn note_box_into<N>(note: Box<dyn Note>) -> N {
         // TODO - As a temporary solution until Kelvin is implemented, using very unsafe code
         unsafe { Box::into_raw(note).cast::<N>().read() }
     }
 
+    /// Execute `filter` for all the stored notes. Equivalent to [`std::iter::Iterator::filter_map`]
+    ///
+    /// Warning: O(n) operation
     pub fn filter_all_notes(
         &self,
         filter: impl FnMut(&Box<dyn Note>) -> Option<Box<dyn Note>>,

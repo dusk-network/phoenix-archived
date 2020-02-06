@@ -2,9 +2,7 @@ use crate::{ConstraintSystem, LinearCombination, NoteUtxoType, TransactionItem};
 
 use hades252::linear_combination;
 
-// The gadgets cannot be tested individually; they are tested within the circuit proving /
-// verification
-
+/// Pre-image of the note
 pub fn note_preimage(
     cs: &mut dyn ConstraintSystem,
     note_pre_image: LinearCombination,
@@ -18,6 +16,7 @@ pub fn note_preimage(
     cs.constrain(x_lc - x);
 }
 
+/// Constrains that the sum of inputs = outputs + fee
 pub fn transaction_balance(
     cs: &mut dyn ConstraintSystem,
     items: Vec<(&TransactionItem, LinearCombination)>,

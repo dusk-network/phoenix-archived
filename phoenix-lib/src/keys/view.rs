@@ -5,8 +5,14 @@ use std::convert::{TryFrom, TryInto};
 use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// Pair of a secret a and public b·G
+///
+/// The notes are encrypted against secret a, so this is used to decrypt the blinding factor and
+/// value
 pub struct ViewKey {
+    /// Secret scalar
     pub a: Scalar,
+    /// Public field element
     pub b_g: EdwardsPoint,
 }
 
@@ -17,10 +23,12 @@ impl Default for ViewKey {
 }
 
 impl ViewKey {
+    /// [`ViewKey`] constructor
     pub fn new(a: Scalar, b_g: EdwardsPoint) -> Self {
         ViewKey { a, b_g }
     }
 
+    /// Derive the secret to deterministically construct a [`PublicKey`]
     pub fn public_key(&self) -> PublicKey {
         let a_g = utils::mul_by_basepoint_edwards(&self.a);
 

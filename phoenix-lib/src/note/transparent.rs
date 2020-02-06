@@ -9,6 +9,7 @@ use std::convert::{TryFrom, TryInto};
 use sha2::{Digest, Sha512};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+/// A note that does not encrypt its value
 pub struct TransparentNote {
     utxo: NoteUtxoType,
     value: u64,
@@ -27,6 +28,7 @@ impl Default for TransparentNote {
 }
 
 impl TransparentNote {
+    /// [`TransparentNote`] constructor
     pub fn new(
         utxo: NoteUtxoType,
         value: u64,
