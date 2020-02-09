@@ -19,7 +19,7 @@ hex = "^0.4"
 lazy_static = "1.4"
 
 [build-dependencies]
-tonic-build = "0.1"
+tonic-build = { version = "0.1", default-features = false, features = ["transport"] }
 
 [dependencies.bulletproofs]
 git = "https://github.com/dusk-network/bulletproofs.git"
