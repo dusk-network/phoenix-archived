@@ -1,4 +1,4 @@
-use crate::{Idx, Note, Nullifier};
+use crate::{Idx, NoteVariant, Nullifier};
 
 use std::collections::{HashMap, HashSet};
 use std::error;
@@ -99,7 +99,7 @@ impl Into<tonic::Status> for Error {
 from_error!(io::Error, Io);
 from_error!(R1CSError, R1CS);
 from_error_unit!(
-    TryLockError<MutexGuard<'_, HashMap<Idx, Box<(dyn Note + 'static)>>>>,
+    TryLockError<MutexGuard<'_, HashMap<Idx, NoteVariant>>>,
     NotReady
 );
 from_error_unit!(TryLockError<MutexGuard<'_, HashSet<Nullifier>>>, NotReady);

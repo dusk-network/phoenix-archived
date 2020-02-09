@@ -1,5 +1,7 @@
 use crate::{Db, Idx, Note, NoteGenerator, ObfuscatedNote, SecretKey, TransparentNote};
 
+use std::convert::TryInto;
+
 #[test]
 fn store_notes() {
     let db = Db::new().unwrap();
@@ -45,7 +47,7 @@ fn store_notes() {
         .collect();
 
     transaparent_notes.iter().for_each(|(idx, note)| {
-        let db_note: TransparentNote = db.fetch_note(idx).unwrap();
+        let db_note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
 
         assert_eq!(note.utxo(), db_note.utxo());
         assert_eq!(note.note(), db_note.note());
@@ -54,7 +56,7 @@ fn store_notes() {
     });
 
     obfuscated_notes.iter().for_each(|(idx, note)| {
-        let db_note: ObfuscatedNote = db.fetch_note(idx).unwrap();
+        let db_note: ObfuscatedNote = db.fetch_note(idx).unwrap().try_into().unwrap();
 
         assert_eq!(note.utxo(), db_note.utxo());
         assert_eq!(note.note(), db_note.note());

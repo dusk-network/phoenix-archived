@@ -1,4 +1,6 @@
-use crate::{Error, Idx, Note, NoteUtxoType, Nullifier, Scalar, Transaction, TransactionItem};
+use crate::{
+    Error, Idx, Note, NoteUtxoType, NoteVariant, Nullifier, Scalar, Transaction, TransactionItem,
+};
 
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
@@ -11,7 +13,7 @@ mod tests;
 /// Database structure for the notes and nullifiers storage
 pub struct Db {
     // TODO - HashMap and HashSet implementation to emulate KVS. Use Kelvin?
-    notes: Arc<Mutex<HashMap<Idx, Box<dyn Note>>>>,
+    notes: Arc<Mutex<HashMap<Idx, NoteVariant>>>,
     nullifiers: Arc<Mutex<HashSet<Nullifier>>>,
 }
 
@@ -74,12 +76,12 @@ impl Db {
 
             Ok(None)
         } else {
-            self.store_unspent_note(item.note()).map(Some)
+            self.store_unspent_note(item.note().clone()).map(Some)
         }
     }
 
     /// Store a note. Return the position of the stored note on the tree.
-    pub fn store_unspent_note(&self, mut note: Box<dyn Note>) -> Result<Idx, Error> {
+    pub fn store_unspent_note(&self, mut note: NoteVariant) -> Result<Idx, Error> {
         let mut notes = self.notes.try_lock()?;
 
         let idx: Idx = (notes.len() as u64).into();
@@ -90,16 +92,10 @@ impl Db {
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
-    /// Provided a position, return a note from the database
-    pub fn fetch_box_note(&self, idx: &Idx) -> Result<Box<dyn Note>, Error> {
-        let notes = self.notes.try_lock()?;
-        notes.get(idx).map(|n| n.box_clone()).ok_or(Error::Generic)
-    }
-
-    #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
     /// Provided a position, return a strong typed note from the database
-    pub fn fetch_note<N: Note>(&self, idx: &Idx) -> Result<N, Error> {
-        self.fetch_box_note(idx).map(Db::note_box_into)
+    pub fn fetch_note(&self, idx: &Idx) -> Result<NoteVariant, Error> {
+        let notes = self.notes.try_lock()?;
+        notes.get(idx).cloned().ok_or(Error::Generic)
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
@@ -113,19 +109,13 @@ impl Db {
         })
     }
 
-    /// Convert a `Box<dyn Note>` to a concrete type
-    pub fn note_box_into<N>(note: Box<dyn Note>) -> N {
-        // TODO - As a temporary solution until Kelvin is implemented, using very unsafe code
-        unsafe { Box::into_raw(note).cast::<N>().read() }
-    }
-
     /// Execute `filter` for all the stored notes. Equivalent to [`std::iter::Iterator::filter_map`]
     ///
     /// Warning: O(n) operation
     pub fn filter_all_notes(
         &self,
-        filter: impl FnMut(&Box<dyn Note>) -> Option<Box<dyn Note>>,
-    ) -> Result<Vec<Box<dyn Note>>, Error> {
+        filter: impl FnMut(&NoteVariant) -> Option<NoteVariant>,
+    ) -> Result<Vec<NoteVariant>, Error> {
         self.notes
             .try_lock()
             .map(|notes| notes.values().filter_map(filter).collect())

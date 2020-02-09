@@ -3,11 +3,7 @@ use crate::{
     PublicKey, R1CSProof, Scalar, SecretKey, TransactionItem, ViewKey,
 };
 
-use std::{
-    cmp::Ordering,
-    convert::{TryFrom, TryInto},
-    fmt::Debug,
-};
+use std::{cmp::Ordering, convert::TryFrom, fmt::Debug};
 
 /// Note position definitions
 pub mod idx;
@@ -17,6 +13,8 @@ pub mod nullifier;
 pub mod obfuscated;
 /// Transparent note definitions
 pub mod transparent;
+/// Note variant definitions (Transparent and Obfuscated)
+pub mod variant;
 
 #[cfg(test)]
 mod tests;
@@ -24,14 +22,24 @@ mod tests;
 pub use nullifier::Nullifier;
 pub use obfuscated::ObfuscatedNote;
 pub use transparent::TransparentNote;
+pub use variant::NoteVariant;
 
 /// Trait for the notes construction
 pub trait NoteGenerator:
-    Sized + Note + TryFrom<rpc::Note> + TryFrom<rpc::DecryptedNote> + Into<rpc::Note>
+    Sized
+    + Note
+    + TryFrom<rpc::Note>
+    + TryFrom<rpc::DecryptedNote>
+    + Into<rpc::Note>
+    + Into<NoteVariant>
+    + TryFrom<NoteVariant>
 {
     #[allow(clippy::trivially_copy_pass_by_ref)]
     /// Create a new phoenix input note
-    fn input(db: &Db, idx: &Idx) -> Result<Self, Error>;
+    fn input(db: &Db, idx: &Idx) -> Result<Self, Error> {
+        Self::try_from(db.fetch_note(idx)?).map_err(|_| Error::InvalidParameters)
+    }
+
     /// Create a new phoenix output note
     fn output(pk: &PublicKey, value: u64) -> (Self, Scalar);
 
@@ -47,7 +55,7 @@ pub trait NoteGenerator:
         let value = self.value(Some(&vk));
         let blinding_factor = self.blinding_factor(&vk);
 
-        TransactionItem::new(self, nullifier, value, blinding_factor, Some(sk), pk)
+        TransactionItem::new(self.into(), nullifier, value, blinding_factor, Some(sk), pk)
     }
 
     /// Create a new transaction output item provided the target value, blinding factor and pk for
@@ -62,7 +70,14 @@ pub trait NoteGenerator:
     ) -> TransactionItem {
         self.set_utxo(NoteUtxoType::Output);
 
-        TransactionItem::new(self, Nullifier::default(), value, blinding_factor, None, pk)
+        TransactionItem::new(
+            self.into(),
+            Nullifier::default(),
+            value,
+            blinding_factor,
+            None,
+            pk,
+        )
     }
 
     /// Create a `PKr = r · A + B` for the diffie-hellman key exchange
@@ -98,9 +113,6 @@ pub trait NoteGenerator:
 
 /// Phoenix note methods. Both transparent and obfuscated notes implements this
 pub trait Note: Debug + Send + Sync {
-    /// Clone the note into a generic [`Box`]
-    fn box_clone(&self) -> Box<dyn Note>;
-
     /// Generate a proof of knowledge of the value
     ///
     /// N/A to transparent notes.
@@ -290,26 +302,6 @@ impl TryFrom<i32> for NoteType {
             0 => Ok(NoteType::Transparent),
             1 => Ok(NoteType::Obfuscated),
             _ => Err(Error::InvalidParameters),
-        }
-    }
-}
-
-impl From<Box<dyn Note>> for rpc::Note {
-    fn from(note: Box<dyn Note>) -> Self {
-        match note.note() {
-            NoteType::Transparent => Db::note_box_into::<TransparentNote>(note).into(),
-            NoteType::Obfuscated => Db::note_box_into::<ObfuscatedNote>(note).into(),
-        }
-    }
-}
-
-impl TryFrom<rpc::Note> for Box<dyn Note> {
-    type Error = Error;
-
-    fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
-        match note.note_type.try_into()? {
-            rpc::NoteType::Transparent => Ok(Box::new(TransparentNote::try_from(note)?)),
-            rpc::NoteType::Obfuscated => Ok(Box::new(ObfuscatedNote::try_from(note)?)),
         }
     }
 }

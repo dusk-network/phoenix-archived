@@ -90,10 +90,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let pk = sk.public_key();
 
             let note = ObfuscatedNote::output(&pk, value).0;
-            let note = Box::new(note);
 
             warn!("Note created for '{}' with {}", pk, note.value(Some(&vk)));
-            db.store_unspent_note(note).unwrap();
+            db.store_unspent_note(note.into()).unwrap();
         })
         .unwrap_or(());
 

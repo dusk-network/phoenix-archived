@@ -9,7 +9,7 @@ use dialoguer::{
 };
 use indicatif::{MultiProgress, ProgressBar};
 use phoenix_lib::{
-    rpc, NoteGenerator, NoteUtxoType, ObfuscatedNote, PublicKey, SecretKey, Transaction,
+    rpc, Note, NoteGenerator, NoteUtxoType, ObfuscatedNote, PublicKey, SecretKey, Transaction,
     TransactionItem, TransparentNote,
 };
 use tonic::transport::Channel;

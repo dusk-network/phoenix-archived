@@ -1,4 +1,4 @@
-use crate::{ConstraintSystem, LinearCombination, NoteUtxoType, TransactionItem};
+use crate::{ConstraintSystem, LinearCombination, Note, NoteUtxoType, TransactionItem};
 
 use hades252::linear_combination;
 

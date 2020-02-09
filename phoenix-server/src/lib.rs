@@ -1,7 +1,7 @@
 use phoenix_lib::{
     rpc::{self, phoenix_server::Phoenix},
-    Db, Error, Idx, Note, NoteGenerator, NoteType, Nullifier, ObfuscatedNote, PublicKey, Scalar,
-    SecretKey, Transaction, TransparentNote, ViewKey,
+    Db, Error, Idx, Note, NoteGenerator, NoteType, NoteVariant, Nullifier, ObfuscatedNote,
+    PublicKey, Scalar, SecretKey, Transaction, TransparentNote, ViewKey,
 };
 
 use std::convert::TryInto;
@@ -79,7 +79,7 @@ impl Phoenix for PhoenixServer {
             .ok_or(Error::InvalidParameters)
             .map_err(error_to_tonic)?
             .into();
-        let note: Box<dyn Note> = request
+        let note: NoteVariant = request
             .note
             .ok_or(Error::InvalidParameters)
             .and_then(|note| note.try_into())
@@ -124,7 +124,7 @@ impl Phoenix for PhoenixServer {
         let idx: Idx = request.into_inner();
         let note = self
             .db
-            .fetch_box_note(&idx)
+            .fetch_note(&idx)
             .map(|note| note.into())
             .map_err(error_to_tonic)?;
 
@@ -138,7 +138,7 @@ impl Phoenix for PhoenixServer {
         trace!("Incoming decrypt note request");
         let request = request.into_inner();
 
-        let note: Box<dyn Note> = request
+        let note: NoteVariant = request
             .note
             .ok_or(Error::InvalidParameters)
             .and_then(|note| note.try_into())
@@ -171,7 +171,7 @@ impl Phoenix for PhoenixServer {
             .notes
             .into_iter()
             .try_fold(vec![], |mut notes, note| {
-                let note: Box<dyn Note> = note.try_into()?;
+                let note: NoteVariant = note.try_into()?;
 
                 if note.is_owned_by(&vk) {
                     notes.push(note.rpc_decrypted_note(&vk));
@@ -195,7 +195,7 @@ impl Phoenix for PhoenixServer {
             .db
             .filter_all_notes(|note| {
                 if note.is_owned_by(&vk) {
-                    Some(note.box_clone())
+                    Some(note.clone())
                 } else {
                     None
                 }
@@ -226,17 +226,13 @@ impl Phoenix for PhoenixServer {
             .map_err(error_to_tonic)?
             .into();
 
-        let note = self.db.fetch_box_note(&idx).map_err(error_to_tonic)?;
-        let txi = match note.note() {
-            NoteType::Transparent => {
-                Db::note_box_into::<TransparentNote>(note).to_transaction_input(sk)
-            }
-            NoteType::Obfuscated => {
-                Db::note_box_into::<ObfuscatedNote>(note).to_transaction_input(sk)
-            }
-        };
-
+        let txi = self
+            .db
+            .fetch_note(&idx)
+            .map_err(error_to_tonic)?
+            .to_transaction_input(sk);
         let txi: rpc::TransactionInput = txi.into();
+
         Ok(tonic::Response::new(txi))
     }
 
@@ -328,7 +324,7 @@ impl Phoenix for PhoenixServer {
             .map_err(error_to_tonic)?
             .iter()
             .try_fold(vec![], |mut v, idx| {
-                v.push(self.db.fetch_box_note(idx)?.into());
+                v.push(self.db.fetch_note(idx)?.into());
                 Ok(v)
             })
             .map_err(error_to_tonic)?;

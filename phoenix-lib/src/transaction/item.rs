@@ -1,5 +1,5 @@
 use crate::{
-    rpc, Db, Error, Idx, Note, NoteGenerator, NoteType, NoteUtxoType, Nullifier, ObfuscatedNote,
+    rpc, Db, Error, Idx, Note, NoteGenerator, NoteType, NoteUtxoType, NoteVariant, Nullifier,
     PublicKey, Scalar, SecretKey, TransparentNote,
 };
 
@@ -8,13 +8,13 @@ use std::convert::{TryFrom, TryInto};
 
 use sha2::{Digest, Sha512};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 /// A transaction item constains sensitive data for a proof creation, and must be obfuscated before
 /// network propagation.
 ///
 /// The secret is required on this structure for the proof generation
 pub struct TransactionItem {
-    note: Box<dyn Note>,
+    note: NoteVariant,
     nullifier: Nullifier,
     value: u64,
     blinding_factor: Scalar,
@@ -64,19 +64,6 @@ impl PartialOrd for TransactionItem {
     }
 }
 
-impl Clone for TransactionItem {
-    fn clone(&self) -> Self {
-        TransactionItem {
-            note: self.note.box_clone(),
-            nullifier: self.nullifier,
-            value: self.value,
-            blinding_factor: self.blinding_factor,
-            sk: None,
-            pk: self.pk,
-        }
-    }
-}
-
 impl Default for TransactionItem {
     fn default() -> Self {
         let note = TransparentNote::default();
@@ -86,14 +73,14 @@ impl Default for TransactionItem {
         let sk = Some(SecretKey::default());
         let pk = PublicKey::default();
 
-        TransactionItem::new(note, nullifier, value, blinding_factor, sk, pk)
+        TransactionItem::new(note.into(), nullifier, value, blinding_factor, sk, pk)
     }
 }
 
 impl TransactionItem {
     /// [`TransactionItem`] constructor
-    pub fn new<N: Note>(
-        note: N,
+    pub fn new(
+        note: NoteVariant,
         nullifier: Nullifier,
         value: u64,
         blinding_factor: Scalar,
@@ -101,7 +88,7 @@ impl TransactionItem {
         pk: PublicKey,
     ) -> Self {
         TransactionItem {
-            note: note.box_clone(),
+            note,
             nullifier,
             value,
             blinding_factor,
@@ -178,12 +165,12 @@ impl TransactionItem {
     }
 
     /// Inner implementation of the note
-    pub fn note(&self) -> Box<dyn Note> {
-        self.note.box_clone()
+    pub fn note(&self) -> &NoteVariant {
+        &self.note
     }
 
     /// Set the inner implementation of the note. Will update only the note attribute
-    pub fn set_note(&mut self, note: Box<dyn Note>) {
+    pub fn set_note(&mut self, note: NoteVariant) {
         self.note = note;
     }
 
@@ -199,18 +186,13 @@ impl TransactionItem {
         item: rpc::TransactionInput,
     ) -> Result<Self, Error> {
         let sk: SecretKey = item.sk.map(|k| k.into()).unwrap_or_default();
-        let note = db.fetch_box_note(&item.pos.ok_or(Error::InvalidParameters)?)?;
-
-        let item = match note.note() {
-            NoteType::Transparent => {
-                Db::note_box_into::<TransparentNote>(note).to_transaction_input(sk)
-            }
-            NoteType::Obfuscated => {
-                Db::note_box_into::<ObfuscatedNote>(note).to_transaction_input(sk)
-            }
-        };
-
-        Ok(item)
+        item.pos
+            .ok_or(Error::InvalidParameters)
+            .and_then(|idx| db.fetch_note(&idx))
+            .map(|note| match note {
+                NoteVariant::Transparent(n) => n.to_transaction_input(sk),
+                NoteVariant::Obfuscated(n) => n.to_transaction_input(sk),
+            })
     }
 }
 
@@ -223,8 +205,7 @@ impl TryFrom<rpc::TransactionOutput> for TransactionItem {
             .ok_or(Error::InvalidParameters)
             .and_then(|k| k.try_into())?;
 
-        let note: Box<dyn Note> = txo.note.ok_or(Error::InvalidParameters)?.try_into()?;
-
+        let note: NoteVariant = txo.note.ok_or(Error::InvalidParameters)?.try_into()?;
         let mut item = TransactionItem::default();
 
         item.set_value(txo.value);
@@ -248,7 +229,7 @@ impl From<TransactionItem> for rpc::TransactionInput {
 impl From<TransactionItem> for rpc::TransactionOutput {
     fn from(item: TransactionItem) -> rpc::TransactionOutput {
         rpc::TransactionOutput {
-            note: Some(item.note().into()),
+            note: Some(item.note().clone().into()),
             pk: Some(item.pk.into()),
             value: item.value,
             blinding_factor: Some((*item.blinding_factor()).into()),

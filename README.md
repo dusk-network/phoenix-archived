@@ -4,17 +4,17 @@
 [![Repository](https://dusk-network.github.io/phoenix/repo-badge.svg)](https://github.com/dusk-network/phoenix)
 [![Documentation](https://dusk-network.github.io/phoenix/badge.svg)](https://dusk-network.github.io/phoenix/phoenix_lib/index.html)
 
-Phoenix is a zero-knowledge powered anonymous unspent outputs transaction layer that backs up Dusk Network tokens.
+Phoenix is an anonymity-preserving zero-knowledge proof-powered transaction model formalized and developed by Dusk Network.
 
 # General
 
-Different from standard UTXO models in the wild, Phoenix doesn't require the owner of a note revealing its identity or position to spend it.
+Phoenix is an enhancement of the UTXO model utilized in the [Zcash protocol](https://github.com/zcash/zips/blob/master/protocol/protocol.pdf).
 
-Considering that based on the revealed information during a transaction propagation, several well-known attacks compromise the anonymity of a spender, or even allow malicious agents to reverse-engineer the balance of his wallet. Phoenix aims to protect the spender from those attacks.
+Unlike Zcash, in which transactions can be potentially linked \(\[[1](https://arxiv.org/pdf/1712.01210)\], \[[2](https://orbilu.uni.lu/bitstream/10993/39996/1/Zcash_Miner_Linking%20%282%29.pdf)\]\), Phoenix guarantees transaction unlinkability through combining the so-called "obfuscated notes" (i.e. outputs containing encrypted values) with "transparent notes" (i.e. outputs containing plain values) into a single Merkle Tree.
 
-All the transactions are one-time-key based. It is totally up to the user how he wants to manage his secret key: he could have one or many secret keys for many unspent outputs. The inner Diffie-Hellman key exchange randomness mechanism guarantees the note public key will not repeat for the same spender public key, which causes the identification of the spender to be unfeasible.
+All the transactions utilize one-time keys. It is totally up to the user how he wants to manage his secret key: he could have one or many secret keys for many unspent outputs. The inner Diffie-Hellman key exchange randomness mechanism guarantees the note public key will not repeat for the same spender public key, which causes the identification of the spender to be unfeasible.
 
-For further details, check the [whitepaper](https://dusk.network/).
+For further details, check out the technical paper to be published soon.
 
 # Concepts
 
@@ -26,11 +26,11 @@ Phoenix uses zero-knowledge proofs to guarantee:
 * Prevent double-spending attacks
 * Prove the ownership of unspent outputs
 
-The unspent outputs are instances of `transparent` and `obfuscated` notes. Both notes share a similar structure, but the obfuscated have encrypted values, whereas transparent notes have their value exposed.
+The set of unspent outputs is a union of obfuscated and transparent note sets. Both notes share a similar structure aside from the obfuscated containing encrypted values and transparent notes containing plain values.
 
-The owner of an obfuscated note can share a `View Key` that will allow revealing the value of the note without allowing the spending of that note.
+The owner of a note can share his/her `View Key`, allowing a third-party (e.g. a wallet provider) to detect the outputs belonging to the owner as well as the value of the encrypted in the note, in case of an obfuscated note.
 
-The spending of a note can be done only via a `Secret Key`, known only to the owner of the note.
+The spending of a note can be done only via a `Secret Key`, known only to the owner of the note. 
 
 # Installation
 
