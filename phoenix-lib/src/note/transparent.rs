@@ -1,6 +1,6 @@
 use super::{Idx, Note, NoteGenerator, NoteUtxoType};
 use crate::{
-    crypto, rpc, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
+    crypto, rpc, utils, CompressedRistretto, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
     Scalar, Value, ViewKey,
 };
 
@@ -53,10 +53,6 @@ impl TransparentNote {
 }
 
 impl NoteGenerator for TransparentNote {
-    fn input(db: &Db, idx: &Idx) -> Result<Self, Error> {
-        db.fetch_note(idx)
-    }
-
     fn output(pk: &PublicKey, value: u64) -> (Self, Scalar) {
         let nonce = utils::gen_nonce();
         let (r, r_g, pk_r) = Self::generate_pk_r(pk);
@@ -99,10 +95,6 @@ impl Note for TransparentNote {
         hasher.input(&self.encrypted_blinding_factor);
 
         Scalar::from_hash(hasher)
-    }
-
-    fn box_clone(&self) -> Box<dyn Note> {
-        Box::new(self.clone())
     }
 
     fn utxo(&self) -> NoteUtxoType {

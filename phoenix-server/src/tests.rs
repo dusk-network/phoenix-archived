@@ -2,8 +2,8 @@ use crate::PhoenixServer;
 
 use futures::executor::block_on;
 use phoenix_lib::{
-    rpc, rpc::phoenix_server::Phoenix, Db, Idx, Note, NoteGenerator, ObfuscatedNote, PublicKey,
-    Scalar, SecretKey, Transaction, TransparentNote, ViewKey,
+    rpc, rpc::phoenix_server::Phoenix, Db, Idx, Note, NoteGenerator, NoteVariant, ObfuscatedNote,
+    PublicKey, Scalar, SecretKey, Transaction, TransparentNote, ViewKey,
 };
 use tonic::IntoRequest;
 
@@ -256,14 +256,13 @@ fn create_and_store_unspent_note<N: Note + NoteGenerator>(
     db: &Db,
     pk: &PublicKey,
     value: u64,
-) -> (PublicKey, u64, Idx, Box<dyn Note>, Scalar) {
+) -> (PublicKey, u64, Idx, NoteVariant, Scalar) {
     let (note, blinding_factor) = N::output(pk, value);
-    let note = note.box_clone();
 
-    let idx = db.store_unspent_note(note.box_clone()).unwrap();
-    let note: N = db.fetch_note(&idx).unwrap();
+    let idx = db.store_unspent_note(note.into()).unwrap();
+    let note = db.fetch_note(&idx).unwrap();
 
-    (pk.clone(), value, idx, note.box_clone(), blinding_factor)
+    (pk.clone(), value, idx, note, blinding_factor)
 }
 
 fn create_and_store_unspent_rpc_note<N: Clone + Note + NoteGenerator>(
@@ -273,7 +272,7 @@ fn create_and_store_unspent_rpc_note<N: Clone + Note + NoteGenerator>(
 ) -> rpc::TransactionInput {
     let pk = sk.public_key();
     let idx = db
-        .store_unspent_note(N::output(&pk, value).0.box_clone())
+        .store_unspent_note(N::output(&pk, value).0.into())
         .unwrap();
     let pos = Some(idx);
     let sk = Some(sk.into());

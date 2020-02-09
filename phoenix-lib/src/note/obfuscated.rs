@@ -1,6 +1,6 @@
 use super::{Idx, Note, NoteGenerator, NoteUtxoType};
 use crate::{
-    crypto, rpc, utils, CompressedRistretto, Db, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
+    crypto, rpc, utils, CompressedRistretto, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
     R1CSProof, Scalar, Value, ViewKey,
 };
 
@@ -48,10 +48,6 @@ impl ObfuscatedNote {
 }
 
 impl NoteGenerator for ObfuscatedNote {
-    fn input(db: &Db, idx: &Idx) -> Result<Self, Error> {
-        db.fetch_note(idx)
-    }
-
     fn output(pk: &PublicKey, value: u64) -> (Self, Scalar) {
         let idx = Idx::default();
         let nonce = utils::gen_nonce();
@@ -97,10 +93,6 @@ impl Note for ObfuscatedNote {
         hasher.input(&self.encrypted_blinding_factor);
 
         Scalar::from_hash(hasher)
-    }
-
-    fn box_clone(&self) -> Box<dyn Note> {
-        Box::new(self.clone())
     }
 
     fn utxo(&self) -> NoteUtxoType {

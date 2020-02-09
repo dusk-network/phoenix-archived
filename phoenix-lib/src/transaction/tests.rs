@@ -1,7 +1,9 @@
 use crate::{
-    rpc, Db, Idx, Note, NoteGenerator, ObfuscatedNote, PublicKey, Scalar, SecretKey, Transaction,
-    TransparentNote, ViewKey,
+    rpc, Db, Idx, Note, NoteGenerator, NoteVariant, ObfuscatedNote, PublicKey, Scalar, SecretKey,
+    Transaction, TransparentNote, ViewKey,
 };
+
+use std::convert::TryInto;
 
 #[test]
 fn transaction_items() {
@@ -65,18 +67,18 @@ fn transaction_zk() {
     // Set the 100 unspent note as the input of the transaction
     let sk = senders[0].0;
     let idx = &inputs[0].2;
-    let note: TransparentNote = db.fetch_note(idx).unwrap();
+    let note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
     transaction.push(note.to_transaction_input(sk));
 
     // Push the 30 output note to the transaction
-    let note = Db::note_box_into::<ObfuscatedNote>(outputs[1].2.box_clone());
+    let note: ObfuscatedNote = outputs[1].2.clone().try_into().unwrap();
     let blinding_factor = outputs[1].3;
     let pk = outputs[1].0;
     let value = outputs[1].1;
     transaction.push(note.to_transaction_output(value, blinding_factor, pk));
 
     // Push the 20 output note to the transaction
-    let note = Db::note_box_into::<ObfuscatedNote>(outputs[2].2.box_clone());
+    let note: ObfuscatedNote = outputs[2].2.clone().try_into().unwrap();
     let blinding_factor = outputs[2].3;
     let pk = outputs[2].0;
     let value = outputs[2].1;
@@ -85,7 +87,7 @@ fn transaction_zk() {
     let mut malicious_transaction = transaction.clone();
 
     // Push the 97 output note to the transaction
-    let note = Db::note_box_into::<TransparentNote>(outputs[0].2.box_clone());
+    let note: TransparentNote = outputs[0].2.clone().try_into().unwrap();
     let blinding_factor = outputs[0].3;
     let pk = outputs[0].0;
     let value = outputs[0].1;
@@ -94,11 +96,11 @@ fn transaction_zk() {
     // Set the 45 unspent note as the input of the malicious transaction
     let sk = senders[1].0;
     let idx = &inputs[2].2;
-    let note: ObfuscatedNote = db.fetch_note(idx).unwrap();
+    let note: ObfuscatedNote = db.fetch_note(idx).unwrap().try_into().unwrap();
     malicious_transaction.push(note.to_transaction_input(sk));
 
     // Push the 92 output note to the malicious transaction
-    let note = Db::note_box_into::<TransparentNote>(outputs[3].2.box_clone());
+    let note: TransparentNote = outputs[3].2.clone().try_into().unwrap();
     let blinding_factor = outputs[3].3;
     let pk = outputs[3].0;
     let value = outputs[3].1;
@@ -109,7 +111,7 @@ fn transaction_zk() {
     // Set the 50 unspent note as the input of the transaction
     let sk = senders[1].0;
     let idx = &inputs[1].2;
-    let note: ObfuscatedNote = db.fetch_note(idx).unwrap();
+    let note: ObfuscatedNote = db.fetch_note(idx).unwrap().try_into().unwrap();
     transaction.push(note.to_transaction_input(sk));
 
     // Grant only transactions with sufficient inputs can be proven
@@ -168,14 +170,14 @@ fn transactions_with_transparent_notes() {
         &db, pk, 100,
     ));
     let idx = &notes[0].2;
-    let note: TransparentNote = db.fetch_note(idx).unwrap();
+    let note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
     let vk = &senders[0].1;
     assert!(note.is_owned_by(vk));
 
     // Assert the new unspent note is not nullified
     let sk = &senders[0].0;
     let idx = &notes[0].2;
-    let note: TransparentNote = db.fetch_note(idx).unwrap();
+    let note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
     let nullifier = note.generate_nullifier(sk);
     assert!(db.fetch_nullifier(&nullifier).unwrap().is_none());
 
@@ -184,7 +186,7 @@ fn transactions_with_transparent_notes() {
     // Set the first unspent note as the input of the transaction
     let sk = senders[0].0;
     let idx = &notes[0].2;
-    let note: TransparentNote = db.fetch_note(idx).unwrap();
+    let note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
     transaction.push(note.to_transaction_input(sk));
 
     // Set the fee cost
@@ -196,12 +198,12 @@ fn transactions_with_transparent_notes() {
     outputs.push(create_output_note::<TransparentNote>(pk, 25));
     let pk = &receivers[1].2;
     outputs.push(create_output_note::<TransparentNote>(pk, 50 - fee_cost));
-    let note = Db::note_box_into::<TransparentNote>(outputs[0].2.box_clone());
+    let note: TransparentNote = outputs[0].2.clone().try_into().unwrap();
     let blinding_factor = outputs[0].3;
     let pk = outputs[0].0;
     let value = outputs[0].1;
     transaction.push(note.to_transaction_output(value, blinding_factor, pk));
-    let note = Db::note_box_into::<TransparentNote>(outputs[1].2.box_clone());
+    let note: TransparentNote = outputs[1].2.clone().try_into().unwrap();
     let blinding_factor = outputs[1].3;
     let pk = outputs[1].0;
     let value = outputs[1].1;
@@ -214,13 +216,13 @@ fn transactions_with_transparent_notes() {
     // Assert the spent note is nullified
     let sk = &senders[0].0;
     let idx = &notes[0].2;
-    let note: TransparentNote = db.fetch_note(idx).unwrap();
+    let note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
     let nullifier = note.generate_nullifier(sk);
     assert!(db.fetch_nullifier(&nullifier).unwrap().is_some());
 
     // Assert the outputs are not nullified
     unspent_outputs.iter().for_each(|idx| {
-        let note: TransparentNote = db.fetch_note(idx).unwrap();
+        let note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
         let sk = receivers
             .iter()
             .fold(SecretKey::default(), |sk, (r_sk, r_vk, _)| {
@@ -323,24 +325,22 @@ fn create_and_store_unspent_note<N: Note + NoteGenerator>(
     db: &Db,
     pk: &PublicKey,
     value: u64,
-) -> (PublicKey, u64, Idx, Box<dyn Note>, Scalar) {
+) -> (PublicKey, u64, Idx, NoteVariant, Scalar) {
     let (note, blinding_factor) = N::output(pk, value);
-    let note = note.box_clone();
 
-    let idx = db.store_unspent_note(note.box_clone()).unwrap();
-    let note: N = db.fetch_note(&idx).unwrap();
+    let idx = db.store_unspent_note(note.into()).unwrap();
+    let note = db.fetch_note(&idx).unwrap();
 
-    (pk.clone(), value, idx, note.box_clone(), blinding_factor)
+    (pk.clone(), value, idx, note, blinding_factor)
 }
 
 fn create_output_note<N: Note + NoteGenerator>(
     pk: &PublicKey,
     value: u64,
-) -> (PublicKey, u64, Box<dyn Note>, Scalar) {
+) -> (PublicKey, u64, NoteVariant, Scalar) {
     let (note, blinding_factor) = N::output(pk, value);
-    let note = note.box_clone();
 
-    (pk.clone(), value, note, blinding_factor)
+    (pk.clone(), value, note.into(), blinding_factor)
 }
 
 fn create_and_store_unspent_rpc_note<N: Clone + Note + NoteGenerator>(
@@ -350,7 +350,7 @@ fn create_and_store_unspent_rpc_note<N: Clone + Note + NoteGenerator>(
 ) -> rpc::TransactionInput {
     let pk = sk.public_key();
     let idx = db
-        .store_unspent_note(N::output(&pk, value).0.box_clone())
+        .store_unspent_note(N::output(&pk, value).0.into())
         .unwrap();
     let pos = Some(idx);
     let sk = Some(sk.into());

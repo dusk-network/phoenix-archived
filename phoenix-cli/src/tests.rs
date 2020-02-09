@@ -22,9 +22,7 @@ fn test_rust_cli_tx_prove() {
     let bob_pk = bob_sk.public_key();
 
     let note = ObfuscatedNote::output(&dusk_pk, 1000).0;
-    let note = Box::new(note);
-
-    db.store_unspent_note(note).unwrap();
+    db.store_unspent_note(note.into()).unwrap();
 
     let server = PhoenixServer::new(db);
     let mut rt = Builder::new().basic_scheduler().build().unwrap();
