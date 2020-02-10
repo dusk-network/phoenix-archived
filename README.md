@@ -10,7 +10,7 @@ Phoenix is an anonymity-preserving zero-knowledge proof-powered transaction mode
 
 Phoenix is an enhancement of the UTXO model utilized in the [Zcash protocol](https://github.com/zcash/zips/blob/master/protocol/protocol.pdf).
 
-Unlike Zcash, in which transactions can be potentially linked \(\[[1](https://arxiv.org/pdf/1712.01210)\], \[[2](https://orbilu.uni.lu/bitstream/10993/39996/1/Zcash_Miner_Linking%20%282%29.pdf)\]\), Phoenix guarantees transaction unlinkability through combining the so-called "obfuscated notes" (i.e. outputs containing encrypted values) with "transparent notes" (i.e. outputs containing plain values) into a single Merkle Tree.
+Unlike Zcash, in which transactions can be potentially linked[\[1\]](https://arxiv.org/pdf/1712.01210), [[\[2\]](https://orbilu.uni.lu/bitstream/10993/39996/1/Zcash_Miner_Linking%20%282%29.pdf), Phoenix guarantees transaction unlinkability through combining the so-called "obfuscated notes" (i.e. outputs containing encrypted values) with "transparent notes" (i.e. outputs containing plain values) into a single Merkle Tree.
 
 All the transactions utilize one-time keys. It is totally up to the user how he wants to manage his secret key: he could have one or many secret keys for many unspent outputs. The inner Diffie-Hellman key exchange randomness mechanism guarantees the note public key will not repeat for the same spender public key, which causes the identification of the spender to be unfeasible.
 
