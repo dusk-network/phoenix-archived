@@ -23,9 +23,13 @@ tonic-build = { version = "0.1", default-features = false, features = ["transpor
 
 [dependencies.bulletproofs]
 git = "https://github.com/dusk-network/bulletproofs.git"
-branch = "dalek-v2"
+branch = "develop"
 features = ["yoloproofs"]
 
 [dependencies.hades252]
 git = "https://github.com/dusk-network/Hades252.git"
-branch = "dalek-v2"
+branch = "master"
+
+[dependencies.poseidon252]
+git = "https://github.com/dusk-network/Poseidon252.git"
+branch = "master"

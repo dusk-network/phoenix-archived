@@ -1,6 +1,6 @@
-use crate::{ConstraintSystem, LinearCombination, Note, NoteUtxoType, TransactionItem};
+use crate::{ConstraintSystem, LinearCombination, Note, NoteUtxoType, Scalar, TransactionItem};
 
-use hades252::linear_combination;
+use hades252::strategies::{GadgetStrategy, Strategy};
 
 /// Pre-image of the note
 pub fn note_preimage(
@@ -8,11 +8,13 @@ pub fn note_preimage(
     note_pre_image: LinearCombination,
     x_lc: LinearCombination,
 ) {
-    // TODO - Review in linear_combination::hash if it could ever fail (so should not return
-    // result)
-    //
+    let mut strategy = GadgetStrategy::new(cs);
+
+    let mut input = vec![LinearCombination::from(Scalar::zero()); hades252::WIDTH];
+    input[1] = note_pre_image;
+    let x = strategy.perm(input)[1].clone();
+
     // x = H(y)
-    let x = linear_combination::hash(cs, &[note_pre_image]).unwrap();
     cs.constrain(x_lc - x);
 }
 
