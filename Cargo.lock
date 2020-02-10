@@ -876,6 +876,7 @@ dependencies = [
  "hex",
  "lazy_static",
  "merlin",
+ "poseidon252",
  "prost",
  "rand",
  "sha2",
@@ -936,6 +937,18 @@ name = "pkg-config"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "05da548ad6865900e60eaba7f589cc0783590a92e940c26953ff81ddbab2d677"
+
+[[package]]
+name = "poseidon252"
+version = "0.1.0"
+source = "git+https://github.com/dusk-network/Poseidon252.git#641c2d5c87b5eafe39d4e682f063811f41d119ed"
+dependencies = [
+ "bulletproofs",
+ "curve25519-dalek",
+ "hades252",
+ "lazy_static",
+ "merlin",
+]
 
 [[package]]
 name = "ppv-lite86"

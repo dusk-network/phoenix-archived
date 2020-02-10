@@ -1,6 +1,7 @@
 use crate::{EdwardsPoint, Nonce, PublicKey, Scalar, ViewKey};
 
 use hades252::strategies::{ScalarStrategy, Strategy};
+use poseidon252::sponge;
 use rand::rngs::OsRng;
 use rand::seq::SliceRandom;
 use sodiumoxide::crypto::box_;
@@ -33,9 +34,7 @@ pub fn decrypt(r_g: &EdwardsPoint, vk: &ViewKey, nonce: &Nonce, value: &[u8]) ->
 
 /// Hash an arbitrary long message to a [`Scalar`]
 pub fn sponge_hash(s: &[Scalar]) -> Scalar {
-    // TODO - This is not truly a sponge function; scalar::hash will fail if the input width is
-    // exceeded
-    ScalarStrategy::new().perm(s.to_vec())[1]
+    sponge::hash(s)
 }
 
 /// Hash a [`Scalar`]

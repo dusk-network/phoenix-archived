@@ -29,3 +29,7 @@ features = ["yoloproofs"]
 [dependencies.hades252]
 git = "https://github.com/dusk-network/Hades252.git"
 branch = "master"
+
+[dependencies.poseidon252]
+git = "https://github.com/dusk-network/Poseidon252.git"
+branch = "master"
