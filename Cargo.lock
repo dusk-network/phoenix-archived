@@ -118,7 +118,7 @@ dependencies = [
 [[package]]
 name = "bulletproofs"
 version = "1.0.4"
-source = "git+https://github.com/dusk-network/bulletproofs?branch=dalek-v2#568975caeefd7f60bacf3a062599ef5679277d8c"
+source = "git+https://github.com/dusk-network/bulletproofs.git?branch=develop#3ddf1dcd4b112ef3fd1c960b9b26ad92e3e2b3ba"
 dependencies = [
  "byteorder",
  "clear_on_drop",
@@ -492,7 +492,7 @@ dependencies = [
 [[package]]
 name = "hades252"
 version = "0.2.0"
-source = "git+https://github.com/dusk-network/Hades252.git#5aaed408f13e4ba713ffcbc7d61836f1f52ce6a0"
+source = "git+https://github.com/dusk-network/Hades252.git#13ee6ef19b26cfb4497dcb47ba0c64361379e1fc"
 dependencies = [
  "bulletproofs",
  "curve25519-dalek",
