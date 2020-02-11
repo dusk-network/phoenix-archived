@@ -1,6 +1,6 @@
 use crate::{
-    crypto, rpc, utils, CompressedRistretto, Db, EdwardsPoint, Error, Idx, Nonce, NoteType,
-    PublicKey, R1CSProof, Scalar, SecretKey, TransactionItem, ViewKey,
+    crypto, rpc, utils, CompressedRistretto, Db, Error, Idx, Nonce, NoteType, PublicKey, R1CSProof,
+    RistrettoPoint, Scalar, SecretKey, TransactionItem, ViewKey,
 };
 
 use std::{cmp::Ordering, convert::TryFrom, fmt::Debug};
@@ -81,14 +81,14 @@ pub trait NoteGenerator:
     }
 
     /// Create a `PKr = r · A + B` for the diffie-hellman key exchange
-    fn generate_pk_r(pk: &PublicKey) -> (Scalar, EdwardsPoint, EdwardsPoint) {
+    fn generate_pk_r(pk: &PublicKey) -> (Scalar, RistrettoPoint, RistrettoPoint) {
         let r = utils::gen_random_clamped_scalar();
-        let r_g = utils::mul_by_basepoint_edwards(&r);
+        let r_g = utils::mul_by_basepoint_ristretto(&r);
 
         let r_a_g = pk.a_g * r;
-        let r_a_g = utils::edwards_to_scalar(r_a_g);
+        let r_a_g = utils::ristretto_to_scalar(r_a_g);
         let r_a_g = crypto::hash_scalar(&r_a_g);
-        let r_a_g = utils::mul_by_basepoint_edwards(&r_a_g);
+        let r_a_g = utils::mul_by_basepoint_ristretto(&r_a_g);
 
         let pk_r = r_a_g + pk.b_g;
 
@@ -218,13 +218,13 @@ pub trait Note: Debug + Send + Sync {
     /// Return the raw encrypted value blinding factor
     fn encrypted_blinding_factor(&self) -> &Vec<u8>;
     /// Return the `r · G` used for the DHKE randomness
-    fn r_g(&self) -> &EdwardsPoint;
+    fn r_g(&self) -> &RistrettoPoint;
     /// Return the public DHKE combined with the secret key of the owner of the note
-    fn pk_r(&self) -> &EdwardsPoint;
+    fn pk_r(&self) -> &RistrettoPoint;
     /// Provided a secret, return `H(a · R) + B`
     fn sk_r(&self, sk: &SecretKey) -> Scalar {
         let r_a_g = sk.a * self.r_g();
-        let r_a_g = utils::edwards_to_scalar(r_a_g);
+        let r_a_g = utils::ristretto_to_scalar(r_a_g);
         let r_a_g = crypto::hash_scalar(&r_a_g);
 
         r_a_g + sk.b
@@ -236,9 +236,9 @@ pub trait Note: Debug + Send + Sync {
     /// This holds true if `H(a · R) · G + B == PKr`
     fn is_owned_by(&self, vk: &ViewKey) -> bool {
         let r_a_g = vk.a * self.r_g();
-        let r_a_g = utils::edwards_to_scalar(r_a_g);
+        let r_a_g = utils::ristretto_to_scalar(r_a_g);
         let r_a_g = crypto::hash_scalar(&r_a_g);
-        let r_a_g = utils::mul_by_basepoint_edwards(&r_a_g);
+        let r_a_g = utils::mul_by_basepoint_ristretto(&r_a_g);
 
         let pk_r = r_a_g + vk.b_g;
 

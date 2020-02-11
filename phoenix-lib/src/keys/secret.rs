@@ -35,15 +35,15 @@ impl SecretKey {
 
     /// Derive the secret to deterministically construct a [`PublicKey`]
     pub fn public_key(&self) -> PublicKey {
-        let a_g = utils::mul_by_basepoint_edwards(&self.a);
-        let b_g = utils::mul_by_basepoint_edwards(&self.b);
+        let a_g = utils::mul_by_basepoint_ristretto(&self.a);
+        let b_g = utils::mul_by_basepoint_ristretto(&self.b);
 
         PublicKey::new(a_g, b_g)
     }
 
     /// Derive the secret to deterministically construct a [`ViewKey`]
     pub fn view_key(&self) -> ViewKey {
-        let b_g = utils::mul_by_basepoint_edwards(&self.b);
+        let b_g = utils::mul_by_basepoint_ristretto(&self.b);
 
         ViewKey::new(self.a, b_g)
     }

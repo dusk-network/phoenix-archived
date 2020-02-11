@@ -1,7 +1,7 @@
 use super::{Idx, Note, NoteGenerator, NoteUtxoType};
 use crate::{
-    crypto, rpc, utils, CompressedRistretto, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
-    R1CSProof, Scalar, Value, ViewKey,
+    crypto, rpc, utils, CompressedRistretto, Error, Nonce, NoteType, PublicKey, R1CSProof,
+    RistrettoPoint, Scalar, Value, ViewKey,
 };
 
 use std::cmp;
@@ -15,8 +15,8 @@ pub struct ObfuscatedNote {
     utxo: NoteUtxoType,
     commitment: CompressedRistretto,
     nonce: Nonce,
-    r_g: EdwardsPoint,
-    pk_r: EdwardsPoint,
+    r_g: RistrettoPoint,
+    pk_r: RistrettoPoint,
     idx: Idx,
     pub(crate) encrypted_value: Vec<u8>,
     pub(crate) encrypted_blinding_factor: Vec<u8>,
@@ -28,8 +28,8 @@ impl ObfuscatedNote {
         utxo: NoteUtxoType,
         commitment: CompressedRistretto,
         nonce: Nonce,
-        r_g: EdwardsPoint,
-        pk_r: EdwardsPoint,
+        r_g: RistrettoPoint,
+        pk_r: RistrettoPoint,
         idx: Idx,
         encrypted_value: Vec<u8>,
         encrypted_blinding_factor: Vec<u8>,
@@ -115,11 +115,11 @@ impl Note for ObfuscatedNote {
         &self.nonce
     }
 
-    fn r_g(&self) -> &EdwardsPoint {
+    fn r_g(&self) -> &RistrettoPoint {
         &self.r_g
     }
 
-    fn pk_r(&self) -> &EdwardsPoint {
+    fn pk_r(&self) -> &RistrettoPoint {
         &self.pk_r
     }
 

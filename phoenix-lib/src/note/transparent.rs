@@ -1,6 +1,6 @@
 use super::{Idx, Note, NoteGenerator, NoteUtxoType};
 use crate::{
-    crypto, rpc, utils, CompressedRistretto, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
+    crypto, rpc, utils, CompressedRistretto, Error, Nonce, NoteType, PublicKey, RistrettoPoint,
     Scalar, Value, ViewKey,
 };
 
@@ -14,8 +14,8 @@ pub struct TransparentNote {
     utxo: NoteUtxoType,
     value: u64,
     nonce: Nonce,
-    r_g: EdwardsPoint,
-    pk_r: EdwardsPoint,
+    r_g: RistrettoPoint,
+    pk_r: RistrettoPoint,
     idx: Idx,
     commitment: CompressedRistretto,
     pub(crate) encrypted_blinding_factor: Vec<u8>,
@@ -33,8 +33,8 @@ impl TransparentNote {
         utxo: NoteUtxoType,
         value: u64,
         nonce: Nonce,
-        r_g: EdwardsPoint,
-        pk_r: EdwardsPoint,
+        r_g: RistrettoPoint,
+        pk_r: RistrettoPoint,
         idx: Idx,
         commitment: CompressedRistretto,
         encrypted_blinding_factor: Vec<u8>,
@@ -117,11 +117,11 @@ impl Note for TransparentNote {
         &self.nonce
     }
 
-    fn r_g(&self) -> &EdwardsPoint {
+    fn r_g(&self) -> &RistrettoPoint {
         &self.r_g
     }
 
-    fn pk_r(&self) -> &EdwardsPoint {
+    fn pk_r(&self) -> &RistrettoPoint {
         &self.pk_r
     }
 
