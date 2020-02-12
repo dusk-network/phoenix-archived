@@ -7,6 +7,7 @@ use phoenix_lib::{
 use std::convert::TryInto;
 
 use tracing::trace;
+use parking_lot::RwLock;
 
 #[cfg(test)]
 mod tests;
@@ -16,12 +17,12 @@ fn error_to_tonic(e: Error) -> tonic::Status {
 }
 
 pub struct PhoenixServer {
-    db: Db,
+    db: RwLock<Db>,
 }
 
 impl PhoenixServer {
     pub fn new(db: Db) -> Self {
-        Self { db }
+        Self { db: RwLock::new(db) }
     }
 }
 
@@ -108,6 +109,7 @@ impl Phoenix for PhoenixServer {
 
         let unspent = self
             .db
+            .read()
             .fetch_nullifier(&nullifier)
             .map(|r| r.is_none())
             .map_err(error_to_tonic)?;
@@ -124,6 +126,7 @@ impl Phoenix for PhoenixServer {
         let idx: Idx = request.into_inner();
         let note = self
             .db
+            .read()
             .fetch_note(&idx)
             .map(|note| note.into())
             .map_err(error_to_tonic)?;
@@ -193,6 +196,7 @@ impl Phoenix for PhoenixServer {
 
         let notes: Vec<rpc::DecryptedNote> = self
             .db
+            .read()
             .filter_all_notes(|note| {
                 if note.is_owned_by(&vk) {
                     Some(note.clone())
@@ -200,8 +204,7 @@ impl Phoenix for PhoenixServer {
                     None
                 }
             })
-            .map_err(error_to_tonic)?
-            .into_iter()
+            .iter()
             .map(|n| n.rpc_decrypted_note(&vk))
             .collect();
 
@@ -228,6 +231,7 @@ impl Phoenix for PhoenixServer {
 
         let txi = self
             .db
+            .read()
             .fetch_note(&idx)
             .map_err(error_to_tonic)?
             .to_transaction_input(sk);
@@ -274,7 +278,7 @@ impl Phoenix for PhoenixServer {
         let request = request.into_inner();
 
         let transaction: rpc::Transaction =
-            Transaction::try_from_rpc_io(&self.db, request.fee, request.inputs, request.outputs)
+            Transaction::try_from_rpc_io(&self.db.read(), request.fee, request.inputs, request.outputs)
                 .map_err(error_to_tonic)?
                 .into();
 
@@ -286,7 +290,7 @@ impl Phoenix for PhoenixServer {
         request: tonic::Request<rpc::Transaction>,
     ) -> Result<tonic::Response<rpc::VerifyTransactionResponse>, tonic::Status> {
         trace!("Incoming verify transaction request");
-        Transaction::try_from_rpc_transaction(&self.db, request.into_inner())
+        Transaction::try_from_rpc_transaction(&self.db.read(), request.into_inner())
             .and_then(|mut tx| tx.verify())
             .map(|_| tonic::Response::new(rpc::VerifyTransactionResponse {}))
             .map_err(error_to_tonic)
@@ -309,7 +313,7 @@ impl Phoenix for PhoenixServer {
         let mut transactions = vec![];
 
         for tx in request.transactions {
-            let tx = Transaction::try_from_rpc_transaction(&self.db, tx).map_err(error_to_tonic)?;
+            let tx = Transaction::try_from_rpc_transaction(&self.db.read(), tx).map_err(error_to_tonic)?;
 
             transactions.push(tx);
         }
@@ -318,18 +322,19 @@ impl Phoenix for PhoenixServer {
             tx.verify().map_err(error_to_tonic)?;
         }
 
-        let notes: Vec<rpc::Note> = self
-            .db
+        let mut db = self.db.write();
+
+        let notes: Vec<rpc::Note> = db
             .store_bulk_transactions(transactions.as_slice())
             .map_err(error_to_tonic)?
             .iter()
             .try_fold(vec![], |mut v, idx| {
-                v.push(self.db.fetch_note(idx)?.into());
+                v.push(db.fetch_note(idx)?.into());
                 Ok(v)
             })
             .map_err(error_to_tonic)?;
 
-        let root: rpc::Scalar = self.db.root().into();
+        let root: rpc::Scalar = db.root().into();
         let root = Some(root);
 
         let response = rpc::StoreTransactionsResponse { notes, root };
@@ -345,7 +350,7 @@ impl Phoenix for PhoenixServer {
 
         let transaction = request.transaction.unwrap_or_default();
         let mut transaction =
-            Transaction::try_from_rpc_transaction(&self.db, transaction).map_err(error_to_tonic)?;
+            Transaction::try_from_rpc_transaction(&self.db.read(), transaction).map_err(error_to_tonic)?;
 
         let pk: PublicKey = request
             .pk

@@ -16,7 +16,7 @@ fn transaction_items() {
 
 #[test]
 fn transaction_zk() {
-    let db = Db::new().unwrap();
+    let mut db = Db::new().unwrap();
 
     let mut inputs = vec![];
     let mut outputs = vec![];
@@ -35,16 +35,16 @@ fn transaction_zk() {
     // Store an unspent note of 100
     let pk = &senders[0].2;
     inputs.push(create_and_store_unspent_note::<TransparentNote>(
-        &db, pk, 100,
+        &mut db, pk, 100,
     ));
 
     // Store an unspent note of 50
     let pk = &senders[1].2;
-    inputs.push(create_and_store_unspent_note::<ObfuscatedNote>(&db, pk, 50));
+    inputs.push(create_and_store_unspent_note::<ObfuscatedNote>(&mut db, pk, 50));
 
     // Store an unspent note of 45 with the same sender for a malicious proof verification
     let pk = &senders[1].2;
-    inputs.push(create_and_store_unspent_note::<ObfuscatedNote>(&db, pk, 45));
+    inputs.push(create_and_store_unspent_note::<ObfuscatedNote>(&mut db, pk, 45));
 
     // Create an output of 97
     let pk = &receivers[0].2;
@@ -149,7 +149,7 @@ fn transaction_zk() {
 
 #[test]
 fn transactions_with_transparent_notes() {
-    let db = Db::new().unwrap();
+    let mut db = Db::new().unwrap();
 
     let mut notes = vec![];
     let mut outputs = vec![];
@@ -167,7 +167,7 @@ fn transactions_with_transparent_notes() {
     // Store an unspent note
     let pk = &senders[0].2;
     notes.push(create_and_store_unspent_note::<TransparentNote>(
-        &db, pk, 100,
+        &mut db, pk, 100,
     ));
     let idx = &notes[0].2;
     let note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
@@ -239,7 +239,7 @@ fn transactions_with_transparent_notes() {
 
 #[test]
 fn rpc_transaction() {
-    let db = Db::new().unwrap();
+    let mut db = Db::new().unwrap();
 
     let mut senders = vec![];
     let mut receivers = vec![];
@@ -258,13 +258,13 @@ fn rpc_transaction() {
     // Store an unspent note of 100
     let sk = senders[0].0;
     inputs.push(create_and_store_unspent_rpc_note::<TransparentNote>(
-        &db, sk, 100,
+        &mut db, sk, 100,
     ));
 
     // Store an unspent note of 50
     let sk = senders[1].0;
     inputs.push(create_and_store_unspent_rpc_note::<TransparentNote>(
-        &db, sk, 50,
+        &mut db, sk, 50,
     ));
 
     // Create an output of 97
@@ -322,7 +322,7 @@ fn generate_keys() -> (SecretKey, ViewKey, PublicKey) {
 }
 
 fn create_and_store_unspent_note<N: Note + NoteGenerator>(
-    db: &Db,
+    db: &mut Db,
     pk: &PublicKey,
     value: u64,
 ) -> (PublicKey, u64, Idx, NoteVariant, Scalar) {
@@ -344,7 +344,7 @@ fn create_output_note<N: Note + NoteGenerator>(
 }
 
 fn create_and_store_unspent_rpc_note<N: Clone + Note + NoteGenerator>(
-    db: &Db,
+    db: &mut Db,
     sk: SecretKey,
     value: u64,
 ) -> rpc::TransactionInput {

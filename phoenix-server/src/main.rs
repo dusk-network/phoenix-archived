@@ -70,7 +70,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .finish();
     tracing::subscriber::set_global_default(subscriber)?;
 
-    let db = Db::new().unwrap();
+    let mut db = Db::new().unwrap();
 
     matches
         .subcommand_matches("note")

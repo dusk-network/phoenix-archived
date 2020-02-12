@@ -11,6 +11,7 @@ tracing = "0.1"
 tracing-subscriber = "0.1"
 clap = "2.33"
 phoenix-lib = { path = "../phoenix-lib" }
+parking_lot = "0.10"
 
 [dev-dependencies]
 lazy_static = "1.4"
