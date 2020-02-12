@@ -9,7 +9,7 @@ use tonic::IntoRequest;
 
 #[test]
 fn rpc_transaction() {
-    let db = Db::new().unwrap();
+    let mut db = Db::new().unwrap();
 
     let mut senders = vec![];
     let mut receivers = vec![];
@@ -28,13 +28,13 @@ fn rpc_transaction() {
     // Store an unspent note of 100
     let sk = senders[0].0;
     inputs.push(create_and_store_unspent_rpc_note::<TransparentNote>(
-        &db, sk, 100,
+        &mut db, sk, 100,
     ));
 
     // Store an unspent note of 50
     let sk = senders[1].0;
     inputs.push(create_and_store_unspent_rpc_note::<TransparentNote>(
-        &db, sk, 50,
+        &mut db, sk, 50,
     ));
 
     // Create an output of 97
@@ -85,7 +85,7 @@ fn rpc_transaction() {
 
 #[test]
 fn rpc_server_transaction_api() {
-    let db = Db::new().unwrap();
+    let mut db = Db::new().unwrap();
 
     let mut unspent = vec![];
     let mut senders = vec![];
@@ -103,12 +103,12 @@ fn rpc_server_transaction_api() {
     // Store an unspent note of 100
     let pk = &senders[0].2;
     unspent.push(create_and_store_unspent_note::<TransparentNote>(
-        &db, pk, 100,
+        &mut db, pk, 100,
     ));
 
     // Store an unspent note of 50
     let pk = &senders[1].2;
-    unspent.push(create_and_store_unspent_note::<ObfuscatedNote>(&db, pk, 50));
+    unspent.push(create_and_store_unspent_note::<ObfuscatedNote>(&mut db, pk, 50));
 
     let server = PhoenixServer::new(db);
 
@@ -253,7 +253,7 @@ fn generate_keys() -> (SecretKey, ViewKey, PublicKey) {
 }
 
 fn create_and_store_unspent_note<N: Note + NoteGenerator>(
-    db: &Db,
+    db: &mut Db,
     pk: &PublicKey,
     value: u64,
 ) -> (PublicKey, u64, Idx, NoteVariant, Scalar) {
@@ -266,7 +266,7 @@ fn create_and_store_unspent_note<N: Note + NoteGenerator>(
 }
 
 fn create_and_store_unspent_rpc_note<N: Clone + Note + NoteGenerator>(
-    db: &Db,
+    db: &mut Db,
     sk: SecretKey,
     value: u64,
 ) -> rpc::TransactionInput {

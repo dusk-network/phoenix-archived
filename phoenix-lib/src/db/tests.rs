@@ -4,7 +4,7 @@ use std::convert::TryInto;
 
 #[test]
 fn store_notes() {
-    let db = Db::new().unwrap();
+    let mut db = Db::new().unwrap();
 
     let transaparent_notes: Vec<(Idx, TransparentNote)> = (0..20)
         .map(|i| {

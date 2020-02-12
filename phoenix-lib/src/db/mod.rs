@@ -3,7 +3,6 @@ use crate::{
 };
 
 use std::collections::{HashMap, HashSet};
-use std::sync::{Arc, Mutex};
 
 use tracing::trace;
 
@@ -13,22 +12,22 @@ mod tests;
 /// Database structure for the notes and nullifiers storage
 pub struct Db {
     // TODO - HashMap and HashSet implementation to emulate KVS. Use Kelvin?
-    notes: Arc<Mutex<HashMap<Idx, NoteVariant>>>,
-    nullifiers: Arc<Mutex<HashSet<Nullifier>>>,
+    notes: HashMap<Idx, NoteVariant>,
+    nullifiers: HashSet<Nullifier>,
 }
 
 impl Db {
     /// [`Db`] constructor
     pub fn new() -> Result<Self, Error> {
         Ok(Db {
-            notes: Arc::new(Mutex::new(HashMap::new())),
-            nullifiers: Arc::new(Mutex::new(HashSet::new())),
+            notes: HashMap::new(),
+            nullifiers: HashSet::new(),
         })
     }
 
     // TODO - Should be able to rollback state in case of failure
     /// Store a provided [`Transaction`]. Return the position of the note on the tree.
-    pub fn store(&self, transaction: &Transaction) -> Result<Vec<Idx>, Error> {
+    pub fn store(&mut self, transaction: &Transaction) -> Result<Vec<Idx>, Error> {
         let fee = transaction.fee();
 
         let fee_idx = self.store_transaction_item(fee)?.ok_or(Error::FeeOutput)?;
@@ -46,7 +45,7 @@ impl Db {
 
     // TODO - Should be able to rollback state in case of failure
     /// Store a set of [`Transaction`]. Return a set of positions of the included notes.
-    pub fn store_bulk_transactions(&self, transactions: &[Transaction]) -> Result<Vec<Idx>, Error> {
+    pub fn store_bulk_transactions(&mut self, transactions: &[Transaction]) -> Result<Vec<Idx>, Error> {
         let mut idx = vec![];
 
         for t in transactions {
@@ -66,13 +65,12 @@ impl Db {
     /// Attempt to store a given transaction item.
     ///
     /// If its an unspent output, will return the idx of the stored note.
-    pub fn store_transaction_item(&self, item: &TransactionItem) -> Result<Option<Idx>, Error> {
+    pub fn store_transaction_item(&mut self, item: &TransactionItem) -> Result<Option<Idx>, Error> {
         if item.utxo() == NoteUtxoType::Input {
             let nullifier = *item.nullifier();
             item.note().validate_nullifier(&nullifier)?;
 
-            let mut nullifiers = self.nullifiers.try_lock()?;
-            nullifiers.insert(nullifier);
+            self.nullifiers.insert(nullifier);
 
             Ok(None)
         } else {
@@ -81,12 +79,10 @@ impl Db {
     }
 
     /// Store a note. Return the position of the stored note on the tree.
-    pub fn store_unspent_note(&self, mut note: NoteVariant) -> Result<Idx, Error> {
-        let mut notes = self.notes.try_lock()?;
-
-        let idx: Idx = (notes.len() as u64).into();
+    pub fn store_unspent_note(&mut self, mut note: NoteVariant) -> Result<Idx, Error> {
+        let idx: Idx = (self.notes.len() as u64).into();
         note.set_idx(idx.clone());
-        notes.insert(idx.clone(), note);
+        self.notes.insert(idx.clone(), note);
 
         Ok(idx)
     }
@@ -94,15 +90,13 @@ impl Db {
     #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
     /// Provided a position, return a strong typed note from the database
     pub fn fetch_note(&self, idx: &Idx) -> Result<NoteVariant, Error> {
-        let notes = self.notes.try_lock()?;
-        notes.get(idx).cloned().ok_or(Error::Generic)
+        self.notes.get(idx).cloned().ok_or(Error::Generic)
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
     /// Verify the existence of a provided nullifier on the set
     pub fn fetch_nullifier(&self, nullifier: &Nullifier) -> Result<Option<()>, Error> {
-        let nullifiers = self.nullifiers.try_lock()?;
-        Ok(if nullifiers.contains(nullifier) {
+        Ok(if self.nullifiers.contains(nullifier) {
             Some(())
         } else {
             None
@@ -115,10 +109,7 @@ impl Db {
     pub fn filter_all_notes(
         &self,
         filter: impl FnMut(&NoteVariant) -> Option<NoteVariant>,
-    ) -> Result<Vec<NoteVariant>, Error> {
-        self.notes
-            .try_lock()
-            .map(|notes| notes.values().filter_map(filter).collect())
-            .map_err(|e| e.into())
+    ) -> Vec<NoteVariant> {
+        self.notes.values().filter_map(filter).collect()
     }
 }

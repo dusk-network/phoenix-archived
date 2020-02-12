@@ -10,7 +10,7 @@ use tonic::IntoRequest;
 
 #[test]
 fn test_rust_cli_tx_prove() {
-    let db = Db::new().unwrap();
+    let mut db = Db::new().unwrap();
 
     let dusk_sk = SecretKey::from(b"dusk".to_vec());
     let dusk_pk = dusk_sk.public_key();
