@@ -1,8 +1,7 @@
 pub use bulletproofs::r1cs::{
     ConstraintSystem, LinearCombination, Prover, R1CSProof, Variable, Verifier,
 };
-pub use curve25519_dalek::edwards::CompressedEdwardsY;
-pub use curve25519_dalek::edwards::EdwardsPoint;
+pub use curve25519_dalek::edwards::{CompressedEdwardsY, EdwardsPoint};
 pub use curve25519_dalek::montgomery::MontgomeryPoint;
 pub use curve25519_dalek::ristretto::{CompressedRistretto, RistrettoPoint};
 pub use curve25519_dalek::scalar::Scalar;
@@ -14,7 +13,7 @@ pub use note::{
     Note, NoteGenerator, NoteUtxoType, NoteVariant, Nullifier, ObfuscatedNote, TransparentNote,
 };
 pub use rpc::{Idx, NoteType};
-pub use sodiumoxide::crypto::box_::curve25519xsalsa20poly1305::Nonce;
+pub use sodiumoxide::crypto::box_::curve25519xsalsa20poly1305::{Nonce, NONCEBYTES};
 pub use transaction::{Transaction, TransactionItem};
 pub use zk::value::Value;
 

@@ -1,12 +1,14 @@
 use super::{Idx, Note, NoteGenerator, NoteUtxoType};
 use crate::{
-    crypto, rpc, utils, CompressedRistretto, EdwardsPoint, Error, Nonce, NoteType, PublicKey,
-    R1CSProof, Scalar, Value, ViewKey,
+    crypto, rpc, utils, CompressedEdwardsY, CompressedRistretto, EdwardsPoint, Error, Nonce,
+    NoteType, PublicKey, R1CSProof, Scalar, Value, ViewKey, NONCEBYTES,
 };
 
 use std::cmp;
 use std::convert::{TryFrom, TryInto};
+use std::io::{self, Read, Write};
 
+use kelvin::{ByteHash, Content, Sink, Source};
 use sha2::{Digest, Sha512};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -265,5 +267,72 @@ impl TryFrom<rpc::DecryptedNote> for ObfuscatedNote {
             encrypted_value,
             encrypted_blinding_factor,
         ))
+    }
+}
+
+impl<H: ByteHash> Content<H> for ObfuscatedNote {
+    fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
+        self.utxo.persist(sink)?;
+        self.commitment.0.persist(sink)?;
+        self.nonce.0.persist(sink)?;
+
+        let r_g = self.r_g.compress();
+        sink.write_all(&r_g.0)?;
+
+        let pk_r = self.pk_r.compress();
+        sink.write_all(&pk_r.0)?;
+
+        self.idx.persist(sink)?;
+        self.encrypted_value.persist(sink)?;
+        self.encrypted_blinding_factor.persist(sink)
+    }
+
+    fn restore(source: &mut Source<H>) -> io::Result<Self> {
+        let utxo = NoteUtxoType::restore(source)?;
+
+        let mut commitment = CompressedRistretto::default();
+        source.read_exact(&mut commitment.0)?;
+
+        let mut nonce_bytes = [0u8; NONCEBYTES];
+        source.read_exact(&mut nonce_bytes)?;
+        let nonce = Nonce(nonce_bytes);
+
+        let mut r_g = CompressedEdwardsY::default();
+        source.read_exact(&mut r_g.0)?;
+        let r_g = if let Some(point) = r_g.decompress() {
+            point
+        } else {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "Invalid Compressed Edwards Point encoding",
+            ));
+        };
+
+        let mut pk_r = CompressedEdwardsY::default();
+        source.read_exact(&mut pk_r.0)?;
+        let pk_r = if let Some(point) = pk_r.decompress() {
+            point
+        } else {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "Invalid Compressed Edwards Point encoding",
+            ));
+        };
+
+        let idx = Idx::restore(source)?;
+
+        let encrypted_value = Vec::restore(source)?;
+        let encrypted_blinding_factor = Vec::restore(source)?;
+
+        Ok(ObfuscatedNote {
+            utxo,
+            commitment,
+            nonce,
+            r_g,
+            pk_r,
+            idx,
+            encrypted_value,
+            encrypted_blinding_factor,
+        })
     }
 }

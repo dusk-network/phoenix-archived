@@ -1,10 +1,10 @@
 use phoenix_lib::{
     rpc::{self, phoenix_server::Phoenix},
-    Db, Error, Idx, Note, NoteGenerator, NoteType, NoteVariant, Nullifier, ObfuscatedNote,
-    PublicKey, Scalar, SecretKey, Transaction, TransparentNote, ViewKey,
+    Db, Error, Idx, Note, NoteGenerator, NoteType, NoteVariant, Nullifier, ObfuscatedNote, PublicKey, Scalar, SecretKey, Transaction, TransparentNote, ViewKey,
 };
 
 use std::convert::TryInto;
+use kelvin::ValIterable;
 
 use tracing::trace;
 use parking_lot::RwLock;
@@ -197,16 +197,19 @@ impl Phoenix for PhoenixServer {
         let notes: Vec<rpc::DecryptedNote> = self
             .db
             .read()
-            .filter_all_notes(|note| {
-                if note.is_owned_by(&vk) {
-                    Some(note.clone())
-                } else {
-                    None
+            .notes()
+            .values()
+            .try_fold(vec![], |mut v, res: Result<&NoteVariant, _>| {
+                match res {
+                    Ok(note) => {
+                        if note.is_owned_by(&vk) {
+                            v.push(note.rpc_decrypted_note(&vk))
+                        }
+                        Ok(v)
+                    }
+                    Err(e) => Err(e),
                 }
-            })
-            .iter()
-            .map(|n| n.rpc_decrypted_note(&vk))
-            .collect();
+            })?;
 
         Ok(tonic::Response::new(rpc::OwnedNotesResponse { notes }))
     }
