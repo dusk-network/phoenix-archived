@@ -36,3 +36,9 @@ impl PartialEq for Nullifier {
         self.x == other.x
     }
 }
+
+impl AsRef<[u8]> for Nullifier {
+    fn as_ref(&self) -> &[u8] {
+        self.x.as_bytes()
+    }
+}

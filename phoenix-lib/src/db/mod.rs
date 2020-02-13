@@ -2,7 +2,9 @@ use crate::{
     Error, Idx, Note, NoteUtxoType, NoteVariant, Nullifier, Scalar, Transaction, TransactionItem,
 };
 
-use std::collections::{HashMap, HashSet};
+use kelvin::{annotations::Count, Blake2b, Map as _};
+use kelvin_hamt::CountingHAMTMap as HAMTMap;
+use kelvin_radix::DefaultRadixMap as RadixMap;
 
 use tracing::trace;
 
@@ -12,16 +14,16 @@ mod tests;
 /// Database structure for the notes and nullifiers storage
 pub struct Db {
     // TODO - HashMap and HashSet implementation to emulate KVS. Use Kelvin?
-    notes: HashMap<Idx, NoteVariant>,
-    nullifiers: HashSet<Nullifier>,
+    notes: HAMTMap<Idx, NoteVariant, Blake2b>,
+    nullifiers: RadixMap<Nullifier, (), Blake2b>,
 }
 
 impl Db {
     /// [`Db`] constructor
     pub fn new() -> Result<Self, Error> {
         Ok(Db {
-            notes: HashMap::new(),
-            nullifiers: HashSet::new(),
+            notes: HAMTMap::new(),
+            nullifiers: RadixMap::new(),
         })
     }
 
@@ -45,7 +47,10 @@ impl Db {
 
     // TODO - Should be able to rollback state in case of failure
     /// Store a set of [`Transaction`]. Return a set of positions of the included notes.
-    pub fn store_bulk_transactions(&mut self, transactions: &[Transaction]) -> Result<Vec<Idx>, Error> {
+    pub fn store_bulk_transactions(
+        &mut self,
+        transactions: &[Transaction],
+    ) -> Result<Vec<Idx>, Error> {
         let mut idx = vec![];
 
         for t in transactions {
@@ -70,7 +75,7 @@ impl Db {
             let nullifier = *item.nullifier();
             item.note().validate_nullifier(&nullifier)?;
 
-            self.nullifiers.insert(nullifier);
+            self.nullifiers.insert(nullifier, ())?;
 
             Ok(None)
         } else {
@@ -80,9 +85,9 @@ impl Db {
 
     /// Store a note. Return the position of the stored note on the tree.
     pub fn store_unspent_note(&mut self, mut note: NoteVariant) -> Result<Idx, Error> {
-        let idx: Idx = (self.notes.len() as u64).into();
+        let idx: Idx = (self.notes.count() as u64).into();
         note.set_idx(idx.clone());
-        self.notes.insert(idx.clone(), note);
+        self.notes.insert(idx.clone(), note)?;
 
         Ok(idx)
     }
@@ -90,26 +95,19 @@ impl Db {
     #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
     /// Provided a position, return a strong typed note from the database
     pub fn fetch_note(&self, idx: &Idx) -> Result<NoteVariant, Error> {
-        self.notes.get(idx).cloned().ok_or(Error::Generic)
+        self.notes
+            .get(idx)?
+            .map(|n| n.clone())
+            .ok_or(Error::Generic)
     }
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
     /// Verify the existence of a provided nullifier on the set
     pub fn fetch_nullifier(&self, nullifier: &Nullifier) -> Result<Option<()>, Error> {
-        Ok(if self.nullifiers.contains(nullifier) {
-            Some(())
-        } else {
-            None
-        })
+        Ok(self.nullifiers.get(nullifier)?.map(|d| *d))
     }
 
-    /// Execute `filter` for all the stored notes. Equivalent to [`std::iter::Iterator::filter_map`]
-    ///
-    /// Warning: O(n) operation
-    pub fn filter_all_notes(
-        &self,
-        filter: impl FnMut(&NoteVariant) -> Option<NoteVariant>,
-    ) -> Vec<NoteVariant> {
-        self.notes.values().filter_map(filter).collect()
+    pub fn notes(&self) -> &HAMTMap<Idx, NoteVariant, Blake2b> {
+        &self.notes
     }
 }

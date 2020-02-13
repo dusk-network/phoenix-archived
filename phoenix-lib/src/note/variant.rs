@@ -5,6 +5,9 @@ use crate::{
 };
 
 use std::convert::{TryFrom, TryInto};
+use std::io;
+
+use kelvin::{ByteHash, Content, Sink, Source};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum NoteVariant {
@@ -249,5 +252,27 @@ impl Note for NoteVariant {
             NoteVariant::Transparent(note) => note.is_owned_by(vk),
             NoteVariant::Obfuscated(note) => note.is_owned_by(vk),
         }
+    }
+}
+
+impl<H: ByteHash> Content<H> for NoteVariant {
+    fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
+        match self {
+            NoteVariant::Transparent(t) => {
+                false.persist(sink)?;
+                t.persist(sink)
+            }
+            NoteVariant::Obfuscated(o) => {
+                true.persist(sink)?;
+                o.persist(sink)
+            }
+        }
+    }
+
+    fn restore(source: &mut Source<H>) -> io::Result<Self> {
+        Ok(match bool::restore(source)? {
+            false => NoteVariant::Transparent(TransparentNote::restore(source)?),
+            true => NoteVariant::Obfuscated(ObfuscatedNote::restore(source)?),
+        })
     }
 }

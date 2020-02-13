@@ -48,6 +48,9 @@ name = "arbitrary"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "491d5e42b1a073ff1fc1e0a02744b3f8bee9cf4bfd552053cac36c64b879795d"
+dependencies = [
+ "derive_arbitrary",
+]
 
 [[package]]
 name = "arrayvec"
@@ -362,6 +365,17 @@ dependencies = [
  "serde",
  "subtle",
  "zeroize",
+]
+
+[[package]]
+name = "derive_arbitrary"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dab2f0544254a47cabc58956cc7ebda74c3b796bb2761e3fe8f29fdde632ad95"
+dependencies = [
+ "proc-macro2",
+ "syn",
+ "synstructure",
 ]
 
 [[package]]
@@ -748,9 +762,9 @@ checksum = "67c21572b4949434e4fc1e1978b99c5f77064153c59d998bf13ecd96fb5ecba7"
 
 [[package]]
 name = "kelvin"
-version = "0.9.0"
+version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20c252a0f82f45e3122405603805eef2b29016e7a1f3e83ff2d040fc2692570f"
+checksum = "dd2b0e0f226688b19b3fef089f5c1378acb103a45b0ef08d8c55d99be55f522a"
 dependencies = [
  "appendix",
  "arbitrary",
@@ -767,6 +781,24 @@ dependencies = [
  "quickcheck",
  "rand 0.6.5",
  "tempfile",
+]
+
+[[package]]
+name = "kelvin-hamt"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cf58db034a3671db4aee4dc71f3d29bb228ec9b652725cf22647f7040b0480ab"
+dependencies = [
+ "kelvin",
+]
+
+[[package]]
+name = "kelvin-radix"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b9bd463c2fd6ccb8fcdd34947067ba1cef37b0027af94b3fa6398f74d97007d0"
+dependencies = [
+ "kelvin",
 ]
 
 [[package]]
@@ -1225,6 +1257,8 @@ dependencies = [
  "hades252",
  "hex",
  "kelvin",
+ "kelvin-hamt",
+ "kelvin-radix",
  "lazy_static",
  "merlin",
  "poseidon252",
@@ -1243,6 +1277,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "futures",
+ "kelvin",
  "lazy_static",
  "parking_lot 0.10.0",
  "phoenix-lib",

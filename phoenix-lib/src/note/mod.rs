@@ -3,6 +3,9 @@ use crate::{
     PublicKey, R1CSProof, Scalar, SecretKey, TransactionItem, ViewKey,
 };
 
+use kelvin::{ByteHash, Content, Sink, Source};
+
+use std::io;
 use std::{cmp::Ordering, convert::TryFrom, fmt::Debug};
 
 /// Note position definitions
@@ -303,5 +306,22 @@ impl TryFrom<i32> for NoteType {
             1 => Ok(NoteType::Obfuscated),
             _ => Err(Error::InvalidParameters),
         }
+    }
+}
+
+impl<H: ByteHash> Content<H> for NoteUtxoType {
+    fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
+        match self {
+            NoteUtxoType::Input => false.persist(sink),
+            NoteUtxoType::Output => true.persist(sink),
+        }
+    }
+
+    fn restore(source: &mut Source<H>) -> io::Result<Self> {
+        Ok(if bool::restore(source)? {
+            NoteUtxoType::Output
+        } else {
+            NoteUtxoType::Input
+        })
     }
 }
