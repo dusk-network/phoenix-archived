@@ -1,0 +1,53 @@
+syntax = "proto3";
+package node;
+
+import "mempool.proto";
+
+
+/*
+message CreateFromSeed {
+	bytes seed = 1;
+	string password = 2;
+}
+
+message SendStakeTx {
+	uint64 amount = 1;
+	uint64 lock_time = 2;
+}
+
+message SendBidTx {
+	uint64 amount = 1;
+	uint64 lock_time = 2;
+}
+
+message SendStandardTx {
+	uint64 amount = 1;
+	bytes address = 2;
+}
+
+message GetMempoolView {}
+
+message GetBalance {}
+
+message GetUnconfirmedBalance {}
+
+message GetAddress {}
+
+message GetTxHistory {}
+
+message AutomateConsensusTxs {}
+
+message GetSyncProgress {}
+
+message IsWalletLoaded {}
+
+message RebuildChain {}
+
+message ClearWalletDatabase {}
+*/
+
+service Node {
+
+    // Mempool rpc
+    rpc SelectTx(mempool.SelectRequest) returns (mempool.SelectResponse) {};
+}
