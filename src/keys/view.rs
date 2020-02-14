@@ -1,5 +1,5 @@
 use super::{PublicKey, SecretKey};
-use crate::{rpc, utils, CompressedEdwardsY, EdwardsPoint, Error, Scalar};
+use crate::{rpc, utils, CompressedRistretto, Error, RistrettoPoint, Scalar};
 
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
@@ -13,7 +13,7 @@ pub struct ViewKey {
     /// Secret scalar
     pub a: Scalar,
     /// Public field element
-    pub b_g: EdwardsPoint,
+    pub b_g: RistrettoPoint,
 }
 
 impl Default for ViewKey {
@@ -24,13 +24,13 @@ impl Default for ViewKey {
 
 impl ViewKey {
     /// [`ViewKey`] constructor
-    pub fn new(a: Scalar, b_g: EdwardsPoint) -> Self {
+    pub fn new(a: Scalar, b_g: RistrettoPoint) -> Self {
         ViewKey { a, b_g }
     }
 
     /// Derive the secret to deterministically construct a [`PublicKey`]
     pub fn public_key(&self) -> PublicKey {
-        let a_g = utils::mul_by_basepoint_edwards(&self.a);
+        let a_g = utils::mul_by_basepoint_ristretto(&self.a);
 
         PublicKey::new(a_g, self.b_g)
     }
@@ -53,7 +53,7 @@ impl TryFrom<rpc::ViewKey> for ViewKey {
 
     fn try_from(k: rpc::ViewKey) -> Result<Self, Self::Error> {
         let a: Scalar = k.a.ok_or(Error::InvalidPoint)?.into();
-        let b_g: EdwardsPoint = k
+        let b_g: RistrettoPoint = k
             .b_g
             .ok_or(Error::InvalidPoint)
             .and_then(|p| p.try_into())?;
@@ -85,7 +85,7 @@ impl TryFrom<String> for ViewKey {
         let a = Scalar::from_bits(utils::safe_32_chunk(a.as_slice()));
 
         let b_g = hex::decode(&s[64..128]).map_err(|_| Error::InvalidPoint)?;
-        let b_g = CompressedEdwardsY::from_slice(&utils::safe_32_chunk(b_g.as_slice()))
+        let b_g = CompressedRistretto::from_slice(&utils::safe_32_chunk(b_g.as_slice()))
             .decompress()
             .ok_or(Error::InvalidPoint)?;
 

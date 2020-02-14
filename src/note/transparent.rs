@@ -1,7 +1,7 @@
 use super::{Idx, Note, NoteGenerator, NoteUtxoType};
 use crate::{
-    crypto, rpc, utils, CompressedEdwardsY, CompressedRistretto, EdwardsPoint, Error, Nonce,
-    NoteType, PublicKey, Scalar, Value, ViewKey, NONCEBYTES,
+    crypto, rpc, utils, CompressedRistretto, Error, Nonce, NoteType, PublicKey, RistrettoPoint,
+    Scalar, Value, ViewKey, NONCEBYTES,
 };
 
 use kelvin::{ByteHash, Content, Sink, Source};
@@ -16,8 +16,8 @@ pub struct TransparentNote {
     utxo: NoteUtxoType,
     value: u64,
     nonce: Nonce,
-    r_g: EdwardsPoint,
-    pk_r: EdwardsPoint,
+    r_g: RistrettoPoint,
+    pk_r: RistrettoPoint,
     idx: Idx,
     commitment: CompressedRistretto,
     pub(crate) encrypted_blinding_factor: Vec<u8>,
@@ -35,8 +35,8 @@ impl TransparentNote {
         utxo: NoteUtxoType,
         value: u64,
         nonce: Nonce,
-        r_g: EdwardsPoint,
-        pk_r: EdwardsPoint,
+        r_g: RistrettoPoint,
+        pk_r: RistrettoPoint,
         idx: Idx,
         commitment: CompressedRistretto,
         encrypted_blinding_factor: Vec<u8>,
@@ -119,11 +119,11 @@ impl Note for TransparentNote {
         &self.nonce
     }
 
-    fn r_g(&self) -> &EdwardsPoint {
+    fn r_g(&self) -> &RistrettoPoint {
         &self.r_g
     }
 
-    fn pk_r(&self) -> &EdwardsPoint {
+    fn pk_r(&self) -> &RistrettoPoint {
         &self.pk_r
     }
 
@@ -269,25 +269,25 @@ impl<H: ByteHash> Content<H> for TransparentNote {
         source.read_exact(&mut nonce_bytes)?;
         let nonce = Nonce(nonce_bytes);
 
-        let mut r_g = CompressedEdwardsY::default();
+        let mut r_g = CompressedRistretto::default();
         source.read_exact(&mut r_g.0)?;
         let r_g = if let Some(point) = r_g.decompress() {
             point
         } else {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidData,
-                "Invalid Compressed Edwards Point encoding",
+                "Invalid Compressed Ristretto Point encoding",
             ));
         };
 
-        let mut pk_r = CompressedEdwardsY::default();
+        let mut pk_r = CompressedRistretto::default();
         source.read_exact(&mut pk_r.0)?;
         let pk_r = if let Some(point) = pk_r.decompress() {
             point
         } else {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidData,
-                "Invalid Compressed Edwards Point encoding",
+                "Invalid Compressed Ristretto Point encoding",
             ));
         };
 

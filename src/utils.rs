@@ -1,8 +1,9 @@
-use crate::{EdwardsPoint, Nonce, Scalar};
+use crate::{MontgomeryPoint, Nonce, RistrettoPoint, Scalar};
 
 use std::cmp;
 
 use curve25519_dalek::constants;
+use curve25519_dalek::edwards::EdwardsPoint;
 use rand::rngs::OsRng;
 use rand::RngCore;
 use sodiumoxide::crypto::box_;
@@ -31,13 +32,8 @@ pub fn clamp_bytes(b: &mut [u8; 32]) {
     b[31] |= 64;
 }
 
-/// Generate a ed field element from a scalar
-pub fn mul_by_basepoint_edwards(s: &Scalar) -> EdwardsPoint {
-    &constants::ED25519_BASEPOINT_TABLE * s
-}
-
-/// Get the Y coordinate of a ed field element and return it as a scalar
-pub fn edwards_to_scalar(p: EdwardsPoint) -> Scalar {
+/// Get the Y coordinate of a ristretto field element and return it as a scalar
+pub fn ristretto_to_scalar(p: RistrettoPoint) -> Scalar {
     Scalar::from_bits(p.compress().to_bytes())
 }
 
@@ -54,4 +50,19 @@ pub fn safe_32_chunk(bytes: &[u8]) -> [u8; 32] {
     (&mut s[0..chunk]).copy_from_slice(&bytes[0..chunk]);
 
     s
+}
+
+/// Generate a ristretto field element from a scalar
+pub fn mul_by_basepoint_ristretto(s: &Scalar) -> RistrettoPoint {
+    &constants::RISTRETTO_BASEPOINT_TABLE * s
+}
+
+/// Unsafely extract the Montgomery model form a ristretto point.
+///
+/// Assumes `(Z + Y) / (Z - Y)` stands also for ristretto points, considering it is a subgroup of
+/// edwards
+///
+/// Dalek implementation won't expose the inner edwards point, so an unsafe transmute is required
+pub fn ristretto_to_montgomery(point: RistrettoPoint) -> MontgomeryPoint {
+    unsafe { std::mem::transmute::<RistrettoPoint, EdwardsPoint>(point).to_montgomery() }
 }

@@ -1,6 +1,6 @@
 use crate::{
-    rpc, CompressedRistretto, EdwardsPoint, Error, Idx, Nonce, Note, NoteGenerator, NoteType,
-    NoteUtxoType, Nullifier, ObfuscatedNote, PublicKey, R1CSProof, Scalar, SecretKey,
+    rpc, CompressedRistretto, Error, Idx, Nonce, Note, NoteGenerator, NoteType, NoteUtxoType,
+    Nullifier, ObfuscatedNote, PublicKey, R1CSProof, RistrettoPoint, Scalar, SecretKey,
     TransactionItem, TransparentNote, ViewKey,
 };
 
@@ -226,14 +226,14 @@ impl Note for NoteVariant {
         }
     }
 
-    fn r_g(&self) -> &EdwardsPoint {
+    fn r_g(&self) -> &RistrettoPoint {
         match self {
             NoteVariant::Transparent(note) => note.r_g(),
             NoteVariant::Obfuscated(note) => note.r_g(),
         }
     }
 
-    fn pk_r(&self) -> &EdwardsPoint {
+    fn pk_r(&self) -> &RistrettoPoint {
         match self {
             NoteVariant::Transparent(note) => note.pk_r(),
             NoteVariant::Obfuscated(note) => note.pk_r(),

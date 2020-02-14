@@ -40,11 +40,15 @@ fn transaction_zk() {
 
     // Store an unspent note of 50
     let pk = &senders[1].2;
-    inputs.push(create_and_store_unspent_note::<ObfuscatedNote>(&mut db, pk, 50));
+    inputs.push(create_and_store_unspent_note::<ObfuscatedNote>(
+        &mut db, pk, 50,
+    ));
 
     // Store an unspent note of 45 with the same sender for a malicious proof verification
     let pk = &senders[1].2;
-    inputs.push(create_and_store_unspent_note::<ObfuscatedNote>(&mut db, pk, 45));
+    inputs.push(create_and_store_unspent_note::<ObfuscatedNote>(
+        &mut db, pk, 45,
+    ));
 
     // Create an output of 97
     let pk = &receivers[0].2;

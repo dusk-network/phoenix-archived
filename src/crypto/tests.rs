@@ -1,5 +1,20 @@
 use crate::{crypto, utils, Note, NoteGenerator, ObfuscatedNote, SecretKey};
 
+use curve25519_dalek::constants;
+
+#[test]
+fn ristretto_to_montgomery() {
+    let sk = SecretKey::default();
+
+    let a_g_ristretto = utils::mul_by_basepoint_ristretto(&sk.a);
+    let a_g_edwards = &constants::ED25519_BASEPOINT_TABLE * &sk.a;
+
+    let montgomery_ristretto = utils::ristretto_to_montgomery(a_g_ristretto);
+    let montgomery_edwards = a_g_edwards.to_montgomery();
+
+    assert_eq!(montgomery_ristretto, montgomery_edwards);
+}
+
 #[test]
 fn decrypt() {
     let sk = SecretKey::default();
