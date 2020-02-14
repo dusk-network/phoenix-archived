@@ -1,4 +1,4 @@
-use crate::{EdwardsPoint, Nonce, PublicKey, Scalar, ViewKey};
+use crate::{utils, Nonce, PublicKey, RistrettoPoint, Scalar, ViewKey};
 
 use hades252::strategies::{ScalarStrategy, Strategy};
 use poseidon252::sponge;
@@ -14,15 +14,15 @@ mod tests;
 
 /// Encrypt a message using `r` as secret for the sender, and `pk` as public for the receiver
 pub fn encrypt<V: AsRef<[u8]>>(r: &Scalar, pk: &PublicKey, nonce: &Nonce, value: V) -> Vec<u8> {
-    let a_g = SodiumPk(pk.a_g.to_montgomery().to_bytes());
+    let a_g = SodiumPk(utils::ristretto_to_montgomery(pk.a_g).to_bytes());
     let r = SodiumSk(r.to_bytes());
 
     box_::seal(value.as_ref(), nonce, &a_g, &r)
 }
 
 /// Decrypt a message using `r_g` as public of the sender, and `vk` as secret for the receiver
-pub fn decrypt(r_g: &EdwardsPoint, vk: &ViewKey, nonce: &Nonce, value: &[u8]) -> Vec<u8> {
-    let r_g = SodiumPk(r_g.to_montgomery().to_bytes());
+pub fn decrypt(r_g: &RistrettoPoint, vk: &ViewKey, nonce: &Nonce, value: &[u8]) -> Vec<u8> {
+    let r_g = SodiumPk(utils::ristretto_to_montgomery(*r_g).to_bytes());
     let a = SodiumSk(vk.a.to_bytes());
 
     box_::open(value, nonce, &r_g, &a).unwrap_or({

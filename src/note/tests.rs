@@ -68,12 +68,12 @@ fn note_keys_consistency() {
 
     let pk_r = note.pk_r();
     let sk_r = note.sk_r(&sk);
-    let sk_r_g = utils::mul_by_basepoint_edwards(&sk_r);
+    let sk_r_g = utils::mul_by_basepoint_ristretto(&sk_r);
 
     assert_eq!(pk_r, &sk_r_g);
 
     let wrong_sk_r = note.sk_r(&wrong_sk);
-    let wrong_sk_r_g = utils::mul_by_basepoint_edwards(&wrong_sk_r);
+    let wrong_sk_r_g = utils::mul_by_basepoint_ristretto(&wrong_sk_r);
 
     assert_ne!(pk_r, &wrong_sk_r_g);
 }

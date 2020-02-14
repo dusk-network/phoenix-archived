@@ -1,6 +1,5 @@
 use crate::{
-    rpc, utils, CompressedEdwardsY, CompressedRistretto, EdwardsPoint, Error, Nonce, NoteUtxoType,
-    Nullifier, RistrettoPoint, Scalar,
+    rpc, utils, CompressedRistretto, Error, Nonce, NoteUtxoType, Nullifier, RistrettoPoint, Scalar,
 };
 
 use std::convert::{TryFrom, TryInto};
@@ -19,20 +18,6 @@ impl Into<Scalar> for rpc::Scalar {
     }
 }
 
-impl From<CompressedEdwardsY> for rpc::CompressedPoint {
-    fn from(s: CompressedEdwardsY) -> Self {
-        rpc::CompressedPoint {
-            y: s.as_bytes().to_vec(),
-        }
-    }
-}
-
-impl Into<CompressedEdwardsY> for rpc::CompressedPoint {
-    fn into(self) -> CompressedEdwardsY {
-        CompressedEdwardsY::from_slice(&utils::safe_32_chunk(self.y.as_slice()))
-    }
-}
-
 impl From<CompressedRistretto> for rpc::CompressedPoint {
     fn from(s: CompressedRistretto) -> Self {
         rpc::CompressedPoint {
@@ -44,23 +29,6 @@ impl From<CompressedRistretto> for rpc::CompressedPoint {
 impl Into<CompressedRistretto> for rpc::CompressedPoint {
     fn into(self) -> CompressedRistretto {
         CompressedRistretto::from_slice(&utils::safe_32_chunk(self.y.as_slice()))
-    }
-}
-
-impl From<EdwardsPoint> for rpc::CompressedPoint {
-    fn from(s: EdwardsPoint) -> Self {
-        rpc::CompressedPoint {
-            y: s.compress().as_bytes().to_vec(),
-        }
-    }
-}
-
-impl TryInto<EdwardsPoint> for rpc::CompressedPoint {
-    type Error = Error;
-
-    fn try_into(self) -> Result<EdwardsPoint, Self::Error> {
-        let y: CompressedEdwardsY = self.into();
-        y.decompress().ok_or(Error::InvalidPoint)
     }
 }
 
