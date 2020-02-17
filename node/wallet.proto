@@ -21,12 +21,12 @@ message LoadResponse {
 }
 
 message ConsensusTxRequest {
-	uint64 amount = 1;
-	uint64 lock_time = 2;
+	fixed64 amount = 1;
+	fixed64 lock_time = 2;
 }
 
 message TransferRequest {
-	uint64 amount = 1;
+	fixed64 amount = 1;
 	bytes address = 2;
 }
 
@@ -34,7 +34,7 @@ message TransferResponse {
 	bytes hash = 1;
 }
 
-message WalletStatusReponse {
+message WalletStatusResponse {
 	bool loaded = 1;
 }
 
