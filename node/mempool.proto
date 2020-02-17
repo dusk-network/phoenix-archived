@@ -1,5 +1,5 @@
 syntax="proto3";
-package mempool;
+package node;
 
 enum TxType {
     // CoinbaseType is the identifier for a block coinbase

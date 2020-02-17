@@ -3,7 +3,6 @@ package node;
 
 import "mempool.proto";
 
-
 /*
 message CreateFromSeed {
 	bytes seed = 1;
@@ -49,5 +48,5 @@ message ClearWalletDatabase {}
 service Node {
 
     // Mempool rpc
-    rpc SelectTx(mempool.SelectRequest) returns (mempool.SelectResponse) {};
+    rpc SelectTx(SelectRequest) returns (SelectResponse) {};
 }
