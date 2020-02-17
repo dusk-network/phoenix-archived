@@ -1,31 +1,27 @@
-use crate::{utils, Nonce, PublicKey, RistrettoPoint, Scalar, ViewKey};
+use crate::{Nonce, PublicKey, RistrettoPoint, Scalar, ViewKey};
 
 use hades252::strategies::{ScalarStrategy, Strategy};
 use poseidon252::sponge;
 use rand::rngs::OsRng;
 use rand::seq::SliceRandom;
-use sodiumoxide::crypto::box_;
-use sodiumoxide::crypto::box_::curve25519xsalsa20poly1305::{
-    PublicKey as SodiumPk, SecretKey as SodiumSk,
-};
+use sodiumoxide::crypto::secretbox::{self, Key};
 
 #[cfg(test)]
 mod tests;
 
+/// Perform a DHKE to create a shared secret
+pub fn dhke(sk: &Scalar, pk: &RistrettoPoint) -> Key {
+    Key((sk * pk).compress().to_bytes())
+}
+
 /// Encrypt a message using `r` as secret for the sender, and `pk` as public for the receiver
 pub fn encrypt<V: AsRef<[u8]>>(r: &Scalar, pk: &PublicKey, nonce: &Nonce, value: V) -> Vec<u8> {
-    let a_g = SodiumPk(utils::ristretto_to_montgomery(pk.a_g).to_bytes());
-    let r = SodiumSk(r.to_bytes());
-
-    box_::seal(value.as_ref(), nonce, &a_g, &r)
+    secretbox::seal(value.as_ref(), nonce, &dhke(r, &pk.a_g))
 }
 
 /// Decrypt a message using `r_g` as public of the sender, and `vk` as secret for the receiver
 pub fn decrypt(r_g: &RistrettoPoint, vk: &ViewKey, nonce: &Nonce, value: &[u8]) -> Vec<u8> {
-    let r_g = SodiumPk(utils::ristretto_to_montgomery(*r_g).to_bytes());
-    let a = SodiumSk(vk.a.to_bytes());
-
-    box_::open(value, nonce, &r_g, &a).unwrap_or({
+    secretbox::open(value, nonce, &dhke(&vk.a, r_g)).unwrap_or({
         let mut value = value.to_vec();
         value.shuffle(&mut OsRng);
         value
