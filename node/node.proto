@@ -22,7 +22,7 @@ service Node {
 	rpc SendStake(ConsensusTxRequest) returns (TransferResponse) {};
 	rpc AutomateConsensusTxs(EmptyRequest) returns (GenericResponse) {};
 
-	rpc GetWalletStatus(EmptyRequest) returns (WalletStatusReponse) {};
+	rpc GetWalletStatus(EmptyRequest) returns (WalletStatusResponse) {};
 	rpc GetAddress(EmptyRequest) returns (LoadResponse) {};
 	rpc GetSyncProgress(EmptyRequest) returns (SyncProgressResponse) {};
 	rpc GetBalance(EmptyRequest) returns (BalanceResponse) {};
