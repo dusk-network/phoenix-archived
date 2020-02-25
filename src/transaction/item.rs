@@ -179,6 +179,13 @@ impl TransactionItem {
         &self.nullifier
     }
 
+    /// Set the nullifier of the transaction item. Should only be done on transaction inputs.
+    /// Use with care: you should guarantee that the nullifier corresponds
+    /// to the note in the TransactionItem.
+    pub fn set_nullifier(&mut self, nullifier: Nullifier) {
+        self.nullifier = nullifier;
+    }
+
     /// Attempt to generate a transaction input from a provided database and rpc item with the
     /// position of the note and its secret
     pub fn try_from_rpc_transaction_input(
