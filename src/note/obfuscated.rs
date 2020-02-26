@@ -6,12 +6,13 @@ use crate::{
 
 use std::cmp;
 use std::convert::{TryFrom, TryInto};
+use std::fmt;
 use std::io::{self, Read, Write};
 
 use kelvin::{ByteHash, Content, Sink, Source};
 use sha2::{Digest, Sha512};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone)]
 /// A note that hides its value and blinding factor
 pub struct ObfuscatedNote {
     utxo: NoteUtxoType,
@@ -20,9 +21,22 @@ pub struct ObfuscatedNote {
     r_g: RistrettoPoint,
     pk_r: RistrettoPoint,
     idx: Idx,
-    pub(crate) encrypted_value: Vec<u8>,
-    pub(crate) encrypted_blinding_factor: Vec<u8>,
+    pub(crate) encrypted_value: [u8; 24],
+    pub(crate) encrypted_blinding_factor: [u8; 48],
 }
+
+impl fmt::Debug for ObfuscatedNote {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "ObfuscatedNote {{ utxo: {:?}, nonce: {:?}, r_g: {:?}, pk_r: {:?}, idx: {:?}, commitment: {:?}, encrypted_value: {:?}, encrypted_blinding_factor: {:?} }}", self.utxo, self.nonce, self.r_g, self.pk_r, self.idx, self.commitment, &self.encrypted_value, &self.encrypted_blinding_factor[0..32])
+    }
+}
+
+impl PartialEq for ObfuscatedNote {
+    fn eq(&self, other: &Self) -> bool {
+        self.hash() == other.hash()
+    }
+}
+impl Eq for ObfuscatedNote {}
 
 impl ObfuscatedNote {
     /// [`ObfuscatedNote`] constructor
@@ -33,8 +47,8 @@ impl ObfuscatedNote {
         r_g: RistrettoPoint,
         pk_r: RistrettoPoint,
         idx: Idx,
-        encrypted_value: Vec<u8>,
-        encrypted_blinding_factor: Vec<u8>,
+        encrypted_value: [u8; 24],
+        encrypted_blinding_factor: [u8; 48],
     ) -> Self {
         ObfuscatedNote {
             utxo,
@@ -92,7 +106,7 @@ impl Note for ObfuscatedNote {
         hasher.input(self.pk_r.compress().as_bytes());
         hasher.input(self.idx.clone().into_vec());
         hasher.input(&self.encrypted_value);
-        hasher.input(&self.encrypted_blinding_factor);
+        hasher.input(&self.encrypted_blinding_factor[..]);
 
         Scalar::from_hash(hasher)
     }
@@ -132,8 +146,7 @@ impl Note for ObfuscatedNote {
     fn value(&self, vk: Option<&ViewKey>) -> u64 {
         let vk = vk.copied().unwrap_or_default();
 
-        let decrypt_value =
-            crypto::decrypt(&self.r_g, &vk, &self.nonce, self.encrypted_value.as_slice());
+        let decrypt_value = crypto::decrypt(&self.r_g, &vk, &self.nonce, &self.encrypted_value[..]);
 
         let mut v = [0x00u8; 8];
         let chunk = cmp::min(decrypt_value.len(), 8);
@@ -142,7 +155,7 @@ impl Note for ObfuscatedNote {
         u64::from_le_bytes(v)
     }
 
-    fn encrypted_value(&self) -> Option<&Vec<u8>> {
+    fn encrypted_value(&self) -> Option<&[u8; 24]> {
         Some(&self.encrypted_value)
     }
 
@@ -155,13 +168,13 @@ impl Note for ObfuscatedNote {
             &self.r_g,
             vk,
             &self.nonce.increment_le(),
-            self.encrypted_blinding_factor.as_slice(),
+            &self.encrypted_blinding_factor[..],
         );
 
         Scalar::from_bits(utils::safe_32_chunk(blinding_factor.as_slice()))
     }
 
-    fn encrypted_blinding_factor(&self) -> &Vec<u8> {
+    fn encrypted_blinding_factor(&self) -> &[u8; 48] {
         &self.encrypted_blinding_factor
     }
 
@@ -190,8 +203,10 @@ impl From<ObfuscatedNote> for rpc::Note {
         let r_g = Some(note.r_g.into());
         let pk_r = Some(note.pk_r.into());
         let commitment = Some(note.commitment.into());
-        let encrypted_blinding_factor = note.encrypted_blinding_factor;
-        let value = Some(rpc::note::Value::EncryptedValue(note.encrypted_value));
+        let encrypted_blinding_factor = note.encrypted_blinding_factor.to_vec();
+        let value = Some(rpc::note::Value::EncryptedValue(
+            note.encrypted_value.to_vec(),
+        ));
 
         rpc::Note {
             note_type,
@@ -221,12 +236,15 @@ impl TryFrom<rpc::Note> for ObfuscatedNote {
         let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
         let idx = note.pos.ok_or(Error::InvalidParameters)?;
         let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
+
         let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
 
         let encrypted_value = match note.value.ok_or(Error::InvalidParameters)? {
             rpc::note::Value::TransparentValue(_) => Err(Error::InvalidParameters),
             rpc::note::Value::EncryptedValue(v) => Ok(v),
         }?;
+        let encrypted_value = utils::safe_24_chunk(encrypted_value.as_slice());
 
         Ok(ObfuscatedNote::new(
             utxo,
@@ -251,11 +269,15 @@ impl TryFrom<rpc::DecryptedNote> for ObfuscatedNote {
         let r_g = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
         let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
         let idx = note.pos.ok_or(Error::InvalidParameters)?;
+
         let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
+
         let encrypted_value = match note.raw_value.ok_or(Error::InvalidParameters)? {
             rpc::decrypted_note::RawValue::EncryptedValue(v) => Ok(v),
             _ => Err(Error::InvalidParameters),
         }?;
+        let encrypted_value = utils::safe_24_chunk(encrypted_value.as_slice());
 
         Ok(ObfuscatedNote::new(
             utxo,
@@ -283,8 +305,8 @@ impl<H: ByteHash> Content<H> for ObfuscatedNote {
         sink.write_all(&pk_r.0)?;
 
         self.idx.persist(sink)?;
-        self.encrypted_value.persist(sink)?;
-        self.encrypted_blinding_factor.persist(sink)
+        self.encrypted_value.to_vec().persist(sink)?;
+        self.encrypted_blinding_factor.to_vec().persist(sink)
     }
 
     fn restore(source: &mut Source<H>) -> io::Result<Self> {
@@ -322,7 +344,10 @@ impl<H: ByteHash> Content<H> for ObfuscatedNote {
         let idx = Idx::restore(source)?;
 
         let encrypted_value = Vec::restore(source)?;
+        let encrypted_value = utils::safe_24_chunk(encrypted_value.as_slice());
+
         let encrypted_blinding_factor = Vec::restore(source)?;
+        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
 
         Ok(ObfuscatedNote {
             utxo,

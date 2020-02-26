@@ -198,7 +198,7 @@ impl Note for NoteVariant {
         }
     }
 
-    fn encrypted_value(&self) -> Option<&Vec<u8>> {
+    fn encrypted_value(&self) -> Option<&[u8; 24]> {
         match self {
             NoteVariant::Transparent(note) => note.encrypted_value(),
             NoteVariant::Obfuscated(note) => note.encrypted_value(),
@@ -219,7 +219,7 @@ impl Note for NoteVariant {
         }
     }
 
-    fn encrypted_blinding_factor(&self) -> &Vec<u8> {
+    fn encrypted_blinding_factor(&self) -> &[u8; 48] {
         match self {
             NoteVariant::Transparent(note) => note.encrypted_blinding_factor(),
             NoteVariant::Obfuscated(note) => note.encrypted_blinding_factor(),

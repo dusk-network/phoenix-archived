@@ -8,9 +8,10 @@ use kelvin::{ByteHash, Content, Sink, Source};
 use sha2::{Digest, Sha512};
 
 use std::convert::{TryFrom, TryInto};
+use std::fmt;
 use std::io::{self, Read, Write};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone)]
 /// A note that does not encrypt its value
 pub struct TransparentNote {
     utxo: NoteUtxoType,
@@ -20,8 +21,21 @@ pub struct TransparentNote {
     pk_r: RistrettoPoint,
     idx: Idx,
     commitment: CompressedRistretto,
-    pub(crate) encrypted_blinding_factor: Vec<u8>,
+    pub(crate) encrypted_blinding_factor: [u8; 48],
 }
+
+impl fmt::Debug for TransparentNote {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "TransparentNote {{ utxo: {:?}, value: {:?}, nonce: {:?}, r_g: {:?}, pk_r: {:?}, idx: {:?}, commitment: {:?}, encrypted_blinding_factor: {:?} }}", self.utxo, self.value, self.nonce, self.r_g, self.pk_r, self.idx, self.commitment, &self.encrypted_blinding_factor[0..32])
+    }
+}
+
+impl PartialEq for TransparentNote {
+    fn eq(&self, other: &Self) -> bool {
+        self.hash() == other.hash()
+    }
+}
+impl Eq for TransparentNote {}
 
 impl Default for TransparentNote {
     fn default() -> Self {
@@ -39,7 +53,7 @@ impl TransparentNote {
         pk_r: RistrettoPoint,
         idx: Idx,
         commitment: CompressedRistretto,
-        encrypted_blinding_factor: Vec<u8>,
+        encrypted_blinding_factor: [u8; 48],
     ) -> Self {
         TransparentNote {
             utxo,
@@ -94,7 +108,7 @@ impl Note for TransparentNote {
         hasher.input(self.pk_r.compress().as_bytes());
         hasher.input(&self.idx.clone().into_vec());
         hasher.input(&self.commitment.as_bytes());
-        hasher.input(&self.encrypted_blinding_factor);
+        hasher.input(&self.encrypted_blinding_factor[..]);
 
         Scalar::from_hash(hasher)
     }
@@ -135,7 +149,7 @@ impl Note for TransparentNote {
         self.value
     }
 
-    fn encrypted_value(&self) -> Option<&Vec<u8>> {
+    fn encrypted_value(&self) -> Option<&[u8; 24]> {
         None
     }
 
@@ -148,13 +162,13 @@ impl Note for TransparentNote {
             &self.r_g,
             vk,
             &self.nonce.increment_le(),
-            self.encrypted_blinding_factor.as_slice(),
+            &self.encrypted_blinding_factor[..],
         );
 
         Scalar::from_bits(utils::safe_32_chunk(blinding_factor.as_slice()))
     }
 
-    fn encrypted_blinding_factor(&self) -> &Vec<u8> {
+    fn encrypted_blinding_factor(&self) -> &[u8; 48] {
         &self.encrypted_blinding_factor
     }
 }
@@ -168,7 +182,7 @@ impl From<TransparentNote> for rpc::Note {
         let r_g = Some(note.r_g.into());
         let pk_r = Some(note.pk_r.into());
         let commitment = Some(note.commitment.into());
-        let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        let encrypted_blinding_factor = note.encrypted_blinding_factor.to_vec();
         let value = Some(rpc::note::Value::TransparentValue(note.value));
 
         rpc::Note {
@@ -199,7 +213,9 @@ impl TryFrom<rpc::Note> for TransparentNote {
         let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
         let idx = note.pos.ok_or(Error::InvalidParameters)?;
         let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
+
         let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
 
         let value = match note.value.ok_or(Error::InvalidParameters)? {
             rpc::note::Value::TransparentValue(v) => Ok(v),
@@ -230,7 +246,9 @@ impl TryFrom<rpc::DecryptedNote> for TransparentNote {
         let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
         let idx = note.pos.ok_or(Error::InvalidParameters)?;
         let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
+
         let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
 
         Ok(TransparentNote::new(
             utxo,
@@ -259,7 +277,7 @@ impl<H: ByteHash> Content<H> for TransparentNote {
 
         self.idx.persist(sink)?;
         self.commitment.0.persist(sink)?;
-        self.encrypted_blinding_factor.persist(sink)
+        self.encrypted_blinding_factor.to_vec().persist(sink)
     }
 
     fn restore(source: &mut Source<H>) -> io::Result<Self> {
@@ -297,6 +315,7 @@ impl<H: ByteHash> Content<H> for TransparentNote {
         source.read_exact(&mut commitment.0)?;
 
         let encrypted_blinding_factor = Vec::restore(source)?;
+        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
 
         Ok(TransparentNote {
             utxo,
