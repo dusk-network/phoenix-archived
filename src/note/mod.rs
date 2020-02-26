@@ -99,8 +99,9 @@ pub trait NoteGenerator:
     }
 
     /// Internally calls the [`crypto::encrypt`] to mask the value
-    fn encrypt_value(r: &Scalar, pk: &PublicKey, nonce: &Nonce, value: u64) -> Vec<u8> {
-        crypto::encrypt(r, pk, nonce, &value.to_le_bytes()[..])
+    fn encrypt_value(r: &Scalar, pk: &PublicKey, nonce: &Nonce, value: u64) -> [u8; 24] {
+        let bytes = crypto::encrypt(r, pk, nonce, &value.to_le_bytes()[..]);
+        utils::safe_24_chunk(bytes.as_slice())
     }
 
     /// Internally calls the [`crypto::encrypt`] to mask the blinding factor
@@ -109,8 +110,9 @@ pub trait NoteGenerator:
         pk: &PublicKey,
         nonce: &Nonce,
         blinding_factor: &Scalar,
-    ) -> Vec<u8> {
-        crypto::encrypt(r, pk, &nonce.increment_le(), blinding_factor.as_bytes())
+    ) -> [u8; 48] {
+        let bytes = crypto::encrypt(r, pk, &nonce.increment_le(), blinding_factor.as_bytes());
+        utils::safe_48_chunk(bytes.as_slice())
     }
 }
 
@@ -161,10 +163,10 @@ pub trait Note: Debug + Send + Sync {
         let pk_r = Some((*self.pk_r()).into());
         let commitment = Some((*self.commitment()).into());
         let blinding_factor = Some(self.blinding_factor(vk).into());
-        let encrypted_blinding_factor = self.encrypted_blinding_factor().clone();
+        let encrypted_blinding_factor = self.encrypted_blinding_factor().to_vec();
         let raw_value = self
             .encrypted_value()
-            .map(|ev| rpc::decrypted_note::RawValue::EncryptedValue(ev.clone()))
+            .map(|ev| rpc::decrypted_note::RawValue::EncryptedValue(ev.to_vec()))
             .unwrap_or(rpc::decrypted_note::RawValue::TransparentValue(value));
         let raw_value = Some(raw_value);
 
@@ -211,15 +213,15 @@ pub trait Note: Debug + Send + Sync {
     /// Attempt to decrypt the note value provided a [`ViewKey`]. Always succeeds for transparent
     /// notes, and will return random values for obfuscated notes provided the wrong view key.
     fn value(&self, vk: Option<&ViewKey>) -> u64;
-    /// Return the raw encrypted bytes for the note. Return an empty [`Vec<u8>`] for transparent
+    /// Return the raw encrypted bytes for the note. Return an empty `[u8; 24]` for transparent
     /// notes
-    fn encrypted_value(&self) -> Option<&Vec<u8>>;
+    fn encrypted_value(&self) -> Option<&[u8; 24]>;
     /// Return the commitment point to the value
     fn commitment(&self) -> &CompressedRistretto;
     /// Attempt to decrypt and return the decrypted blinding factor used to prove the obfuscated note value. If a wrong view key is provided, a random scalar is returned
     fn blinding_factor(&self, vk: &ViewKey) -> Scalar;
     /// Return the raw encrypted value blinding factor
-    fn encrypted_blinding_factor(&self) -> &Vec<u8>;
+    fn encrypted_blinding_factor(&self) -> &[u8; 48];
     /// Return the `r · G` used for the DHKE randomness
     fn r_g(&self) -> &RistrettoPoint;
     /// Return the public DHKE combined with the secret key of the owner of the note

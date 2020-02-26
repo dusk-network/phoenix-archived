@@ -63,8 +63,8 @@ fn store_notes() {
         assert_eq!(note.commitment(), db_note.commitment());
         assert_eq!(note.encrypted_value, db_note.encrypted_value);
         assert_eq!(
-            note.encrypted_blinding_factor,
-            db_note.encrypted_blinding_factor
+            &note.encrypted_blinding_factor[..],
+            &db_note.encrypted_blinding_factor[..]
         );
         assert_eq!(idx, db_note.idx());
     });

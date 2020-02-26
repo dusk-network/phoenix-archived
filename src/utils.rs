@@ -41,10 +41,30 @@ pub fn gen_nonce() -> Nonce {
     secretbox::gen_nonce()
 }
 
+/// Safely transpose a slice of any size to a `[u8; 24]`
+pub fn safe_24_chunk(bytes: &[u8]) -> [u8; 24] {
+    let mut s = [0x00u8; 24];
+    let chunk = cmp::min(bytes.len(), 24);
+
+    (&mut s[0..chunk]).copy_from_slice(&bytes[0..chunk]);
+
+    s
+}
+
 /// Safely transpose a slice of any size to a `[u8; 32]`
 pub fn safe_32_chunk(bytes: &[u8]) -> [u8; 32] {
     let mut s = [0x00u8; 32];
     let chunk = cmp::min(bytes.len(), 32);
+
+    (&mut s[0..chunk]).copy_from_slice(&bytes[0..chunk]);
+
+    s
+}
+
+/// Safely transpose a slice of any size to a `[u8; 48]`
+pub fn safe_48_chunk(bytes: &[u8]) -> [u8; 48] {
+    let mut s = [0x00u8; 48];
+    let chunk = cmp::min(bytes.len(), 48);
 
     (&mut s[0..chunk]).copy_from_slice(&bytes[0..chunk]);
 
