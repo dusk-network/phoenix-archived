@@ -1,9 +1,11 @@
 use crate::{
-    rpc, Db, Idx, Note, NoteGenerator, NoteVariant, ObfuscatedNote, PublicKey, Scalar, SecretKey,
-    Transaction, TransparentNote, ViewKey,
+    db, rpc, Db, Idx, Note, NoteGenerator, NoteVariant, ObfuscatedNote, PublicKey, Scalar,
+    SecretKey, Transaction, TransparentNote, ViewKey,
 };
 
+use kelvin::{Blake2b, ByteHash, Root};
 use std::convert::TryInto;
+use std::fs;
 
 #[test]
 fn transaction_items() {
@@ -16,7 +18,12 @@ fn transaction_items() {
 
 #[test]
 fn transaction_zk() {
-    let mut db = Db::new().unwrap();
+    // Since we're only working with notes, the db is instantiated here
+    // directly and used in the test, as there is no API for directly
+    // storing notes without having a `Db` around.
+    const DB_PATH: &'static str = "/tmp/phoenix-test-tx-zk";
+    let mut root = Root::<_, Blake2b>::new(DB_PATH).unwrap();
+    let mut state: Db<_> = root.restore().unwrap();
 
     let mut inputs = vec![];
     let mut outputs = vec![];
@@ -34,21 +41,24 @@ fn transaction_zk() {
 
     // Store an unspent note of 100
     let pk = &senders[0].2;
-    inputs.push(create_and_store_unspent_note::<TransparentNote>(
-        &mut db, pk, 100,
+    inputs.push(create_and_store_unspent_note::<TransparentNote, Blake2b>(
+        &mut state, pk, 100,
     ));
 
     // Store an unspent note of 50
     let pk = &senders[1].2;
-    inputs.push(create_and_store_unspent_note::<ObfuscatedNote>(
-        &mut db, pk, 50,
+    inputs.push(create_and_store_unspent_note::<ObfuscatedNote, Blake2b>(
+        &mut state, pk, 50,
     ));
 
     // Store an unspent note of 45 with the same sender for a malicious proof verification
     let pk = &senders[1].2;
-    inputs.push(create_and_store_unspent_note::<ObfuscatedNote>(
-        &mut db, pk, 45,
+    inputs.push(create_and_store_unspent_note::<ObfuscatedNote, Blake2b>(
+        &mut state, pk, 45,
     ));
+
+    // Persist changes to disk
+    root.set_root(&mut state).unwrap();
 
     // Create an output of 97
     let pk = &receivers[0].2;
@@ -71,7 +81,7 @@ fn transaction_zk() {
     // Set the 100 unspent note as the input of the transaction
     let sk = senders[0].0;
     let idx = &inputs[0].2;
-    let note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
+    let note: TransparentNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
     transaction.push(note.to_transaction_input(sk));
 
     // Push the 30 output note to the transaction
@@ -100,7 +110,7 @@ fn transaction_zk() {
     // Set the 45 unspent note as the input of the malicious transaction
     let sk = senders[1].0;
     let idx = &inputs[2].2;
-    let note: ObfuscatedNote = db.fetch_note(idx).unwrap().try_into().unwrap();
+    let note: ObfuscatedNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
     malicious_transaction.push(note.to_transaction_input(sk));
 
     // Push the 92 output note to the malicious transaction
@@ -115,7 +125,7 @@ fn transaction_zk() {
     // Set the 50 unspent note as the input of the transaction
     let sk = senders[1].0;
     let idx = &inputs[1].2;
-    let note: ObfuscatedNote = db.fetch_note(idx).unwrap().try_into().unwrap();
+    let note: ObfuscatedNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
     transaction.push(note.to_transaction_input(sk));
 
     // Grant only transactions with sufficient inputs can be proven
@@ -149,11 +159,16 @@ fn transaction_zk() {
 
     // The fee should be the difference between the input and output
     assert_eq!(3, transaction.fee().value());
+
+    // Clean up the db
+    fs::remove_dir_all(DB_PATH).expect("could not remove temp db");
 }
 
 #[test]
 fn transactions_with_transparent_notes() {
-    let mut db = Db::new().unwrap();
+    const DB_PATH: &'static str = "/tmp/phoenix-test-tx-transparent";
+    let mut root = Root::<_, Blake2b>::new(DB_PATH).unwrap();
+    let mut state: Db<_> = root.restore().unwrap();
 
     let mut notes = vec![];
     let mut outputs = vec![];
@@ -170,27 +185,31 @@ fn transactions_with_transparent_notes() {
 
     // Store an unspent note
     let pk = &senders[0].2;
-    notes.push(create_and_store_unspent_note::<TransparentNote>(
-        &mut db, pk, 100,
+    notes.push(create_and_store_unspent_note::<TransparentNote, Blake2b>(
+        &mut state, pk, 100,
     ));
+
+    // Persist changes to disk
+    root.set_root(&mut state).unwrap();
+
     let idx = &notes[0].2;
-    let note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
+    let note: TransparentNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
     let vk = &senders[0].1;
     assert!(note.is_owned_by(vk));
 
     // Assert the new unspent note is not nullified
     let sk = &senders[0].0;
     let idx = &notes[0].2;
-    let note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
+    let note: TransparentNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
     let nullifier = note.generate_nullifier(sk);
-    assert!(db.fetch_nullifier(&nullifier).unwrap().is_none());
+    assert!(db::fetch_nullifier(DB_PATH, &nullifier).unwrap().is_none());
 
     let mut transaction = Transaction::default();
 
     // Set the first unspent note as the input of the transaction
     let sk = senders[0].0;
     let idx = &notes[0].2;
-    let note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
+    let note: TransparentNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
     transaction.push(note.to_transaction_input(sk));
 
     // Set the fee cost
@@ -215,18 +234,18 @@ fn transactions_with_transparent_notes() {
 
     // Execute the transaction
     transaction.prove().unwrap();
-    let unspent_outputs = db.store(&transaction).unwrap();
+    let unspent_outputs = db::store(DB_PATH, &transaction).unwrap();
 
     // Assert the spent note is nullified
     let sk = &senders[0].0;
     let idx = &notes[0].2;
-    let note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
+    let note: TransparentNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
     let nullifier = note.generate_nullifier(sk);
-    assert!(db.fetch_nullifier(&nullifier).unwrap().is_some());
+    assert!(db::fetch_nullifier(DB_PATH, &nullifier).unwrap().is_some());
 
     // Assert the outputs are not nullified
     unspent_outputs.iter().for_each(|idx| {
-        let note: TransparentNote = db.fetch_note(idx).unwrap().try_into().unwrap();
+        let note: TransparentNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
         let sk = receivers
             .iter()
             .fold(SecretKey::default(), |sk, (r_sk, r_vk, _)| {
@@ -237,13 +256,18 @@ fn transactions_with_transparent_notes() {
                 }
             });
         let nullifier = note.generate_nullifier(&sk);
-        assert!(db.fetch_nullifier(&nullifier).unwrap().is_none());
+        assert!(db::fetch_nullifier(DB_PATH, &nullifier).unwrap().is_none());
     });
+
+    // Clean up the db
+    fs::remove_dir_all(DB_PATH).expect("could not remove temp db");
 }
 
 #[test]
 fn rpc_transaction() {
-    let mut db = Db::new().unwrap();
+    const DB_PATH: &'static str = "/tmp/phoenix-test-rpc-tx";
+    let mut root = Root::<_, Blake2b>::new(DB_PATH).unwrap();
+    let mut state: Db<_> = root.restore().unwrap();
 
     let mut senders = vec![];
     let mut receivers = vec![];
@@ -261,15 +285,14 @@ fn rpc_transaction() {
 
     // Store an unspent note of 100
     let sk = senders[0].0;
-    inputs.push(create_and_store_unspent_rpc_note::<TransparentNote>(
-        &mut db, sk, 100,
-    ));
+    inputs.push(create_and_store_unspent_rpc_note::<TransparentNote, Blake2b>(&mut state, sk, 100));
 
     // Store an unspent note of 50
     let sk = senders[1].0;
-    inputs.push(create_and_store_unspent_rpc_note::<TransparentNote>(
-        &mut db, sk, 50,
-    ));
+    inputs.push(create_and_store_unspent_rpc_note::<TransparentNote, Blake2b>(&mut state, sk, 50));
+
+    // Persist changes to disk
+    root.set_root(&mut state).unwrap();
 
     // Create an output of 97
     let pk = &receivers[0].2;
@@ -289,7 +312,10 @@ fn rpc_transaction() {
         .into_iter()
         .for_each(|output| transaction.outputs.push(output));
 
-    let mut transaction = Transaction::try_from_rpc_transaction(&db, transaction).unwrap();
+    let mut transaction = Transaction::try_from_rpc_transaction(DB_PATH, transaction).unwrap();
+
+    // Persist changes to disk
+    root.set_root(&mut state).unwrap();
 
     // It is not possible to verify an unproven transaction
     assert!(transaction.verify().is_err());
@@ -303,7 +329,7 @@ fn rpc_transaction() {
     let commitments = transaction.commitments().clone();
 
     let transaction: rpc::Transaction = transaction.into();
-    let mut transaction = Transaction::try_from_rpc_transaction(&db, transaction).unwrap();
+    let mut transaction = Transaction::try_from_rpc_transaction(DB_PATH, transaction).unwrap();
 
     let deserialized_proof = transaction.r1cs().cloned().unwrap();
     let deserialized_commitments = transaction.commitments().clone();
@@ -315,6 +341,9 @@ fn rpc_transaction() {
     transaction.verify().unwrap();
 
     assert_eq!(3, transaction.fee().value());
+
+    // Clean up the db
+    fs::remove_dir_all(DB_PATH).expect("could not remove temp db");
 }
 
 fn generate_keys() -> (SecretKey, ViewKey, PublicKey) {
@@ -325,11 +354,15 @@ fn generate_keys() -> (SecretKey, ViewKey, PublicKey) {
     (sk, vk, pk)
 }
 
-fn create_and_store_unspent_note<N: Note + NoteGenerator>(
-    db: &mut Db,
+fn create_and_store_unspent_note<N, H>(
+    db: &mut Db<H>,
     pk: &PublicKey,
     value: u64,
-) -> (PublicKey, u64, Idx, NoteVariant, Scalar) {
+) -> (PublicKey, u64, Idx, NoteVariant, Scalar)
+where
+    N: Clone + Note + NoteGenerator,
+    H: ByteHash,
+{
     let (note, blinding_factor) = N::output(pk, value);
 
     let idx = db.store_unspent_note(note.into()).unwrap();
@@ -347,11 +380,15 @@ fn create_output_note<N: Note + NoteGenerator>(
     (pk.clone(), value, note.into(), blinding_factor)
 }
 
-fn create_and_store_unspent_rpc_note<N: Clone + Note + NoteGenerator>(
-    db: &mut Db,
+fn create_and_store_unspent_rpc_note<N, H>(
+    db: &mut Db<H>,
     sk: SecretKey,
     value: u64,
-) -> rpc::TransactionInput {
+) -> rpc::TransactionInput
+where
+    N: Clone + Note + NoteGenerator,
+    H: ByteHash,
+{
     let pk = sk.public_key();
     let idx = db
         .store_unspent_note(N::output(&pk, value).0.into())

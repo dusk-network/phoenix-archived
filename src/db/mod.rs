@@ -1,8 +1,10 @@
 use crate::{
     Error, Idx, Note, NoteUtxoType, NoteVariant, Nullifier, Scalar, Transaction, TransactionItem,
 };
+use std::io;
 
-use kelvin::{annotations::Count, Blake2b, Map as _};
+use bytehash::ByteHash;
+use kelvin::{annotations::Count, Blake2b, Content, Map as _, Root, Sink, Source};
 use kelvin_hamt::CountingHAMTMap as HAMTMap;
 use kelvin_radix::DefaultRadixMap as RadixMap;
 
@@ -12,26 +14,92 @@ use tracing::trace;
 mod tests;
 
 /// Database structure for the notes and nullifiers storage
-pub struct Db {
-    // TODO - HashMap and HashSet implementation to emulate KVS. Use Kelvin?
-    notes: HAMTMap<Idx, NoteVariant, Blake2b>,
-    nullifiers: RadixMap<Nullifier, (), Blake2b>,
+#[derive(Clone)]
+pub struct Db<H: ByteHash> {
+    notes: HAMTMap<Idx, NoteVariant, H>,
+    nullifiers: RadixMap<Nullifier, (), H>,
 }
 
-impl Db {
-    /// [`Db`] constructor
-    pub fn new() -> Result<Self, Error> {
-        Ok(Db {
-            notes: HAMTMap::new(),
-            nullifiers: RadixMap::new(),
-        })
+impl<H: ByteHash> Default for Db<H> {
+    fn default() -> Self {
+        Db {
+            notes: HAMTMap::default(),
+            nullifiers: RadixMap::default(),
+        }
+    }
+}
+
+impl<H: ByteHash> Content<H> for Db<H> {
+    fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
+        self.notes.persist(sink)?;
+        self.nullifiers.persist(sink)
     }
 
-    // TODO - Should be able to rollback state in case of failure
-    /// Store a provided [`Transaction`]. Return the position of the note on the tree.
-    pub fn store(&mut self, transaction: &Transaction) -> Result<Vec<Idx>, Error> {
-        let fee = transaction.fee();
+    fn restore(source: &mut Source<H>) -> io::Result<Self> {
+        Ok(Db {
+            notes: HAMTMap::restore(source)?,
+            nullifiers: RadixMap::restore(source)?,
+        })
+    }
+}
 
+// TODO - Should be able to rollback state in case of failure
+/// Store a provided [`Transaction`]. Return the position of the note on the tree.
+pub fn store(path: &'static str, transaction: &Transaction) -> Result<Vec<Idx>, Error> {
+    let mut root = Root::<_, Blake2b>::new(path)?;
+    let mut state: Db<_> = root.restore()?;
+    let v = state.store_transaction(transaction)?;
+    root.set_root(&mut state)?;
+    Ok(v)
+}
+
+// TODO - Should be able to rollback state in case of failure
+/// Store a set of [`Transaction`]. Return a set of positions of the included notes.
+pub fn store_bulk_transactions(
+    path: &'static str,
+    transactions: &[Transaction],
+) -> Result<Vec<Idx>, Error> {
+    let mut root = Root::<_, Blake2b>::new(path)?;
+    let mut state: Db<_> = root.restore()?;
+    let mut idx = vec![];
+
+    for t in transactions {
+        trace!("Storing tx {}", hex::encode(t.hash().as_bytes()));
+        idx.extend(state.store_transaction(t)?);
+    }
+
+    root.set_root(&mut state)?;
+    Ok(idx)
+}
+
+// TODO: for the following two functions, i needed to clone the
+// data structure in question in order to be able to take the value
+// out of this function without the compiler yelling at me.
+// will need to investigate if this is the most optimal strategy.
+#[allow(clippy::trivially_copy_pass_by_ref)] // Idx
+/// Provided a position, return a strong typed note from the database
+pub fn fetch_note(path: &'static str, idx: &Idx) -> Result<NoteVariant, Error> {
+    let root = Root::<_, Blake2b>::new(path)?;
+    let state: Db<_> = root.restore()?;
+    state
+        .notes
+        .clone()
+        .get(idx)?
+        .map(|n| n.clone())
+        .ok_or(Error::Generic)
+}
+
+#[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
+/// Verify the existence of a provided nullifier on the set
+pub fn fetch_nullifier(path: &'static str, nullifier: &Nullifier) -> Result<Option<()>, Error> {
+    let root = Root::<_, Blake2b>::new(path)?;
+    let state: Db<_> = root.restore()?;
+    Ok(state.nullifiers.clone().get(nullifier)?.map(|d| *d))
+}
+
+impl<H: ByteHash> Db<H> {
+    pub fn store_transaction(&mut self, transaction: &Transaction) -> Result<Vec<Idx>, Error> {
+        let fee = transaction.fee();
         let fee_idx = self.store_transaction_item(fee)?.ok_or(Error::FeeOutput)?;
         let notes = vec![fee_idx];
 
@@ -43,22 +111,6 @@ impl Db {
 
             Ok(v)
         })
-    }
-
-    // TODO - Should be able to rollback state in case of failure
-    /// Store a set of [`Transaction`]. Return a set of positions of the included notes.
-    pub fn store_bulk_transactions(
-        &mut self,
-        transactions: &[Transaction],
-    ) -> Result<Vec<Idx>, Error> {
-        let mut idx = vec![];
-
-        for t in transactions {
-            trace!("Storing tx {}", hex::encode(t.hash().as_bytes()));
-            idx.extend(self.store(t)?);
-        }
-
-        Ok(idx)
     }
 
     /// Return the current merkle root
@@ -103,11 +155,7 @@ impl Db {
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
     /// Verify the existence of a provided nullifier on the set
-    pub fn fetch_nullifier(&self, nullifier: &Nullifier) -> Result<Option<()>, Error> {
+    pub fn fetch_nullifier(self, nullifier: &Nullifier) -> Result<Option<()>, Error> {
         Ok(self.nullifiers.get(nullifier)?.map(|d| *d))
-    }
-
-    pub fn notes(&self) -> &HAMTMap<Idx, NoteVariant, Blake2b> {
-        &self.notes
     }
 }

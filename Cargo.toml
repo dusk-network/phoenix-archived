@@ -17,6 +17,7 @@ hex = "^0.4"
 kelvin = "0.11.2"
 kelvin-radix = "0.7"
 kelvin-hamt = "0.8"
+bytehash = "0.2"
 
 [dev-dependencies]
 lazy_static = "1.4"
