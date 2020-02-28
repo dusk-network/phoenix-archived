@@ -1,11 +1,12 @@
 use crate::{
-    crypto, rpc, utils, CompressedRistretto, Db, Error, Idx, Nonce, NoteType, PublicKey, R1CSProof,
+    crypto, db, rpc, utils, CompressedRistretto, Error, Idx, Nonce, NoteType, PublicKey, R1CSProof,
     RistrettoPoint, Scalar, SecretKey, TransactionItem, ViewKey,
 };
 
 use kelvin::{ByteHash, Content, Sink, Source};
 
 use std::io;
+use std::path::Path;
 use std::{cmp::Ordering, convert::TryFrom, fmt::Debug};
 
 /// Note position definitions
@@ -39,8 +40,8 @@ pub trait NoteGenerator:
 {
     #[allow(clippy::trivially_copy_pass_by_ref)]
     /// Create a new phoenix input note
-    fn input(db: &Db, idx: &Idx) -> Result<Self, Error> {
-        Self::try_from(db.fetch_note(idx)?).map_err(|_| Error::InvalidParameters)
+    fn input<P: AsRef<Path>>(db_path: P, idx: &Idx) -> Result<Self, Error> {
+        Self::try_from(db::fetch_note(db_path, idx)?).map_err(|_| Error::InvalidParameters)
     }
 
     /// Create a new phoenix output note

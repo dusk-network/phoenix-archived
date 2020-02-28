@@ -1,10 +1,11 @@
 use crate::{
-    rpc, Db, Error, Idx, Note, NoteGenerator, NoteType, NoteUtxoType, NoteVariant, Nullifier,
+    db, rpc, Error, Idx, Note, NoteGenerator, NoteType, NoteUtxoType, NoteVariant, Nullifier,
     PublicKey, Scalar, SecretKey, TransparentNote,
 };
 
 use std::cmp::Ordering;
 use std::convert::{TryFrom, TryInto};
+use std::path::Path;
 
 use sha2::{Digest, Sha512};
 
@@ -188,14 +189,14 @@ impl TransactionItem {
 
     /// Attempt to generate a transaction input from a provided database and rpc item with the
     /// position of the note and its secret
-    pub fn try_from_rpc_transaction_input(
-        db: &Db,
+    pub fn try_from_rpc_transaction_input<P: AsRef<Path>>(
+        db_path: P,
         item: rpc::TransactionInput,
     ) -> Result<Self, Error> {
         let sk: SecretKey = item.sk.map(|k| k.into()).unwrap_or_default();
         item.pos
             .ok_or(Error::InvalidParameters)
-            .and_then(|idx| db.fetch_note(&idx))
+            .and_then(|idx| db::fetch_note(db_path, &idx))
             .map(|note| match note {
                 NoteVariant::Transparent(n) => n.to_transaction_input(sk),
                 NoteVariant::Obfuscated(n) => n.to_transaction_input(sk),
