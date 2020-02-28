@@ -5,6 +5,7 @@ use crate::{
 
 use kelvin::{Blake2b, ByteHash, Root};
 use std::convert::TryInto;
+use std::env::temp_dir;
 use std::fs;
 
 #[test]
@@ -21,8 +22,9 @@ fn transaction_zk() {
     // Since we're only working with notes, the db is instantiated here
     // directly and used in the test, as there is no API for directly
     // storing notes without having a `Db` around.
-    const DB_PATH: &'static str = "/tmp/phoenix-test-tx-zk";
-    let mut root = Root::<_, Blake2b>::new(DB_PATH).unwrap();
+    let mut db = temp_dir();
+    db.push("transaction_zk");
+    let mut root = Root::<_, Blake2b>::new(db.as_path()).unwrap();
     let mut state: Db<_> = root.restore().unwrap();
 
     let mut inputs = vec![];
@@ -81,7 +83,10 @@ fn transaction_zk() {
     // Set the 100 unspent note as the input of the transaction
     let sk = senders[0].0;
     let idx = &inputs[0].2;
-    let note: TransparentNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
+    let note: TransparentNote = db::fetch_note(db.as_path(), idx)
+        .unwrap()
+        .try_into()
+        .unwrap();
     transaction.push(note.to_transaction_input(sk));
 
     // Push the 30 output note to the transaction
@@ -110,7 +115,10 @@ fn transaction_zk() {
     // Set the 45 unspent note as the input of the malicious transaction
     let sk = senders[1].0;
     let idx = &inputs[2].2;
-    let note: ObfuscatedNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
+    let note: ObfuscatedNote = db::fetch_note(db.as_path(), idx)
+        .unwrap()
+        .try_into()
+        .unwrap();
     malicious_transaction.push(note.to_transaction_input(sk));
 
     // Push the 92 output note to the malicious transaction
@@ -125,7 +133,10 @@ fn transaction_zk() {
     // Set the 50 unspent note as the input of the transaction
     let sk = senders[1].0;
     let idx = &inputs[1].2;
-    let note: ObfuscatedNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
+    let note: ObfuscatedNote = db::fetch_note(db.as_path(), idx)
+        .unwrap()
+        .try_into()
+        .unwrap();
     transaction.push(note.to_transaction_input(sk));
 
     // Grant only transactions with sufficient inputs can be proven
@@ -161,13 +172,14 @@ fn transaction_zk() {
     assert_eq!(3, transaction.fee().value());
 
     // Clean up the db
-    fs::remove_dir_all(DB_PATH).expect("could not remove temp db");
+    fs::remove_dir_all(db.as_path()).expect("could not remove temp db");
 }
 
 #[test]
 fn transactions_with_transparent_notes() {
-    const DB_PATH: &'static str = "/tmp/phoenix-test-tx-transparent";
-    let mut root = Root::<_, Blake2b>::new(DB_PATH).unwrap();
+    let mut db = temp_dir();
+    db.push("transactions_with_transparent_notes");
+    let mut root = Root::<_, Blake2b>::new(db.as_path()).unwrap();
     let mut state: Db<_> = root.restore().unwrap();
 
     let mut notes = vec![];
@@ -193,23 +205,34 @@ fn transactions_with_transparent_notes() {
     root.set_root(&mut state).unwrap();
 
     let idx = &notes[0].2;
-    let note: TransparentNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
+    let note: TransparentNote = db::fetch_note(db.as_path(), idx)
+        .unwrap()
+        .try_into()
+        .unwrap();
     let vk = &senders[0].1;
     assert!(note.is_owned_by(vk));
 
     // Assert the new unspent note is not nullified
     let sk = &senders[0].0;
     let idx = &notes[0].2;
-    let note: TransparentNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
+    let note: TransparentNote = db::fetch_note(db.as_path(), idx)
+        .unwrap()
+        .try_into()
+        .unwrap();
     let nullifier = note.generate_nullifier(sk);
-    assert!(db::fetch_nullifier(DB_PATH, &nullifier).unwrap().is_none());
+    assert!(db::fetch_nullifier(db.as_path(), &nullifier)
+        .unwrap()
+        .is_none());
 
     let mut transaction = Transaction::default();
 
     // Set the first unspent note as the input of the transaction
     let sk = senders[0].0;
     let idx = &notes[0].2;
-    let note: TransparentNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
+    let note: TransparentNote = db::fetch_note(db.as_path(), idx)
+        .unwrap()
+        .try_into()
+        .unwrap();
     transaction.push(note.to_transaction_input(sk));
 
     // Set the fee cost
@@ -234,18 +257,26 @@ fn transactions_with_transparent_notes() {
 
     // Execute the transaction
     transaction.prove().unwrap();
-    let unspent_outputs = db::store(DB_PATH, &transaction).unwrap();
+    let unspent_outputs = db::store(db.as_path(), &transaction).unwrap();
 
     // Assert the spent note is nullified
     let sk = &senders[0].0;
     let idx = &notes[0].2;
-    let note: TransparentNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
+    let note: TransparentNote = db::fetch_note(db.as_path(), idx)
+        .unwrap()
+        .try_into()
+        .unwrap();
     let nullifier = note.generate_nullifier(sk);
-    assert!(db::fetch_nullifier(DB_PATH, &nullifier).unwrap().is_some());
+    assert!(db::fetch_nullifier(db.as_path(), &nullifier)
+        .unwrap()
+        .is_some());
 
     // Assert the outputs are not nullified
     unspent_outputs.iter().for_each(|idx| {
-        let note: TransparentNote = db::fetch_note(DB_PATH, idx).unwrap().try_into().unwrap();
+        let note: TransparentNote = db::fetch_note(db.as_path(), idx)
+            .unwrap()
+            .try_into()
+            .unwrap();
         let sk = receivers
             .iter()
             .fold(SecretKey::default(), |sk, (r_sk, r_vk, _)| {
@@ -256,17 +287,20 @@ fn transactions_with_transparent_notes() {
                 }
             });
         let nullifier = note.generate_nullifier(&sk);
-        assert!(db::fetch_nullifier(DB_PATH, &nullifier).unwrap().is_none());
+        assert!(db::fetch_nullifier(db.as_path(), &nullifier)
+            .unwrap()
+            .is_none());
     });
 
     // Clean up the db
-    fs::remove_dir_all(DB_PATH).expect("could not remove temp db");
+    fs::remove_dir_all(db.as_path()).expect("could not remove temp db");
 }
 
 #[test]
 fn rpc_transaction() {
-    const DB_PATH: &'static str = "/tmp/phoenix-test-rpc-tx";
-    let mut root = Root::<_, Blake2b>::new(DB_PATH).unwrap();
+    let mut db = temp_dir();
+    db.push("rpc_transaction");
+    let mut root = Root::<_, Blake2b>::new(db.as_path()).unwrap();
     let mut state: Db<_> = root.restore().unwrap();
 
     let mut senders = vec![];
@@ -312,7 +346,7 @@ fn rpc_transaction() {
         .into_iter()
         .for_each(|output| transaction.outputs.push(output));
 
-    let mut transaction = Transaction::try_from_rpc_transaction(DB_PATH, transaction).unwrap();
+    let mut transaction = Transaction::try_from_rpc_transaction(db.as_path(), transaction).unwrap();
 
     // Persist changes to disk
     root.set_root(&mut state).unwrap();
@@ -329,7 +363,7 @@ fn rpc_transaction() {
     let commitments = transaction.commitments().clone();
 
     let transaction: rpc::Transaction = transaction.into();
-    let mut transaction = Transaction::try_from_rpc_transaction(DB_PATH, transaction).unwrap();
+    let mut transaction = Transaction::try_from_rpc_transaction(db.as_path(), transaction).unwrap();
 
     let deserialized_proof = transaction.r1cs().cloned().unwrap();
     let deserialized_commitments = transaction.commitments().clone();
@@ -343,7 +377,7 @@ fn rpc_transaction() {
     assert_eq!(3, transaction.fee().value());
 
     // Clean up the db
-    fs::remove_dir_all(DB_PATH).expect("could not remove temp db");
+    fs::remove_dir_all(db.as_path()).expect("could not remove temp db");
 }
 
 fn generate_keys() -> (SecretKey, ViewKey, PublicKey) {
