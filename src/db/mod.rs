@@ -2,6 +2,7 @@ use crate::{
     Error, Idx, Note, NoteUtxoType, NoteVariant, Nullifier, Scalar, Transaction, TransactionItem,
 };
 use std::io;
+use std::path::Path;
 
 use bytehash::ByteHash;
 use kelvin::{annotations::Count, Blake2b, Content, Map as _, Root, Sink, Source};
@@ -44,8 +45,8 @@ impl<H: ByteHash> Content<H> for Db<H> {
 }
 
 /// Store a provided [`Transaction`]. Return the position of the note on the tree.
-pub fn store(path: &'static str, transaction: &Transaction) -> Result<Vec<Idx>, Error> {
-    let mut root = Root::<_, Blake2b>::new(path)?;
+pub fn store<P: AsRef<Path>>(path: P, transaction: &Transaction) -> Result<Vec<Idx>, Error> {
+    let mut root = Root::<_, Blake2b>::new(path.as_ref())?;
     let mut state: Db<_> = root.restore()?;
     let v = state.store_transaction(transaction)?;
     root.set_root(&mut state)?;
@@ -53,11 +54,11 @@ pub fn store(path: &'static str, transaction: &Transaction) -> Result<Vec<Idx>, 
 }
 
 /// Store a set of [`Transaction`]. Return a set of positions of the included notes.
-pub fn store_bulk_transactions(
-    path: &'static str,
+pub fn store_bulk_transactions<P: AsRef<Path>>(
+    path: P,
     transactions: &[Transaction],
 ) -> Result<Vec<Idx>, Error> {
-    let mut root = Root::<_, Blake2b>::new(path)?;
+    let mut root = Root::<_, Blake2b>::new(path.as_ref())?;
     let mut state: Db<_> = root.restore()?;
     let mut idx = vec![];
 
@@ -76,8 +77,8 @@ pub fn store_bulk_transactions(
 // will need to investigate if this is the most optimal strategy.
 #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
 /// Provided a position, return a strong typed note from the database
-pub fn fetch_note(path: &'static str, idx: &Idx) -> Result<NoteVariant, Error> {
-    let root = Root::<_, Blake2b>::new(path)?;
+pub fn fetch_note<P: AsRef<Path>>(path: P, idx: &Idx) -> Result<NoteVariant, Error> {
+    let root = Root::<_, Blake2b>::new(path.as_ref())?;
     let state: Db<_> = root.restore()?;
     state
         .notes
@@ -89,8 +90,11 @@ pub fn fetch_note(path: &'static str, idx: &Idx) -> Result<NoteVariant, Error> {
 
 #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
 /// Verify the existence of a provided nullifier on the set
-pub fn fetch_nullifier(path: &'static str, nullifier: &Nullifier) -> Result<Option<()>, Error> {
-    let root = Root::<_, Blake2b>::new(path)?;
+pub fn fetch_nullifier<P: AsRef<Path>>(
+    path: P,
+    nullifier: &Nullifier,
+) -> Result<Option<()>, Error> {
+    let root = Root::<_, Blake2b>::new(path.as_ref())?;
     let state: Db<_> = root.restore()?;
     Ok(state.nullifiers.clone().get(nullifier)?.map(|d| *d))
 }
