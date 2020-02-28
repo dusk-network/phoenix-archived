@@ -5,6 +5,7 @@ use crate::{
 };
 
 use std::convert::TryFrom;
+use std::path::Path;
 
 use rand::rngs::OsRng;
 use sha2::{Digest, Sha512};
@@ -268,8 +269,8 @@ impl Transaction {
     /// Create a new transaction from a set of inputs/outputs defined by a rpc source.
     ///
     /// Will prove and verify the created transaction.
-    pub fn try_from_rpc_io(
-        db_path: &'static str,
+    pub fn try_from_rpc_io<P: AsRef<Path>>(
+        db_path: P,
         fee_value: u64,
         inputs: Vec<rpc::TransactionInput>,
         outputs: Vec<rpc::TransactionOutput>,
@@ -277,7 +278,7 @@ impl Transaction {
         let mut transaction = Transaction::default();
 
         for i in inputs {
-            let input = TransactionItem::try_from_rpc_transaction_input(db_path, i)?;
+            let input = TransactionItem::try_from_rpc_transaction_input(db_path.as_ref(), i)?;
             trace!("Pushing {} dusk as input to the transaction", input.value());
             transaction.push(input);
         }
@@ -306,8 +307,8 @@ impl Transaction {
     ///
     /// If there is a r1cs proof present on the request, will attempt to verify it against the
     /// proof.
-    pub fn try_from_rpc_transaction(
-        db_path: &'static str,
+    pub fn try_from_rpc_transaction<P: AsRef<Path>>(
+        db_path: P,
         tx: rpc::Transaction,
     ) -> Result<Self, Error> {
         let mut transaction = Transaction::default();
@@ -317,7 +318,10 @@ impl Transaction {
         }
 
         for i in tx.inputs {
-            transaction.push(TransactionItem::try_from_rpc_transaction_input(db_path, i)?);
+            transaction.push(TransactionItem::try_from_rpc_transaction_input(
+                db_path.as_ref(),
+                i,
+            )?);
         }
         for o in tx.outputs {
             transaction.push(TransactionItem::try_from(o)?);

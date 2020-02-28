@@ -6,6 +6,7 @@ use crate::{
 use kelvin::{ByteHash, Content, Sink, Source};
 
 use std::io;
+use std::path::Path;
 use std::{cmp::Ordering, convert::TryFrom, fmt::Debug};
 
 /// Note position definitions
@@ -39,7 +40,7 @@ pub trait NoteGenerator:
 {
     #[allow(clippy::trivially_copy_pass_by_ref)]
     /// Create a new phoenix input note
-    fn input(db_path: &'static str, idx: &Idx) -> Result<Self, Error> {
+    fn input<P: AsRef<Path>>(db_path: P, idx: &Idx) -> Result<Self, Error> {
         Self::try_from(db::fetch_note(db_path, idx)?).map_err(|_| Error::InvalidParameters)
     }
 

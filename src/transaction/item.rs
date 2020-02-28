@@ -5,6 +5,7 @@ use crate::{
 
 use std::cmp::Ordering;
 use std::convert::{TryFrom, TryInto};
+use std::path::Path;
 
 use sha2::{Digest, Sha512};
 
@@ -188,8 +189,8 @@ impl TransactionItem {
 
     /// Attempt to generate a transaction input from a provided database and rpc item with the
     /// position of the note and its secret
-    pub fn try_from_rpc_transaction_input(
-        db_path: &'static str,
+    pub fn try_from_rpc_transaction_input<P: AsRef<Path>>(
+        db_path: P,
         item: rpc::TransactionInput,
     ) -> Result<Self, Error> {
         let sk: SecretKey = item.sk.map(|k| k.into()).unwrap_or_default();
