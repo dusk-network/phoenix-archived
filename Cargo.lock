@@ -1052,7 +1052,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "phoenix-lib"
+name = "phoenix"
 version = "0.1.0"
 dependencies = [
  "bulletproofs",
