@@ -43,7 +43,6 @@ impl<H: ByteHash> Content<H> for Db<H> {
     }
 }
 
-// TODO - Should be able to rollback state in case of failure
 /// Store a provided [`Transaction`]. Return the position of the note on the tree.
 pub fn store(path: &'static str, transaction: &Transaction) -> Result<Vec<Idx>, Error> {
     let mut root = Root::<_, Blake2b>::new(path)?;
@@ -53,7 +52,6 @@ pub fn store(path: &'static str, transaction: &Transaction) -> Result<Vec<Idx>, 
     Ok(v)
 }
 
-// TODO - Should be able to rollback state in case of failure
 /// Store a set of [`Transaction`]. Return a set of positions of the included notes.
 pub fn store_bulk_transactions(
     path: &'static str,
