@@ -1,3 +1,13 @@
+use std::path::Path;
+
 fn main() {
-    tonic_build::compile_protos("proto/phoenix/phoenix.proto").unwrap();
+    let phoenix = Path::new("dusk-protobuf/phoenix/phoenix.proto");
+    let rusk = Path::new("dusk-protobuf/phoenix/rusk.proto");
+    let proto_dir = phoenix
+        .parent()
+        .expect("proto file should reside in a directory");
+
+    tonic_build::configure()
+        .compile(&[phoenix, rusk], &[proto_dir])
+        .unwrap();
 }
