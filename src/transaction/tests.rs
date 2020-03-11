@@ -1,9 +1,9 @@
 use crate::{
-    db, rpc, Db, Idx, Note, NoteGenerator, NoteVariant, ObfuscatedNote, PublicKey, Scalar,
-    SecretKey, Transaction, TransparentNote, ViewKey,
+    db, rpc, Db, DbRoot, HashPrimitive, Idx, Note, NoteGenerator, NoteVariant, ObfuscatedNote,
+    PublicKey, Scalar, SecretKey, Transaction, TransparentNote, ViewKey,
 };
 
-use kelvin::{Blake2b, ByteHash, Root};
+use kelvin::ByteHash;
 use std::convert::TryInto;
 use std::env::temp_dir;
 use std::fs;
@@ -24,8 +24,8 @@ fn transaction_zk() {
     // storing notes without having a `Db` around.
     let mut db = temp_dir();
     db.push("transaction_zk");
-    let mut root = Root::<_, Blake2b>::new(db.as_path()).unwrap();
-    let mut state: Db<_> = root.restore().unwrap();
+    let mut root = DbRoot::new(db.as_path()).unwrap();
+    let mut state = root.restore().unwrap();
 
     let mut inputs = vec![];
     let mut outputs = vec![];
@@ -43,21 +43,18 @@ fn transaction_zk() {
 
     // Store an unspent note of 100
     let pk = &senders[0].2;
-    inputs.push(create_and_store_unspent_note::<TransparentNote, Blake2b>(
-        &mut state, pk, 100,
-    ));
+    inputs.push(create_and_store_unspent_note::<
+        TransparentNote,
+        HashPrimitive,
+    >(&mut state, pk, 100));
 
     // Store an unspent note of 50
     let pk = &senders[1].2;
-    inputs.push(create_and_store_unspent_note::<ObfuscatedNote, Blake2b>(
-        &mut state, pk, 50,
-    ));
+    inputs.push(create_and_store_unspent_note::<ObfuscatedNote, HashPrimitive>(&mut state, pk, 50));
 
     // Store an unspent note of 45 with the same sender for a malicious proof verification
     let pk = &senders[1].2;
-    inputs.push(create_and_store_unspent_note::<ObfuscatedNote, Blake2b>(
-        &mut state, pk, 45,
-    ));
+    inputs.push(create_and_store_unspent_note::<ObfuscatedNote, HashPrimitive>(&mut state, pk, 45));
 
     // Persist changes to disk
     root.set_root(&mut state).unwrap();
@@ -179,8 +176,8 @@ fn transaction_zk() {
 fn transactions_with_transparent_notes() {
     let mut db = temp_dir();
     db.push("transactions_with_transparent_notes");
-    let mut root = Root::<_, Blake2b>::new(db.as_path()).unwrap();
-    let mut state: Db<_> = root.restore().unwrap();
+    let mut root = DbRoot::new(db.as_path()).unwrap();
+    let mut state = root.restore().unwrap();
 
     let mut notes = vec![];
     let mut outputs = vec![];
@@ -197,9 +194,10 @@ fn transactions_with_transparent_notes() {
 
     // Store an unspent note
     let pk = &senders[0].2;
-    notes.push(create_and_store_unspent_note::<TransparentNote, Blake2b>(
-        &mut state, pk, 100,
-    ));
+    notes.push(create_and_store_unspent_note::<
+        TransparentNote,
+        HashPrimitive,
+    >(&mut state, pk, 100));
 
     // Persist changes to disk
     root.set_root(&mut state).unwrap();
@@ -301,8 +299,8 @@ fn validate_bulk_transaction() {
     let mut db = temp_dir();
     db.push("validate_bulk_transaction");
 
-    let mut root = Root::<_, Blake2b>::new(db.as_path()).unwrap();
-    let mut state: Db<_> = root.restore().unwrap();
+    let mut root = DbRoot::new(db.as_path()).unwrap();
+    let mut state = root.restore().unwrap();
 
     let mut inputs = vec![];
     let mut outputs = vec![];
@@ -320,16 +318,15 @@ fn validate_bulk_transaction() {
 
     // Store an unspent note of 100
     let pk = &senders[0].2;
-    inputs.push(create_and_store_unspent_note::<TransparentNote, Blake2b>(
-        &mut state, pk, 100,
-    ));
+    inputs.push(create_and_store_unspent_note::<
+        TransparentNote,
+        HashPrimitive,
+    >(&mut state, pk, 100));
 
     // Store an unspent note of 50
     let sk = senders[1].0;
     let pk = &senders[1].2;
-    inputs.push(create_and_store_unspent_note::<ObfuscatedNote, Blake2b>(
-        &mut state, pk, 50,
-    ));
+    inputs.push(create_and_store_unspent_note::<ObfuscatedNote, HashPrimitive>(&mut state, pk, 50));
 
     // Store the nullifier for the created unspent note
     state
@@ -417,8 +414,8 @@ fn validate_bulk_transaction() {
 fn rpc_transaction() {
     let mut db = temp_dir();
     db.push("rpc_transaction");
-    let mut root = Root::<_, Blake2b>::new(db.as_path()).unwrap();
-    let mut state: Db<_> = root.restore().unwrap();
+    let mut root = DbRoot::new(db.as_path()).unwrap();
+    let mut state = root.restore().unwrap();
 
     let mut senders = vec![];
     let mut receivers = vec![];
@@ -436,11 +433,17 @@ fn rpc_transaction() {
 
     // Store an unspent note of 100
     let sk = senders[0].0;
-    inputs.push(create_and_store_unspent_rpc_note::<TransparentNote, Blake2b>(&mut state, sk, 100));
+    inputs.push(create_and_store_unspent_rpc_note::<
+        TransparentNote,
+        HashPrimitive,
+    >(&mut state, sk, 100));
 
     // Store an unspent note of 50
     let sk = senders[1].0;
-    inputs.push(create_and_store_unspent_rpc_note::<TransparentNote, Blake2b>(&mut state, sk, 50));
+    inputs.push(create_and_store_unspent_rpc_note::<
+        TransparentNote,
+        HashPrimitive,
+    >(&mut state, sk, 50));
 
     // Persist changes to disk
     root.set_root(&mut state).unwrap();

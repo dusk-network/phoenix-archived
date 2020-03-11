@@ -8,11 +8,16 @@ use std::iter::FromIterator;
 use std::path::Path;
 
 use bytehash::ByteHash;
-use kelvin::{annotations::Count, Blake2b, Content, Map as _, Root, Sink, Source};
+use kelvin::{annotations::Count, Content, Map as _, Root, Sink, Source};
 use kelvin_hamt::CountingHAMTMap as HAMTMap;
 use kelvin_radix::DefaultRadixMap as RadixMap;
 
 use tracing::trace;
+
+pub use kelvin::Blake2b as HashPrimitive;
+
+pub type DbState = Db<HashPrimitive>;
+pub type DbRoot = Root<DbState, HashPrimitive>;
 
 #[cfg(test)]
 mod tests;
@@ -49,8 +54,8 @@ impl<H: ByteHash> Content<H> for Db<H> {
 
 /// Store a provided [`Transaction`]. Return the position of the note on the tree.
 pub fn store<P: AsRef<Path>>(path: P, transaction: &Transaction) -> Result<Vec<Idx>, Error> {
-    let mut root = Root::<_, Blake2b>::new(path.as_ref())?;
-    let mut state: Db<_> = root.restore()?;
+    let mut root = DbRoot::new(path.as_ref())?;
+    let mut state = root.restore()?;
     let v = state.store_transaction(transaction)?;
     root.set_root(&mut state)?;
     Ok(v)
@@ -61,8 +66,8 @@ pub fn store_bulk_transactions<P: AsRef<Path>>(
     path: P,
     transactions: &[Transaction],
 ) -> Result<Vec<Idx>, Error> {
-    let mut root = Root::<_, Blake2b>::new(path.as_ref())?;
-    let mut state: Db<_> = root.restore()?;
+    let mut root = DbRoot::new(path.as_ref())?;
+    let mut state = root.restore()?;
     let mut idx = vec![];
 
     for t in transactions {
@@ -81,8 +86,8 @@ pub fn store_bulk_transactions<P: AsRef<Path>>(
 #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
 /// Provided a position, return a strong typed note from the database
 pub fn fetch_note<P: AsRef<Path>>(path: P, idx: &Idx) -> Result<NoteVariant, Error> {
-    let root = Root::<_, Blake2b>::new(path.as_ref())?;
-    let state: Db<_> = root.restore()?;
+    let root = DbRoot::new(path.as_ref())?;
+    let state = root.restore()?;
     state
         .notes
         .clone()
@@ -97,8 +102,8 @@ pub fn fetch_nullifier<P: AsRef<Path>>(
     path: P,
     nullifier: &Nullifier,
 ) -> Result<Option<()>, Error> {
-    let root = Root::<_, Blake2b>::new(path.as_ref())?;
-    let state: Db<_> = root.restore()?;
+    let root = DbRoot::new(path.as_ref())?;
+    let state = root.restore()?;
     Ok(state.nullifiers.clone().get(nullifier)?.map(|d| *d))
 }
 

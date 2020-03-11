@@ -1,12 +1,9 @@
 use crate::{
-    rpc, utils, Note, NoteGenerator, NoteType, NoteUtxoType, ObfuscatedNote, PublicKey, SecretKey,
-    TransparentNote,
+    rpc, utils, HashPrimitive, Note, NoteGenerator, NoteType, NoteUtxoType, ObfuscatedNote,
+    PublicKey, SecretKey, TransparentNote,
 };
 
-use kelvin::{
-    tests::{arbitrary as a, fuzz_content, fuzz_content_iterations},
-    Blake2b,
-};
+use kelvin::tests::{arbitrary as a, fuzz_content, fuzz_content_iterations};
 
 use std::convert::TryFrom;
 
@@ -131,6 +128,6 @@ fn content_implementations() {
         }
     }
 
-    fuzz_content::<Idx, Blake2b>();
-    fuzz_content_iterations::<NoteVariant, Blake2b>(64);
+    fuzz_content::<Idx, HashPrimitive>();
+    fuzz_content_iterations::<NoteVariant, HashPrimitive>(64);
 }

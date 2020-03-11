@@ -4,7 +4,7 @@ pub use bulletproofs::r1cs::{
 pub use curve25519_dalek::ristretto::{CompressedRistretto, RistrettoPoint};
 pub use curve25519_dalek::scalar::Scalar;
 
-pub use db::Db;
+pub use db::{Db, DbRoot, DbState, HashPrimitive};
 pub use error::Error;
 pub use keys::{PublicKey, SecretKey, ViewKey};
 pub use note::{

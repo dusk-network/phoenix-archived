@@ -1,6 +1,5 @@
-use crate::{db, Db, Idx, Note, NoteGenerator, ObfuscatedNote, SecretKey, TransparentNote};
+use crate::{db, DbRoot, Idx, Note, NoteGenerator, ObfuscatedNote, SecretKey, TransparentNote};
 
-use kelvin::{Blake2b, Root};
 use std::convert::TryInto;
 use std::env::temp_dir;
 use std::fs;
@@ -12,8 +11,8 @@ fn store_notes() {
     // storing notes without having a `Db` around.
     let mut db = temp_dir();
     db.push("db_store_notes");
-    let mut root = Root::<_, Blake2b>::new(db.as_path()).unwrap();
-    let mut state: Db<_> = root.restore().unwrap();
+    let mut root = DbRoot::new(db.as_path()).unwrap();
+    let mut state = root.restore().unwrap();
 
     let transparent_notes: Vec<(Idx, TransparentNote)> = (0..20)
         .map(|i| {
