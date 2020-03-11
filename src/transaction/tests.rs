@@ -147,12 +147,12 @@ fn transaction_zk() {
     transaction.verify().unwrap();
 
     let proof = transaction.r1cs().cloned().unwrap();
-    let commitments = transaction.commitments().clone();
+    let commitments = transaction.commitments().to_vec();
 
     // The malicious transaction should be consistent by itself
     malicious_transaction.prove().unwrap();
     let malicious_proof = malicious_transaction.r1cs().cloned().unwrap();
-    let malicious_commitments = malicious_transaction.commitments().clone();
+    let malicious_commitments = malicious_transaction.commitments().to_vec();
     malicious_transaction.verify().unwrap();
 
     // Validate no malicious proof or commitments could be verified successfully
@@ -297,6 +297,123 @@ fn transactions_with_transparent_notes() {
 }
 
 #[test]
+fn validate_bulk_transaction() {
+    let mut db = temp_dir();
+    db.push("validate_bulk_transaction");
+
+    let mut root = Root::<_, Blake2b>::new(db.as_path()).unwrap();
+    let mut state: Db<_> = root.restore().unwrap();
+
+    let mut inputs = vec![];
+    let mut outputs = vec![];
+    let mut senders = vec![];
+    let mut receivers = vec![];
+
+    // Setup a sender
+    senders.push(generate_keys());
+    senders.push(generate_keys());
+
+    // Setup receivers
+    receivers.push(generate_keys());
+    receivers.push(generate_keys());
+    receivers.push(generate_keys());
+
+    // Store an unspent note of 100
+    let pk = &senders[0].2;
+    inputs.push(create_and_store_unspent_note::<TransparentNote, Blake2b>(
+        &mut state, pk, 100,
+    ));
+
+    // Store an unspent note of 50
+    let sk = senders[1].0;
+    let pk = &senders[1].2;
+    inputs.push(create_and_store_unspent_note::<ObfuscatedNote, Blake2b>(
+        &mut state, pk, 50,
+    ));
+
+    // Store the nullifier for the created unspent note
+    state
+        .store_transaction_item(&(inputs[1].3.clone()).to_transaction_input(sk))
+        .unwrap();
+
+    // Persist changes to disk
+    root.set_root(&mut state).unwrap();
+
+    // Create an output of 97
+    let pk = &receivers[0].2;
+    outputs.push(create_output_note::<TransparentNote>(pk, 97));
+
+    // Create an output of 30
+    let pk = &receivers[1].2;
+    outputs.push(create_output_note::<ObfuscatedNote>(pk, 30));
+
+    let mut transaction = Transaction::default();
+    let mut transaction_spent = Transaction::default();
+
+    // Set the 100 unspent note as the input of the transaction
+    let sk = senders[0].0;
+    let idx = &inputs[0].2;
+    let note: TransparentNote = db::fetch_note(db.as_path(), idx)
+        .unwrap()
+        .try_into()
+        .unwrap();
+    transaction.push(note.to_transaction_input(sk));
+
+    // Set the 50 spent note as the input of the transaction
+    let sk = senders[1].0;
+    let idx = &inputs[1].2;
+    let note: ObfuscatedNote = db::fetch_note(db.as_path(), idx)
+        .unwrap()
+        .try_into()
+        .unwrap();
+    transaction_spent.push(note.to_transaction_input(sk));
+
+    let mut transaction_duplicated_input = transaction.clone();
+
+    // Push the 97 output note to the transaction
+    let note: TransparentNote = outputs[0].2.clone().try_into().unwrap();
+    let blinding_factor = outputs[0].3;
+    let pk = outputs[0].0;
+    let value = outputs[0].1;
+    transaction.push(note.to_transaction_output(value, blinding_factor, pk));
+
+    // Push the 30 output note to the transaction
+    let note: ObfuscatedNote = outputs[1].2.clone().try_into().unwrap();
+    let blinding_factor = outputs[1].3;
+    let pk = outputs[1].0;
+    let value = outputs[1].1;
+    transaction_duplicated_input.push(note.clone().to_transaction_output(
+        value,
+        blinding_factor,
+        pk,
+    ));
+    transaction_spent.push(note.to_transaction_output(value, blinding_factor, pk));
+
+    transaction.prove().unwrap();
+    transaction_duplicated_input.prove().unwrap();
+    transaction_spent.prove().unwrap();
+
+    state
+        .validate_bulk_transaction(&[transaction.clone()])
+        .unwrap();
+    state
+        .validate_bulk_transaction(&[transaction_duplicated_input.clone()])
+        .unwrap();
+    assert!(state
+        .validate_bulk_transaction(&[transaction.clone(), transaction_duplicated_input])
+        .is_err());
+    assert!(state
+        .validate_bulk_transaction(&[transaction_spent.clone()])
+        .is_err());
+    assert!(state
+        .validate_bulk_transaction(&[transaction, transaction_spent])
+        .is_err());
+
+    // Clean up the db
+    fs::remove_dir_all(db.as_path()).expect("could not remove temp db");
+}
+
+#[test]
 fn rpc_transaction() {
     let mut db = temp_dir();
     db.push("rpc_transaction");
@@ -360,13 +477,13 @@ fn rpc_transaction() {
     assert_eq!(3, transaction.fee().value());
 
     let proof = transaction.r1cs().cloned().unwrap();
-    let commitments = transaction.commitments().clone();
+    let commitments = transaction.commitments().to_vec();
 
     let transaction: rpc::Transaction = transaction.into();
     let mut transaction = Transaction::try_from_rpc_transaction(db.as_path(), transaction).unwrap();
 
     let deserialized_proof = transaction.r1cs().cloned().unwrap();
-    let deserialized_commitments = transaction.commitments().clone();
+    let deserialized_commitments = transaction.commitments().to_vec();
 
     assert!(!commitments.is_empty());
     assert_eq!(commitments, deserialized_commitments);

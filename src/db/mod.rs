@@ -1,7 +1,10 @@
 use crate::{
     Error, Idx, Note, NoteUtxoType, NoteVariant, Nullifier, Scalar, Transaction, TransactionItem,
 };
+
+use std::collections::HashSet;
 use std::io;
+use std::iter::FromIterator;
 use std::path::Path;
 
 use bytehash::ByteHash;
@@ -157,7 +160,43 @@ impl<H: ByteHash> Db<H> {
 
     #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
     /// Verify the existence of a provided nullifier on the set
-    pub fn fetch_nullifier(self, nullifier: &Nullifier) -> Result<Option<()>, Error> {
+    pub fn fetch_nullifier(&self, nullifier: &Nullifier) -> Result<Option<()>, Error> {
         Ok(self.nullifiers.get(nullifier)?.map(|d| *d))
+    }
+
+    /// Validate a set of [`Transaction`]
+    ///
+    /// Verify also if they contain duplicated nullifiers
+    pub fn validate_bulk_transaction(&self, txs: &[Transaction]) -> Result<(), Error> {
+        let nullifiers: Vec<Nullifier> = txs
+            .iter()
+            .map(|t| {
+                t.items().iter().filter_map(|i| match i.utxo() {
+                    NoteUtxoType::Input => Some(*i.nullifier()),
+                    NoteUtxoType::Output => None,
+                })
+            })
+            .flatten()
+            .collect();
+
+        // Check for inexistence of provided nullifiers on the database
+        nullifiers
+            .iter()
+            .map(|n| match self.fetch_nullifier(n) {
+                Ok(r) if r.is_none() => Ok(()),
+                Ok(_) => Err(Error::Generic),
+                Err(e) => Err(e),
+            })
+            .collect::<Result<(), Error>>()?;
+
+        // Validate for duplicated nullifiers
+        // TODO - Optimize check for uniqueness of the nullifiers
+        let uniq_nullifiers: HashSet<Nullifier> = HashSet::from_iter(nullifiers.iter().map(|n| *n));
+        if uniq_nullifiers.len() != nullifiers.len() {
+            return Err(Error::Generic);
+        }
+
+        // Execute the circuit verification for all transactions
+        txs.iter().map(|t| t.clone().verify()).collect()
     }
 }

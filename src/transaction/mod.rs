@@ -98,8 +98,8 @@ impl Transaction {
     }
 
     /// Reference to the transaction items
-    pub fn items(&self) -> &Vec<TransactionItem> {
-        &self.items
+    pub fn items(&self) -> &[TransactionItem] {
+        self.items.as_slice()
     }
 
     /// Remove a specific item from the transaction. Internally calls the `Vec::remove` method
@@ -123,8 +123,8 @@ impl Transaction {
     }
 
     /// Commitment points of the proved transaction. Created by [`Transaction::prove`]
-    pub fn commitments(&self) -> &Vec<CompressedRistretto> {
-        &self.commitments
+    pub fn commitments(&self) -> &[CompressedRistretto] {
+        self.commitments.as_slice()
     }
 
     /// Commitment points of the r1cs circuit
