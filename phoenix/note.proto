@@ -42,4 +42,9 @@ message DecryptedNote {
   CompressedPoint pk_r = 7;
   CompressedPoint commitment = 8;
   Scalar blinding_factor = 9;
+  bytes encrypted_blinding_factor = 10;
+  oneof rawValue {
+    uint64 transparent_value = 11;
+    bytes encrypted_value = 12;
+  }
 }
