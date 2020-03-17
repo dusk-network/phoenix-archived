@@ -1,5 +1,5 @@
 syntax="proto3";
-package node;
+package monitor;
 
 message SemverRequest {
     uint32 major = 1;
