@@ -1,0 +1,16 @@
+syntax="proto3";
+package node;
+
+message SemverRequest {
+    uint32 major = 1;
+    uint32 minor = 2;
+    uint32 patch = 3;
+}
+
+message EmptyRequest {};
+
+message EmptyResponse {};
+
+service Monitor {
+    rpc Hello(SemverRequest) returns (EmptyResponse) {};
+}
