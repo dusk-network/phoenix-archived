@@ -13,4 +13,5 @@ message EmptyResponse {};
 
 service Monitor {
     rpc Hello(SemverRequest) returns (EmptyResponse) {};
+    rpc Bye(EmptyRequest) returns (EmptyResponse) {};
 }
