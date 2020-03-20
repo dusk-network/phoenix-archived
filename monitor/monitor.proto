@@ -11,7 +11,16 @@ message EmptyRequest {};
 
 message EmptyResponse {};
 
+message BlockUpdate {
+    uint64 height = 1;
+    bytes hash=2;
+    string timestamp=3;
+    uint32 txAmount=4;
+    uint32 blockTimeSec=5;
+}
+
 service Monitor {
     rpc Hello(SemverRequest) returns (EmptyResponse) {};
     rpc Bye(EmptyRequest) returns (EmptyResponse) {};
+    rpc NotifyBlock(BlockUpdate) returns (EmptyResponse) {};
 }
