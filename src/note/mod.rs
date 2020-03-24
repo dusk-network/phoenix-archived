@@ -26,25 +26,25 @@ use std::ops::Mul;
 pub mod obfuscated;
 /// Transparent note definitions
 pub mod transparent;
-///// Note variant definitions (Transparent and Obfuscated)
-//pub mod variant;
-//
+/// Note variant definitions (Transparent and Obfuscated)
+pub mod variant;
+
 //#[cfg(test)]
 //mod tests;
 //
 //pub use nullifier::Nullifier;
 pub use obfuscated::ObfuscatedNote;
-//pub use transparent::TransparentNote;
-//pub use variant::NoteVariant;
-//
+pub use transparent::TransparentNote;
+pub use variant::NoteVariant;
+
 /// Trait for the notes construction
 pub trait NoteGenerator: Sized
-//    + Note
+    + Note
 //    + TryFrom<rpc::Note>
 //    + TryFrom<rpc::DecryptedNote>
 //    + Into<rpc::Note>
-//    + Into<NoteVariant>
-//    + TryFrom<NoteVariant>
+    + Into<NoteVariant>
+    + TryFrom<NoteVariant>
 {
     //    #[allow(clippy::trivially_copy_pass_by_ref)]
     //    /// Create a new phoenix input note

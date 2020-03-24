@@ -5,7 +5,7 @@ pub use algebra::fields::bls12_381::fr::Fr as BlsScalar;
 pub use algebra::fields::jubjub::fr::Fr as JubJubScalar;
 
 pub use keys::{PublicKey, SecretKey, ViewKey};
-pub use note::{Note, NoteGenerator, ObfuscatedNote};
+pub use note::{Note, NoteGenerator, NoteVariant, ObfuscatedNote, TransparentNote};
 
 //pub use bulletproofs::r1cs::{
 //    ConstraintSystem, LinearCombination, Prover, R1CSProof, Variable, Verifier,
