@@ -1,24 +1,13 @@
 use crate::{
-    crypto, rpc, utils, BlsScalar, JubJubProjective, Nonce, Note, NoteGenerator, NoteType,
+    crypto, rpc, utils, BlsScalar, Error, JubJubProjective, Nonce, Note, NoteGenerator, NoteType,
     PublicKey, ViewKey,
 };
 
-use std::{cmp, fmt};
+use std::convert::{TryFrom, TryInto};
+use std::{cmp, fmt, io};
 
-//use super::{Idx, Note, NoteGenerator, NoteUtxoType};
-//use crate::{
-//    crypto, rpc, utils, CompressedRistretto, Error, Nonce, NoteType, PublicKey, R1CSProof,
-//    RistrettoPoint, Scalar, Value, ViewKey, NONCEBYTES,
-//};
-//
-//use std::cmp;
-//use std::convert::{TryFrom, TryInto};
-//use std::fmt;
-//use std::io::{self, Read, Write};
-//
-//use kelvin::{ByteHash, Content, Sink, Source};
-//use sha2::{Digest, Sha512};
-//
+use kelvin::{ByteHash, Content, Sink, Source};
+
 /// A note that hides its value and blinding factor
 #[derive(Clone, Copy)]
 pub struct ObfuscatedNote {
@@ -168,166 +157,170 @@ impl Note for ObfuscatedNote {
 
 impl From<ObfuscatedNote> for rpc::Note {
     fn from(note: ObfuscatedNote) -> rpc::Note {
-                let note_type = rpc::NoteType::Obfuscated.into();
-                let pos = note.idx.into();
-                let nonce = Some(note.nonce.into());
-                let r_g = Some(note.R.into());
-                let pk_r = Some(note.pk_r.into());
-                let commitment = unimplemented!(); // Some(note.value_commitment.into());
-                let encrypted_blinding_factor = note.encrypted_blinding_factor.to_vec();
-                let value = Some(rpc::note::Value::EncryptedValue(
-                    note.encrypted_value.to_vec(),
-                ));
+        let note_type = rpc::NoteType::Obfuscated.into();
+        let pos = note.idx.into();
+        let nonce = Some(note.nonce.into());
+        let r_g = Some(note.R.into());
+        let pk_r = Some(note.pk_r.into());
+        let value_commitment = Some(note.value_commitment.into());
+        let encrypted_blinding_factor = note.encrypted_blinding_factor.to_vec();
+        let value = Some(rpc::note::Value::EncryptedValue(
+            note.encrypted_value.to_vec(),
+        ));
 
-                rpc::Note {
-                    note_type,
-                    pos,
-                    nonce,
-                    r_g,
-                    pk_r,
-                    commitment,
-                    encrypted_blinding_factor,
-                    value,
-                }
+        rpc::Note {
+            note_type,
+            pos,
+            nonce,
+            r_g,
+            pk_r,
+            value_commitment,
+            encrypted_blinding_factor,
+            value,
+        }
     }
 }
-//
-//impl TryFrom<rpc::Note> for ObfuscatedNote {
-//    type Error = Error;
-//
-//    fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
-//        if rpc::NoteType::try_from(note.note_type)? != NoteType::Obfuscated {
-//            return Err(Error::InvalidParameters);
-//        }
-//
-//        let utxo = rpc::InputOutput::try_from(note.io)?.into();
-//        let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
-//        let r_g = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
-//        let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
-//        let idx = note.pos.ok_or(Error::InvalidParameters)?;
-//        let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
-//
-//        let encrypted_blinding_factor = note.encrypted_blinding_factor;
-//        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
-//
-//        let encrypted_value = match note.value.ok_or(Error::InvalidParameters)? {
-//            rpc::note::Value::TransparentValue(_) => Err(Error::InvalidParameters),
-//            rpc::note::Value::EncryptedValue(v) => Ok(v),
-//        }?;
-//        let encrypted_value = utils::safe_24_chunk(encrypted_value.as_slice());
-//
-//        Ok(ObfuscatedNote::new(
-//            utxo,
-//            commitment,
-//            nonce,
-//            r_g,
-//            pk_r,
-//            idx,
-//            encrypted_value,
-//            encrypted_blinding_factor,
-//        ))
-//    }
-//}
-//
-//impl TryFrom<rpc::DecryptedNote> for ObfuscatedNote {
-//    type Error = Error;
-//
-//    fn try_from(note: rpc::DecryptedNote) -> Result<Self, Self::Error> {
-//        let utxo = NoteUtxoType::Output;
-//        let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
-//        let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
-//        let r_g = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
-//        let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
-//        let idx = note.pos.ok_or(Error::InvalidParameters)?;
-//
-//        let encrypted_blinding_factor = note.encrypted_blinding_factor;
-//        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
-//
-//        let encrypted_value = match note.raw_value.ok_or(Error::InvalidParameters)? {
-//            rpc::decrypted_note::RawValue::EncryptedValue(v) => Ok(v),
-//            _ => Err(Error::InvalidParameters),
-//        }?;
-//        let encrypted_value = utils::safe_24_chunk(encrypted_value.as_slice());
-//
-//        Ok(ObfuscatedNote::new(
-//            utxo,
-//            commitment,
-//            nonce,
-//            r_g,
-//            pk_r,
-//            idx,
-//            encrypted_value,
-//            encrypted_blinding_factor,
-//        ))
-//    }
-//}
-//
-//impl<H: ByteHash> Content<H> for ObfuscatedNote {
-//    fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
-//        self.utxo.persist(sink)?;
-//        self.commitment.0.persist(sink)?;
-//        self.nonce.0.persist(sink)?;
-//
-//        let r_g = self.r_g.compress();
-//        sink.write_all(&r_g.0)?;
-//
-//        let pk_r = self.pk_r.compress();
-//        sink.write_all(&pk_r.0)?;
-//
-//        self.idx.persist(sink)?;
-//        self.encrypted_value.to_vec().persist(sink)?;
-//        self.encrypted_blinding_factor.to_vec().persist(sink)
-//    }
-//
-//    fn restore(source: &mut Source<H>) -> io::Result<Self> {
-//        let utxo = NoteUtxoType::restore(source)?;
-//
-//        let mut commitment = CompressedRistretto::default();
-//        source.read_exact(&mut commitment.0)?;
-//
-//        let mut nonce_bytes = [0u8; NONCEBYTES];
-//        source.read_exact(&mut nonce_bytes)?;
-//        let nonce = Nonce(nonce_bytes);
-//
-//        let mut r_g = CompressedRistretto::default();
-//        source.read_exact(&mut r_g.0)?;
-//        let r_g = if let Some(point) = r_g.decompress() {
-//            point
-//        } else {
-//            return Err(io::Error::new(
-//                io::ErrorKind::InvalidData,
-//                "Invalid Compressed Ristretto Point encoding",
-//            ));
-//        };
-//
-//        let mut pk_r = CompressedRistretto::default();
-//        source.read_exact(&mut pk_r.0)?;
-//        let pk_r = if let Some(point) = pk_r.decompress() {
-//            point
-//        } else {
-//            return Err(io::Error::new(
-//                io::ErrorKind::InvalidData,
-//                "Invalid Compressed Ristretto Point encoding",
-//            ));
-//        };
-//
-//        let idx = Idx::restore(source)?;
-//
-//        let encrypted_value = Vec::restore(source)?;
-//        let encrypted_value = utils::safe_24_chunk(encrypted_value.as_slice());
-//
-//        let encrypted_blinding_factor = Vec::restore(source)?;
-//        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
-//
-//        Ok(ObfuscatedNote {
-//            utxo,
-//            commitment,
-//            nonce,
-//            r_g,
-//            pk_r,
-//            idx,
-//            encrypted_value,
-//            encrypted_blinding_factor,
-//        })
-//    }
-//}
+
+impl TryFrom<rpc::Note> for ObfuscatedNote {
+    type Error = Error;
+
+    fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
+        if rpc::NoteType::try_from(note.note_type)? != NoteType::Obfuscated {
+            return Err(Error::InvalidParameters);
+        }
+
+        let value_commitment = note
+            .value_commitment
+            .ok_or(Error::InvalidParameters)?
+            .try_into()?;
+        let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
+        let R = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
+        let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
+        let idx = note.pos;
+
+        let encrypted_value = match note.value.ok_or(Error::InvalidParameters)? {
+            rpc::note::Value::TransparentValue(_) => Err(Error::InvalidParameters),
+            rpc::note::Value::EncryptedValue(v) => Ok(v),
+        }?;
+        let encrypted_value = utils::safe_24_chunk(encrypted_value.as_slice());
+
+        let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
+
+        Ok(ObfuscatedNote::new(
+            value_commitment,
+            nonce,
+            R,
+            pk_r,
+            idx,
+            encrypted_value,
+            encrypted_blinding_factor,
+        ))
+    }
+}
+
+impl TryFrom<rpc::DecryptedNote> for ObfuscatedNote {
+    type Error = Error;
+
+    fn try_from(note: rpc::DecryptedNote) -> Result<Self, Self::Error> {
+        let value_commitment = note
+            .value_commitment
+            .ok_or(Error::InvalidParameters)?
+            .try_into()?;
+        let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
+        let R = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
+        let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
+        let idx = note.pos;
+
+        let encrypted_value = match note.raw_value.ok_or(Error::InvalidParameters)? {
+            rpc::decrypted_note::RawValue::EncryptedValue(v) => Ok(v),
+            _ => Err(Error::InvalidParameters),
+        }?;
+        let encrypted_value = utils::safe_24_chunk(encrypted_value.as_slice());
+
+        let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
+
+        Ok(ObfuscatedNote::new(
+            value_commitment,
+            nonce,
+            R,
+            pk_r,
+            idx,
+            encrypted_value,
+            encrypted_blinding_factor,
+        ))
+    }
+}
+
+impl<H: ByteHash> Content<H> for ObfuscatedNote {
+    fn persist(&mut self, _sink: &mut Sink<H>) -> io::Result<()> {
+        //self.utxo.persist(sink)?;
+        //self.commitment.0.persist(sink)?;
+        //self.nonce.0.persist(sink)?;
+
+        //let r_g = self.r_g.compress();
+        //sink.write_all(&r_g.0)?;
+
+        //let pk_r = self.pk_r.compress();
+        //sink.write_all(&pk_r.0)?;
+
+        //self.idx.persist(sink)?;
+        //self.encrypted_value.to_vec().persist(sink)?;
+        //self.encrypted_blinding_factor.to_vec().persist(sink)
+        unimplemented!()
+    }
+
+    fn restore(_source: &mut Source<H>) -> io::Result<Self> {
+        //let utxo = NoteUtxoType::restore(source)?;
+
+        //let mut commitment = CompressedRistretto::default();
+        //source.read_exact(&mut commitment.0)?;
+
+        //let mut nonce_bytes = [0u8; NONCEBYTES];
+        //source.read_exact(&mut nonce_bytes)?;
+        //let nonce = Nonce(nonce_bytes);
+
+        //let mut r_g = CompressedRistretto::default();
+        //source.read_exact(&mut r_g.0)?;
+        //let r_g = if let Some(point) = r_g.decompress() {
+        //    point
+        //} else {
+        //    return Err(io::Error::new(
+        //        io::ErrorKind::InvalidData,
+        //        "Invalid Compressed Ristretto Point encoding",
+        //    ));
+        //};
+
+        //let mut pk_r = CompressedRistretto::default();
+        //source.read_exact(&mut pk_r.0)?;
+        //let pk_r = if let Some(point) = pk_r.decompress() {
+        //    point
+        //} else {
+        //    return Err(io::Error::new(
+        //        io::ErrorKind::InvalidData,
+        //        "Invalid Compressed Ristretto Point encoding",
+        //    ));
+        //};
+
+        //let idx = Idx::restore(source)?;
+
+        //let encrypted_value = Vec::restore(source)?;
+        //let encrypted_value = utils::safe_24_chunk(encrypted_value.as_slice());
+
+        //let encrypted_blinding_factor = Vec::restore(source)?;
+        //let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
+
+        //Ok(ObfuscatedNote {
+        //    utxo,
+        //    commitment,
+        //    nonce,
+        //    r_g,
+        //    pk_r,
+        //    idx,
+        //    encrypted_value,
+        //    encrypted_blinding_factor,
+        //})
+        unimplemented!()
+    }
+}

@@ -1,4 +1,4 @@
-use crate::{rpc, utils, Error, JubJubProjective, JubJubScalar, Nonce};
+use crate::{rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce};
 
 use std::convert::TryFrom;
 
@@ -19,6 +19,26 @@ impl TryFrom<rpc::Scalar> for JubJubScalar {
 
     fn try_from(s: rpc::Scalar) -> Result<JubJubScalar, Error> {
         utils::deserialize_jubjub_scalar(s.data.as_slice())
+    }
+}
+
+impl From<BlsScalar> for rpc::Scalar {
+    fn from(s: BlsScalar) -> Self {
+        let mut data = [0x00u8; utils::BLS_SCALAR_SERIALIZED_SIZE];
+
+        utils::serialize_bls_scalar(&s, &mut data).expect("In-memory write");
+
+        rpc::Scalar {
+            data: data.to_vec(),
+        }
+    }
+}
+
+impl TryFrom<rpc::Scalar> for BlsScalar {
+    type Error = Error;
+
+    fn try_from(s: rpc::Scalar) -> Result<BlsScalar, Error> {
+        utils::deserialize_bls_scalar(s.data.as_slice())
     }
 }
 
