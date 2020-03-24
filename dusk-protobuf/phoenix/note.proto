@@ -16,7 +16,7 @@ message Note {
   Nonce nonce = 3;
   CompressedPoint r_g = 4;
   CompressedPoint pk_r = 5;
-  CompressedPoint commitment = 6;
+  Scalar value_commitment = 6;
   bytes encrypted_blinding_factor = 7;
   oneof value {
     fixed64 transparent_value = 8;
@@ -31,7 +31,7 @@ message DecryptedNote {
   Nonce nonce = 4;
   CompressedPoint r_g = 5;
   CompressedPoint pk_r = 6;
-  CompressedPoint commitment = 7;
+  Scalar value_commitment = 7;
   Scalar blinding_factor = 8;
   bytes encrypted_blinding_factor = 9;
   oneof rawValue {
