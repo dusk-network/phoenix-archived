@@ -1,5 +1,9 @@
-use crate::{crypto, utils, BlsScalar, JubJubProjective, JubJubScalar, Nonce, PublicKey, ViewKey};
+use crate::{
+    crypto, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, NoteType, PublicKey,
+    SecretKey, ViewKey,
+};
 
+use std::convert::TryFrom;
 use std::fmt::Debug;
 use std::ops::Mul;
 
@@ -104,17 +108,21 @@ pub trait NoteGenerator: Sized
         let bytes = crypto::encrypt(r, pk, nonce, &value.to_le_bytes()[..]);
         utils::safe_24_chunk(bytes.as_slice())
     }
-    //
-    //    /// Internally calls the [`crypto::encrypt`] to mask the blinding factor
-    //    fn encrypt_blinding_factor(
-    //        r: &Scalar,
-    //        pk: &PublicKey,
-    //        nonce: &Nonce,
-    //        blinding_factor: &Scalar,
-    //    ) -> [u8; 48] {
-    //        let bytes = crypto::encrypt(r, pk, &nonce.increment_le(), blinding_factor.as_bytes());
-    //        utils::safe_48_chunk(bytes.as_slice())
-    //    }
+
+    /// Internally calls the [`crypto::encrypt`] to mask the blinding factor
+    fn encrypt_blinding_factor(
+        r: &JubJubScalar,
+        pk: &PublicKey,
+        nonce: &Nonce,
+        blinding_factor: &BlsScalar,
+    ) -> [u8; 48] {
+        let mut blinding_factor_bytes = [0x00u8; utils::BLS_SCALAR_SERIALIZED_SIZE];
+        utils::serialize_bls_scalar(blinding_factor, &mut blinding_factor_bytes)
+            .expect("In-memory write");
+
+        let bytes = crypto::encrypt(r, pk, &nonce.increment_le(), blinding_factor_bytes);
+        utils::safe_48_chunk(bytes.as_slice())
+    }
 }
 
 /// Phoenix note methods. Both transparent and obfuscated notes implements this
@@ -133,11 +141,11 @@ pub trait Note: Debug + Send + Sync {
     //        Err(Error::Generic)
     //    }
     //
-    //    /// Create a unique nullifier for the note
-    //    fn generate_nullifier(&self, _sk: &SecretKey) -> Nullifier {
-    //        // TODO - Create a secure nullifier
-    //        Nullifier::new(self.idx().pos.into())
-    //    }
+    /// Create a unique nullifier for the note
+    fn generate_nullifier(&self, _sk: &SecretKey) -> BlsScalar {
+        // TODO - Set nullifier as `H(a, b, idx)`
+        crypto::hash_merkle(&[BlsScalar::from(self.idx())])
+    }
     //
     //    #[allow(clippy::trivially_copy_pass_by_ref)] // Nullifier
     //    /// Validate the note against a provided nullifier. It will be checked against `PKr`
@@ -194,64 +202,61 @@ pub trait Note: Debug + Send + Sync {
     //        (y, x)
     //    }
     //
-    //    /// Deterministically hash the note to a [`Scalar`]
-    //    fn hash(&self) -> Scalar;
+    /// Return a hash represented by `H(value_commitment, idx, H([R]), H([PKr]))`
+    fn hash(&self) -> BlsScalar {
+        crypto::hash_merkle(&[
+            *self.value_commitment(),
+            BlsScalar::from(self.idx()),
+            crypto::hash_jubjub_projective(self.R()),
+            crypto::hash_jubjub_projective(self.pk_r()),
+        ])
+    }
+
     //    // TODO - This is not really a property of the note, but of the transaction item. Remove it.
     //    /// Return the I/O direction of the note in a transaction item
     //    fn utxo(&self) -> NoteUtxoType;
     //    /// Set the I/O direction of the note in a transaction item
     //    fn set_utxo(&mut self, utxo: NoteUtxoType);
-    //    /// Return the type of the note
-    //    fn note(&self) -> NoteType;
-    //    /// Return the position of the note on the tree. For transaction outputs, the position is
-    //    /// undefined; therefore, random
-    //    fn idx(&self) -> &Idx;
-    //    /// Set the position of the note on the tree. This, naturally, won't reflect immediatelly on
-    //    /// the data storage
-    //    fn set_idx(&mut self, idx: Idx);
-    //    /// Nonce used for the encrypt / decrypt of data for this note
-    //    fn nonce(&self) -> &Nonce;
-    //
+    /// Return the type of the note
+    fn note(&self) -> NoteType;
+    /// Return the position of the note on the tree. For transaction outputs, the position is
+    /// undefined; therefore, random
+    fn idx(&self) -> u64;
+    /// Set the position of the note on the tree. This, naturally, won't reflect immediatelly on
+    /// the data storage
+    fn set_idx(&mut self, idx: u64);
+    /// Nonce used for the encrypt / decrypt of data for this note
+    fn nonce(&self) -> &Nonce;
+
     /// Attempt to decrypt the note value provided a [`ViewKey`]. Always succeeds for transparent
     /// notes, and will return random values for obfuscated notes provided the wrong view key.
     fn value(&self, vk: Option<&ViewKey>) -> u64;
 
-    //    /// Return the raw encrypted bytes for the note. Return an empty `[u8; 24]` for transparent
-    //    /// notes
-    //    fn encrypted_value(&self) -> Option<&[u8; 24]>;
-    //    /// Return the commitment point to the value
-    //    fn commitment(&self) -> &CompressedRistretto;
-    //    /// Attempt to decrypt and return the decrypted blinding factor used to prove the obfuscated note value. If a wrong view key is provided, a random scalar is returned
-    //    fn blinding_factor(&self, vk: &ViewKey) -> Scalar;
-    //    /// Return the raw encrypted value blinding factor
-    //    fn encrypted_blinding_factor(&self) -> &[u8; 48];
-    //    /// Return the `r · G` used for the DHKE randomness
-    //    fn r_g(&self) -> &RistrettoPoint;
-    //    /// Return the public DHKE combined with the secret key of the owner of the note
-    //    fn pk_r(&self) -> &RistrettoPoint;
-    //    /// Provided a secret, return `H(a · R) + B`
-    //    fn sk_r(&self, sk: &SecretKey) -> Scalar {
-    //        let r_a_g = sk.a * self.r_g();
-    //        let r_a_g = utils::ristretto_to_scalar(r_a_g);
-    //        let r_a_g = crypto::hash_scalar(&r_a_g);
-    //
-    //        r_a_g + sk.b
-    //    }
-    //
-    //    /// Return true if the note was constructed with the same secret that constructed the provided
-    //    /// view key
-    //    ///
-    //    /// This holds true if `H(a · R) · G + B == PKr`
-    //    fn is_owned_by(&self, vk: &ViewKey) -> bool {
-    //        let r_a_g = vk.a * self.r_g();
-    //        let r_a_g = utils::ristretto_to_scalar(r_a_g);
-    //        let r_a_g = crypto::hash_scalar(&r_a_g);
-    //        let r_a_g = utils::mul_by_basepoint_ristretto(&r_a_g);
-    //
-    //        let pk_r = r_a_g + vk.b_g;
-    //
-    //        self.pk_r() == &pk_r
-    //    }
+    /// Return the raw encrypted bytes of the value. If the note is transparent, `None` is returned
+    fn encrypted_value(&self) -> Option<&[u8; 24]>;
+    /// Return the value commitment `H(value, blinding_factor)`
+    fn value_commitment(&self) -> &BlsScalar;
+    /// Decrypt the blinding factor with the provided [`ViewKey`]
+    ///
+    /// If the decrypt fails, a random value is returned
+    fn blinding_factor(&self, vk: &ViewKey) -> BlsScalar;
+    /// Return the raw encrypted value blinding factor
+    fn encrypted_blinding_factor(&self) -> &[u8; 48];
+    /// Return the `r · G` used for the DHKE randomness
+    fn R(&self) -> &JubJubProjective;
+    /// Return the public DHKE combined with the secret key of the owner of the note
+    fn pk_r(&self) -> &JubJubProjective;
+
+    /// Return true if the note was constructed with the same secret that constructed the provided
+    /// view key
+    ///
+    /// This holds true if `a · R + B == PKr`
+    fn is_owned_by(&self, vk: &ViewKey) -> bool {
+        let aR = self.R().mul(&vk.a);
+        let pk_r = aR + vk.B;
+
+        self.pk_r() == &pk_r
+    }
 }
 
 //#[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -301,19 +306,19 @@ pub trait Note: Debug + Send + Sync {
 //        }
 //    }
 //}
-//
-//impl TryFrom<i32> for NoteType {
-//    type Error = Error;
-//
-//    fn try_from(note_type: i32) -> Result<Self, Self::Error> {
-//        match note_type {
-//            0 => Ok(NoteType::Transparent),
-//            1 => Ok(NoteType::Obfuscated),
-//            _ => Err(Error::InvalidParameters),
-//        }
-//    }
-//}
-//
+
+impl TryFrom<i32> for NoteType {
+    type Error = Error;
+
+    fn try_from(note_type: i32) -> Result<Self, Self::Error> {
+        match note_type {
+            0 => Ok(NoteType::Transparent),
+            1 => Ok(NoteType::Obfuscated),
+            _ => Err(Error::InvalidParameters),
+        }
+    }
+}
+
 //impl<H: ByteHash> Content<H> for NoteUtxoType {
 //    fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
 //        match self {

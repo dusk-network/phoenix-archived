@@ -1,8 +1,9 @@
 use crate::{
-    crypto, utils, BlsScalar, JubJubProjective, Nonce, Note, NoteGenerator, PublicKey, ViewKey,
+    crypto, utils, BlsScalar, JubJubProjective, Nonce, Note, NoteGenerator, NoteType, PublicKey,
+    ViewKey,
 };
 
-use std::cmp;
+use std::{cmp, fmt};
 
 //use super::{Idx, Note, NoteGenerator, NoteUtxoType};
 //use crate::{
@@ -19,82 +20,78 @@ use std::cmp;
 //use sha2::{Digest, Sha512};
 //
 /// A note that hides its value and blinding factor
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct ObfuscatedNote {
-    //    utxo: NoteUtxoType,
-    //    commitment: CompressedRistretto,
+    value_commitment: BlsScalar,
     nonce: Nonce,
     R: JubJubProjective,
     pk_r: JubJubProjective,
-    //    idx: Idx,
+    idx: u64,
     pub encrypted_value: [u8; 24],
-    //    pub(crate) encrypted_blinding_factor: [u8; 48],
+    pub encrypted_blinding_factor: [u8; 48],
 }
-//
-//impl fmt::Debug for ObfuscatedNote {
-//    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-//        write!(f, "ObfuscatedNote {{ utxo: {:?}, nonce: {:?}, r_g: {:?}, pk_r: {:?}, idx: {:?}, commitment: {:?}, encrypted_value: {:?}, encrypted_blinding_factor: {:?} }}", self.utxo, self.nonce, self.r_g, self.pk_r, self.idx, self.commitment, &self.encrypted_value, &self.encrypted_blinding_factor[0..32])
-//    }
-//}
-//
-//impl PartialEq for ObfuscatedNote {
-//    fn eq(&self, other: &Self) -> bool {
-//        self.hash() == other.hash()
-//    }
-//}
-//impl Eq for ObfuscatedNote {}
-//
+
+impl fmt::Debug for ObfuscatedNote {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "ObfuscatedNote {{ nonce: {:?}, R: {:?}, pk_r: {:?}, idx: {:?}, value_commitment: {:?}, encrypted_value: {:?}, encrypted_blinding_factor: {:?} }}", self.nonce, self.R, self.pk_r, self.idx, self.value_commitment, &self.encrypted_value, &self.encrypted_blinding_factor[0..32])
+    }
+}
+
+impl PartialEq for ObfuscatedNote {
+    fn eq(&self, other: &Self) -> bool {
+        self.hash() == other.hash()
+    }
+}
+impl Eq for ObfuscatedNote {}
+
 impl ObfuscatedNote {
     /// [`ObfuscatedNote`] constructor
     pub fn new(
-        //        utxo: NoteUtxoType,
-        //        commitment: CompressedRistretto,
+        value_commitment: BlsScalar,
         nonce: Nonce,
         R: JubJubProjective,
         pk_r: JubJubProjective,
-        //        idx: Idx,
+        idx: u64,
         encrypted_value: [u8; 24],
-        //        encrypted_blinding_factor: [u8; 48],
+        encrypted_blinding_factor: [u8; 48],
     ) -> Self {
         ObfuscatedNote {
-            //            utxo,
-            //            commitment,
+            value_commitment,
             nonce,
             R,
             pk_r,
-            //            idx,
+            idx,
             encrypted_value,
-            //            encrypted_blinding_factor,
+            encrypted_blinding_factor,
         }
     }
 }
 
 impl NoteGenerator for ObfuscatedNote {
     fn output(pk: &PublicKey, value: u64) -> (Self, BlsScalar) {
-        //        let idx = Idx::default();
         let nonce = utils::gen_nonce();
 
         let (r, R, pk_r) = Self::generate_pk_r(pk);
-        //
-        //        let phoenix_value = Value::new(Scalar::from(value));
-        //
-        //        let blinding_factor = *phoenix_value.blinding_factor();
+
         let blinding_factor = utils::gen_random_bls_scalar();
-        //        let commitment = *phoenix_value.commitment();
-        //
+        let value_commitment = BlsScalar::from(value);
+        let value_commitment = crypto::hash_merkle(&[value_commitment, blinding_factor]);
+
+        // Output notes have undefined idx
+        let idx = 0;
+
         let encrypted_value = ObfuscatedNote::encrypt_value(&r, pk, &nonce, value);
-        //        let encrypted_blinding_factor =
-        //            ObfuscatedNote::encrypt_blinding_factor(&r, pk, &nonce, &blinding_factor);
-        //
+        let encrypted_blinding_factor =
+            ObfuscatedNote::encrypt_blinding_factor(&r, pk, &nonce, &blinding_factor);
+
         let note = ObfuscatedNote::new(
-            //            NoteUtxoType::Output,
-            //            commitment,
+            value_commitment,
             nonce,
             R,
             pk_r,
-            //            idx,
+            idx,
             encrypted_value,
-            //            encrypted_blinding_factor,
+            encrypted_blinding_factor,
         );
 
         (note, blinding_factor)
@@ -102,54 +99,30 @@ impl NoteGenerator for ObfuscatedNote {
 }
 
 impl Note for ObfuscatedNote {
-    //    fn hash(&self) -> Scalar {
-    //        // TODO - Use poseidon sponge, when available
-    //        let mut hasher = Sha512::default();
-    //
-    //        hasher.input(&[self.utxo.into()]);
-    //        hasher.input(self.commitment.as_bytes());
-    //        hasher.input(&self.nonce);
-    //        hasher.input(self.r_g.compress().as_bytes());
-    //        hasher.input(self.pk_r.compress().as_bytes());
-    //        hasher.input(self.idx.clone().into_vec());
-    //        hasher.input(&self.encrypted_value);
-    //        hasher.input(&self.encrypted_blinding_factor[..]);
-    //
-    //        Scalar::from_hash(hasher)
-    //    }
-    //
-    //    fn utxo(&self) -> NoteUtxoType {
-    //        self.utxo
-    //    }
-    //
-    //    fn set_utxo(&mut self, utxo: NoteUtxoType) {
-    //        self.utxo = utxo;
-    //    }
-    //
-    //    fn note(&self) -> NoteType {
-    //        NoteType::Obfuscated
-    //    }
-    //
-    //    fn idx(&self) -> &Idx {
-    //        &self.idx
-    //    }
-    //
-    //    fn nonce(&self) -> &Nonce {
-    //        &self.nonce
-    //    }
-    //
-    //    fn r_g(&self) -> &RistrettoPoint {
-    //        &self.r_g
-    //    }
-    //
-    //    fn pk_r(&self) -> &RistrettoPoint {
-    //        &self.pk_r
-    //    }
-    //
-    //    fn set_idx(&mut self, idx: Idx) {
-    //        self.idx = idx;
-    //    }
-    //
+    fn note(&self) -> NoteType {
+        NoteType::Obfuscated
+    }
+
+    fn idx(&self) -> u64 {
+        self.idx
+    }
+
+    fn set_idx(&mut self, idx: u64) {
+        self.idx = idx;
+    }
+
+    fn nonce(&self) -> &Nonce {
+        &self.nonce
+    }
+
+    fn R(&self) -> &JubJubProjective {
+        &self.R
+    }
+
+    fn pk_r(&self) -> &JubJubProjective {
+        &self.pk_r
+    }
+
     fn value(&self, vk: Option<&ViewKey>) -> u64 {
         let vk = vk.copied().unwrap_or_default();
 
@@ -161,44 +134,30 @@ impl Note for ObfuscatedNote {
 
         u64::from_le_bytes(v)
     }
-    //
-    //    fn encrypted_value(&self) -> Option<&[u8; 24]> {
-    //        Some(&self.encrypted_value)
-    //    }
-    //
-    //    fn commitment(&self) -> &CompressedRistretto {
-    //        &self.commitment
-    //    }
-    //
-    //    fn blinding_factor(&self, vk: &ViewKey) -> Scalar {
-    //        let blinding_factor = crypto::decrypt(
-    //            &self.r_g,
-    //            vk,
-    //            &self.nonce.increment_le(),
-    //            &self.encrypted_blinding_factor[..],
-    //        );
-    //
-    //        Scalar::from_bits(utils::safe_32_chunk(blinding_factor.as_slice()))
-    //    }
-    //
-    //    fn encrypted_blinding_factor(&self) -> &[u8; 48] {
-    //        &self.encrypted_blinding_factor
-    //    }
-    //
-    //    fn prove_value(&self, vk: &ViewKey) -> Result<R1CSProof, Error> {
-    //        let value = self.value(Some(vk));
-    //        let blinding_factor = self.blinding_factor(vk);
-    //
-    //        let phoenix_value = Value::with_blinding_factor(value, blinding_factor);
-    //
-    //        phoenix_value.prove(value).map_err(Error::generic)
-    //    }
-    //
-    //    fn verify_value(&self, proof: &R1CSProof) -> Result<(), Error> {
-    //        Value::with_commitment(*self.commitment())
-    //            .verify(proof)
-    //            .map_err(Error::generic)
-    //    }
+
+    fn encrypted_value(&self) -> Option<&[u8; 24]> {
+        Some(&self.encrypted_value)
+    }
+
+    fn value_commitment(&self) -> &BlsScalar {
+        &self.value_commitment
+    }
+
+    fn blinding_factor(&self, vk: &ViewKey) -> BlsScalar {
+        let blinding_factor = crypto::decrypt(
+            &self.R,
+            vk,
+            &self.nonce.increment_le(),
+            &self.encrypted_blinding_factor[..],
+        );
+
+        utils::deserialize_bls_scalar(blinding_factor.as_slice())
+            .unwrap_or(utils::gen_random_bls_scalar())
+    }
+
+    fn encrypted_blinding_factor(&self) -> &[u8; 48] {
+        &self.encrypted_blinding_factor
+    }
 }
 
 //impl From<ObfuscatedNote> for rpc::Note {

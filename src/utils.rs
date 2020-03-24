@@ -96,6 +96,9 @@ pub const COMPRESSED_JUBJUB_SERIALIZED_SIZE: usize = 32;
 /// Serialized size of a [`JubJubScalar`]
 pub const JUBJUB_SCALAR_SERIALIZED_SIZE: usize = 32;
 
+/// Serialized size of a [`BlsScalar`]
+pub const BLS_SCALAR_SERIALIZED_SIZE: usize = 32;
+
 /// Convert a [`JubJubProjective`] into affine and then serialize the `x` coordinate
 pub fn serialize_compressed_jubjub(p: &JubJubProjective, bytes: &mut [u8]) -> Result<usize, Error> {
     p.into_affine().serialize(&[], bytes)?;
@@ -118,6 +121,18 @@ pub fn serialize_jubjub_scalar(s: &JubJubScalar, bytes: &mut [u8]) -> Result<usi
 /// Deserialize a [`JubJubScalar`] from a slice of bytes
 pub fn deserialize_jubjub_scalar(bytes: &[u8]) -> Result<JubJubScalar, Error> {
     Ok(JubJubScalar::deserialize(bytes, &mut [])?)
+}
+
+/// Serialize a [`BlsScalar`] into bytes
+pub fn serialize_bls_scalar(s: &BlsScalar, bytes: &mut [u8]) -> Result<usize, Error> {
+    s.serialize(&[], bytes)?;
+
+    Ok(BLS_SCALAR_SERIALIZED_SIZE)
+}
+
+/// Deserialize a [`BlsScalar`] from a slice of bytes
+pub fn deserialize_bls_scalar(bytes: &[u8]) -> Result<BlsScalar, Error> {
+    Ok(BlsScalar::deserialize(bytes, &mut [])?)
 }
 
 //
@@ -168,16 +183,16 @@ pub fn safe_24_chunk(bytes: &[u8]) -> [u8; 24] {
 ////
 ////    s
 ////}
-////
-/////// Safely transpose a slice of any size to a `[u8; 48]`
-////pub fn safe_48_chunk(bytes: &[u8]) -> [u8; 48] {
-////    let mut s = [0x00u8; 48];
-////    let chunk = cmp::min(bytes.len(), 48);
-////
-////    (&mut s[0..chunk]).copy_from_slice(&bytes[0..chunk]);
-////
-////    s
-////}
+
+/// Safely transpose a slice of any size to a `[u8; 48]`
+pub fn safe_48_chunk(bytes: &[u8]) -> [u8; 48] {
+    let mut s = [0x00u8; 48];
+    let chunk = cmp::min(bytes.len(), 48);
+
+    (&mut s[0..chunk]).copy_from_slice(&bytes[0..chunk]);
+
+    s
+}
 ////
 /////// Generate a ristretto field element from a scalar
 ////pub fn mul_by_basepoint_ristretto(s: &Scalar) -> RistrettoPoint {

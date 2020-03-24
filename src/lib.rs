@@ -19,7 +19,7 @@ pub use error::Error;
 //pub use note::{
 //    Note, NoteGenerator, NoteUtxoType, NoteVariant, Nullifier, ObfuscatedNote, TransparentNote,
 //};
-//pub use rpc::{Idx, NoteType};
+pub use rpc::NoteType;
 pub use sodiumoxide::crypto::secretbox::xsalsa20poly1305::{Nonce, NONCEBYTES};
 //pub use transaction::{Transaction, TransactionItem};
 //pub use zk::value::Value;
@@ -34,8 +34,8 @@ pub mod error;
 pub mod keys;
 /// Transparent and obfuscated notes defition
 pub mod note;
-///// RPC data generated via protobuf
-//pub mod rpc;
+/// RPC data generated via protobuf
+pub mod rpc;
 ///// Transaction operations
 //pub mod transaction;
 /// General toolkit
