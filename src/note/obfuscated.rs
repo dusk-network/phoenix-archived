@@ -20,7 +20,7 @@ use std::{cmp, fmt};
 //use sha2::{Digest, Sha512};
 //
 /// A note that hides its value and blinding factor
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct ObfuscatedNote {
     value_commitment: BlsScalar,
     nonce: Nonce,
@@ -43,6 +43,12 @@ impl PartialEq for ObfuscatedNote {
     }
 }
 impl Eq for ObfuscatedNote {}
+
+impl Default for ObfuscatedNote {
+    fn default() -> Self {
+        ObfuscatedNote::output(&PublicKey::default(), 0).0
+    }
+}
 
 impl ObfuscatedNote {
     /// [`ObfuscatedNote`] constructor

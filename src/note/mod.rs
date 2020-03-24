@@ -24,8 +24,8 @@ use std::ops::Mul;
 //pub mod nullifier;
 /// Obfuscated note definitions
 pub mod obfuscated;
-///// Transparent note definitions
-//pub mod transparent;
+/// Transparent note definitions
+pub mod transparent;
 ///// Note variant definitions (Transparent and Obfuscated)
 //pub mod variant;
 //
