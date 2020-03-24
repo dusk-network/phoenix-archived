@@ -110,7 +110,7 @@
 | nonce | [Nonce](#phoenix.Nonce) |  |  |
 | r_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
-| commitment | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
+| value_commitment | [Scalar](#phoenix.Scalar) |  |  |
 | blinding_factor | [Scalar](#phoenix.Scalar) |  |  |
 | encrypted_blinding_factor | [bytes](#bytes) |  |  |
 | transparent_value | [fixed64](#fixed64) |  |  |
@@ -125,7 +125,7 @@
 | nonce | [Nonce](#phoenix.Nonce) |  |  |
 | r_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
-| commitment | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
+| value_commitment | [Scalar](#phoenix.Scalar) |  |  |
 | encrypted_blinding_factor | [bytes](#bytes) |  |  |
 | transparent_value | [fixed64](#fixed64) |  |  |
 | encrypted_value | [bytes](#bytes) |  |  |
