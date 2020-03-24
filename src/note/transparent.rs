@@ -4,20 +4,10 @@ use crate::{
 };
 
 use std::convert::{TryFrom, TryInto};
+use std::io;
 
-//use super::{Idx, Note, NoteGenerator, NoteUtxoType};
-//use crate::{
-//    crypto, rpc, utils, CompressedRistretto, Error, Nonce, NoteType, PublicKey, RistrettoPoint,
-//    Scalar, Value, ViewKey, NONCEBYTES,
-//};
-//
-//use kelvin::{ByteHash, Content, Sink, Source};
-//use sha2::{Digest, Sha512};
-//
-//use std::convert::{TryFrom, TryInto};
-//use std::fmt;
-//use std::io::{self, Read, Write};
-//
+use kelvin::{ByteHash, Content, Sink, Source};
+
 /// A note that does not encrypt its value
 #[derive(Debug, Clone, Copy)]
 pub struct TransparentNote {
@@ -147,7 +137,9 @@ impl From<TransparentNote> for rpc::Note {
         let r_g = Some(note.R.into());
         let pk_r = Some(note.pk_r.into());
         let value_commitment = Some(note.value_commitment.into());
-        let blinding_factor = unimplemented!(); //Some(rpc::note::BlindingFactor::TransparentBlindingFactor(note.blinding_factor.into()));
+        let blinding_factor = Some(rpc::note::BlindingFactor::TransparentBlindingFactor(
+            note.blinding_factor.into(),
+        ));
         let value = Some(rpc::note::Value::TransparentValue(note.value));
 
         rpc::Note {
@@ -171,18 +163,6 @@ impl TryFrom<rpc::Note> for TransparentNote {
             return Err(Error::InvalidParameters);
         }
 
-        //let utxo = rpc::InputOutput::try_from(note.io)?.into();
-        //let nonce = ;
-        //let r_g = ;
-        //let pk_r = ;
-        //let idx = note.pos.ok_or(Error::InvalidParameters)?;
-        //let commitment = ;
-
-        //let encrypted_blinding_factor = note.encrypted_blinding_factor;
-        //let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
-
-        //let value = ;
-
         let value_commitment = note
             .value_commitment
             .ok_or(Error::InvalidParameters)?
@@ -192,9 +172,11 @@ impl TryFrom<rpc::Note> for TransparentNote {
         let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
         let idx = note.pos;
 
-        let blinding_factor = unimplemented!();
-        //let encrypted_blinding_factor = note.encrypted_blinding_factor;
-        //let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
+        let blinding_factor = match note.blinding_factor.ok_or(Error::InvalidParameters)? {
+            rpc::note::BlindingFactor::TransparentBlindingFactor(b) => Ok(b),
+            rpc::note::BlindingFactor::EncryptedBlindingFactor(_) => Err(Error::InvalidParameters),
+        }?
+        .try_into()?;
 
         let value = match note.value.ok_or(Error::InvalidParameters)? {
             rpc::note::Value::TransparentValue(v) => Ok(v),
@@ -212,98 +194,102 @@ impl TryFrom<rpc::Note> for TransparentNote {
         ))
     }
 }
-//
-//impl TryFrom<rpc::DecryptedNote> for TransparentNote {
-//    type Error = Error;
-//
-//    fn try_from(note: rpc::DecryptedNote) -> Result<Self, Self::Error> {
-//        let utxo = NoteUtxoType::Output;
-//        let value = note.value;
-//        let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
-//        let r_g = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
-//        let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
-//        let idx = note.pos.ok_or(Error::InvalidParameters)?;
-//        let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
-//
-//        let encrypted_blinding_factor = note.encrypted_blinding_factor;
-//        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
-//
-//        Ok(TransparentNote::new(
-//            utxo,
-//            value,
-//            nonce,
-//            r_g,
-//            pk_r,
-//            idx,
-//            commitment,
-//            encrypted_blinding_factor,
-//        ))
-//    }
-//}
-//
-//impl<H: ByteHash> Content<H> for TransparentNote {
-//    fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
-//        self.utxo.persist(sink)?;
-//        self.value.persist(sink)?;
-//        self.nonce.0.persist(sink)?;
-//
-//        let r_g = self.r_g.compress();
-//        sink.write_all(&r_g.0)?;
-//
-//        let pk_r = self.pk_r.compress();
-//        sink.write_all(&pk_r.0)?;
-//
-//        self.idx.persist(sink)?;
-//        self.commitment.0.persist(sink)?;
-//        self.encrypted_blinding_factor.to_vec().persist(sink)
-//    }
-//
-//    fn restore(source: &mut Source<H>) -> io::Result<Self> {
-//        let utxo = NoteUtxoType::restore(source)?;
-//        let value = u64::restore(source)?;
-//        let mut nonce_bytes = [0u8; NONCEBYTES];
-//        source.read_exact(&mut nonce_bytes)?;
-//        let nonce = Nonce(nonce_bytes);
-//
-//        let mut r_g = CompressedRistretto::default();
-//        source.read_exact(&mut r_g.0)?;
-//        let r_g = if let Some(point) = r_g.decompress() {
-//            point
-//        } else {
-//            return Err(io::Error::new(
-//                io::ErrorKind::InvalidData,
-//                "Invalid Compressed Ristretto Point encoding",
-//            ));
-//        };
-//
-//        let mut pk_r = CompressedRistretto::default();
-//        source.read_exact(&mut pk_r.0)?;
-//        let pk_r = if let Some(point) = pk_r.decompress() {
-//            point
-//        } else {
-//            return Err(io::Error::new(
-//                io::ErrorKind::InvalidData,
-//                "Invalid Compressed Ristretto Point encoding",
-//            ));
-//        };
-//
-//        let idx = Idx::restore(source)?;
-//
-//        let mut commitment = CompressedRistretto::default();
-//        source.read_exact(&mut commitment.0)?;
-//
-//        let encrypted_blinding_factor = Vec::restore(source)?;
-//        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
-//
-//        Ok(TransparentNote {
-//            utxo,
-//            value,
-//            nonce,
-//            r_g,
-//            pk_r,
-//            idx,
-//            commitment,
-//            encrypted_blinding_factor,
-//        })
-//    }
-//}
+
+impl TryFrom<rpc::DecryptedNote> for TransparentNote {
+    type Error = Error;
+
+    fn try_from(note: rpc::DecryptedNote) -> Result<Self, Self::Error> {
+        let value_commitment = note
+            .value_commitment
+            .ok_or(Error::InvalidParameters)?
+            .try_into()?;
+        let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
+        let R = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
+        let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
+        let idx = note.pos;
+        let value = note.value;
+        let blinding_factor = note
+            .blinding_factor
+            .ok_or(Error::InvalidParameters)?
+            .try_into()?;
+
+        Ok(Self::new(
+            value_commitment,
+            nonce,
+            R,
+            pk_r,
+            idx,
+            value,
+            blinding_factor,
+        ))
+    }
+}
+
+impl<H: ByteHash> Content<H> for TransparentNote {
+    fn persist(&mut self, _sink: &mut Sink<H>) -> io::Result<()> {
+        //self.utxo.persist(sink)?;
+        //self.value.persist(sink)?;
+        //self.nonce.0.persist(sink)?;
+
+        //let r_g = self.r_g.compress();
+        //sink.write_all(&r_g.0)?;
+
+        //let pk_r = self.pk_r.compress();
+        //sink.write_all(&pk_r.0)?;
+
+        //self.idx.persist(sink)?;
+        //self.commitment.0.persist(sink)?;
+        //self.encrypted_blinding_factor.to_vec().persist(sink)
+        unimplemented!()
+    }
+
+    fn restore(_source: &mut Source<H>) -> io::Result<Self> {
+        //let utxo = NoteUtxoType::restore(source)?;
+        //let value = u64::restore(source)?;
+        //let mut nonce_bytes = [0u8; NONCEBYTES];
+        //source.read_exact(&mut nonce_bytes)?;
+        //let nonce = Nonce(nonce_bytes);
+
+        //let mut r_g = CompressedRistretto::default();
+        //source.read_exact(&mut r_g.0)?;
+        //let r_g = if let Some(point) = r_g.decompress() {
+        //    point
+        //} else {
+        //    return Err(io::Error::new(
+        //        io::ErrorKind::InvalidData,
+        //        "Invalid Compressed Ristretto Point encoding",
+        //    ));
+        //};
+
+        //let mut pk_r = CompressedRistretto::default();
+        //source.read_exact(&mut pk_r.0)?;
+        //let pk_r = if let Some(point) = pk_r.decompress() {
+        //    point
+        //} else {
+        //    return Err(io::Error::new(
+        //        io::ErrorKind::InvalidData,
+        //        "Invalid Compressed Ristretto Point encoding",
+        //    ));
+        //};
+
+        //let idx = Idx::restore(source)?;
+
+        //let mut commitment = CompressedRistretto::default();
+        //source.read_exact(&mut commitment.0)?;
+
+        //let encrypted_blinding_factor = Vec::restore(source)?;
+        //let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
+
+        //Ok(TransparentNote {
+        //    utxo,
+        //    value,
+        //    nonce,
+        //    r_g,
+        //    pk_r,
+        //    idx,
+        //    commitment,
+        //    encrypted_blinding_factor,
+        //})
+        unimplemented!()
+    }
+}

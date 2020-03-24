@@ -1,26 +1,19 @@
 use crate::{
-    BlsScalar, Error, JubJubProjective, Nonce, Note, NoteType, ObfuscatedNote, TransparentNote,
-    ViewKey,
+    rpc, BlsScalar, Error, JubJubProjective, Nonce, Note, NoteType, ObfuscatedNote,
+    TransparentNote, ViewKey,
 };
 
-use std::convert::TryFrom;
+use std::convert::{TryFrom, TryInto};
+use std::io;
 
-//use crate::{
-//    rpc, CompressedRistretto, Error, Idx, Nonce, Note, NoteGenerator, NoteType, NoteUtxoType,
-//    Nullifier, ObfuscatedNote, PublicKey, R1CSProof, RistrettoPoint, Scalar, SecretKey,
-//    TransactionItem, TransparentNote, ViewKey,
-//};
-//
-//use std::io;
-//
-//use kelvin::{ByteHash, Content, Sink, Source};
-//
+use kelvin::{ByteHash, Content, Sink, Source};
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NoteVariant {
     Transparent(TransparentNote),
     Obfuscated(ObfuscatedNote),
 }
-//
+
 //impl NoteVariant {
 //    // TODO - Duplicated code, maybe split NoteGenerator trait?
 //    /// Create a new transaction input item provided the secret key for the nullifier generation
@@ -85,26 +78,26 @@ impl TryFrom<NoteVariant> for ObfuscatedNote {
     }
 }
 
-//impl TryFrom<rpc::Note> for NoteVariant {
-//    type Error = Error;
-//
-//    fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
-//        match note.note_type.try_into()? {
-//            NoteType::Transparent => Ok(NoteVariant::Transparent(note.try_into()?)),
-//            NoteType::Obfuscated => Ok(NoteVariant::Obfuscated(note.try_into()?)),
-//        }
-//    }
-//}
-//
-//impl From<NoteVariant> for rpc::Note {
-//    fn from(note: NoteVariant) -> Self {
-//        match note {
-//            NoteVariant::Transparent(note) => note.into(),
-//            NoteVariant::Obfuscated(note) => note.into(),
-//        }
-//    }
-//}
-//
+impl TryFrom<rpc::Note> for NoteVariant {
+    type Error = Error;
+
+    fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
+        match note.note_type.try_into()? {
+            NoteType::Transparent => Ok(NoteVariant::Transparent(note.try_into()?)),
+            NoteType::Obfuscated => Ok(NoteVariant::Obfuscated(note.try_into()?)),
+        }
+    }
+}
+
+impl From<NoteVariant> for rpc::Note {
+    fn from(note: NoteVariant) -> Self {
+        match note {
+            NoteVariant::Transparent(note) => note.into(),
+            NoteVariant::Obfuscated(note) => note.into(),
+        }
+    }
+}
+
 impl Note for NoteVariant {
     fn note(&self) -> NoteType {
         match self {
@@ -183,25 +176,27 @@ impl Note for NoteVariant {
         }
     }
 }
-//
-//impl<H: ByteHash> Content<H> for NoteVariant {
-//    fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
-//        match self {
-//            NoteVariant::Transparent(t) => {
-//                false.persist(sink)?;
-//                t.persist(sink)
-//            }
-//            NoteVariant::Obfuscated(o) => {
-//                true.persist(sink)?;
-//                o.persist(sink)
-//            }
-//        }
-//    }
-//
-//    fn restore(source: &mut Source<H>) -> io::Result<Self> {
-//        Ok(match bool::restore(source)? {
-//            false => NoteVariant::Transparent(TransparentNote::restore(source)?),
-//            true => NoteVariant::Obfuscated(ObfuscatedNote::restore(source)?),
-//        })
-//    }
-//}
+
+impl<H: ByteHash> Content<H> for NoteVariant {
+    fn persist(&mut self, _sink: &mut Sink<H>) -> io::Result<()> {
+        //match self {
+        //    NoteVariant::Transparent(t) => {
+        //        false.persist(sink)?;
+        //        t.persist(sink)
+        //    }
+        //    NoteVariant::Obfuscated(o) => {
+        //        true.persist(sink)?;
+        //        o.persist(sink)
+        //    }
+        //}
+        unimplemented!()
+    }
+
+    fn restore(_source: &mut Source<H>) -> io::Result<Self> {
+        //Ok(match bool::restore(source)? {
+        //    false => NoteVariant::Transparent(TransparentNote::restore(source)?),
+        //    true => NoteVariant::Obfuscated(ObfuscatedNote::restore(source)?),
+        //})
+        unimplemented!()
+    }
+}
