@@ -1,12 +1,8 @@
-use crate::{Idx, NoteVariant, Nullifier};
-
-use std::collections::{HashMap, HashSet};
 use std::error;
 use std::fmt;
 use std::io;
-use std::sync::{MutexGuard, TryLockError};
 
-use bulletproofs::r1cs::R1CSError;
+use algebra::serialize::SerializationError as JubJubSerializationError;
 
 macro_rules! from_error {
     ($t:ty, $id:ident) => {
@@ -18,25 +14,17 @@ macro_rules! from_error {
     };
 }
 
-macro_rules! from_error_unit {
-    ($t:ty, $id:ident) => {
-        impl From<$t> for Error {
-            fn from(_e: $t) -> Self {
-                Error::$id
-            }
-        }
-    };
-}
-
 #[derive(Debug)]
 /// Standard error for the interface
 pub enum Error {
-    /// [`R1CSError`]
-    R1CS(R1CSError),
     /// I/O [`io::Error`]
     Io(io::Error),
+    /// Fmt [`fmt::Error`]
+    Fmt(fmt::Error),
     /// Field operation error
     Field(String),
+    /// Error during JubJub point serialization
+    JubJubSerialization(JubJubSerializationError),
     /// Cryptographic bottom
     Generic,
     /// Resource not ready
@@ -64,7 +52,9 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Error::Io(e) => write!(f, "{}", e),
-            Error::R1CS(e) => write!(f, "{}", e),
+            Error::Fmt(e) => write!(f, "{}", e),
+            Error::JubJubSerialization(e) => write!(f, "{}", e),
+            //Error::R1CS(e) => write!(f, "{}", e),
             Error::Field(s) => write!(f, "{}", s),
             _ => write!(f, "{:?}", self),
         }
@@ -75,6 +65,8 @@ impl error::Error for Error {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match self {
             Error::Io(e) => Some(e),
+            Error::Fmt(e) => Some(e),
+            Error::JubJubSerialization(e) => Some(e),
             _ => None,
         }
     }
@@ -89,6 +81,12 @@ impl Into<io::Error> for Error {
     }
 }
 
+impl Into<fmt::Error> for Error {
+    fn into(self) -> fmt::Error {
+        fmt::Error {}
+    }
+}
+
 impl Into<tonic::Status> for Error {
     fn into(self) -> tonic::Status {
         // TODO - Improve the error mapping to tonic codes
@@ -97,9 +95,5 @@ impl Into<tonic::Status> for Error {
 }
 
 from_error!(io::Error, Io);
-from_error!(R1CSError, R1CS);
-from_error_unit!(
-    TryLockError<MutexGuard<'_, HashMap<Idx, NoteVariant>>>,
-    NotReady
-);
-from_error_unit!(TryLockError<MutexGuard<'_, HashSet<Nullifier>>>, NotReady);
+from_error!(fmt::Error, Fmt);
+from_error!(JubJubSerializationError, JubJubSerialization);
