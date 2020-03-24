@@ -112,6 +112,7 @@
 | pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | value_commitment | [Scalar](#phoenix.Scalar) |  |  |
 | blinding_factor | [Scalar](#phoenix.Scalar) |  |  |
+| transparent_blinding_factor | [fixed64](#fixed64) |  |  |
 | encrypted_blinding_factor | [bytes](#bytes) |  |  |
 | transparent_value | [fixed64](#fixed64) |  |  |
 | encrypted_value | [bytes](#bytes) |  |  |
@@ -126,6 +127,7 @@
 | r_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | value_commitment | [Scalar](#phoenix.Scalar) |  |  |
+| transparent_blinding_factor | [bytes](#bytes) |  |  |
 | encrypted_blinding_factor | [bytes](#bytes) |  |  |
 | transparent_value | [fixed64](#fixed64) |  |  |
 | encrypted_value | [bytes](#bytes) |  |  |
