@@ -29,8 +29,8 @@ pub mod transparent;
 /// Note variant definitions (Transparent and Obfuscated)
 pub mod variant;
 
-//#[cfg(test)]
-//mod tests;
+#[cfg(test)]
+mod tests;
 //
 //pub use nullifier::Nullifier;
 pub use obfuscated::ObfuscatedNote;

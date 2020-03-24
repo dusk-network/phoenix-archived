@@ -1,6 +1,6 @@
 use crate::{
-    crypto, utils, BlsScalar, JubJubProjective, Nonce, Note, NoteGenerator, NoteType, PublicKey,
-    ViewKey,
+    crypto, rpc, utils, BlsScalar, JubJubProjective, Nonce, Note, NoteGenerator, NoteType,
+    PublicKey, ViewKey,
 };
 
 use std::{cmp, fmt};
@@ -166,33 +166,34 @@ impl Note for ObfuscatedNote {
     }
 }
 
-//impl From<ObfuscatedNote> for rpc::Note {
-//    fn from(note: ObfuscatedNote) -> rpc::Note {
-//        let note_type = rpc::NoteType::Obfuscated.into();
-//        let pos = note.idx.into();
-//        let io = rpc::InputOutput::from(note.utxo).into();
-//        let nonce = Some(note.nonce.into());
-//        let r_g = Some(note.r_g.into());
-//        let pk_r = Some(note.pk_r.into());
-//        let commitment = Some(note.commitment.into());
-//        let encrypted_blinding_factor = note.encrypted_blinding_factor.to_vec();
-//        let value = Some(rpc::note::Value::EncryptedValue(
-//            note.encrypted_value.to_vec(),
-//        ));
-//
-//        rpc::Note {
-//            note_type,
-//            pos,
-//            io,
-//            nonce,
-//            r_g,
-//            pk_r,
-//            commitment,
-//            encrypted_blinding_factor,
-//            value,
-//        }
-//    }
-//}
+impl From<ObfuscatedNote> for rpc::Note {
+    fn from(note: ObfuscatedNote) -> rpc::Note {
+        //        let note_type = rpc::NoteType::Obfuscated.into();
+        //        let pos = note.idx.into();
+        //        let io = rpc::InputOutput::from(note.utxo).into();
+        //        let nonce = Some(note.nonce.into());
+        //        let r_g = Some(note.r_g.into());
+        //        let pk_r = Some(note.pk_r.into());
+        //        let commitment = Some(note.commitment.into());
+        //        let encrypted_blinding_factor = note.encrypted_blinding_factor.to_vec();
+        //        let value = Some(rpc::note::Value::EncryptedValue(
+        //            note.encrypted_value.to_vec(),
+        //        ));
+        //
+        //        rpc::Note {
+        //            note_type,
+        //            pos,
+        //            io,
+        //            nonce,
+        //            r_g,
+        //            pk_r,
+        //            commitment,
+        //            encrypted_blinding_factor,
+        //            value,
+        //        }
+        unimplemented!()
+    }
+}
 //
 //impl TryFrom<rpc::Note> for ObfuscatedNote {
 //    type Error = Error;
