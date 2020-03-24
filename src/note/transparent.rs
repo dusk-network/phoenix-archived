@@ -1,7 +1,9 @@
 use crate::{
-    crypto, utils, BlsScalar, JubJubProjective, Nonce, Note, NoteGenerator, NoteType, PublicKey,
-    ViewKey,
+    crypto, rpc, utils, BlsScalar, Error, JubJubProjective, Nonce, Note, NoteGenerator, NoteType,
+    PublicKey, ViewKey,
 };
+
+use std::convert::{TryFrom, TryInto};
 
 //use super::{Idx, Note, NoteGenerator, NoteUtxoType};
 //use crate::{
@@ -137,67 +139,77 @@ impl Note for TransparentNote {
     }
 }
 
-//impl From<TransparentNote> for rpc::Note {
-//    fn from(note: TransparentNote) -> rpc::Note {
-//        let note_type = rpc::NoteType::Transparent.into();
-//        let pos = note.idx.into();
-//        let io = rpc::InputOutput::from(note.utxo).into();
-//        let nonce = Some(note.nonce.into());
-//        let r_g = Some(note.r_g.into());
-//        let pk_r = Some(note.pk_r.into());
-//        let commitment = Some(note.commitment.into());
-//        let encrypted_blinding_factor = note.encrypted_blinding_factor.to_vec();
-//        let value = Some(rpc::note::Value::TransparentValue(note.value));
-//
-//        rpc::Note {
-//            note_type,
-//            pos,
-//            io,
-//            nonce,
-//            r_g,
-//            pk_r,
-//            commitment,
-//            encrypted_blinding_factor,
-//            value,
-//        }
-//    }
-//}
-//
-//impl TryFrom<rpc::Note> for TransparentNote {
-//    type Error = Error;
-//
-//    fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
-//        if rpc::NoteType::try_from(note.note_type)? != NoteType::Transparent {
-//            return Err(Error::InvalidParameters);
-//        }
-//
-//        let utxo = rpc::InputOutput::try_from(note.io)?.into();
-//        let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
-//        let r_g = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
-//        let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
-//        let idx = note.pos.ok_or(Error::InvalidParameters)?;
-//        let commitment = note.commitment.ok_or(Error::InvalidParameters)?.into();
-//
-//        let encrypted_blinding_factor = note.encrypted_blinding_factor;
-//        let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
-//
-//        let value = match note.value.ok_or(Error::InvalidParameters)? {
-//            rpc::note::Value::TransparentValue(v) => Ok(v),
-//            rpc::note::Value::EncryptedValue(_) => Err(Error::InvalidParameters),
-//        }?;
-//
-//        Ok(Self::new(
-//            utxo,
-//            value,
-//            nonce,
-//            r_g,
-//            pk_r,
-//            idx,
-//            commitment,
-//            encrypted_blinding_factor,
-//        ))
-//    }
-//}
+impl From<TransparentNote> for rpc::Note {
+    fn from(note: TransparentNote) -> rpc::Note {
+        let note_type = rpc::NoteType::Transparent.into();
+        let pos = note.idx.into();
+        let nonce = Some(note.nonce.into());
+        let r_g = Some(note.R.into());
+        let pk_r = Some(note.pk_r.into());
+        let value_commitment = Some(note.value_commitment.into());
+        let encrypted_blinding_factor = note.encrypted_blinding_factor().to_vec();
+        let value = Some(rpc::note::Value::TransparentValue(note.value));
+
+        rpc::Note {
+            note_type,
+            pos,
+            nonce,
+            r_g,
+            pk_r,
+            value_commitment,
+            encrypted_blinding_factor,
+            value,
+        }
+    }
+}
+
+impl TryFrom<rpc::Note> for TransparentNote {
+    type Error = Error;
+
+    fn try_from(note: rpc::Note) -> Result<Self, Self::Error> {
+        if rpc::NoteType::try_from(note.note_type)? != NoteType::Transparent {
+            return Err(Error::InvalidParameters);
+        }
+
+        //let utxo = rpc::InputOutput::try_from(note.io)?.into();
+        //let nonce = ;
+        //let r_g = ;
+        //let pk_r = ;
+        //let idx = note.pos.ok_or(Error::InvalidParameters)?;
+        //let commitment = ;
+
+        //let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        //let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
+
+        //let value = ;
+
+        let value_commitment = note
+            .value_commitment
+            .ok_or(Error::InvalidParameters)?
+            .try_into()?;
+        let nonce = note.nonce.ok_or(Error::InvalidParameters)?.try_into()?;
+        let R = note.r_g.ok_or(Error::InvalidParameters)?.try_into()?;
+        let pk_r = note.pk_r.ok_or(Error::InvalidParameters)?.try_into()?;
+        let idx = note.pos;
+
+        let blinding_factor = unimplemented!();
+
+        let value = match note.value.ok_or(Error::InvalidParameters)? {
+            rpc::note::Value::TransparentValue(v) => Ok(v),
+            rpc::note::Value::EncryptedValue(_) => Err(Error::InvalidParameters),
+        }?;
+
+        Ok(Self::new(
+            value_commitment,
+            nonce,
+            R,
+            pk_r,
+            idx,
+            value,
+            blinding_factor,
+        ))
+    }
+}
 //
 //impl TryFrom<rpc::DecryptedNote> for TransparentNote {
 //    type Error = Error;
