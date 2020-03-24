@@ -6,14 +6,14 @@ import "keys.proto";
 import "note.proto";
 
 message TransactionInput {
-  Idx pos = 1;
+  fixed64 pos = 1;
   SecretKey sk = 2;
 }
 
 message TransactionOutput {
   Note note = 1;
   PublicKey pk = 2;
-  uint64 value = 3;
+  fixed64 value = 3;
   Scalar blinding_factor = 4;
 }
 

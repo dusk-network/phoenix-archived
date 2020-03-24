@@ -14,15 +14,14 @@
 
 - [note.proto](#note.proto)
     - [DecryptedNote](#phoenix.DecryptedNote)
-    - [Idx](#phoenix.Idx)
     - [Note](#phoenix.Note)
     - [Nullifier](#phoenix.Nullifier)
-    - [InputOutput](#phoenix.InputOutput)
     - [NoteType](#phoenix.NoteType)
 
 - [phoenix.proto](#phoenix.proto)
     - [DecryptNoteRequest](#phoenix.DecryptNoteRequest)
     - [EchoMethod](#phoenix.EchoMethod)
+    - [FetchNoteRequest](#phoenix.FetchNoteRequest)
     - [GenerateSecretKeyRequest](#phoenix.GenerateSecretKeyRequest)
     - [KeysResponse](#phoenix.KeysResponse)
     - [NewTransactionInputRequest](#phoenix.NewTransactionInputRequest)
@@ -41,6 +40,13 @@
     - [VerifyTransactionRootRequest](#phoenix.VerifyTransactionRootRequest)
     - [VerifyTransactionRootResponse](#phoenix.VerifyTransactionRootResponse)
     - [Phoenix](#phoenix.Phoenix)
+
+- [rusk.proto](#rusk.proto)
+    - [EchoRequest](#phoenix.EchoRequest)
+    - [EchoResponse](#phoenix.EchoResponse)
+    - [ValidateStateTransitionRequest](#phoenix.ValidateStateTransitionRequest)
+    - [ValidateStateTransitionResponse](#phoenix.ValidateStateTransitionResponse)
+    - [Rusk](#phoenix.Rusk)
 
 - [transaction.proto](#transaction.proto)
     - [Transaction](#phoenix.Transaction)
@@ -99,34 +105,29 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | note_type | [NoteType](#phoenix.NoteType) |  |  |
-| pos | [Idx](#phoenix.Idx) |  |  |
-| value | [uint64](#uint64) |  |  |
-| io | [InputOutput](#phoenix.InputOutput) |  |  |
+| pos | [fixed64](#fixed64) |  |  |
+| value | [fixed64](#fixed64) |  |  |
 | nonce | [Nonce](#phoenix.Nonce) |  |  |
 | r_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | commitment | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | blinding_factor | [Scalar](#phoenix.Scalar) |  |  |
-
-### Idx
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| pos | [uint64](#uint64) |  |  |
+| encrypted_blinding_factor | [bytes](#bytes) |  |  |
+| transparent_value | [fixed64](#fixed64) |  |  |
+| encrypted_value | [bytes](#bytes) |  |  |
 
 ### Note
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | note_type | [NoteType](#phoenix.NoteType) |  |  |
-| pos | [Idx](#phoenix.Idx) |  |  |
-| io | [InputOutput](#phoenix.InputOutput) |  |  |
+| pos | [fixed64](#fixed64) |  |  |
 | nonce | [Nonce](#phoenix.Nonce) |  |  |
 | r_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | commitment | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
 | encrypted_blinding_factor | [bytes](#bytes) |  |  |
-| transparent_value | [uint64](#uint64) |  |  |
+| transparent_value | [fixed64](#fixed64) |  |  |
 | encrypted_value | [bytes](#bytes) |  |  |
 
 ### Nullifier
@@ -134,13 +135,6 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | h | [Scalar](#phoenix.Scalar) |  |  |
-
-### InputOutput
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| INPUT | 0 |  |
-| OUTPUT | 1 |  |
 
 ### NoteType
 
@@ -164,6 +158,12 @@
 | ----- | ---- | ----- | ----------- |
 | m | [string](#string) |  |  |
 
+### FetchNoteRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pos | [fixed64](#fixed64) |  |  |
+
 ### GenerateSecretKeyRequest
 
 | Field | Type | Label | Description |
@@ -181,7 +181,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| pos | [Idx](#phoenix.Idx) |  |  |
+| pos | [fixed64](#fixed64) |  |  |
 | sk | [SecretKey](#phoenix.SecretKey) |  |  |
 
 ### NewTransactionOutputRequest
@@ -190,7 +190,7 @@
 | ----- | ---- | ----- | ----------- |
 | note_type | [NoteType](#phoenix.NoteType) |  |  |
 | pk | [PublicKey](#phoenix.PublicKey) |  |  |
-| value | [uint64](#uint64) |  |  |
+| value | [fixed64](#fixed64) |  |  |
 
 ### NewTransactionRequest
 
@@ -198,7 +198,7 @@
 | ----- | ---- | ----- | ----------- |
 | inputs | [TransactionInput](#phoenix.TransactionInput) | repeated |  |
 | outputs | [TransactionOutput](#phoenix.TransactionOutput) | repeated |  |
-| fee | [uint64](#uint64) |  |  |
+| fee | [fixed64](#fixed64) |  |  |
 
 ### NullifierRequest
 
@@ -278,7 +278,7 @@
 | Keys | [SecretKey](#phoenix.SecretKey) | [KeysResponse](#phoenix.KeysResponse) |  |
 | Nullifier | [NullifierRequest](#phoenix.NullifierRequest) | [NullifierResponse](#phoenix.NullifierResponse) |  |
 | NullifierStatus | [NullifierStatusRequest](#phoenix.NullifierStatusRequest) | [NullifierStatusResponse](#phoenix.NullifierStatusResponse) |  |
-| FetchNote | [Idx](#phoenix.Idx) | [Note](#phoenix.Note) |  |
+| FetchNote | [FetchNoteRequest](#phoenix.FetchNoteRequest) | [Note](#phoenix.Note) |  |
 | DecryptNote | [DecryptNoteRequest](#phoenix.DecryptNoteRequest) | [DecryptedNote](#phoenix.DecryptedNote) |  |
 | OwnedNotes | [OwnedNotesRequest](#phoenix.OwnedNotesRequest) | [OwnedNotesResponse](#phoenix.OwnedNotesResponse) |  |
 | FullScanOwnedNotes | [ViewKey](#phoenix.ViewKey) | [OwnedNotesResponse](#phoenix.OwnedNotesResponse) |  |
@@ -330,7 +330,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| pos | [Idx](#phoenix.Idx) |  |  |
+| pos | [fixed64](#fixed64) |  |  |
 | sk | [SecretKey](#phoenix.SecretKey) |  |  |
 
 ### TransactionOutput
@@ -339,5 +339,5 @@
 | ----- | ---- | ----- | ----------- |
 | note | [Note](#phoenix.Note) |  |  |
 | pk | [PublicKey](#phoenix.PublicKey) |  |  |
-| value | [uint64](#uint64) |  |  |
+| value | [fixed64](#fixed64) |  |  |
 | blinding_factor | [Scalar](#phoenix.Scalar) |  |  |
