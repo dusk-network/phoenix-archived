@@ -19,6 +19,7 @@ kelvin-radix = "0.7"
 kelvin-hamt = "0.8"
 bytehash = "0.2"
 lazy_static = "1.4"
+num-traits = "0.2"
 
 [dependencies.algebra]
 git = "https://github.com/scipr-lab/zexe/"
@@ -31,7 +32,7 @@ features = ["yoloproofs"]
 
 [dependencies.hades252]
 git = "https://github.com/dusk-network/Hades252.git"
-branch = "master"
+branch = "plonk_zexe"
 
 [dependencies.poseidon252]
 git = "https://github.com/dusk-network/Poseidon252.git"

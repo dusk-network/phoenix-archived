@@ -1,7 +1,7 @@
-use crate::{Error, JubJubAffine, JubJubProjective, JubJubScalar};
+use crate::{BlsScalar, Error, JubJubAffine, JubJubProjective, JubJubScalar, Nonce};
 
 use std::ops::Mul;
-use std::{mem, ptr, slice, thread};
+use std::{cmp, mem, ptr, slice, thread};
 
 use algebra::biginteger::BigInteger256;
 use algebra::curves::jubjub::JubJubParameters;
@@ -9,6 +9,7 @@ use algebra::curves::models::TEModelParameters;
 use algebra::curves::{AffineCurve, ProjectiveCurve};
 use algebra::serialize::{CanonicalDeserialize, CanonicalSerialize};
 use rand::{Rng, RngCore};
+use sodiumoxide::crypto::secretbox;
 
 lazy_static::lazy_static! {
     static ref INITIALIZING: bool = false;
@@ -60,8 +61,18 @@ pub fn gen_random_scalar() -> JubJubScalar {
     gen_random_scalar_from_rng(&mut rand::thread_rng())
 }
 
-/// Generate a random [`BlsScalar`] from a provided random number generator
+/// Generate a random [`JubJubScalar`] from a provided random number generator
 pub fn gen_random_scalar_from_rng<R: RngCore>(rng: &mut R) -> JubJubScalar {
+    rng.gen()
+}
+
+/// Generate a random [`BlsScalar`] from [`rand::thread_rng`]
+pub fn gen_random_bls_scalar() -> BlsScalar {
+    gen_random_bls_scalar_from_rng(&mut rand::thread_rng())
+}
+
+/// Generate a random [`BlsScalar`] from a provided random number generator
+pub fn gen_random_bls_scalar_from_rng<R: RngCore>(rng: &mut R) -> BlsScalar {
     rng.gen()
 }
 
@@ -133,20 +144,20 @@ pub fn deserialize_jubjub_scalar(bytes: &[u8]) -> Result<JubJubScalar, Error> {
 ////    Scalar::from_bits(p.compress().to_bytes())
 ////}
 ////
-/////// Generate a new random nonce
-////pub fn gen_nonce() -> Nonce {
-////    secretbox::gen_nonce()
-////}
+/// Generate a new random nonce
+pub fn gen_nonce() -> Nonce {
+    secretbox::gen_nonce()
+}
 ////
-/////// Safely transpose a slice of any size to a `[u8; 24]`
-////pub fn safe_24_chunk(bytes: &[u8]) -> [u8; 24] {
-////    let mut s = [0x00u8; 24];
-////    let chunk = cmp::min(bytes.len(), 24);
-////
-////    (&mut s[0..chunk]).copy_from_slice(&bytes[0..chunk]);
-////
-////    s
-////}
+/// Safely transpose a slice of any size to a `[u8; 24]`
+pub fn safe_24_chunk(bytes: &[u8]) -> [u8; 24] {
+    let mut s = [0x00u8; 24];
+    let chunk = cmp::min(bytes.len(), 24);
+
+    (&mut s[0..chunk]).copy_from_slice(&bytes[0..chunk]);
+
+    s
+}
 ////
 /////// Safely transpose a slice of any size to a `[u8; 32]`
 ////pub fn safe_32_chunk(bytes: &[u8]) -> [u8; 32] {
