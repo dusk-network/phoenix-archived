@@ -17,10 +17,13 @@ message Note {
   CompressedPoint r_g = 4;
   CompressedPoint pk_r = 5;
   Scalar value_commitment = 6;
-  bytes encrypted_blinding_factor = 7;
+  oneof blinding_factor {
+    bytes transparent_blinding_factor = 7;
+    bytes encrypted_blinding_factor = 8;
+  }
   oneof value {
-    fixed64 transparent_value = 8;
-    bytes encrypted_value = 9;
+    fixed64 transparent_value = 9;
+    bytes encrypted_value = 10;
   }
 }
 
@@ -33,9 +36,12 @@ message DecryptedNote {
   CompressedPoint pk_r = 6;
   Scalar value_commitment = 7;
   Scalar blinding_factor = 8;
-  bytes encrypted_blinding_factor = 9;
+  oneof rawBlindingFactor {
+    fixed64 transparent_blinding_factor = 9;
+    bytes encrypted_blinding_factor = 10;
+  }
   oneof rawValue {
-    fixed64 transparent_value = 10;
-    bytes encrypted_value = 11;
+    fixed64 transparent_value = 11;
+    bytes encrypted_value = 12;
   }
 }
