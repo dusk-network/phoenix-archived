@@ -14,7 +14,7 @@ message EmptyResponse {};
 message BlockUpdate {
     uint64 height = 1;
     bytes hash=2;
-    string timestamp=3;
+    uint64 timestamp=3;
     uint32 txAmount=4;
     uint32 blockTimeSec=5;
 }
