@@ -147,7 +147,7 @@ impl From<TransparentNote> for rpc::Note {
         let r_g = Some(note.R.into());
         let pk_r = Some(note.pk_r.into());
         let value_commitment = Some(note.value_commitment.into());
-        let encrypted_blinding_factor = note.encrypted_blinding_factor().to_vec();
+        let blinding_factor = unimplemented!(); //Some(rpc::note::BlindingFactor::TransparentBlindingFactor(note.blinding_factor.into()));
         let value = Some(rpc::note::Value::TransparentValue(note.value));
 
         rpc::Note {
@@ -157,7 +157,7 @@ impl From<TransparentNote> for rpc::Note {
             r_g,
             pk_r,
             value_commitment,
-            encrypted_blinding_factor,
+            blinding_factor,
             value,
         }
     }
@@ -193,6 +193,8 @@ impl TryFrom<rpc::Note> for TransparentNote {
         let idx = note.pos;
 
         let blinding_factor = unimplemented!();
+        //let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        //let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
 
         let value = match note.value.ok_or(Error::InvalidParameters)? {
             rpc::note::Value::TransparentValue(v) => Ok(v),

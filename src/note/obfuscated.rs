@@ -163,8 +163,10 @@ impl From<ObfuscatedNote> for rpc::Note {
         let r_g = Some(note.R.into());
         let pk_r = Some(note.pk_r.into());
         let value_commitment = Some(note.value_commitment.into());
-        let encrypted_blinding_factor = note.encrypted_blinding_factor.to_vec();
         let value = Some(rpc::note::Value::EncryptedValue(
+            note.encrypted_value.to_vec(),
+        ));
+        let blinding_factor = Some(rpc::note::BlindingFactor::EncryptedBlindingFactor(
             note.encrypted_value.to_vec(),
         ));
 
@@ -175,7 +177,7 @@ impl From<ObfuscatedNote> for rpc::Note {
             r_g,
             pk_r,
             value_commitment,
-            encrypted_blinding_factor,
+            blinding_factor,
             value,
         }
     }
@@ -204,7 +206,13 @@ impl TryFrom<rpc::Note> for ObfuscatedNote {
         }?;
         let encrypted_value = utils::safe_24_chunk(encrypted_value.as_slice());
 
-        let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        let encrypted_blinding_factor =
+            match note.blinding_factor.ok_or(Error::InvalidParameters)? {
+                rpc::note::BlindingFactor::TransparentBlindingFactor(_) => {
+                    Err(Error::InvalidParameters)
+                }
+                rpc::note::BlindingFactor::EncryptedBlindingFactor(b) => Ok(b),
+            }?;
         let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
 
         Ok(ObfuscatedNote::new(
@@ -238,7 +246,13 @@ impl TryFrom<rpc::DecryptedNote> for ObfuscatedNote {
         }?;
         let encrypted_value = utils::safe_24_chunk(encrypted_value.as_slice());
 
-        let encrypted_blinding_factor = note.encrypted_blinding_factor;
+        let encrypted_blinding_factor =
+            match note.raw_blinding_factor.ok_or(Error::InvalidParameters)? {
+                rpc::decrypted_note::RawBlindingFactor::TransparentBlindingFactor(_) => {
+                    Err(Error::InvalidParameters)
+                }
+                rpc::decrypted_note::RawBlindingFactor::EncryptedBlindingFactor(b) => Ok(b),
+            }?;
         let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
 
         Ok(ObfuscatedNote::new(
