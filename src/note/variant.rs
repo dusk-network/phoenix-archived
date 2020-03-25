@@ -20,36 +20,6 @@ impl Default for NoteVariant {
     }
 }
 
-//impl NoteVariant {
-//    // TODO - Duplicated code, maybe split NoteGenerator trait?
-//    /// Create a new transaction input item provided the secret key for the nullifier generation
-//    /// and value / blinding factor decrypt
-//    pub fn to_transaction_input(self, sk: SecretKey) -> TransactionItem {
-//        match self {
-//            NoteVariant::Transparent(note) => note.to_transaction_input(sk),
-//            NoteVariant::Obfuscated(note) => note.to_transaction_input(sk),
-//        }
-//    }
-//
-//    /// Create a new transaction output item provided the target value, blinding factor and pk for
-//    /// the proof construction.
-//    ///
-//    /// The parameters are not present on the note; hence they need to be provided.
-//    pub fn to_transaction_output(
-//        self,
-//        value: u64,
-//        blinding_factor: Scalar,
-//        pk: PublicKey,
-//    ) -> TransactionItem {
-//        match self {
-//            NoteVariant::Transparent(note) => {
-//                note.to_transaction_output(value, blinding_factor, pk)
-//            }
-//            NoteVariant::Obfuscated(note) => note.to_transaction_output(value, blinding_factor, pk),
-//        }
-//    }
-//}
-
 impl From<TransparentNote> for NoteVariant {
     fn from(note: TransparentNote) -> Self {
         NoteVariant::Transparent(note)
