@@ -1,11 +1,12 @@
 use crate::{
-    crypto, rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, NoteType,
-    PublicKey, SecretKey, ViewKey,
+    crypto, db, rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, NoteType,
+    PublicKey, SecretKey, TransactionInput, TransactionOutput, ViewKey,
 };
 
 use std::convert::TryFrom;
 use std::fmt::Debug;
 use std::ops::Mul;
+use std::path::Path;
 
 //use kelvin::{ByteHash, Content, Sink, Source};
 
@@ -33,51 +34,38 @@ pub trait NoteGenerator:
     + Into<NoteVariant>
     + TryFrom<NoteVariant>
 {
-    //    #[allow(clippy::trivially_copy_pass_by_ref)]
-    //    /// Create a new phoenix input note
-    //    fn input<P: AsRef<Path>>(db_path: P, idx: &Idx) -> Result<Self, Error> {
-    //        Self::try_from(db::fetch_note(db_path, idx)?).map_err(|_| Error::InvalidParameters)
-    //    }
-    //
+    /// Create a new phoenix input note
+    fn input<P: AsRef<Path>>(db_path: P, idx: u64) -> Result<Self, Error> {
+        Self::try_from(db::fetch_note(db_path, idx)?).map_err(|_| Error::InvalidParameters)
+    }
+
     /// Create a new phoenix output note
     fn output(pk: &PublicKey, value: u64) -> (Self, BlsScalar);
-    //
-    //    /// Create a new transaction input item provided the secret key for the nullifier generation
-    //    /// and value / blinding factor decrypt
-    //    fn to_transaction_input(mut self, sk: SecretKey) -> TransactionItem {
-    //        let vk = sk.view_key();
-    //        let pk = sk.public_key();
-    //
-    //        self.set_utxo(NoteUtxoType::Input);
-    //
-    //        let nullifier = self.generate_nullifier(&sk);
-    //        let value = self.value(Some(&vk));
-    //        let blinding_factor = self.blinding_factor(&vk);
-    //
-    //        TransactionItem::new(self.into(), nullifier, value, blinding_factor, Some(sk), pk)
-    //    }
-    //
-    //    /// Create a new transaction output item provided the target value, blinding factor and pk for
-    //    /// the proof construction.
-    //    ///
-    //    /// The parameters are not present on the note; hence they need to be provided.
-    //    fn to_transaction_output(
-    //        mut self,
-    //        value: u64,
-    //        blinding_factor: Scalar,
-    //        pk: PublicKey,
-    //    ) -> TransactionItem {
-    //        self.set_utxo(NoteUtxoType::Output);
-    //
-    //        TransactionItem::new(
-    //            self.into(),
-    //            Nullifier::default(),
-    //            value,
-    //            blinding_factor,
-    //            None,
-    //            pk,
-    //        )
-    //    }
+
+    /// Create a new transaction input item provided the secret key for the nullifier generation
+    /// and value / blinding factor decrypt
+    fn to_transaction_input(self, sk: SecretKey) -> TransactionInput {
+        let vk = sk.view_key();
+
+        let nullifier = self.generate_nullifier(&sk);
+        let value = self.value(Some(&vk));
+        let blinding_factor = self.blinding_factor(&vk);
+
+        TransactionInput::new(self.into(), nullifier, value, blinding_factor, sk)
+    }
+
+    /// Create a new transaction output item provided the target value, blinding factor and pk for
+    /// the proof construction.
+    ///
+    /// The parameters are not present on the note; hence they need to be provided.
+    fn to_transaction_output(
+        self,
+        value: u64,
+        blinding_factor: BlsScalar,
+        pk: PublicKey,
+    ) -> TransactionOutput {
+        TransactionOutput::new(self.into(), value, blinding_factor, pk)
+    }
 
     /// Create a `PKr = r · A + B` for the diffie-hellman key exchange
     fn generate_pk_r(pk: &PublicKey) -> (JubJubScalar, JubJubProjective, JubJubProjective) {

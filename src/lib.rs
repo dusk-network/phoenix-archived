@@ -4,8 +4,10 @@ pub use algebra::curves::jubjub::{JubJubAffine, JubJubProjective};
 pub use algebra::fields::bls12_381::fr::Fr as BlsScalar;
 pub use algebra::fields::jubjub::fr::Fr as JubJubScalar;
 
+pub use db::Db;
 pub use keys::{PublicKey, SecretKey, ViewKey};
 pub use note::{Note, NoteGenerator, NoteVariant, ObfuscatedNote, TransparentNote};
+pub use transaction::{TransactionInput, TransactionItem, TransactionOutput};
 
 //pub use bulletproofs::r1cs::{
 //    ConstraintSystem, LinearCombination, Prover, R1CSProof, Variable, Verifier,
@@ -26,8 +28,8 @@ pub use sodiumoxide::crypto::secretbox::xsalsa20poly1305::{Nonce, NONCEBYTES};
 //
 /// Crypto primitives
 pub mod crypto;
-///// Storage implementation
-//pub mod db;
+/// Storage implementation
+pub mod db;
 /// General error for phoenix operations
 pub mod error;
 /// Secret, view and public keys defition
@@ -36,8 +38,8 @@ pub mod keys;
 pub mod note;
 /// RPC data generated via protobuf
 pub mod rpc;
-///// Transaction operations
-//pub mod transaction;
+/// Transaction operations
+pub mod transaction;
 /// General toolkit
 pub mod utils;
 ///// ZK Gadgets and value proof
