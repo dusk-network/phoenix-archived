@@ -1,5 +1,6 @@
-use crate::{utils, JubJubScalar, PublicKey, ViewKey};
+use crate::{rpc, utils, Error, JubJubScalar, PublicKey, ViewKey};
 
+use std::convert::{TryFrom, TryInto};
 use std::fmt;
 
 use rand::rngs::StdRng;
@@ -56,26 +57,26 @@ impl SecretKey {
         ViewKey::new(self.a, B)
     }
 }
-////
-////impl From<rpc::SecretKey> for SecretKey {
-////    fn from(k: rpc::SecretKey) -> Self {
-////        Self::new(
-////            k.a.unwrap_or_default().into(),
-////            k.b.unwrap_or_default().into(),
-////        )
-////    }
-////}
-////
-////impl From<SecretKey> for rpc::SecretKey {
-////    fn from(k: SecretKey) -> Self {
-////        Self {
-////            a: Some(rpc::Scalar::from(k.a)),
-////            b: Some(rpc::Scalar::from(k.b)),
-////        }
-////    }
-////}
-////
-//
+
+impl TryFrom<rpc::SecretKey> for SecretKey {
+    type Error = Error;
+
+    fn try_from(k: rpc::SecretKey) -> Result<Self, Self::Error> {
+        let a = k.a.ok_or(Error::InvalidPoint).and_then(|s| s.try_into())?;
+        let b = k.b.ok_or(Error::InvalidPoint).and_then(|s| s.try_into())?;
+
+        Ok(Self::new(a, b))
+    }
+}
+
+impl From<SecretKey> for rpc::SecretKey {
+    fn from(k: SecretKey) -> Self {
+        Self {
+            a: Some(k.a.into()),
+            b: Some(k.b.into()),
+        }
+    }
+}
 
 const SK_SIZE: usize = utils::JUBJUB_SCALAR_SERIALIZED_SIZE * 2;
 

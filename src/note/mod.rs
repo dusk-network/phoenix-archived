@@ -10,6 +10,8 @@ use std::path::Path;
 
 //use kelvin::{ByteHash, Content, Sink, Source};
 
+/// Nullifier definition
+pub mod nullifier;
 /// Obfuscated note definitions
 pub mod obfuscated;
 /// Transparent note definitions
@@ -20,6 +22,7 @@ pub mod variant;
 #[cfg(test)]
 mod tests;
 
+pub use nullifier::Nullifier;
 pub use obfuscated::ObfuscatedNote;
 pub use transparent::TransparentNote;
 pub use variant::NoteVariant;
@@ -103,9 +106,9 @@ pub trait NoteGenerator:
 /// Phoenix note methods. Both transparent and obfuscated notes implements this
 pub trait Note: Debug + Send + Sync {
     /// Create a unique nullifier for the note
-    fn generate_nullifier(&self, _sk: &SecretKey) -> BlsScalar {
+    fn generate_nullifier(&self, _sk: &SecretKey) -> Nullifier {
         // TODO - Set nullifier as `H(a, b, idx)`
-        crypto::hash_merkle(&[BlsScalar::from(self.idx())])
+        crypto::hash_merkle(&[BlsScalar::from(self.idx())]).into()
     }
 
     /// Fully decrypt the note (value and blinding factor) with the provided [`ViewKey`], and

@@ -6,8 +6,8 @@ pub use algebra::fields::jubjub::fr::Fr as JubJubScalar;
 
 pub use db::Db;
 pub use keys::{PublicKey, SecretKey, ViewKey};
-pub use note::{Note, NoteGenerator, NoteVariant, ObfuscatedNote, TransparentNote};
-pub use transaction::{TransactionInput, TransactionItem, TransactionOutput};
+pub use note::{Note, NoteGenerator, NoteVariant, Nullifier, ObfuscatedNote, TransparentNote};
+pub use transaction::{Transaction, TransactionInput, TransactionItem, TransactionOutput};
 
 //pub use bulletproofs::r1cs::{
 //    ConstraintSystem, LinearCombination, Prover, R1CSProof, Variable, Verifier,
@@ -47,6 +47,5 @@ pub mod utils;
 //
 ///// Bulletproofs generators capacity
 //pub const GENERATORS_CAPACITY: usize = 4096;
-///// Maximum allowed number of notes per transaction. If this is updated, then
-///// [`GENERATORS_CAPACITY`] must also be updated.
-//pub const MAX_NOTES_PER_TRANSACTION: usize = 10;
+/// Maximum allowed number of notes per transaction.
+pub const MAX_NOTES_PER_TRANSACTION: usize = 10;

@@ -1,4 +1,4 @@
-use crate::{BlsScalar, JubJubProjective, JubJubScalar, Nonce, PublicKey, ViewKey};
+use crate::{BlsScalar, JubJubAffine, JubJubProjective, JubJubScalar, Nonce, PublicKey, ViewKey};
 
 use std::{cmp, ptr};
 
@@ -111,9 +111,12 @@ pub fn hash_scalar(s: &BlsScalar) -> BlsScalar {
     ScalarStrategy::new().poseidon(&mut input)
 }
 
-/// Return a hash represented by `H(x, y, z, t)`
-///
-/// Will behave abnormally if [`hades252::WIDTH`] is smaller than 5
+/// Convert the projective to affine, and perform `H(x, y)`
 pub fn hash_jubjub_projective(p: &JubJubProjective) -> BlsScalar {
-    hash_merkle(&[p.x, p.y, p.z, p.t])
+    hash_jubjub_affine(&p.into_affine())
+}
+
+/// Return a hash represented by `H(x, y)`
+pub fn hash_jubjub_affine(p: &JubJubAffine) -> BlsScalar {
+    hash_merkle(&[p.x, p.y])
 }

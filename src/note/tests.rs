@@ -36,13 +36,13 @@ fn obfuscated_note() {
     let (note, _) = ObfuscatedNote::output(&pk, value);
     assert_eq!(note.note(), NoteType::Obfuscated);
 
-    // TODO - JubJubProjective deserialization is not deterministic, check the consequences
-
     let rpc_note = rpc::Note::from(note.clone());
-    let _deserialized_note = ObfuscatedNote::try_from(rpc_note).unwrap();
+    let deserialized_note = ObfuscatedNote::try_from(rpc_note).unwrap();
+    assert_eq!(deserialized_note, note);
 
     let rpc_decrypted_note = note.clone().rpc_decrypted_note(&vk);
-    let _deserialized_note = ObfuscatedNote::try_from(rpc_decrypted_note).unwrap();
+    let deserialized_note = ObfuscatedNote::try_from(rpc_decrypted_note).unwrap();
+    assert_eq!(deserialized_note, note);
 
     assert_eq!(value, note.value(Some(&vk)));
 }

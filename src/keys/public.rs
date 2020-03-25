@@ -1,6 +1,6 @@
-use crate::{utils, Error, JubJubProjective, SecretKey};
+use crate::{rpc, utils, Error, JubJubProjective, SecretKey};
 
-use std::convert::TryFrom;
+use std::convert::{TryFrom, TryInto};
 use std::fmt;
 
 /// Public pair of a·G and b·G
@@ -37,31 +37,32 @@ impl From<&SecretKey> for PublicKey {
     }
 }
 
-//impl TryFrom<rpc::PublicKey> for PublicKey {
-//    type Error = Error;
-//
-//    fn try_from(k: rpc::PublicKey) -> Result<Self, Self::Error> {
-//        let a_g: RistrettoPoint = k
-//            .a_g
-//            .ok_or(Error::InvalidPoint)
-//            .and_then(|p| p.try_into())?;
-//        let b_g: RistrettoPoint = k
-//            .b_g
-//            .ok_or(Error::InvalidPoint)
-//            .and_then(|p| p.try_into())?;
-//
-//        Ok(Self::new(a_g, b_g))
-//    }
-//}
-//
-//impl From<PublicKey> for rpc::PublicKey {
-//    fn from(k: PublicKey) -> Self {
-//        Self {
-//            a_g: Some(rpc::CompressedPoint::from(k.a_g)),
-//            b_g: Some(rpc::CompressedPoint::from(k.b_g)),
-//        }
-//    }
-//}
+impl TryFrom<rpc::PublicKey> for PublicKey {
+    type Error = Error;
+
+    fn try_from(k: rpc::PublicKey) -> Result<Self, Self::Error> {
+        let A = k
+            .a_g
+            .ok_or(Error::InvalidPoint)
+            .and_then(|p| p.try_into())?;
+
+        let B = k
+            .b_g
+            .ok_or(Error::InvalidPoint)
+            .and_then(|p| p.try_into())?;
+
+        Ok(Self::new(A, B))
+    }
+}
+
+impl From<PublicKey> for rpc::PublicKey {
+    fn from(k: PublicKey) -> Self {
+        Self {
+            a_g: Some(k.A.into()),
+            b_g: Some(k.B.into()),
+        }
+    }
+}
 
 const PK_SIZE: usize = utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE * 2;
 

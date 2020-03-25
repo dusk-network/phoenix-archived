@@ -14,6 +14,12 @@ pub enum NoteVariant {
     Obfuscated(ObfuscatedNote),
 }
 
+impl Default for NoteVariant {
+    fn default() -> Self {
+        NoteVariant::Transparent(TransparentNote::default())
+    }
+}
+
 //impl NoteVariant {
 //    // TODO - Duplicated code, maybe split NoteGenerator trait?
 //    /// Create a new transaction input item provided the secret key for the nullifier generation
