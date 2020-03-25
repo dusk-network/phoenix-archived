@@ -7,6 +7,32 @@ message SemverRequest {
     uint32 patch = 3;
 }
 
+message SlowdownAlert {
+    uint32 timeSinceLastBlock = 1;
+}
+
+enum Level {
+    WARN=0;
+    ERROR=1;
+    FATAL=2;
+    PANIC=3;
+}
+
+message Field {
+    string field = 1;
+    string value = 2;
+}
+
+message ErrorAlert {
+    Level level = 1;
+    string msg = 2;
+    int64 timestamp=3;
+    string file=4;
+    uint32 line=5;
+    string function=6;
+    repeated Field fields=7;
+}
+
 message EmptyRequest {};
 
 message EmptyResponse {};
@@ -23,4 +49,6 @@ service Monitor {
     rpc Hello(SemverRequest) returns (EmptyResponse) {};
     rpc Bye(EmptyRequest) returns (EmptyResponse) {};
     rpc NotifyBlock(BlockUpdate) returns (EmptyResponse) {};
+    rpc NotifySlowdown(SlowdownAlert) returns (EmptyResponse) {};
+    rpc NotifyError(ErrorAlert) returns (EmptyResponse) {};
 }
