@@ -184,25 +184,23 @@ impl Note for NoteVariant {
 }
 
 impl<H: ByteHash> Content<H> for NoteVariant {
-    fn persist(&mut self, _sink: &mut Sink<H>) -> io::Result<()> {
-        //match self {
-        //    NoteVariant::Transparent(t) => {
-        //        false.persist(sink)?;
-        //        t.persist(sink)
-        //    }
-        //    NoteVariant::Obfuscated(o) => {
-        //        true.persist(sink)?;
-        //        o.persist(sink)
-        //    }
-        //}
-        unimplemented!()
+    fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
+        match self {
+            NoteVariant::Transparent(t) => {
+                false.persist(sink)?;
+                t.persist(sink)
+            }
+            NoteVariant::Obfuscated(o) => {
+                true.persist(sink)?;
+                o.persist(sink)
+            }
+        }
     }
 
-    fn restore(_source: &mut Source<H>) -> io::Result<Self> {
-        //Ok(match bool::restore(source)? {
-        //    false => NoteVariant::Transparent(TransparentNote::restore(source)?),
-        //    true => NoteVariant::Obfuscated(ObfuscatedNote::restore(source)?),
-        //})
-        unimplemented!()
+    fn restore(source: &mut Source<H>) -> io::Result<Self> {
+        Ok(match bool::restore(source)? {
+            false => NoteVariant::Transparent(TransparentNote::restore(source)?),
+            true => NoteVariant::Obfuscated(ObfuscatedNote::restore(source)?),
+        })
     }
 }

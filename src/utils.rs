@@ -1,5 +1,6 @@
-use crate::{BlsScalar, Error, JubJubAffine, JubJubProjective, JubJubScalar, Nonce};
+use crate::{BlsScalar, Error, JubJubAffine, JubJubProjective, JubJubScalar, Nonce, NONCEBYTES};
 
+use std::io::{self, Read};
 use std::ops::Mul;
 use std::{cmp, mem, ptr, slice, thread};
 
@@ -8,6 +9,7 @@ use algebra::curves::jubjub::JubJubParameters;
 use algebra::curves::models::TEModelParameters;
 use algebra::curves::{AffineCurve, ProjectiveCurve};
 use algebra::serialize::{CanonicalDeserialize, CanonicalSerialize};
+use kelvin::{ByteHash, Source};
 use rand::{Rng, RngCore};
 use sodiumoxide::crypto::secretbox;
 
@@ -98,6 +100,53 @@ pub const JUBJUB_SCALAR_SERIALIZED_SIZE: usize = 32;
 
 /// Serialized size of a [`BlsScalar`]
 pub const BLS_SCALAR_SERIALIZED_SIZE: usize = 32;
+
+/// Serialize a jubjub projective point and return the bytes
+pub fn projective_jubjub_to_bytes(
+    p: &JubJubProjective,
+) -> Result<[u8; COMPRESSED_JUBJUB_SERIALIZED_SIZE], Error> {
+    let mut bytes = [0x00u8; COMPRESSED_JUBJUB_SERIALIZED_SIZE];
+
+    serialize_compressed_jubjub(p, &mut bytes)?;
+
+    Ok(bytes)
+}
+
+/// Serialize a jubjub projective point and return the bytes
+pub fn bls_scalar_to_bytes(s: &BlsScalar) -> Result<[u8; BLS_SCALAR_SERIALIZED_SIZE], Error> {
+    let mut bytes = [0x00u8; BLS_SCALAR_SERIALIZED_SIZE];
+
+    serialize_bls_scalar(s, &mut bytes)?;
+
+    Ok(bytes)
+}
+
+/// Deserialize a [`BlsScalar`] from a [`Source`]
+pub fn kelvin_source_to_bls_scalar<H: ByteHash>(source: &mut Source<H>) -> io::Result<BlsScalar> {
+    let mut s = [0x00u8; BLS_SCALAR_SERIALIZED_SIZE];
+
+    source.read_exact(&mut s)?;
+
+    deserialize_bls_scalar(&s).map_err(|e| e.into())
+}
+
+/// Deserialize a [`JubJubProjective`] from a [`Source`]
+pub fn kelvin_source_to_jubjub_projective<H: ByteHash>(
+    source: &mut Source<H>,
+) -> io::Result<JubJubProjective> {
+    let mut p = [0x00u8; COMPRESSED_JUBJUB_SERIALIZED_SIZE];
+
+    source.read_exact(&mut p)?;
+
+    deserialize_compressed_jubjub(&p).map_err(|e| e.into())
+}
+
+/// Deserialize a [`Nonce`] from a [`Source`]
+pub fn kelvin_source_to_nonce<H: ByteHash>(source: &mut Source<H>) -> io::Result<Nonce> {
+    let mut n = [0x00u8; NONCEBYTES];
+
+    source.read_exact(&mut n).map(|_| Nonce(n))
+}
 
 /// Convert a [`JubJubProjective`] into affine and then serialize the `x` coordinate
 pub fn serialize_compressed_jubjub(p: &JubJubProjective, bytes: &mut [u8]) -> Result<usize, Error> {

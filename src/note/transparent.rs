@@ -4,7 +4,7 @@ use crate::{
 };
 
 use std::convert::{TryFrom, TryInto};
-use std::io;
+use std::io::{self, Write};
 
 use kelvin::{ByteHash, Content, Sink, Source};
 
@@ -226,70 +226,49 @@ impl TryFrom<rpc::DecryptedNote> for TransparentNote {
 }
 
 impl<H: ByteHash> Content<H> for TransparentNote {
-    fn persist(&mut self, _sink: &mut Sink<H>) -> io::Result<()> {
-        //self.utxo.persist(sink)?;
-        //self.value.persist(sink)?;
-        //self.nonce.0.persist(sink)?;
+    fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
+        utils::bls_scalar_to_bytes(&self.value_commitment)
+            .map_err::<io::Error, _>(|e| e.into())
+            .and_then(|b| sink.write_all(&b))?;
 
-        //let r_g = self.r_g.compress();
-        //sink.write_all(&r_g.0)?;
+        utils::projective_jubjub_to_bytes(&self.R)
+            .map_err::<io::Error, _>(|e| e.into())
+            .and_then(|b| sink.write_all(&b))?;
 
-        //let pk_r = self.pk_r.compress();
-        //sink.write_all(&pk_r.0)?;
+        utils::projective_jubjub_to_bytes(&self.pk_r)
+            .map_err::<io::Error, _>(|e| e.into())
+            .and_then(|b| sink.write_all(&b))?;
 
-        //self.idx.persist(sink)?;
-        //self.commitment.0.persist(sink)?;
-        //self.encrypted_blinding_factor.to_vec().persist(sink)
-        unimplemented!()
+        self.nonce.0.persist(sink)?;
+        self.idx.persist(sink)?;
+        self.value.persist(sink)?;
+
+        utils::bls_scalar_to_bytes(&self.blinding_factor)
+            .map_err::<io::Error, _>(|e| e.into())
+            .and_then(|b| sink.write_all(&b))?;
+
+        Ok(())
     }
 
-    fn restore(_source: &mut Source<H>) -> io::Result<Self> {
-        //let utxo = NoteUtxoType::restore(source)?;
-        //let value = u64::restore(source)?;
-        //let mut nonce_bytes = [0u8; NONCEBYTES];
-        //source.read_exact(&mut nonce_bytes)?;
-        //let nonce = Nonce(nonce_bytes);
+    fn restore(source: &mut Source<H>) -> io::Result<Self> {
+        let value_commitment = utils::kelvin_source_to_bls_scalar(source)?;
+        let R = utils::kelvin_source_to_jubjub_projective(source)?;
+        let pk_r = utils::kelvin_source_to_jubjub_projective(source)?;
 
-        //let mut r_g = CompressedRistretto::default();
-        //source.read_exact(&mut r_g.0)?;
-        //let r_g = if let Some(point) = r_g.decompress() {
-        //    point
-        //} else {
-        //    return Err(io::Error::new(
-        //        io::ErrorKind::InvalidData,
-        //        "Invalid Compressed Ristretto Point encoding",
-        //    ));
-        //};
+        let nonce = utils::kelvin_source_to_nonce(source)?;
+        let idx = u64::restore(source)?;
+        let value = u64::restore(source)?;
 
-        //let mut pk_r = CompressedRistretto::default();
-        //source.read_exact(&mut pk_r.0)?;
-        //let pk_r = if let Some(point) = pk_r.decompress() {
-        //    point
-        //} else {
-        //    return Err(io::Error::new(
-        //        io::ErrorKind::InvalidData,
-        //        "Invalid Compressed Ristretto Point encoding",
-        //    ));
-        //};
+        let blinding_factor = utils::kelvin_source_to_bls_scalar(source)?;
 
-        //let idx = Idx::restore(source)?;
-
-        //let mut commitment = CompressedRistretto::default();
-        //source.read_exact(&mut commitment.0)?;
-
-        //let encrypted_blinding_factor = Vec::restore(source)?;
-        //let encrypted_blinding_factor = utils::safe_48_chunk(encrypted_blinding_factor.as_slice());
-
-        //Ok(TransparentNote {
-        //    utxo,
-        //    value,
-        //    nonce,
-        //    r_g,
-        //    pk_r,
-        //    idx,
-        //    commitment,
-        //    encrypted_blinding_factor,
-        //})
-        unimplemented!()
+        Ok(TransparentNote::new(
+            value_commitment,
+            nonce,
+            R,
+            pk_r,
+            idx,
+            value,
+            blinding_factor,
+        ))
     }
 }

@@ -8,8 +8,6 @@ use std::fmt::Debug;
 use std::ops::Mul;
 use std::path::Path;
 
-//use kelvin::{ByteHash, Content, Sink, Source};
-
 /// Nullifier definition
 pub mod nullifier;
 /// Obfuscated note definitions
