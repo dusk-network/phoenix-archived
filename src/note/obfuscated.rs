@@ -144,10 +144,12 @@ impl Note for ObfuscatedNote {
         &self.value_commitment
     }
 
-    fn blinding_factor(&self, vk: &ViewKey) -> BlsScalar {
+    fn blinding_factor(&self, vk: Option<&ViewKey>) -> BlsScalar {
+        let vk = vk.copied().unwrap_or_default();
+
         let blinding_factor = crypto::decrypt(
             &self.R,
-            vk,
+            &vk,
             &self.nonce.increment_le(),
             &self.encrypted_blinding_factor[..],
         );

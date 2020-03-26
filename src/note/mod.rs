@@ -50,7 +50,7 @@ pub trait NoteGenerator:
 
         let nullifier = self.generate_nullifier(&sk);
         let value = self.value(Some(&vk));
-        let blinding_factor = self.blinding_factor(&vk);
+        let blinding_factor = self.blinding_factor(Some(&vk));
 
         TransactionInput::new(self.into(), nullifier, value, blinding_factor, sk)
     }
@@ -120,7 +120,7 @@ pub trait Note: Debug + Send + Sync {
         let pk_r = Some((*self.pk_r()).into());
         let value_commitment = Some((*self.value_commitment()).into());
 
-        let blinding_factor = self.blinding_factor(vk);
+        let blinding_factor = self.blinding_factor(Some(vk));
         let raw_blinding_factor = match self.note() {
             NoteType::Transparent => {
                 rpc::decrypted_note::RawBlindingFactor::TransparentBlindingFactor(
@@ -196,7 +196,7 @@ pub trait Note: Debug + Send + Sync {
     /// Decrypt the blinding factor with the provided [`ViewKey`]
     ///
     /// If the decrypt fails, a random value is returned
-    fn blinding_factor(&self, vk: &ViewKey) -> BlsScalar;
+    fn blinding_factor(&self, vk: Option<&ViewKey>) -> BlsScalar;
     /// Return the raw encrypted value blinding factor
     fn encrypted_blinding_factor(&self) -> &[u8; 48];
     /// Return the `r · G` used for the DHKE randomness

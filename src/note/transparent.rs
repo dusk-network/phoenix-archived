@@ -120,7 +120,7 @@ impl Note for TransparentNote {
         &self.value_commitment
     }
 
-    fn blinding_factor(&self, _vk: &ViewKey) -> BlsScalar {
+    fn blinding_factor(&self, _vk: Option<&ViewKey>) -> BlsScalar {
         self.blinding_factor
     }
 

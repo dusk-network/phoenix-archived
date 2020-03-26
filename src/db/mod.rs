@@ -12,10 +12,10 @@ use kelvin_hamt::CountingHAMTMap as HAMTMap;
 use kelvin_radix::DefaultRadixMap as RadixMap;
 
 use tracing::trace;
-//
-//#[cfg(test)]
-//mod tests;
-//
+
+#[cfg(test)]
+mod tests;
+
 /// Database structure for the notes and nullifiers storage
 #[derive(Clone)]
 pub struct Db<H: ByteHash> {

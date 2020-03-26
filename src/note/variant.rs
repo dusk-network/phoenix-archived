@@ -138,7 +138,7 @@ impl Note for NoteVariant {
         }
     }
 
-    fn blinding_factor(&self, vk: &ViewKey) -> BlsScalar {
+    fn blinding_factor(&self, vk: Option<&ViewKey>) -> BlsScalar {
         match self {
             NoteVariant::Transparent(note) => note.blinding_factor(vk),
             NoteVariant::Obfuscated(note) => note.blinding_factor(vk),

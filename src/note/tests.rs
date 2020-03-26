@@ -1,19 +1,15 @@
-use crate::{rpc, Note, NoteGenerator, NoteType, ObfuscatedNote, SecretKey, TransparentNote};
+use crate::{
+    rpc, Note, NoteGenerator, NoteType, NoteVariant, ObfuscatedNote, PublicKey, SecretKey,
+    TransparentNote,
+};
 
 use std::convert::TryFrom;
 
-//use crate::{
-//    rpc, utils, Note, NoteGenerator, NoteType, NoteUtxoType, ObfuscatedNote, PublicKey, SecretKey,
-//    TransparentNote,
-//};
-//
-//use kelvin::{
-//    tests::{arbitrary as a, fuzz_content, fuzz_content_iterations},
-//    Blake2b,
-//};
-//
-//use std::convert::TryFrom;
-//
+use kelvin::{
+    tests::{arbitrary as a, fuzz_content, fuzz_content_iterations},
+    Blake2b,
+};
+
 #[test]
 fn transparent_note() {
     let sk = SecretKey::default();
@@ -65,59 +61,38 @@ fn note_keys_consistency() {
     assert!(note.is_owned_by(&vk));
 }
 
-//#[test]
-//fn content_implementations() {
-//    use crate::note::NoteVariant;
-//    use rpc::Idx;
-//
-//    impl a::Arbitrary for Idx {
-//        fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
-//            Ok(Idx {
-//                pos: a::Arbitrary::arbitrary(u)?,
-//            })
-//        }
-//    }
-//
-//    impl a::Arbitrary for NoteVariant {
-//        fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
-//            let transparent: bool = a::Arbitrary::arbitrary(u)?;
-//
-//            if transparent {
-//                Ok(NoteVariant::Transparent(a::Arbitrary::arbitrary(u)?))
-//            } else {
-//                Ok(NoteVariant::Obfuscated(a::Arbitrary::arbitrary(u)?))
-//            }
-//        }
-//    }
-//
-//    impl a::Arbitrary for NoteUtxoType {
-//        fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
-//            Ok(if a::Arbitrary::arbitrary(u)? {
-//                NoteUtxoType::Input
-//            } else {
-//                NoteUtxoType::Output
-//            })
-//        }
-//    }
-//
-//    impl a::Arbitrary for TransparentNote {
-//        fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
-//            let vec: Vec<u8> = a::Arbitrary::arbitrary(u)?;
-//            let pubkey: PublicKey = SecretKey::from(vec).into();
-//            let note = TransparentNote::output(&pubkey, a::Arbitrary::arbitrary(u)?).0;
-//            Ok(note)
-//        }
-//    }
-//
-//    impl a::Arbitrary for ObfuscatedNote {
-//        fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
-//            let vec: Vec<u8> = a::Arbitrary::arbitrary(u)?;
-//            let pubkey: PublicKey = SecretKey::from(vec).into();
-//            let note = ObfuscatedNote::output(&pubkey, a::Arbitrary::arbitrary(u)?).0;
-//            Ok(note)
-//        }
-//    }
-//
-//    fuzz_content::<Idx, Blake2b>();
-//    fuzz_content_iterations::<NoteVariant, Blake2b>(64);
-//}
+#[test]
+fn content_implementations() {
+    impl a::Arbitrary for TransparentNote {
+        fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
+            let vec: Vec<u8> = a::Arbitrary::arbitrary(u)?;
+            let pubkey: PublicKey = SecretKey::from(vec.as_slice()).into();
+            let note = TransparentNote::output(&pubkey, a::Arbitrary::arbitrary(u)?).0;
+            Ok(note)
+        }
+    }
+
+    impl a::Arbitrary for ObfuscatedNote {
+        fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
+            let vec: Vec<u8> = a::Arbitrary::arbitrary(u)?;
+            let pubkey: PublicKey = SecretKey::from(vec.as_slice()).into();
+            let note = ObfuscatedNote::output(&pubkey, a::Arbitrary::arbitrary(u)?).0;
+            Ok(note)
+        }
+    }
+
+    impl a::Arbitrary for NoteVariant {
+        fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
+            let transparent: bool = a::Arbitrary::arbitrary(u)?;
+
+            if transparent {
+                Ok(NoteVariant::Transparent(a::Arbitrary::arbitrary(u)?))
+            } else {
+                Ok(NoteVariant::Obfuscated(a::Arbitrary::arbitrary(u)?))
+            }
+        }
+    }
+
+    fuzz_content::<u64, Blake2b>();
+    fuzz_content_iterations::<NoteVariant, Blake2b>(64);
+}
