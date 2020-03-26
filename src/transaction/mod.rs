@@ -297,7 +297,7 @@ impl Transaction {
             })
             .collect::<Result<_, _>>()?;
 
-        let proof = zk::bytes_to_proof(tx.r1cs.as_slice())?;
+        let proof = zk::bytes_to_proof(tx.proof.as_slice())?;
         transaction.set_proof(proof);
 
         Ok(transaction)
@@ -312,20 +312,20 @@ impl TryFrom<Transaction> for rpc::Transaction {
         let outputs = tx.outputs.iter().map(|o| (*o).into()).collect();
         let fee = Some(tx.fee.into());
 
-        let r1cs = tx
+        let proof = tx
             .proof()
             .map(|p| zk::proof_to_bytes(p).map(|b| b.to_vec()))
             .transpose()?
             .unwrap_or_default();
 
-        let commitments = vec![];
+        let public_inputs = vec![];
 
         Ok(rpc::Transaction {
             inputs,
             outputs,
             fee,
-            r1cs,
-            commitments,
+            proof,
+            public_inputs,
         })
     }
 }
