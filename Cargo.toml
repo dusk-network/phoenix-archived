@@ -25,6 +25,13 @@ num-traits = "0.2"
 git = "https://github.com/scipr-lab/zexe/"
 features = ["parallel"]
 
+[dependencies.poly-commit]
+git = "https://github.com/scipr-lab/poly-commit"
+branch = "master"
+
+[dependencies.ff-fft]
+git = "https://github.com/scipr-lab/zexe/"
+
 [dependencies.bulletproofs]
 git = "https://github.com/dusk-network/bulletproofs.git"
 branch = "develop"

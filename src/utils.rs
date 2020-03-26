@@ -1,8 +1,9 @@
 use crate::{BlsScalar, Error, JubJubAffine, JubJubProjective, JubJubScalar, Nonce, NONCEBYTES};
 
 use std::io::{self, Read};
+use std::mem::{self, MaybeUninit};
 use std::ops::Mul;
-use std::{cmp, mem, ptr, slice, thread};
+use std::{cmp, ptr, slice, thread};
 
 use algebra::biginteger::BigInteger256;
 use algebra::curves::jubjub::JubJubParameters;
@@ -53,9 +54,15 @@ pub fn init() {
     }
 }
 
-unsafe fn lazy_static_write<T: Copy>(p: &T, v: T) {
+pub(crate) unsafe fn lazy_static_write<T>(p: &T, v: T) {
     let ptr: *mut T = mem::transmute(p);
     ptr::write(ptr, v);
+}
+
+pub(crate) unsafe fn lazy_static_maybeuninit_write<T>(p: &MaybeUninit<T>, v: T) {
+    let ptr = p as *const MaybeUninit<T> as *mut MaybeUninit<T>;
+    let p: &mut MaybeUninit<T> = ptr.as_mut().unwrap();
+    p.write(v);
 }
 
 /// Generate a random [`JubJubScalar`] from [`rand::thread_rng`]

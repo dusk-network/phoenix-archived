@@ -1,4 +1,5 @@
 #![allow(non_snake_case)]
+#![feature(maybe_uninit_extra)]
 
 pub use algebra::curves::jubjub::{JubJubAffine, JubJubProjective};
 pub use algebra::fields::bls12_381::fr::Fr as BlsScalar;
@@ -28,8 +29,8 @@ pub mod rpc;
 pub mod transaction;
 /// General toolkit
 pub mod utils;
-///// ZK Gadgets and value proof
-//pub mod zk;
+/// ZK Gadgets and value proof
+pub mod zk;
 
 /// Maximum allowed number of notes per transaction.
 pub const MAX_NOTES_PER_TRANSACTION: usize = 10;

@@ -1,5 +1,5 @@
 use crate::{
-    crypto, rpc, utils, BlsScalar, Error, Note, NoteGenerator, PublicKey, TransparentNote,
+    crypto, rpc, utils, zk, BlsScalar, Error, Note, NoteGenerator, PublicKey, TransparentNote,
     MAX_NOTES_PER_TRANSACTION,
 };
 
@@ -18,13 +18,14 @@ pub mod item;
 //mod tests;
 //
 /// A phoenix transaction
-#[derive(Debug, Clone, Default)]
+#[derive(Default)]
 pub struct Transaction {
     fee: TransactionOutput,
     idx_inputs: usize,
     inputs: [TransactionInput; MAX_NOTES_PER_TRANSACTION],
     idx_outputs: usize,
     outputs: [TransactionOutput; MAX_NOTES_PER_TRANSACTION],
+    proof: Option<zk::Proof>,
 }
 
 impl PartialEq for Transaction {
@@ -191,14 +192,27 @@ impl Transaction {
     ///
     /// The transaction items will be sorted for verification correctness
     pub fn prove(&mut self) -> Result<(), Error> {
-        // TODO - Implement
         if self.idx_inputs + self.idx_outputs + 1 > MAX_NOTES_PER_TRANSACTION {
             return Err(Error::MaximumNotes);
         }
 
         self.sort_items();
 
+        let (mut transcript, mut composer, circuit) = zk::gen_circuit();
+        let proof = zk::prove(&mut transcript, &mut composer, &circuit);
+        self.proof.replace(proof);
+
         Ok(())
+    }
+
+    /// Return the transaction proof created via [`Transaction::prove`]
+    pub fn proof(&self) -> Option<&zk::Proof> {
+        self.proof.as_ref()
+    }
+
+    /// Replace the current proof, if any
+    pub fn set_proof(&mut self, proof: zk::Proof) {
+        self.proof.replace(proof);
     }
 
     /// Verify a previously proven transaction with [`Transaction::prove`].
@@ -207,9 +221,14 @@ impl Transaction {
     /// circuit and commitment points.
     ///
     /// The transaction items will be sorted for verification correctness
-    pub fn verify(&mut self) -> Result<(), Error> {
-        // TODO - Implement
-        Ok(())
+    pub fn verify(&self) -> Result<(), Error> {
+        let proof = self.proof.as_ref().ok_or(Error::Generic)?;
+
+        if zk::verify(proof) {
+            Ok(())
+        } else {
+            Err(Error::Generic)
+        }
     }
 
     /// Create a new transaction from a set of inputs/outputs defined by a rpc source.
@@ -278,27 +297,36 @@ impl Transaction {
             })
             .collect::<Result<_, _>>()?;
 
+        let proof = zk::bytes_to_proof(tx.r1cs.as_slice())?;
+        transaction.set_proof(proof);
+
         Ok(transaction)
     }
 }
 
-impl From<Transaction> for rpc::Transaction {
-    fn from(tx: Transaction) -> rpc::Transaction {
+impl TryFrom<Transaction> for rpc::Transaction {
+    type Error = Error;
+
+    fn try_from(tx: Transaction) -> Result<rpc::Transaction, Self::Error> {
         let inputs = tx.inputs.iter().map(|i| (*i).into()).collect();
         let outputs = tx.outputs.iter().map(|o| (*o).into()).collect();
         let fee = Some(tx.fee.into());
 
-        // TODO - Replace for plonk proof
-        let r1cs = b"Not implemented proof".to_vec();
+        let r1cs = tx
+            .proof()
+            .map(|p| zk::proof_to_bytes(p).map(|b| b.to_vec()))
+            .transpose()?
+            .unwrap_or_default();
+
         let commitments = vec![];
 
-        rpc::Transaction {
+        Ok(rpc::Transaction {
             inputs,
             outputs,
             fee,
             r1cs,
             commitments,
-        }
+        })
     }
 }
 
