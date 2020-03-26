@@ -1,51 +1,62 @@
-use crate::{
-    rpc, utils, CompressedRistretto, Error, Nonce, NoteUtxoType, Nullifier, RistrettoPoint, Scalar,
-};
+use crate::{rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce};
 
-use std::convert::{TryFrom, TryInto};
+use std::convert::TryFrom;
 
-impl From<Scalar> for rpc::Scalar {
-    fn from(s: Scalar) -> Self {
+impl From<JubJubScalar> for rpc::Scalar {
+    fn from(s: JubJubScalar) -> Self {
+        let mut data = [0x00u8; utils::JUBJUB_SCALAR_SERIALIZED_SIZE];
+
+        utils::serialize_jubjub_scalar(&s, &mut data).expect("In-memory write");
+
         rpc::Scalar {
-            data: s.as_bytes().to_vec(),
+            data: data.to_vec(),
         }
     }
 }
 
-impl Into<Scalar> for rpc::Scalar {
-    fn into(self) -> Scalar {
-        Scalar::from_bits(utils::safe_32_chunk(self.data.as_slice()))
-    }
-}
-
-impl From<CompressedRistretto> for rpc::CompressedPoint {
-    fn from(s: CompressedRistretto) -> Self {
-        rpc::CompressedPoint {
-            y: s.as_bytes().to_vec(),
-        }
-    }
-}
-
-impl Into<CompressedRistretto> for rpc::CompressedPoint {
-    fn into(self) -> CompressedRistretto {
-        CompressedRistretto::from_slice(&utils::safe_32_chunk(self.y.as_slice()))
-    }
-}
-
-impl From<RistrettoPoint> for rpc::CompressedPoint {
-    fn from(s: RistrettoPoint) -> Self {
-        rpc::CompressedPoint {
-            y: s.compress().as_bytes().to_vec(),
-        }
-    }
-}
-
-impl TryInto<RistrettoPoint> for rpc::CompressedPoint {
+impl TryFrom<rpc::Scalar> for JubJubScalar {
     type Error = Error;
 
-    fn try_into(self) -> Result<RistrettoPoint, Self::Error> {
-        let y: CompressedRistretto = self.into();
-        y.decompress().ok_or(Error::InvalidPoint)
+    fn try_from(s: rpc::Scalar) -> Result<JubJubScalar, Error> {
+        utils::deserialize_jubjub_scalar(s.data.as_slice())
+    }
+}
+
+impl From<BlsScalar> for rpc::Scalar {
+    fn from(s: BlsScalar) -> Self {
+        let mut data = [0x00u8; utils::BLS_SCALAR_SERIALIZED_SIZE];
+
+        utils::serialize_bls_scalar(&s, &mut data).expect("In-memory write");
+
+        rpc::Scalar {
+            data: data.to_vec(),
+        }
+    }
+}
+
+impl TryFrom<rpc::Scalar> for BlsScalar {
+    type Error = Error;
+
+    fn try_from(s: rpc::Scalar) -> Result<BlsScalar, Error> {
+        utils::deserialize_bls_scalar(s.data.as_slice())
+    }
+}
+
+impl From<JubJubProjective> for rpc::CompressedPoint {
+    fn from(p: JubJubProjective) -> Self {
+        let mut x = [0x00u8; utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE];
+
+        utils::serialize_compressed_jubjub(&p, &mut x).expect("In-memory write");
+
+        rpc::CompressedPoint { y: x.to_vec() }
+    }
+}
+
+impl TryFrom<rpc::CompressedPoint> for JubJubProjective {
+    type Error = Error;
+
+    fn try_from(p: rpc::CompressedPoint) -> Result<JubJubProjective, Error> {
+        utils::deserialize_compressed_jubjub(p.y.as_slice())
     }
 }
 
@@ -62,54 +73,5 @@ impl TryFrom<rpc::Nonce> for Nonce {
 
     fn try_from(nonce: rpc::Nonce) -> Result<Self, Self::Error> {
         Nonce::from_slice(nonce.bs.as_slice()).ok_or(Error::InvalidParameters)
-    }
-}
-
-impl From<rpc::InputOutput> for NoteUtxoType {
-    fn from(io: rpc::InputOutput) -> NoteUtxoType {
-        match io {
-            rpc::InputOutput::Input => NoteUtxoType::Input,
-            rpc::InputOutput::Output => NoteUtxoType::Output,
-        }
-    }
-}
-
-impl From<NoteUtxoType> for rpc::InputOutput {
-    fn from(utxo: NoteUtxoType) -> rpc::InputOutput {
-        match utxo {
-            NoteUtxoType::Input => rpc::InputOutput::Input,
-            NoteUtxoType::Output => rpc::InputOutput::Output,
-        }
-    }
-}
-
-impl TryFrom<i32> for rpc::InputOutput {
-    type Error = Error;
-
-    fn try_from(io: i32) -> Result<Self, Self::Error> {
-        match io {
-            0 => Ok(rpc::InputOutput::Input),
-            1 => Ok(rpc::InputOutput::Output),
-            _ => Err(Error::InvalidParameters),
-        }
-    }
-}
-
-impl TryFrom<rpc::Nullifier> for Nullifier {
-    type Error = Error;
-
-    fn try_from(nullifier: rpc::Nullifier) -> Result<Self, Self::Error> {
-        nullifier
-            .h
-            .ok_or(Error::InvalidParameters)
-            .map(|x| Nullifier::new(x.into()))
-    }
-}
-
-impl From<Nullifier> for rpc::Nullifier {
-    fn from(nullifier: Nullifier) -> rpc::Nullifier {
-        rpc::Nullifier {
-            h: Some(nullifier.x.into()),
-        }
     }
 }

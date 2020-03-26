@@ -2,22 +2,26 @@ use crate::{crypto, utils, Note, NoteGenerator, ObfuscatedNote, SecretKey};
 
 #[test]
 fn decrypt() {
+    utils::init();
+
     let sk = SecretKey::default();
     let pk = sk.public_key();
     let vk = sk.view_key();
     let nonce = utils::gen_nonce();
 
-    let (r, r_g, _) = ObfuscatedNote::generate_pk_r(&pk);
+    let (r, R, _) = ObfuscatedNote::generate_pk_r(&pk);
 
     let bytes = b"some data";
     let encrypted = crypto::encrypt(&r, &pk, &nonce, bytes);
-    let decrypted = crypto::decrypt(&r_g, &vk, &nonce, encrypted.as_slice());
+    let decrypted = crypto::decrypt(&R, &vk, &nonce, encrypted.as_slice());
 
     assert_eq!(&bytes[..], decrypted.as_slice());
 }
 
 #[test]
 fn decrypt_with_wrong_key_should_fail() {
+    utils::init();
+
     let sk = SecretKey::default();
     let pk = sk.public_key();
     let vk = sk.view_key();

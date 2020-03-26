@@ -18,13 +18,19 @@ kelvin = "0.11.2"
 kelvin-radix = "0.7"
 kelvin-hamt = "0.8"
 bytehash = "0.2"
-
-[dev-dependencies]
 lazy_static = "1.4"
+num-traits = "0.2"
 
+[dependencies.algebra]
+git = "https://github.com/scipr-lab/zexe/"
+features = ["parallel"]
 
-[build-dependencies]
-tonic-build = { version = "0.1", default-features = false, features = ["transport"] }
+[dependencies.poly-commit]
+git = "https://github.com/scipr-lab/poly-commit"
+branch = "master"
+
+[dependencies.ff-fft]
+git = "https://github.com/scipr-lab/zexe/"
 
 [dependencies.bulletproofs]
 git = "https://github.com/dusk-network/bulletproofs.git"
@@ -33,8 +39,15 @@ features = ["yoloproofs"]
 
 [dependencies.hades252]
 git = "https://github.com/dusk-network/Hades252.git"
-branch = "master"
+branch = "plonk_zexe"
 
 [dependencies.poseidon252]
 git = "https://github.com/dusk-network/Poseidon252.git"
 branch = "master"
+
+[dependencies.plonk]
+git = "https://github.com/dusk-network/plonk.git"
+branch = "fast_prover_zexe"
+
+[build-dependencies]
+tonic-build = { version = "0.1", default-features = false, features = ["transport"] }
