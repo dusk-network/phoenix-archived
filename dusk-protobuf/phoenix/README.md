@@ -325,8 +325,8 @@
 | inputs | [TransactionInput](#phoenix.TransactionInput) | repeated |  |
 | outputs | [TransactionOutput](#phoenix.TransactionOutput) | repeated |  |
 | fee | [TransactionOutput](#phoenix.TransactionOutput) |  |  |
-| r1cs | [bytes](#bytes) |  |  |
-| commitments | [CompressedPoint](#phoenix.CompressedPoint) | repeated |  |
+| proof | [bytes](#bytes) |  |  |
+| public_inputs | [Scalar](#phoenix.Scalar) | repeated |  |
 
 ### TransactionInput
 
