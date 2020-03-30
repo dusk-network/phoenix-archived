@@ -19,6 +19,8 @@ message NullifierResponse { Nullifier nullifier = 1; }
 message NullifierStatusRequest { Nullifier nullifier = 1; }
 message NullifierStatusResponse { bool unspent = 1; }
 
+message FetchNoteRequest { fixed64 pos = 1; }
+
 message DecryptNoteRequest {
   Note note = 1;
   ViewKey vk = 2;
@@ -32,20 +34,20 @@ message OwnedNotesRequest {
 message OwnedNotesResponse { repeated DecryptedNote notes = 1; }
 
 message NewTransactionInputRequest {
-  Idx pos = 1;
+  fixed64 pos = 1;
   SecretKey sk = 2;
 }
 
 message NewTransactionOutputRequest {
   NoteType note_type = 1;
   PublicKey pk = 2;
-  uint64 value = 3;
+  fixed64 value = 3;
 }
 
 message NewTransactionRequest {
   repeated TransactionInput inputs = 1;
   repeated TransactionOutput outputs = 2;
-  uint64 fee = 3;
+  fixed64 fee = 3;
 }
 
 message VerifyTransactionResponse {}
@@ -81,7 +83,7 @@ service Phoenix {
   rpc Nullifier(NullifierRequest) returns (NullifierResponse) {}
   rpc NullifierStatus(NullifierStatusRequest)
       returns (NullifierStatusResponse) {}
-  rpc FetchNote(Idx) returns (Note) {}
+  rpc FetchNote(FetchNoteRequest) returns (Note) {}
   rpc DecryptNote(DecryptNoteRequest) returns (DecryptedNote) {}
   rpc OwnedNotes(OwnedNotesRequest) returns (OwnedNotesResponse) {}
   rpc FullScanOwnedNotes(ViewKey) returns (OwnedNotesResponse) {}
