@@ -8,7 +8,9 @@ message SemverRequest {
 }
 
 message SlowdownAlert {
-    uint32 timeSinceLastBlock = 1;
+    uint32 timeSinceLastBlockSec = 1;
+    string lastKnownHeight = 2;
+    string lastKnownHash = 3;
 }
 
 enum Level {
