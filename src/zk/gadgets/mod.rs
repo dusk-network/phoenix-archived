@@ -1,3 +1,3 @@
-pub use transaction_balance::balance;
+pub use balance::balance;
 
-mod transaction_balance;
+mod balance;

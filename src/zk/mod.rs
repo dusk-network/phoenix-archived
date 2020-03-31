@@ -15,10 +15,18 @@ use plonk::cs::{proof::Proof as PlonkProof, Composer as _, PreProcessedCircuit};
 use plonk::srs;
 use poly_commit::kzg10::{Commitment, Powers, VerifierKey};
 
+pub use plonk::cs::constraint_system::Variable;
+
+/// [`ZkTransaction`] definition
+pub mod transaction;
+
+pub use transaction::{ZkTransaction, ZkTransactionInput, ZkTransactionOutput};
+
 /// Length of the public inputs
 #[rustfmt::skip]
 pub const PI_LEN: usize = {
-    (hades252::strategies::gadget::PI_SIZE + 2) * (MAX_INPUT_NOTES_PER_TRANSACTION + MAX_OUTPUT_NOTES_PER_TRANSACTION + 1)
+    // Tx balance
+    (hades252::strategies::gadget::PI_SIZE + 2) * (MAX_INPUT_NOTES_PER_TRANSACTION + MAX_OUTPUT_NOTES_PER_TRANSACTION + 1) + 1
 };
 
 lazy_static::lazy_static! {
@@ -189,10 +197,12 @@ pub fn init() {
 /// Generate a new circuit
 pub fn gen_circuit(tx: &mut Transaction) -> (Transcript, Composer, Circuit) {
     let mut transcript = gen_transcript();
-    let composer = Composer::new();
+    let mut composer = Composer::new();
 
     let pi = tx.public_inputs_unbound_iter_mut();
-    let (mut composer, _pi) = gadgets::balance(composer, tx, pi);
+    let tx = ZkTransaction::from_tx(&mut composer, tx);
+
+    let (mut composer, _pi) = gadgets::balance(composer, &tx, pi);
 
     composer.add_dummy_constraints();
 

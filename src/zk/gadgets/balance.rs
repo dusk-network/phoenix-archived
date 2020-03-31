@@ -1,4 +1,4 @@
-use crate::{zk, BlsScalar, Note, Transaction, TransactionItem};
+use crate::{zk, BlsScalar};
 
 use hades252::strategies::GadgetStrategy;
 use num_traits::{One, Zero};
@@ -12,20 +12,12 @@ macro_rules! value_commitment_preimage {
         $bitflags:ident,
         $pi:ident,
         $zero:ident,
-        $inputs:ident
+        $acc:ident
     ) => {
-        let value = BlsScalar::from($item.value());
-        let blinding_factor = *$item.blinding_factor();
-        let value_commitment = *$item.note().value_commitment();
-
-        let value = $composer.add_input(value);
-        let blinding_factor = $composer.add_input(blinding_factor);
-        let value_commitment = $composer.add_input(value_commitment);
-
         $perm.copy_from_slice(&$zero_perm);
         $perm[0] = $bitflags;
-        $perm[1] = value;
-        $perm[2] = blinding_factor;
+        $perm[1] = $item.value;
+        $perm[2] = $item.blinding_factor;
 
         let (p_composer, p_pi, c) = GadgetStrategy::poseidon_gadget($composer, $pi, &mut $perm);
 
@@ -34,7 +26,7 @@ macro_rules! value_commitment_preimage {
 
         $pi.next().map(|p| *p = BlsScalar::zero());
         $composer.add_gate(
-            value_commitment,
+            $item.value_commitment,
             c,
             $zero,
             -BlsScalar::one(),
@@ -45,9 +37,9 @@ macro_rules! value_commitment_preimage {
         );
 
         $pi.next().map(|p| *p = BlsScalar::zero());
-        $inputs = $composer.add(
-            $inputs,
-            value,
+        $acc = $composer.add(
+            $acc,
+            $item.value,
             BlsScalar::one(),
             BlsScalar::one(),
             -BlsScalar::one(),
@@ -58,7 +50,11 @@ macro_rules! value_commitment_preimage {
 }
 
 /// Perform the pre-image of the value commitment and check if the inputs equals the outputs + fee
-pub fn balance<'a, P>(mut composer: zk::Composer, tx: &Transaction, mut pi: P) -> (zk::Composer, P)
+pub fn balance<'a, P>(
+    mut composer: zk::Composer,
+    tx: &zk::ZkTransaction,
+    mut pi: P,
+) -> (zk::Composer, P)
 where
     P: Iterator<Item = &'a mut BlsScalar>,
 {
@@ -70,14 +66,14 @@ where
     let mut inputs = zero;
     let mut outputs = zero;
 
-    for item in tx.all_inputs() {
+    for item in tx.inputs.iter() {
         value_commitment_preimage!(item, composer, perm, zero_perm, bitflags, pi, zero, inputs);
     }
 
-    let item = tx.fee();
-    value_commitment_preimage!(item, composer, perm, zero_perm, bitflags, pi, zero, outputs);
+    let fee = tx.fee;
+    value_commitment_preimage!(fee, composer, perm, zero_perm, bitflags, pi, zero, outputs);
 
-    for item in tx.all_outputs() {
+    for item in tx.outputs.iter() {
         value_commitment_preimage!(item, composer, perm, zero_perm, bitflags, pi, zero, outputs);
     }
 
