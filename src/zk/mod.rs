@@ -1,4 +1,7 @@
-use crate::{utils, BlsScalar, Error};
+use crate::{
+    utils, BlsScalar, Error, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
+    MAX_OUTPUT_NOTES_PER_TRANSACTION,
+};
 
 use std::mem::{self, MaybeUninit};
 
@@ -7,11 +10,16 @@ use algebra::curves::bls12_381::Bls12_381;
 use algebra::curves::bls12_381::G1Affine;
 use ff_fft::EvaluationDomain;
 use merlin::Transcript;
-use num_traits::Zero;
 use plonk::cs::composer::StandardComposer;
 use plonk::cs::{proof::Proof as PlonkProof, Composer as _, PreProcessedCircuit};
 use plonk::srs;
 use poly_commit::kzg10::{Commitment, Powers, VerifierKey};
+
+/// Length of the public inputs
+#[rustfmt::skip]
+pub const PI_LEN: usize = {
+    (hades252::strategies::gadget::PI_SIZE + 2) * (MAX_INPUT_NOTES_PER_TRANSACTION + MAX_OUTPUT_NOTES_PER_TRANSACTION + 1)
+};
 
 lazy_static::lazy_static! {
     static ref DOMAIN: EvaluationDomain<BlsScalar> = unsafe { mem::zeroed() };
@@ -27,6 +35,9 @@ pub type Composer = StandardComposer<Bls12_381>;
 pub type Proof = PlonkProof<Bls12_381>;
 
 pub const SERIALIZED_PROOF_SIZE: usize = 1097;
+
+/// Circuit gadgets
+pub mod gadgets;
 
 #[cfg(test)]
 mod tests;
@@ -156,9 +167,9 @@ pub fn bytes_to_proof(bytes: &[u8]) -> Result<Proof, Error> {
 
 /// Initialize the zk static data
 pub fn init() {
-    let public_parameters = srs::setup(16384, &mut rand::thread_rng());
-    let (ck, vk) = srs::trim(&public_parameters, 16384).unwrap();
-    let domain: EvaluationDomain<BlsScalar> = EvaluationDomain::new(16384).unwrap();
+    let public_parameters = srs::setup(32768, &mut rand::thread_rng());
+    let (ck, vk) = srs::trim(&public_parameters, 32768).unwrap();
+    let domain: EvaluationDomain<BlsScalar> = EvaluationDomain::new(32768).unwrap();
 
     unsafe {
         utils::lazy_static_write(&*DOMAIN, domain);
@@ -166,7 +177,8 @@ pub fn init() {
         utils::lazy_static_write(&*VK, vk);
     }
 
-    let (transcript, _, circuit) = gen_circuit();
+    let mut tx = Transaction::default();
+    let (transcript, _, circuit) = gen_circuit(&mut tx);
 
     unsafe {
         utils::lazy_static_write(&*TRANSCRIPT, transcript);
@@ -175,13 +187,13 @@ pub fn init() {
 }
 
 /// Generate a new circuit
-pub fn gen_circuit() -> (Transcript, Composer, Circuit) {
-    // TODO - Implement
+pub fn gen_circuit(tx: &mut Transaction) -> (Transcript, Composer, Circuit) {
     let mut transcript = gen_transcript();
-    let mut composer = Composer::new();
+    let composer = Composer::new();
 
-    composer.add_dummy_constraints();
-    composer.add_dummy_constraints();
+    let pi = tx.public_inputs_unbound_iter_mut();
+    let (mut composer, _pi) = gadgets::balance(composer, tx, pi);
+
     composer.add_dummy_constraints();
 
     let circuit = composer.preprocess(&*CK, &mut transcript, &*DOMAIN);
@@ -199,19 +211,15 @@ fn gen_transcript() -> Transcript {
 }
 
 /// Generate a new transaction zk proof
-pub fn prove(transcript: &mut Transcript, composer: &mut Composer, circuit: &Circuit) -> Proof {
-    composer.prove(&*CK, circuit, transcript)
+pub fn prove(tx: &mut Transaction) -> Proof {
+    let (mut transcript, mut composer, circuit) = gen_circuit(tx);
+    composer.prove(&*CK, &circuit, &mut transcript)
 }
 
 /// Verify a proof with a pre-generated circuit
-pub fn verify(proof: &Proof) -> bool {
+pub fn verify(proof: &Proof, pi: &[BlsScalar]) -> bool {
     let mut transcript = TRANSCRIPT.clone();
     let preprocessed_circuit = circuit();
 
-    proof.verify(
-        preprocessed_circuit,
-        &mut transcript,
-        &*VK,
-        &vec![BlsScalar::zero()],
-    )
+    proof.verify(preprocessed_circuit, &mut transcript, &*VK, &pi.to_vec())
 }
