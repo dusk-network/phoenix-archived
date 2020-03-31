@@ -40,8 +40,25 @@ pub trait NoteGenerator:
         Self::try_from(db::fetch_note(db_path, idx)?).map_err(|_| Error::InvalidParameters)
     }
 
+    /// Create a new phoenix output note without inner randomness
+    fn deterministic_output(
+        r: &JubJubScalar,
+        nonce: Nonce,
+        pk: &PublicKey,
+        value: u64,
+        blinding_factor: BlsScalar,
+    ) -> Self;
+
     /// Create a new phoenix output note
-    fn output(pk: &PublicKey, value: u64) -> (Self, BlsScalar);
+    fn output(pk: &PublicKey, value: u64) -> (Self, BlsScalar) {
+        let r = utils::gen_random_scalar();
+        let nonce = utils::gen_nonce();
+        let blinding_factor = utils::gen_random_bls_scalar();
+
+        let note = Self::deterministic_output(&r, nonce, pk, value, blinding_factor);
+
+        (note, blinding_factor)
+    }
 
     /// Create a new transaction input item provided the secret key for the nullifier generation
     /// and value / blinding factor decrypt
@@ -71,12 +88,20 @@ pub trait NoteGenerator:
     /// Create a `PKr = r · A + B` for the diffie-hellman key exchange
     fn generate_pk_r(pk: &PublicKey) -> (JubJubScalar, JubJubProjective, JubJubProjective) {
         let r = utils::gen_random_scalar();
-        let R = utils::mul_by_basepoint_jubjub(&r);
 
-        let rA = pk.A.mul(&r);
-        let pk_r = rA + pk.B;
+        let (R, pk_r) = Self::new_pk_r(&r, pk);
 
         (r, R, pk_r)
+    }
+
+    /// Create a `PKr = r · A + B` for the diffie-hellman key exchange
+    fn new_pk_r(r: &JubJubScalar, pk: &PublicKey) -> (JubJubProjective, JubJubProjective) {
+        let R = utils::mul_by_basepoint_jubjub(r);
+
+        let rA = pk.A.mul(r);
+        let pk_r = rA + pk.B;
+
+        (R, pk_r)
     }
 
     /// Internally calls the [`crypto::encrypt`] to mask the value

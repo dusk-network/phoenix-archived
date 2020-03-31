@@ -1,15 +1,26 @@
 use crate::{
     crypto, rpc, utils, zk, BlsScalar, Error, Note, NoteGenerator, PublicKey, TransparentNote,
-    MAX_NOTES_PER_TRANSACTION,
 };
 
 use std::convert::TryFrom;
 use std::path::Path;
-use std::{fmt, ptr};
+use std::{fmt, ptr, slice};
 
 use num_traits::Zero;
 
+pub const MAX_INPUT_NOTES_PER_TRANSACTION: usize = 2;
+pub const MAX_OUTPUT_NOTES_PER_TRANSACTION: usize = 2;
+
+/// Maximum allowed number of notes per transaction.
+pub const MAX_NOTES_PER_TRANSACTION: usize =
+    MAX_INPUT_NOTES_PER_TRANSACTION + MAX_OUTPUT_NOTES_PER_TRANSACTION;
+
 pub use item::{TransactionInput, TransactionItem, TransactionOutput};
+
+lazy_static::lazy_static! {
+    static ref DEFAULT_INPUT: TransactionInput = TransactionInput::default();
+    static ref DEFAULT_OUTPUT: TransactionOutput = TransactionOutput::default();
+}
 
 /// Transaction item definitions
 pub mod item;
@@ -18,14 +29,28 @@ pub mod item;
 //mod tests;
 //
 /// A phoenix transaction
-#[derive(Default)]
 pub struct Transaction {
     fee: TransactionOutput,
     idx_inputs: usize,
-    inputs: [TransactionInput; MAX_NOTES_PER_TRANSACTION],
+    inputs: [TransactionInput; MAX_INPUT_NOTES_PER_TRANSACTION],
     idx_outputs: usize,
-    outputs: [TransactionOutput; MAX_NOTES_PER_TRANSACTION],
+    outputs: [TransactionOutput; MAX_OUTPUT_NOTES_PER_TRANSACTION],
     proof: Option<zk::Proof>,
+    public_inputs: [BlsScalar; zk::PI_LEN],
+}
+
+impl Default for Transaction {
+    fn default() -> Self {
+        Self {
+            fee: *DEFAULT_OUTPUT,
+            idx_inputs: 0,
+            inputs: [*DEFAULT_INPUT; MAX_INPUT_NOTES_PER_TRANSACTION],
+            idx_outputs: 0,
+            outputs: [*DEFAULT_OUTPUT; MAX_OUTPUT_NOTES_PER_TRANSACTION],
+            proof: None,
+            public_inputs: [BlsScalar::zero(); zk::PI_LEN],
+        }
+    }
 }
 
 impl PartialEq for Transaction {
@@ -45,7 +70,7 @@ impl Transaction {
 
         hash[0] = self.fee.hash();
 
-        let mut items = [TransactionInput::default(); MAX_NOTES_PER_TRANSACTION];
+        let mut items = [TransactionInput::default(); MAX_INPUT_NOTES_PER_TRANSACTION];
 
         let max_idx = self.idx_inputs;
         if max_idx > 0 {
@@ -61,7 +86,7 @@ impl Transaction {
                 });
         }
 
-        let mut items = [TransactionOutput::default(); MAX_NOTES_PER_TRANSACTION];
+        let mut items = [TransactionOutput::default(); MAX_OUTPUT_NOTES_PER_TRANSACTION];
 
         let max_idx = self.idx_outputs;
         if max_idx > 0 {
@@ -82,7 +107,7 @@ impl Transaction {
 
     /// Append an input to the transaction
     pub fn push_input(&mut self, item: TransactionInput) -> Result<(), Error> {
-        if self.idx_inputs + self.idx_outputs > MAX_NOTES_PER_TRANSACTION - 2 {
+        if self.idx_inputs > MAX_INPUT_NOTES_PER_TRANSACTION {
             return Err(Error::MaximumNotes);
         }
 
@@ -94,7 +119,7 @@ impl Transaction {
 
     /// Append an output to the transaction
     pub fn push_output(&mut self, item: TransactionOutput) -> Result<(), Error> {
-        if self.idx_inputs + self.idx_outputs > MAX_NOTES_PER_TRANSACTION - 2 {
+        if self.idx_outputs > MAX_OUTPUT_NOTES_PER_TRANSACTION {
             return Err(Error::MaximumNotes);
         }
 
@@ -126,9 +151,19 @@ impl Transaction {
         self.fee = note.to_transaction_output(value, blinding_factor, pk);
     }
 
+    /// All transaction inputs, including the dummy non-pushed ones
+    pub fn all_inputs(&self) -> &[TransactionInput] {
+        &self.inputs[0..MAX_INPUT_NOTES_PER_TRANSACTION]
+    }
+
     /// Transaction inputs
     pub fn inputs(&self) -> &[TransactionInput] {
         &self.inputs[0..self.idx_inputs]
+    }
+
+    /// All transaction outputs, including the dummy non-pushed ones
+    pub fn all_outputs(&self) -> &[TransactionOutput] {
+        &self.outputs[0..MAX_OUTPUT_NOTES_PER_TRANSACTION]
     }
 
     /// Transaction outputs
@@ -151,6 +186,7 @@ impl Transaction {
         unsafe {
             ptr::swap(src, dst);
         }
+        self.inputs[self.idx_inputs] = *DEFAULT_INPUT;
 
         Some(self.inputs[self.idx_inputs])
     }
@@ -170,6 +206,7 @@ impl Transaction {
         unsafe {
             ptr::swap(src, dst);
         }
+        self.outputs[self.idx_outputs] = *DEFAULT_OUTPUT;
 
         Some(self.outputs[self.idx_outputs])
     }
@@ -185,6 +222,23 @@ impl Transaction {
         }
     }
 
+    /// Unsafely create an unbound mutable iterator for a given lifetime
+    ///
+    /// The user should provide the guarantee that the data will live long enough (e.g. as much as
+    /// `self`)
+    pub fn public_inputs_unbound_iter_mut<'a, 'b>(&'a mut self) -> slice::IterMut<'b, BlsScalar> {
+        unsafe {
+            let ptr = (&mut self.public_inputs).as_mut_ptr();
+            let slc = slice::from_raw_parts_mut(ptr, zk::PI_LEN);
+            slc.iter_mut()
+        }
+    }
+
+    /// Zero-knowledge circuit public inputs for the built proof
+    pub fn public_inputs(&self) -> &[BlsScalar] {
+        &self.public_inputs
+    }
+
     /// Perform the zk proof, and save internally the created r1cs circuit and the commitment
     /// points.
     ///
@@ -192,14 +246,15 @@ impl Transaction {
     ///
     /// The transaction items will be sorted for verification correctness
     pub fn prove(&mut self) -> Result<(), Error> {
-        if self.idx_inputs + self.idx_outputs + 1 > MAX_NOTES_PER_TRANSACTION {
+        if self.idx_inputs > MAX_INPUT_NOTES_PER_TRANSACTION
+            || self.idx_outputs > MAX_OUTPUT_NOTES_PER_TRANSACTION
+        {
             return Err(Error::MaximumNotes);
         }
 
         self.sort_items();
 
-        let (mut transcript, mut composer, circuit) = zk::gen_circuit();
-        let proof = zk::prove(&mut transcript, &mut composer, &circuit);
+        let proof = zk::prove(self);
         self.proof.replace(proof);
 
         Ok(())
@@ -224,7 +279,7 @@ impl Transaction {
     pub fn verify(&self) -> Result<(), Error> {
         let proof = self.proof.as_ref().ok_or(Error::Generic)?;
 
-        if zk::verify(proof) {
+        if zk::verify(proof, &self.public_inputs[..]) {
             Ok(())
         } else {
             Err(Error::Generic)

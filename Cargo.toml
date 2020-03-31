@@ -5,7 +5,6 @@ authors = ["Victor Lopez <vhrlopes@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-curve25519-dalek = { version = "2.0", features = ["serde"] }
 merlin = "2.0"
 rand = "^0.7"
 tonic = "^0.1"
@@ -32,18 +31,9 @@ branch = "master"
 [dependencies.ff-fft]
 git = "https://github.com/scipr-lab/zexe/"
 
-[dependencies.bulletproofs]
-git = "https://github.com/dusk-network/bulletproofs.git"
-branch = "develop"
-features = ["yoloproofs"]
-
 [dependencies.hades252]
 git = "https://github.com/dusk-network/Hades252.git"
 branch = "plonk_zexe"
-
-[dependencies.poseidon252]
-git = "https://github.com/dusk-network/Poseidon252.git"
-branch = "master"
 
 [dependencies.plonk]
 git = "https://github.com/dusk-network/plonk.git"

@@ -1,5 +1,6 @@
 use crate::{
-    db, rpc, BlsScalar, Error, Note, NoteGenerator, NoteVariant, Nullifier, PublicKey, SecretKey,
+    db, rpc, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator, NoteVariant, Nullifier,
+    PublicKey, SecretKey, TransparentNote,
 };
 
 use std::cmp::Ordering;
@@ -26,13 +27,28 @@ pub trait TransactionItem:
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TransactionInput {
     note: NoteVariant,
     value: u64,
     blinding_factor: BlsScalar,
     pub nullifier: Nullifier,
     pub sk: SecretKey,
+}
+
+impl Default for TransactionInput {
+    fn default() -> Self {
+        let sk = SecretKey::from(&b"default-tx-input"[..]);
+        let pk = sk.public_key();
+        let value = 0;
+
+        let r = JubJubScalar::from(3u8);
+        let nonce = Nonce([5u8; 24]);
+        let blinding_factor = BlsScalar::from(7u8);
+
+        TransparentNote::deterministic_output(&r, nonce, &pk, value, blinding_factor)
+            .to_transaction_input(sk)
+    }
 }
 
 impl TransactionInput {
@@ -97,12 +113,27 @@ impl TransactionItem for TransactionInput {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TransactionOutput {
     pub note: NoteVariant,
     pub value: u64,
     pub blinding_factor: BlsScalar,
     pub pk: PublicKey,
+}
+
+impl Default for TransactionOutput {
+    fn default() -> Self {
+        let sk = SecretKey::from(&b"default-tx-input"[..]);
+        let pk = sk.public_key();
+        let value = 0;
+
+        let r = JubJubScalar::from(11u8);
+        let nonce = Nonce([13u8; 24]);
+        let blinding_factor = BlsScalar::from(17u8);
+
+        TransparentNote::deterministic_output(&r, nonce, &pk, value, blinding_factor)
+            .to_transaction_output(value, blinding_factor, pk)
+    }
 }
 
 impl TransactionOutput {

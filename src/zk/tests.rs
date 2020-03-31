@@ -27,10 +27,12 @@ fn proof_serialization() {
     tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
 
     tx.prove().unwrap();
+    let pi = tx.public_inputs().to_vec();
+
     tx.verify().unwrap();
 
     let bytes = zk::proof_to_bytes(tx.proof().unwrap()).unwrap();
     let proof = zk::bytes_to_proof(&bytes).unwrap();
 
-    assert!(zk::verify(&proof));
+    assert!(zk::verify(&proof, pi.as_slice()));
 }

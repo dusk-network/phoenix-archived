@@ -1,6 +1,6 @@
 use crate::{
-    crypto, rpc, utils, BlsScalar, Error, JubJubProjective, Nonce, Note, NoteGenerator, NoteType,
-    PublicKey, ViewKey,
+    crypto, rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, Note,
+    NoteGenerator, NoteType, PublicKey, ViewKey,
 };
 
 use std::convert::{TryFrom, TryInto};
@@ -69,12 +69,14 @@ impl ObfuscatedNote {
 }
 
 impl NoteGenerator for ObfuscatedNote {
-    fn output(pk: &PublicKey, value: u64) -> (Self, BlsScalar) {
-        let nonce = utils::gen_nonce();
-
-        let (r, R, pk_r) = Self::generate_pk_r(pk);
-
-        let blinding_factor = utils::gen_random_bls_scalar();
+    fn deterministic_output(
+        r: &JubJubScalar,
+        nonce: Nonce,
+        pk: &PublicKey,
+        value: u64,
+        blinding_factor: BlsScalar,
+    ) -> Self {
+        let (R, pk_r) = Self::new_pk_r(r, pk);
         let value_commitment = BlsScalar::from(value);
         let value_commitment = crypto::hash_merkle(&[value_commitment, blinding_factor]);
 
@@ -85,7 +87,7 @@ impl NoteGenerator for ObfuscatedNote {
         let encrypted_blinding_factor =
             ObfuscatedNote::encrypt_blinding_factor(&r, pk, &nonce, &blinding_factor);
 
-        let note = ObfuscatedNote::new(
+        ObfuscatedNote::new(
             value_commitment,
             nonce,
             R,
@@ -93,9 +95,7 @@ impl NoteGenerator for ObfuscatedNote {
             idx,
             encrypted_value,
             encrypted_blinding_factor,
-        );
-
-        (note, blinding_factor)
+        )
     }
 }
 
