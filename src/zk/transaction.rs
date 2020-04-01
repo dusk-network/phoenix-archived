@@ -5,6 +5,8 @@ use crate::{
 
 use std::mem;
 
+use algebra::curves::ProjectiveCurve;
+
 /// Structure reflecting a [`Transaction`] committed to a circuit
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub struct ZkTransaction {
@@ -56,6 +58,14 @@ pub struct ZkTransactionInput {
     pub value: zk::Variable,
     pub blinding_factor: zk::Variable,
     pub value_commitment: zk::Variable,
+    pub idx: zk::Variable,
+    pub R_affine_x: zk::Variable,
+    pub R_affine_y: zk::Variable,
+    pub pk_r_affine_x: zk::Variable,
+    pub pk_r_affine_y: zk::Variable,
+
+    pub note_hash_scalar: BlsScalar,
+    pub note_hash: zk::Variable,
 }
 
 impl ZkTransactionInput {
@@ -63,11 +73,27 @@ impl ZkTransactionInput {
         value: zk::Variable,
         blinding_factor: zk::Variable,
         value_commitment: zk::Variable,
+        idx: zk::Variable,
+        R_affine_x: zk::Variable,
+        R_affine_y: zk::Variable,
+        pk_r_affine_x: zk::Variable,
+        pk_r_affine_y: zk::Variable,
+
+        note_hash_scalar: BlsScalar,
+        note_hash: zk::Variable,
     ) -> Self {
         Self {
             value,
             blinding_factor,
             value_commitment,
+            idx,
+            R_affine_x,
+            R_affine_y,
+            pk_r_affine_x,
+            pk_r_affine_y,
+
+            note_hash_scalar,
+            note_hash,
         }
     }
 
@@ -78,7 +104,33 @@ impl ZkTransactionInput {
         let blinding_factor = composer.add_input(*item.blinding_factor());
         let value_commitment = composer.add_input(*item.note().value_commitment());
 
-        Self::new(value, blinding_factor, value_commitment)
+        let idx = item.note().idx();
+        let idx = BlsScalar::from(idx);
+        let idx = composer.add_input(idx);
+
+        let R_affine = item.note().R().into_affine();
+        let R_affine_x = composer.add_input(R_affine.x);
+        let R_affine_y = composer.add_input(R_affine.y);
+
+        let pk_r_affine = item.note().pk_r().into_affine();
+        let pk_r_affine_x = composer.add_input(pk_r_affine.x);
+        let pk_r_affine_y = composer.add_input(pk_r_affine.y);
+
+        let note_hash_scalar = item.note().hash();
+        let note_hash = composer.add_input(note_hash_scalar);
+
+        Self::new(
+            value,
+            blinding_factor,
+            value_commitment,
+            idx,
+            R_affine_x,
+            R_affine_y,
+            pk_r_affine_x,
+            pk_r_affine_y,
+            note_hash_scalar,
+            note_hash,
+        )
     }
 }
 
@@ -88,6 +140,13 @@ pub struct ZkTransactionOutput {
     pub value: zk::Variable,
     pub blinding_factor: zk::Variable,
     pub value_commitment: zk::Variable,
+    pub idx: zk::Variable,
+    pub R_affine_x: zk::Variable,
+    pub R_affine_y: zk::Variable,
+    pub pk_r_affine_x: zk::Variable,
+    pub pk_r_affine_y: zk::Variable,
+    pub note_hash_scalar: BlsScalar,
+    pub note_hash: zk::Variable,
 }
 
 impl ZkTransactionOutput {
@@ -95,11 +154,25 @@ impl ZkTransactionOutput {
         value: zk::Variable,
         blinding_factor: zk::Variable,
         value_commitment: zk::Variable,
+        idx: zk::Variable,
+        R_affine_x: zk::Variable,
+        R_affine_y: zk::Variable,
+        pk_r_affine_x: zk::Variable,
+        pk_r_affine_y: zk::Variable,
+        note_hash_scalar: BlsScalar,
+        note_hash: zk::Variable,
     ) -> Self {
         Self {
             value,
             blinding_factor,
             value_commitment,
+            idx,
+            R_affine_x,
+            R_affine_y,
+            pk_r_affine_x,
+            pk_r_affine_y,
+            note_hash_scalar,
+            note_hash,
         }
     }
 
@@ -110,6 +183,32 @@ impl ZkTransactionOutput {
         let blinding_factor = composer.add_input(*item.blinding_factor());
         let value_commitment = composer.add_input(*item.note().value_commitment());
 
-        Self::new(value, blinding_factor, value_commitment)
+        let idx = item.note().idx();
+        let idx = BlsScalar::from(idx);
+        let idx = composer.add_input(idx);
+
+        let R_affine = item.note().R().into_affine();
+        let R_affine_x = composer.add_input(R_affine.x);
+        let R_affine_y = composer.add_input(R_affine.y);
+
+        let pk_r_affine = item.note().pk_r().into_affine();
+        let pk_r_affine_x = composer.add_input(pk_r_affine.x);
+        let pk_r_affine_y = composer.add_input(pk_r_affine.y);
+
+        let note_hash_scalar = item.note().hash();
+        let note_hash = composer.add_input(note_hash_scalar);
+
+        Self::new(
+            value,
+            blinding_factor,
+            value_commitment,
+            idx,
+            R_affine_x,
+            R_affine_y,
+            pk_r_affine_x,
+            pk_r_affine_y,
+            note_hash_scalar,
+            note_hash,
+        )
     }
 }

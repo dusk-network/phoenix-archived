@@ -181,14 +181,6 @@ pub trait Note: Debug + Send + Sync {
         }
     }
 
-    //    /// Generate a tuple (H(note), H(H(note))) for the zero-knowledge note pre-image
-    //    fn zk_preimage(&self) -> (Scalar, Scalar) {
-    //        let y = self.hash();
-    //        let x = crypto::hash_scalar(&y);
-    //
-    //        (y, x)
-    //    }
-
     /// Return a hash represented by `H(value_commitment, idx, H([R]), H([PKr]))`
     fn hash(&self) -> BlsScalar {
         crypto::hash_merkle(&[

@@ -4,7 +4,7 @@ use crate::{
 
 use std::convert::TryFrom;
 use std::path::Path;
-use std::{fmt, ptr, slice};
+use std::{fmt, ptr};
 
 use num_traits::Zero;
 
@@ -36,7 +36,7 @@ pub struct Transaction {
     idx_outputs: usize,
     outputs: [TransactionOutput; MAX_OUTPUT_NOTES_PER_TRANSACTION],
     proof: Option<zk::Proof>,
-    public_inputs: [BlsScalar; zk::PI_LEN],
+    public_inputs: Vec<BlsScalar>,
 }
 
 impl Default for Transaction {
@@ -48,7 +48,7 @@ impl Default for Transaction {
             idx_outputs: 0,
             outputs: [*DEFAULT_OUTPUT; MAX_OUTPUT_NOTES_PER_TRANSACTION],
             proof: None,
-            public_inputs: [BlsScalar::zero(); zk::PI_LEN],
+            public_inputs: vec![BlsScalar::zero(); zk::PI_LEN],
         }
     }
 }
@@ -222,21 +222,12 @@ impl Transaction {
         }
     }
 
-    /// Unsafely create an unbound mutable iterator for a given lifetime
-    ///
-    /// The user should provide the guarantee that the data will live long enough (e.g. as much as
-    /// `self`)
-    pub fn public_inputs_unbound_iter_mut<'a, 'b>(&'a mut self) -> slice::IterMut<'b, BlsScalar> {
-        unsafe {
-            let ptr = (&mut self.public_inputs).as_mut_ptr();
-            let slc = slice::from_raw_parts_mut(ptr, zk::PI_LEN);
-            slc.iter_mut()
-        }
+    pub fn public_inputs(&self) -> &Vec<BlsScalar> {
+        &self.public_inputs
     }
 
-    /// Zero-knowledge circuit public inputs for the built proof
-    pub fn public_inputs(&self) -> &[BlsScalar] {
-        &self.public_inputs
+    pub fn public_inputs_mut(&mut self) -> &mut Vec<BlsScalar> {
+        &mut self.public_inputs
     }
 
     /// Perform the zk proof, and save internally the created r1cs circuit and the commitment

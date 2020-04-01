@@ -25,8 +25,16 @@ pub use transaction::{ZkTransaction, ZkTransactionInput, ZkTransactionOutput};
 /// Length of the public inputs
 #[rustfmt::skip]
 pub const PI_LEN: usize = {
+
+    const HADES_SIZE: usize = hades252::strategies::gadget::PI_SIZE;
+    const MAX_NOTES: usize = MAX_INPUT_NOTES_PER_TRANSACTION + MAX_OUTPUT_NOTES_PER_TRANSACTION;
+    const MAX_NOTES_FEE: usize = MAX_NOTES + 1;
+
+    // Notes preimage
+    (HADES_SIZE * 3 + 1) * MAX_NOTES +
+
     // Tx balance
-    (hades252::strategies::gadget::PI_SIZE + 2) * (MAX_INPUT_NOTES_PER_TRANSACTION + MAX_OUTPUT_NOTES_PER_TRANSACTION + 1) + 1
+    (HADES_SIZE + 2) * MAX_NOTES_FEE + 1
 };
 
 lazy_static::lazy_static! {
@@ -175,9 +183,9 @@ pub fn bytes_to_proof(bytes: &[u8]) -> Result<Proof, Error> {
 
 /// Initialize the zk static data
 pub fn init() {
-    let public_parameters = srs::setup(32768, &mut rand::thread_rng());
-    let (ck, vk) = srs::trim(&public_parameters, 32768).unwrap();
-    let domain: EvaluationDomain<BlsScalar> = EvaluationDomain::new(32768).unwrap();
+    let public_parameters = srs::setup(32768 * 4, &mut rand::thread_rng());
+    let (ck, vk) = srs::trim(&public_parameters, 32768 * 4).unwrap();
+    let domain: EvaluationDomain<BlsScalar> = EvaluationDomain::new(32768 * 4).unwrap();
 
     unsafe {
         utils::lazy_static_write(&*DOMAIN, domain);
@@ -199,10 +207,11 @@ pub fn gen_circuit(tx: &mut Transaction) -> (Transcript, Composer, Circuit) {
     let mut transcript = gen_transcript();
     let mut composer = Composer::new();
 
-    let pi = tx.public_inputs_unbound_iter_mut();
-    let tx = ZkTransaction::from_tx(&mut composer, tx);
+    let tx_zk = ZkTransaction::from_tx(&mut composer, tx);
+    let pi = tx.public_inputs_mut().iter_mut();
 
-    let (mut composer, _pi) = gadgets::balance(composer, &tx, pi);
+    let (composer, pi) = gadgets::preimage(composer, &tx_zk, pi);
+    let (mut composer, _) = gadgets::balance(composer, &tx_zk, pi);
 
     composer.add_dummy_constraints();
 

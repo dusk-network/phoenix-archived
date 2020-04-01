@@ -27,7 +27,7 @@ fn proof_serialization() {
     tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
 
     tx.prove().unwrap();
-    let pi = tx.public_inputs().to_vec();
+    let pi = tx.public_inputs().clone();
 
     tx.verify().unwrap();
 
