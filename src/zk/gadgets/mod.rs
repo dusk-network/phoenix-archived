@@ -1,3 +1,5 @@
-pub use transaction_balance::balance;
+pub use balance::balance;
+pub use preimage::preimage;
 
-mod transaction_balance;
+mod balance;
+mod preimage;
