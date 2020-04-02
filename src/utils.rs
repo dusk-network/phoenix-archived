@@ -10,7 +10,9 @@ use algebra::curves::jubjub::JubJubParameters;
 use algebra::curves::models::TEModelParameters;
 use algebra::curves::{AffineCurve, ProjectiveCurve};
 use algebra::serialize::{CanonicalDeserialize, CanonicalSerialize};
+use algebra::ToBytes;
 use kelvin::{ByteHash, Source};
+use num_traits::{One, Zero};
 use rand::{Rng, RngCore};
 use sodiumoxide::crypto::secretbox;
 
@@ -90,6 +92,10 @@ pub fn gen_random_bls_scalar_from_rng<R: RngCore>(rng: &mut R) -> BlsScalar {
 /// Both [`JubJubScalar`] and [`BlsScalar`] are represented internally by a [`BigInteger256`]
 pub fn scalar_as_slice<'a>(s: &'a BigInteger256) -> &'a [u8] {
     unsafe { slice::from_raw_parts(s.0.as_ptr() as *const u8, 32) }
+}
+
+pub fn jubjub_projective_basepoint() -> &'static JubJubProjective {
+    &JUBJUB_BASEPOINT_PROJECTIVE
 }
 
 /// Multiply a [`JubJubScalar`] by the JubJub generator point
@@ -254,3 +260,25 @@ pub fn safe_48_chunk(bytes: &[u8]) -> [u8; 48] {
 ////pub fn mul_by_basepoint_ristretto(s: &Scalar) -> RistrettoPoint {
 ////    &constants::RISTRETTO_BASEPOINT_TABLE * s
 ////}
+
+/// Decompose a [`JubJubScalar`] to a set of bits represented by [`BlsScalar`]
+pub fn jubjub_scalar_to_bls_bits(scalar: &JubJubScalar) -> [BlsScalar; 256] {
+    let mut bytes = [0x00u8; 32];
+    scalar.write(&mut bytes[..]).expect("In-memory write");
+
+    // Compute bit-array
+    let mut res = [BlsScalar::zero(); 256];
+
+    let mut res_iter = res.iter_mut();
+    bytes.iter_mut().for_each(|b| {
+        (0..8).for_each(|_| {
+            let r = res_iter.next();
+            if (*b) & 1u8 == 1 {
+                r.map(|r| *r = BlsScalar::one());
+            }
+            *b >>= 1;
+        });
+    });
+
+    res
+}

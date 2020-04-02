@@ -39,5 +39,9 @@ branch = "plonk_zexe"
 git = "https://github.com/dusk-network/plonk.git"
 branch = "fast_prover_zexe"
 
+[dependencies.plonk_gadgets]
+git = "https://github.com/dusk-network/plonk_gadgets.git"
+branch = "vlopes11/ecc_gadgets"
+
 [build-dependencies]
 tonic-build = { version = "0.1", default-features = false, features = ["transport"] }

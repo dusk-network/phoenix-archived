@@ -2,7 +2,7 @@ use crate::{BlsScalar, JubJubAffine, JubJubProjective, JubJubScalar, Nonce, Publ
 
 use std::{cmp, ptr};
 
-use algebra::curves::ProjectiveCurve;
+use algebra::curves::{AffineCurve, ProjectiveCurve};
 use algebra::groups::Group;
 use num_traits::{One, Zero};
 use rand::seq::SliceRandom;
@@ -111,9 +111,11 @@ pub fn hash_scalar(s: &BlsScalar) -> BlsScalar {
     ScalarStrategy::new().poseidon(&mut input)
 }
 
-/// Convert the projective to affine, and perform `H(x, y)`
+/// Convert to a deterministic representation of the projective point, and perform `H(x, y, z, t)`
 pub fn hash_jubjub_projective(p: &JubJubProjective) -> BlsScalar {
-    hash_jubjub_affine(&p.into_affine())
+    let p = p.into_affine().into_projective();
+
+    hash_merkle(&[p.x, p.y, p.z, p.t])
 }
 
 /// Return a hash represented by `H(x, y)`
