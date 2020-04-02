@@ -211,7 +211,8 @@ pub fn gen_circuit(tx: &mut Transaction) -> (Transcript, Composer, Circuit) {
     let pi = tx.public_inputs_mut().iter_mut();
 
     let (composer, pi) = gadgets::preimage(composer, &tx_zk, pi);
-    let (mut composer, _) = gadgets::balance(composer, &tx_zk, pi);
+    let (composer, _) = gadgets::balance(composer, &tx_zk, pi);
+    let mut composer = gadgets::sk_r(composer, &tx_zk);
 
     composer.add_dummy_constraints();
 
