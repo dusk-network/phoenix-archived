@@ -4,6 +4,20 @@ version = "0.1.0"
 authors = ["Victor Lopez <vhrlopes@gmail.com>"]
 edition = "2018"
 
+[features]
+circuit-merkle = []
+circuit-preimage = []
+circuit-balance = []
+circuit-nullifier = []
+circuit-skr = []
+full-circuit = [
+    "circuit-merkle",
+    "circuit-preimage",
+    "circuit-balance",
+    "circuit-nullifier",
+    "circuit-skr"
+]
+
 [dependencies]
 merlin = "2.0"
 rand = "^0.7"

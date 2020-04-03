@@ -10,6 +10,10 @@ use rand::seq::SliceRandom;
 use hades252::strategies::{ScalarStrategy, Strategy};
 use sodiumoxide::crypto::secretbox::{self, Key};
 
+pub mod merkle;
+
+pub use merkle::{MerkleProof, MerkleProofProvider, ARITY, TREE_HEIGHT};
+
 #[cfg(test)]
 mod tests;
 

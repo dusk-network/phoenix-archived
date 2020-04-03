@@ -97,7 +97,7 @@ mod tests {
     use crate::{utils, zk, NoteGenerator, SecretKey, Transaction, TransparentNote};
 
     #[test]
-    fn tx_balance() {
+    fn tx_balance_valid() {
         utils::init();
         zk::init();
 
@@ -140,6 +140,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "circuit-balance")]
     fn tx_balance_invalid() {
         utils::init();
         zk::init();

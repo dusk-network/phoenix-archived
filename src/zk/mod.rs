@@ -1,5 +1,5 @@
 use crate::{
-    utils, BlsScalar, Error, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
+    crypto, utils, BlsScalar, Db, Error, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
     MAX_OUTPUT_NOTES_PER_TRANSACTION,
 };
 
@@ -9,7 +9,9 @@ use algebra::bytes::{FromBytes, ToBytes};
 use algebra::curves::bls12_381::Bls12_381;
 use algebra::curves::bls12_381::G1Affine;
 use ff_fft::EvaluationDomain;
+use kelvin::Blake2b;
 use merlin::Transcript;
+use num_traits::Zero;
 use plonk::cs::composer::StandardComposer;
 use plonk::cs::{proof::Proof as PlonkProof, Composer as _, PreProcessedCircuit};
 use plonk::srs;
@@ -37,7 +39,10 @@ pub const PI_LEN: usize = {
     (HADES_SIZE + 2) * MAX_NOTES_FEE + 1 +
 
     // Nullifier
-    (HADES_SIZE + 1) * MAX_INPUT_NOTES_PER_TRANSACTION
+    (HADES_SIZE + 1) * MAX_INPUT_NOTES_PER_TRANSACTION +
+
+    // Merkle
+    crypto::TREE_HEIGHT * (5 * crypto::ARITY + 2 + HADES_SIZE)
 };
 
 lazy_static::lazy_static! {
@@ -186,7 +191,7 @@ pub fn bytes_to_proof(bytes: &[u8]) -> Result<Proof, Error> {
 
 /// Initialize the zk static data
 pub fn init() {
-    const CAPACITY: usize = 32768 * 4;
+    const CAPACITY: usize = 32768 * 2;
 
     let public_parameters = srs::setup(CAPACITY, &mut utils::generate_rng(b"phoenix-plonk-srs"));
     let (ck, vk) = srs::trim(&public_parameters, CAPACITY).unwrap();
@@ -212,14 +217,29 @@ pub fn gen_circuit(tx: &mut Transaction) -> (Transcript, Composer, Circuit) {
     let mut transcript = gen_transcript();
     let mut composer = Composer::new();
 
-    let tx_zk = ZkTransaction::from_tx(&mut composer, tx);
+    let db: Db<Blake2b> = Db::default();
+    let tx_zk = ZkTransaction::from_tx(&mut composer, tx, &db);
     let pi = tx.public_inputs_mut().iter_mut();
 
-    let (composer, pi) = gadgets::preimage(composer, &tx_zk, pi);
-    let (composer, pi) = gadgets::balance(composer, &tx_zk, pi);
-    let (composer, _) = gadgets::nullifier(composer, &tx_zk, pi);
-    let mut composer = gadgets::sk_r(composer, &tx_zk);
+    #[cfg(feature = "circuit-merkle")]
+    let (composer, pi) = gadgets::merkle(composer, &tx_zk, pi);
 
+    #[cfg(feature = "circuit-preimage")]
+    let (composer, pi) = gadgets::preimage(composer, &tx_zk, pi);
+
+    #[cfg(feature = "circuit-balance")]
+    let (composer, pi) = gadgets::balance(composer, &tx_zk, pi);
+
+    #[cfg(feature = "circuit-nullifier")]
+    let (composer, pi) = gadgets::nullifier(composer, &tx_zk, pi);
+
+    #[cfg(feature = "circuit-skr")]
+    let composer = gadgets::sk_r(composer, &tx_zk);
+
+    let mut pi = pi;
+    let mut composer = composer;
+
+    pi.next().map(|p| *p = BlsScalar::zero());
     composer.add_dummy_constraints();
 
     let circuit = composer.preprocess(&*CK, &mut transcript, &*DOMAIN);

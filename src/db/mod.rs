@@ -1,5 +1,6 @@
 use crate::{
-    Error, Note, NoteVariant, Nullifier, Transaction, TransactionItem, MAX_NOTES_PER_TRANSACTION,
+    crypto, BlsScalar, Error, Note, NoteVariant, Nullifier, Transaction, TransactionItem,
+    MAX_NOTES_PER_TRANSACTION,
 };
 
 use std::io;
@@ -10,7 +11,7 @@ use kelvin::annotations::Count;
 use kelvin::{Blake2b, Content, Map as _, Root, Sink, Source};
 use kelvin_hamt::CountingHAMTMap as HAMTMap;
 use kelvin_radix::DefaultRadixMap as RadixMap;
-
+use rand::Rng;
 use tracing::trace;
 
 #[cfg(test)]
@@ -43,6 +44,18 @@ impl<H: ByteHash> Content<H> for Db<H> {
             notes: HAMTMap::restore(source)?,
             nullifiers: RadixMap::restore(source)?,
         })
+    }
+}
+
+impl<H: ByteHash> crypto::MerkleProofProvider for Db<H> {
+    fn query_level(&self, _depth: u32, _idx: usize) -> [Option<BlsScalar>; crypto::ARITY] {
+        // TODO - Implement
+        let mut rng = rand::thread_rng();
+
+        let mut leaves = [None; crypto::ARITY];
+        leaves.iter_mut().for_each(|l| *l = rng.gen());
+
+        leaves
     }
 }
 
