@@ -73,7 +73,7 @@ pub struct ZkTransactionInput {
 
     pub sk_a: [zk::Variable; 256],
     pub sk_b: [zk::Variable; 256],
-    pub nullifier: zk::Variable,
+    pub nullifier: BlsScalar,
 }
 
 impl ZkTransactionInput {
@@ -96,7 +96,7 @@ impl ZkTransactionInput {
 
         sk_a: [zk::Variable; 256],
         sk_b: [zk::Variable; 256],
-        nullifier: zk::Variable,
+        nullifier: BlsScalar,
     ) -> Self {
         Self {
             value,
@@ -163,7 +163,7 @@ impl ZkTransactionInput {
                 *s = composer.add_input(*bit);
             });
 
-        let nullifier = composer.add_input(item.nullifier.into());
+        let nullifier = item.nullifier.into();
 
         Self::new(
             value,

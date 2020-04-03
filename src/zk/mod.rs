@@ -34,7 +34,10 @@ pub const PI_LEN: usize = {
     (HADES_SIZE * 3 + 1) * MAX_NOTES +
 
     // Tx balance
-    (HADES_SIZE + 2) * MAX_NOTES_FEE + 1
+    (HADES_SIZE + 2) * MAX_NOTES_FEE + 1 +
+
+    // Nullifier
+    (HADES_SIZE + 1) * MAX_INPUT_NOTES_PER_TRANSACTION
 };
 
 lazy_static::lazy_static! {
@@ -183,9 +186,11 @@ pub fn bytes_to_proof(bytes: &[u8]) -> Result<Proof, Error> {
 
 /// Initialize the zk static data
 pub fn init() {
-    let public_parameters = srs::setup(32768 * 4, &mut rand::thread_rng());
-    let (ck, vk) = srs::trim(&public_parameters, 32768 * 4).unwrap();
-    let domain: EvaluationDomain<BlsScalar> = EvaluationDomain::new(32768 * 4).unwrap();
+    const CAPACITY: usize = 32768 * 4;
+
+    let public_parameters = srs::setup(CAPACITY, &mut utils::generate_rng(b"phoenix-plonk-srs"));
+    let (ck, vk) = srs::trim(&public_parameters, CAPACITY).unwrap();
+    let domain: EvaluationDomain<BlsScalar> = EvaluationDomain::new(CAPACITY).unwrap();
 
     unsafe {
         utils::lazy_static_write(&*DOMAIN, domain);
@@ -211,7 +216,8 @@ pub fn gen_circuit(tx: &mut Transaction) -> (Transcript, Composer, Circuit) {
     let pi = tx.public_inputs_mut().iter_mut();
 
     let (composer, pi) = gadgets::preimage(composer, &tx_zk, pi);
-    let (composer, _) = gadgets::balance(composer, &tx_zk, pi);
+    let (composer, pi) = gadgets::balance(composer, &tx_zk, pi);
+    let (composer, _) = gadgets::nullifier(composer, &tx_zk, pi);
     let mut composer = gadgets::sk_r(composer, &tx_zk);
 
     composer.add_dummy_constraints();

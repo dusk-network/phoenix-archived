@@ -130,8 +130,9 @@ pub trait NoteGenerator:
 pub trait Note: Debug + Send + Sync {
     /// Create a unique nullifier for the note
     fn generate_nullifier(&self, _sk: &SecretKey) -> Nullifier {
-        // TODO - Set nullifier as `H(a, b, idx)`
-        crypto::hash_merkle(&[BlsScalar::from(self.idx())]).into()
+        // TODO - Generate a secure nullifier
+        let c = BlsScalar::from(self.idx());
+        crypto::hash_merkle(&[c]).into()
     }
 
     /// Fully decrypt the note (value and blinding factor) with the provided [`ViewKey`], and
