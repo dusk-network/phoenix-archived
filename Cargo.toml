@@ -5,18 +5,18 @@ authors = ["Victor Lopez <vhrlopes@gmail.com>"]
 edition = "2018"
 
 [features]
-circuit-merkle = []
-circuit-preimage = []
-circuit-balance = []
-circuit-nullifier = []
-circuit-skr = []
-full-circuit = [
+default = [
     "circuit-merkle",
     "circuit-preimage",
     "circuit-balance",
     "circuit-nullifier",
     "circuit-skr"
 ]
+circuit-merkle = []
+circuit-preimage = []
+circuit-balance = []
+circuit-nullifier = []
+circuit-skr = []
 
 [dependencies]
 merlin = "2.0"

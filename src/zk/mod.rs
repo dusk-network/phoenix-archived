@@ -23,7 +23,7 @@ pub mod transaction;
 
 pub use transaction::{ZkTransaction, ZkTransactionInput, ZkTransactionOutput};
 
-const CAPACITY: usize = 32768 * 2;
+const CAPACITY: usize = 32768 * 8;
 
 /// Length of the public inputs
 #[rustfmt::skip]
@@ -43,7 +43,7 @@ pub const PI_LEN: usize = {
     (HADES_SIZE + 1) * MAX_INPUT_NOTES_PER_TRANSACTION +
 
     // Merkle
-    crypto::TREE_HEIGHT * (5 * crypto::ARITY + 2 + HADES_SIZE)
+    MAX_INPUT_NOTES_PER_TRANSACTION * crypto::TREE_HEIGHT * (5 * crypto::ARITY + 3 + HADES_SIZE)
 };
 
 lazy_static::lazy_static! {

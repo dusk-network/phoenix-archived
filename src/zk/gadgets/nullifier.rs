@@ -18,8 +18,7 @@ where
 
     zero_perm[0] = composer.add_input(BlsScalar::one());
 
-    let item = &tx.inputs[0];
-    {
+    for item in tx.inputs.iter() {
         perm.copy_from_slice(&zero_perm);
         perm[1] = item.idx;
         let (mut p_composer, mut p_pi, n) =
