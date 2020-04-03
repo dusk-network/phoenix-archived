@@ -11,7 +11,6 @@ use algebra::curves::bls12_381::G1Affine;
 use ff_fft::EvaluationDomain;
 use kelvin::Blake2b;
 use merlin::Transcript;
-use num_traits::Zero;
 use plonk::cs::composer::StandardComposer;
 use plonk::cs::{proof::Proof as PlonkProof, Composer as _, PreProcessedCircuit};
 use plonk::srs;
@@ -23,6 +22,8 @@ pub use plonk::cs::constraint_system::Variable;
 pub mod transaction;
 
 pub use transaction::{ZkTransaction, ZkTransactionInput, ZkTransactionOutput};
+
+const CAPACITY: usize = 32768 * 2;
 
 /// Length of the public inputs
 #[rustfmt::skip]
@@ -191,8 +192,6 @@ pub fn bytes_to_proof(bytes: &[u8]) -> Result<Proof, Error> {
 
 /// Initialize the zk static data
 pub fn init() {
-    const CAPACITY: usize = 32768 * 2;
-
     let public_parameters = srs::setup(CAPACITY, &mut utils::generate_rng(b"phoenix-plonk-srs"));
     let (ck, vk) = srs::trim(&public_parameters, CAPACITY).unwrap();
     let domain: EvaluationDomain<BlsScalar> = EvaluationDomain::new(CAPACITY).unwrap();
@@ -214,9 +213,21 @@ pub fn init() {
 
 /// Generate a new circuit
 pub fn gen_circuit(tx: &mut Transaction) -> (Transcript, Composer, Circuit) {
-    let mut transcript = gen_transcript();
-    let mut composer = Composer::new();
+    let composer = Composer::new();
+    let mut composer = inner_circuit(composer, tx);
 
+    let mut transcript = gen_transcript();
+    let circuit = composer.preprocess(&*CK, &mut transcript, &*DOMAIN);
+
+    (transcript, composer, circuit)
+}
+
+/// Full transaction circuit
+pub fn circuit() -> &'static Circuit {
+    unsafe { &*PREPROCESSED_CIRCUIT.as_ptr() }
+}
+
+fn inner_circuit(mut composer: Composer, tx: &mut Transaction) -> Composer {
     let db: Db<Blake2b> = Db::default();
     let tx_zk = ZkTransaction::from_tx(&mut composer, tx, &db);
     let pi = tx.public_inputs_mut().iter_mut();
@@ -236,20 +247,12 @@ pub fn gen_circuit(tx: &mut Transaction) -> (Transcript, Composer, Circuit) {
     #[cfg(feature = "circuit-skr")]
     let composer = gadgets::sk_r(composer, &tx_zk);
 
-    let mut pi = pi;
+    let _ = pi;
     let mut composer = composer;
 
-    pi.next().map(|p| *p = BlsScalar::zero());
-    composer.add_dummy_constraints();
+    composer.fill_capacity_with_dummy_constraints(CAPACITY);
 
-    let circuit = composer.preprocess(&*CK, &mut transcript, &*DOMAIN);
-
-    (transcript, composer, circuit)
-}
-
-/// Full transaction circuit
-pub fn circuit() -> &'static Circuit {
-    unsafe { &*PREPROCESSED_CIRCUIT.as_ptr() }
+    composer
 }
 
 fn gen_transcript() -> Transcript {
@@ -258,8 +261,13 @@ fn gen_transcript() -> Transcript {
 
 /// Generate a new transaction zk proof
 pub fn prove(tx: &mut Transaction) -> Proof {
-    let (mut transcript, mut composer, circuit) = gen_circuit(tx);
-    composer.prove(&*CK, &circuit, &mut transcript)
+    let composer = Composer::new();
+    let mut composer = inner_circuit(composer, tx);
+
+    let mut transcript = TRANSCRIPT.clone();
+    let preprocessed_circuit = circuit();
+
+    composer.prove(&*CK, preprocessed_circuit, &mut transcript)
 }
 
 /// Verify a proof with a pre-generated circuit
