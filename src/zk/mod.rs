@@ -23,7 +23,7 @@ pub mod transaction;
 
 pub use transaction::{ZkTransaction, ZkTransactionInput, ZkTransactionOutput};
 
-const CAPACITY: usize = 32768 * 8;
+const CAPACITY: usize = 32768 * 16;
 
 /// Length of the public inputs
 #[rustfmt::skip]

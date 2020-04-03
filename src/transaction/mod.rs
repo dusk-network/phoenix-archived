@@ -8,8 +8,8 @@ use std::{fmt, ptr};
 
 use num_traits::Zero;
 
-pub const MAX_INPUT_NOTES_PER_TRANSACTION: usize = 2;
-pub const MAX_OUTPUT_NOTES_PER_TRANSACTION: usize = 2;
+pub const MAX_INPUT_NOTES_PER_TRANSACTION: usize = 3;
+pub const MAX_OUTPUT_NOTES_PER_TRANSACTION: usize = 3;
 
 /// Maximum allowed number of notes per transaction.
 pub const MAX_NOTES_PER_TRANSACTION: usize =
