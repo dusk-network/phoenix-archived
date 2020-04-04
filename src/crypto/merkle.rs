@@ -4,7 +4,7 @@ use hades252::strategies::{ScalarStrategy, Strategy};
 use num_traits::Zero;
 
 pub const ARITY: usize = hades252::WIDTH - 1;
-pub const TREE_HEIGHT: usize = 17;
+pub const TREE_HEIGHT: usize = 16;
 
 pub trait MerkleProofProvider {
     /// Ability to return the leaves of a given level

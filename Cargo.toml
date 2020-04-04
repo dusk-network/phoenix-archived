@@ -59,3 +59,26 @@ branch = "vlopes11/ecc_gadgets"
 
 [build-dependencies]
 tonic-build = { version = "0.1", default-features = false, features = ["transport"] }
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "phoenix"
+harness = false
+
+[profile.release]
+opt-level = 3
+incremental = false
+codegen-units = 1
+debug = true
+lto = true
+overflow-checks = false
+
+[profile.bench]
+opt-level = 3
+incremental = false
+codegen-units = 1
+debug = false
+lto = true
+overflow-checks = false

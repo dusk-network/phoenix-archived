@@ -23,7 +23,7 @@ pub mod transaction;
 
 pub use transaction::{ZkTransaction, ZkTransactionInput, ZkTransactionOutput};
 
-const CAPACITY: usize = 32768 * 16;
+pub const CAPACITY: usize = 8192 * 16;
 
 /// Length of the public inputs
 #[rustfmt::skip]
@@ -213,7 +213,7 @@ pub fn init() {
 
 /// Generate a new circuit
 pub fn gen_circuit(tx: &mut Transaction) -> (Transcript, Composer, Circuit) {
-    let composer = Composer::new();
+    let composer = Composer::with_expected_size(CAPACITY);
     let mut composer = inner_circuit(composer, tx);
 
     let mut transcript = gen_transcript();
@@ -261,7 +261,7 @@ fn gen_transcript() -> Transcript {
 
 /// Generate a new transaction zk proof
 pub fn prove(tx: &mut Transaction) -> Proof {
-    let composer = Composer::new();
+    let composer = Composer::with_expected_size(CAPACITY);
     let mut composer = inner_circuit(composer, tx);
 
     let mut transcript = TRANSCRIPT.clone();
