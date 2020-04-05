@@ -18,9 +18,12 @@ use poly_commit::kzg10::{Commitment, Powers, VerifierKey};
 
 pub use plonk::cs::constraint_system::Variable;
 
+/// [`ZkMerkleProof`] definition
+pub mod merkle;
 /// [`ZkTransaction`] definition
 pub mod transaction;
 
+pub use merkle::ZkMerkleProof;
 pub use transaction::{ZkTransaction, ZkTransactionInput, ZkTransactionOutput};
 
 pub const CAPACITY: usize = 8192 * 8;
@@ -250,6 +253,7 @@ fn inner_circuit(mut composer: Composer, tx: &mut Transaction) -> Composer {
     #[cfg(feature = "circuit-skr")]
     let composer = gadgets::sk_r(composer, &tx_zk);
 
+    let _ = tx_zk;
     let _ = pi;
     let mut composer = composer;
 

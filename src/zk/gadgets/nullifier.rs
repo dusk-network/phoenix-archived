@@ -88,3 +88,47 @@ where
 
     (composer, pi)
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
+
+    #[test]
+    fn tx_input_nullifier_invalid() {
+        utils::init();
+        zk::init();
+
+        let mut tx = Transaction::default();
+
+        let sk = SecretKey::default();
+        let pk = sk.public_key();
+        let value = 61;
+        let note = TransparentNote::output(&pk, value).0;
+        let mut txi = note.to_transaction_input(sk);
+        txi.nullifier = note.generate_nullifier(&SecretKey::default());
+        tx.push_input(txi).unwrap();
+
+        let sk = SecretKey::default();
+        let pk = sk.public_key();
+        let value = 22;
+        let (note, blinding_factor) = TransparentNote::output(&pk, value);
+        tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
+            .unwrap();
+
+        let sk = SecretKey::default();
+        let pk = sk.public_key();
+        let value = 24;
+        let (note, blinding_factor) = TransparentNote::output(&pk, value);
+        tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
+            .unwrap();
+
+        let sk = SecretKey::default();
+        let pk = sk.public_key();
+        let value = 15;
+        let (note, blinding_factor) = TransparentNote::output(&pk, value);
+        tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
+
+        tx.prove().unwrap();
+        assert!(tx.verify().is_err());
+    }
+}

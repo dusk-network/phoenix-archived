@@ -124,44 +124,6 @@ mod tests {
     use crate::{utils, zk, NoteGenerator, SecretKey, Transaction, TransparentNote};
 
     #[test]
-    fn tx_balance_valid() {
-        utils::init();
-        zk::init();
-
-        let mut tx = Transaction::default();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 61;
-        let note = TransparentNote::output(&pk, value).0;
-        tx.push_input(note.to_transaction_input(sk)).unwrap();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 22;
-        let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
-            .unwrap();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 24;
-        let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
-            .unwrap();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 15;
-        let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
-
-        tx.prove().unwrap();
-        tx.verify().unwrap();
-    }
-
-    #[test]
-    #[cfg(feature = "circuit-balance")]
     fn tx_balance_invalid() {
         utils::init();
         zk::init();

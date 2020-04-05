@@ -124,7 +124,7 @@ pub struct ZkTransactionInput {
     pub sk_r: [zk::Variable; 256],
     pub nullifier: BlsScalar,
 
-    pub merkle: zk::gadgets::ZkMerkleProof,
+    pub merkle: zk::ZkMerkleProof,
     pub merkle_root: BlsScalar,
 }
 
@@ -145,7 +145,7 @@ impl ZkTransactionInput {
         sk_r: [zk::Variable; 256],
         nullifier: BlsScalar,
 
-        merkle: zk::gadgets::ZkMerkleProof,
+        merkle: zk::ZkMerkleProof,
         merkle_root: BlsScalar,
     ) -> Self {
         Self {
@@ -206,7 +206,7 @@ impl ZkTransactionInput {
 
         let merkle = crypto::MerkleProof::new(tree, item.note());
         let merkle_root = merkle.levels[crypto::TREE_HEIGHT - 1].data[1];
-        let merkle = zk::gadgets::ZkMerkleProof::new(composer, &merkle);
+        let merkle = zk::ZkMerkleProof::new(composer, &merkle);
 
         Self::new(
             value,
