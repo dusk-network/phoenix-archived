@@ -27,10 +27,7 @@ lazy_static::lazy_static! {
 
 /// Transaction item definitions
 pub mod item;
-//
-//#[cfg(test)]
-//mod tests;
-//
+
 /// A phoenix transaction
 #[derive(Clone)]
 pub struct Transaction {
