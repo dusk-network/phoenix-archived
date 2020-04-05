@@ -23,7 +23,7 @@ pub mod transaction;
 
 pub use transaction::{ZkTransaction, ZkTransactionInput, ZkTransactionOutput};
 
-pub const CAPACITY: usize = 8192 * 16;
+pub const CAPACITY: usize = 8192 * 8;
 
 /// Length of the public inputs
 #[rustfmt::skip]
@@ -231,6 +231,9 @@ fn inner_circuit(mut composer: Composer, tx: &mut Transaction) -> Composer {
     let db: Db<Blake2b> = Db::default();
     let tx_zk = ZkTransaction::from_tx(&mut composer, tx, &db);
     let pi = tx.public_inputs_mut().iter_mut();
+
+    #[cfg(feature = "circuit-sanity")]
+    let (composer, pi) = gadgets::sanity(composer, &tx_zk, pi);
 
     #[cfg(feature = "circuit-merkle")]
     let (composer, pi) = gadgets::merkle(composer, &tx_zk, pi);

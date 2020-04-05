@@ -11,7 +11,6 @@ use algebra::curves::models::TEModelParameters;
 use algebra::curves::{AffineCurve, ProjectiveCurve};
 use algebra::serialize::{CanonicalDeserialize, CanonicalSerialize};
 use algebra::ToBytes;
-use hades252::strategies::{ScalarStrategy, Strategy};
 use kelvin::{ByteHash, Source};
 use num_traits::{One, Zero};
 use rand::rngs::StdRng;
@@ -248,10 +247,66 @@ pub fn jubjub_scalar_to_bls_bits(scalar: &JubJubScalar) -> [BlsScalar; 256] {
     res
 }
 
-/// Perform  a poseidon merkle slice hash strategy on a bits representation of a jubjub scalar
-pub fn jubjub_scalar_to_bls(s: &JubJubScalar) -> BlsScalar {
-    let bits = jubjub_scalar_to_bls_bits(s);
-    ScalarStrategy::new().poseidon_slice(&bits)
+/// Decompose a [`JubJubScalar`] to a set of bits
+pub fn jubjub_scalar_to_bits(scalar: &JubJubScalar) -> [u8; 256] {
+    let mut bytes = [0x00u8; 32];
+    scalar.write(&mut bytes[..]).expect("In-memory write");
+
+    // Compute bit-array
+    let mut res = [0x00u8; 256];
+
+    let mut res_iter = res.iter_mut();
+    bytes.iter_mut().for_each(|b| {
+        (0..8).for_each(|_| {
+            let r = res_iter.next();
+            if (*b) & 1u8 == 1 {
+                r.map(|r| *r = 1);
+            }
+            *b >>= 1;
+        });
+    });
+
+    res
+}
+
+/// Decompose a [`BlsScalar`] to a set of bits
+pub fn bls_scalar_to_bits(scalar: &BlsScalar) -> [u8; 256] {
+    let mut bytes = [0x00u8; 32];
+    scalar.write(&mut bytes[..]).expect("In-memory write");
+
+    // Compute bit-array
+    let mut res = [0x00u8; 256];
+
+    let mut res_iter = res.iter_mut();
+    bytes.iter_mut().for_each(|b| {
+        (0..8).for_each(|_| {
+            let r = res_iter.next();
+            if (*b) & 1u8 == 1 {
+                r.map(|r| *r = 1u8);
+            }
+            *b >>= 1;
+        });
+    });
+
+    res
+}
+
+/// Decompose a [`JubJubScalar`] into bits and reconstruct a [`BlsScalar`] from them
+pub fn bls_scalar_from_jubjub_bits(s: &JubJubScalar) -> BlsScalar {
+    let two = BlsScalar::from(2u8);
+    let mut result = BlsScalar::zero();
+
+    jubjub_scalar_to_bits(s)
+        .iter()
+        .fold(BlsScalar::one(), |mut acc, bit| {
+            acc *= &two;
+            if bit == &1u8 {
+                result += &acc;
+            }
+            acc
+        });
+
+    result
 }
 
 /// Generate a [`StdRng`] from a given slice of bytes

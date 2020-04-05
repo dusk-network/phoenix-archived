@@ -600,7 +600,7 @@ dependencies = [
 [[package]]
 name = "hades252"
 version = "2.0.0"
-source = "git+https://github.com/dusk-network/Hades252.git?branch=plonk_zexe#ec4945b4d5f6ed239670386418db73a824129c1c"
+source = "git+https://github.com/dusk-network/Hades252.git?branch=plonk_zexe#af197607f0757bc722293ee40e89e6bfa158ebb0"
 dependencies = [
  "algebra 0.1.0 (git+https://github.com/scipr-lab/zexe/)",
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",

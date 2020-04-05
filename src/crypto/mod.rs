@@ -1,4 +1,6 @@
-use crate::{BlsScalar, JubJubAffine, JubJubProjective, JubJubScalar, Nonce, PublicKey, ViewKey};
+use crate::{
+    utils, BlsScalar, JubJubAffine, JubJubProjective, JubJubScalar, Nonce, PublicKey, ViewKey,
+};
 
 use std::{cmp, ptr};
 
@@ -125,4 +127,32 @@ pub fn hash_jubjub_projective(p: &JubJubProjective) -> BlsScalar {
 /// Return a hash represented by `H(x, y)`
 pub fn hash_jubjub_affine(p: &JubJubAffine) -> BlsScalar {
     hash_merkle(&[p.x, p.y])
+}
+
+/// Perform  a poseidon merkle slice hash strategy on a bits representation of a jubjub scalar
+pub fn jubjub_scalar_to_bls(s: &JubJubScalar) -> BlsScalar {
+    let bits = utils::jubjub_scalar_to_bls_bits(s);
+    ScalarStrategy::new().poseidon_slice(&bits)
+}
+
+/// Hash the point into a [`BlsScalar`], decompose the result in bits and reconstruct a
+/// [`JubJubScalar`] from the bits
+pub fn hash_jubjub_projective_to_jubjub_scalar(p: &JubJubProjective) -> JubJubScalar {
+    // TODO - Review and improve
+    let s = hash_jubjub_projective(p);
+
+    let two = JubJubScalar::from(2u8);
+    let mut result = JubJubScalar::zero();
+
+    utils::bls_scalar_to_bits(&s)
+        .iter()
+        .fold(JubJubScalar::one(), |mut acc, bit| {
+            acc *= &two;
+            if bit == &1u8 {
+                result += &acc;
+            }
+            acc
+        });
+
+    result
 }

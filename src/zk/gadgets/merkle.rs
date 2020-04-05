@@ -64,7 +64,7 @@ pub fn merkle<'a, P>(
 where
     P: Iterator<Item = &'a mut BlsScalar>,
 {
-    let zero = composer.add_input(BlsScalar::zero());
+    let zero = tx.zero;
     let mut perm = [zero; hades252::WIDTH];
 
     for item in tx.inputs.iter() {
