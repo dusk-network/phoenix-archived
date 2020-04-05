@@ -160,4 +160,8 @@ impl<H: ByteHash> Db<H> {
     pub fn fetch_nullifier(self, nullifier: &Nullifier) -> Result<Option<()>, Error> {
         Ok(self.nullifiers.get(nullifier)?.map(|d| *d))
     }
+
+    pub fn notes(self) -> HAMTMap<Idx, NoteVariant, H> {
+        self.notes
+    }
 }
