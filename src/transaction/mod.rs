@@ -369,9 +369,6 @@ impl Transaction {
     }
 
     /// Attempt to create a transaction from a rpc request.
-    ///
-    /// If there is a r1cs proof present on the request, will attempt to verify it against the
-    /// proof.
     pub fn try_from_rpc_transaction<P: AsRef<Path>>(
         db_path: P,
         tx: rpc::Transaction,
