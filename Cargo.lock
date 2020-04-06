@@ -600,7 +600,7 @@ dependencies = [
 [[package]]
 name = "hades252"
 version = "2.0.0"
-source = "git+https://github.com/dusk-network/Hades252.git?branch=plonk_zexe#6090b0b6bb19814a74c70cefbb205ea804a5710b"
+source = "git+https://github.com/dusk-network/Hades252.git?branch=plonk_zexe#528dcd5392a51b391798026a7f7b7faa8ba15f1e"
 dependencies = [
  "algebra 0.1.0 (git+https://github.com/scipr-lab/zexe/)",
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1099,7 +1099,7 @@ dependencies = [
 
 [[package]]
 name = "phoenix"
-version = "0.1.0"
+version = "2.0.0"
 dependencies = [
  "algebra 0.1.0 (git+https://github.com/scipr-lab/zexe/)",
  "bytehash 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1161,7 +1161,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "plonk"
 version = "0.1.0"
-source = "git+https://github.com/dusk-network/plonk.git?branch=fast_prover_zexe#00c804b057630f1858ebc39a948d49c7df1f9f76"
+source = "git+https://github.com/dusk-network/plonk.git?branch=fast_prover_zexe#9eb65ccf730193af450fbe9fb16cb983a651063e"
 dependencies = [
  "algebra 0.1.0 (git+https://github.com/scipr-lab/zexe/)",
  "bench-utils 0.1.0 (git+https://github.com/scipr-lab/zexe/)",
