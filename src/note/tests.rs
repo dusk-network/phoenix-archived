@@ -1,42 +1,40 @@
 use crate::{
-    rpc, utils, Note, NoteGenerator, NoteType, NoteUtxoType, ObfuscatedNote, PublicKey, SecretKey,
+    rpc, utils, Note, NoteGenerator, NoteType, NoteVariant, ObfuscatedNote, PublicKey, SecretKey,
     TransparentNote,
 };
+
+use std::convert::TryFrom;
 
 use kelvin::{
     tests::{arbitrary as a, fuzz_content, fuzz_content_iterations},
     Blake2b,
 };
 
-use std::convert::TryFrom;
-
 #[test]
 fn transparent_note() {
+    utils::init();
+
     let sk = SecretKey::default();
     let pk = sk.public_key();
     let value = 25;
 
     let (note, _) = TransparentNote::output(&pk, value);
 
-    assert_eq!(note.utxo(), NoteUtxoType::Output);
     assert_eq!(note.note(), NoteType::Transparent);
     assert_eq!(value, note.value(None));
 }
 
 #[test]
 fn obfuscated_note() {
+    utils::init();
+
     let sk = SecretKey::default();
     let pk = sk.public_key();
     let vk = sk.view_key();
     let value = 25;
 
     let (note, _) = ObfuscatedNote::output(&pk, value);
-
-    assert_eq!(note.utxo(), NoteUtxoType::Output);
     assert_eq!(note.note(), NoteType::Obfuscated);
-
-    let proof = note.prove_value(&vk).unwrap();
-    note.verify_value(&proof).unwrap();
 
     let rpc_note = rpc::Note::from(note.clone());
     let deserialized_note = ObfuscatedNote::try_from(rpc_note).unwrap();
@@ -51,6 +49,8 @@ fn obfuscated_note() {
 
 #[test]
 fn note_keys_consistency() {
+    utils::init();
+
     let sk = SecretKey::default();
     let pk = sk.public_key();
     let vk = sk.view_key();
@@ -66,28 +66,32 @@ fn note_keys_consistency() {
     assert!(!note.is_owned_by(&wrong_vk));
     assert!(note.is_owned_by(&vk));
 
-    let pk_r = note.pk_r();
     let sk_r = note.sk_r(&sk);
-    let sk_r_g = utils::mul_by_basepoint_ristretto(&sk_r);
-
-    assert_eq!(pk_r, &sk_r_g);
-
     let wrong_sk_r = note.sk_r(&wrong_sk);
-    let wrong_sk_r_g = utils::mul_by_basepoint_ristretto(&wrong_sk_r);
 
-    assert_ne!(pk_r, &wrong_sk_r_g);
+    assert_eq!(note.pk_r(), &utils::mul_by_basepoint_jubjub(&sk_r));
+    assert_ne!(note.pk_r(), &utils::mul_by_basepoint_jubjub(&wrong_sk_r));
 }
 
 #[test]
 fn content_implementations() {
-    use crate::note::NoteVariant;
-    use rpc::Idx;
+    utils::init();
 
-    impl a::Arbitrary for Idx {
+    impl a::Arbitrary for TransparentNote {
         fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
-            Ok(Idx {
-                pos: a::Arbitrary::arbitrary(u)?,
-            })
+            let vec: Vec<u8> = a::Arbitrary::arbitrary(u)?;
+            let pubkey: PublicKey = SecretKey::from(vec.as_slice()).into();
+            let note = TransparentNote::output(&pubkey, a::Arbitrary::arbitrary(u)?).0;
+            Ok(note)
+        }
+    }
+
+    impl a::Arbitrary for ObfuscatedNote {
+        fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
+            let vec: Vec<u8> = a::Arbitrary::arbitrary(u)?;
+            let pubkey: PublicKey = SecretKey::from(vec.as_slice()).into();
+            let note = ObfuscatedNote::output(&pubkey, a::Arbitrary::arbitrary(u)?).0;
+            Ok(note)
         }
     }
 
@@ -103,34 +107,6 @@ fn content_implementations() {
         }
     }
 
-    impl a::Arbitrary for NoteUtxoType {
-        fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
-            Ok(if a::Arbitrary::arbitrary(u)? {
-                NoteUtxoType::Input
-            } else {
-                NoteUtxoType::Output
-            })
-        }
-    }
-
-    impl a::Arbitrary for TransparentNote {
-        fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
-            let vec: Vec<u8> = a::Arbitrary::arbitrary(u)?;
-            let pubkey: PublicKey = SecretKey::from(vec).into();
-            let note = TransparentNote::output(&pubkey, a::Arbitrary::arbitrary(u)?).0;
-            Ok(note)
-        }
-    }
-
-    impl a::Arbitrary for ObfuscatedNote {
-        fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
-            let vec: Vec<u8> = a::Arbitrary::arbitrary(u)?;
-            let pubkey: PublicKey = SecretKey::from(vec).into();
-            let note = ObfuscatedNote::output(&pubkey, a::Arbitrary::arbitrary(u)?).0;
-            Ok(note)
-        }
-    }
-
-    fuzz_content::<Idx, Blake2b>();
+    fuzz_content::<u64, Blake2b>();
     fuzz_content_iterations::<NoteVariant, Blake2b>(64);
 }

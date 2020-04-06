@@ -1,105 +1,114 @@
-use super::{PublicKey, ViewKey};
-use crate::{rpc, utils, Scalar};
+use crate::{rpc, utils, Error, JubJubScalar, PublicKey, ViewKey};
 
+use std::convert::{TryFrom, TryInto};
 use std::fmt;
 
-use rand::rngs::StdRng;
-use rand::{RngCore, SeedableRng};
-use sha2::{Digest, Sha512};
+use rand::RngCore;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Secret pair of a and b
 ///
 /// It is used to create a note nullifier via secret b
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SecretKey {
     /// Secret scalar
-    pub a: Scalar,
+    pub a: JubJubScalar,
     /// Secret scalar
-    pub b: Scalar,
+    pub b: JubJubScalar,
 }
 
 impl Default for SecretKey {
     fn default() -> Self {
         SecretKey {
-            a: utils::gen_random_clamped_scalar(),
-            b: utils::gen_random_clamped_scalar(),
+            a: utils::gen_random_scalar(),
+            b: utils::gen_random_scalar(),
         }
     }
 }
 
 impl SecretKey {
     /// [`SecretKey`] constructor
-    pub fn new(a: Scalar, b: Scalar) -> Self {
+    pub fn new(a: JubJubScalar, b: JubJubScalar) -> Self {
         SecretKey { a, b }
+    }
+
+    /// Deterministically create a new [`SecretKey`] from a random number generator
+    pub fn from_rng<R: RngCore>(rng: &mut R) -> Self {
+        let a = utils::gen_random_scalar_from_rng(rng);
+        let b = utils::gen_random_scalar_from_rng(rng);
+
+        SecretKey::new(a, b)
     }
 
     /// Derive the secret to deterministically construct a [`PublicKey`]
     pub fn public_key(&self) -> PublicKey {
-        let a_g = utils::mul_by_basepoint_ristretto(&self.a);
-        let b_g = utils::mul_by_basepoint_ristretto(&self.b);
+        let A = utils::mul_by_basepoint_jubjub(&self.a);
+        let B = utils::mul_by_basepoint_jubjub(&self.b);
 
-        PublicKey::new(a_g, b_g)
+        PublicKey::new(A, B)
     }
 
     /// Derive the secret to deterministically construct a [`ViewKey`]
     pub fn view_key(&self) -> ViewKey {
-        let b_g = utils::mul_by_basepoint_ristretto(&self.b);
+        let B = utils::mul_by_basepoint_jubjub(&self.b);
 
-        ViewKey::new(self.a, b_g)
+        ViewKey::new(self.a, B)
     }
 }
 
-impl From<rpc::SecretKey> for SecretKey {
-    fn from(k: rpc::SecretKey) -> Self {
-        Self::new(
-            k.a.unwrap_or_default().into(),
-            k.b.unwrap_or_default().into(),
-        )
+impl TryFrom<rpc::SecretKey> for SecretKey {
+    type Error = Error;
+
+    fn try_from(k: rpc::SecretKey) -> Result<Self, Self::Error> {
+        let a = k.a.ok_or(Error::InvalidPoint).and_then(|s| s.try_into())?;
+        let b = k.b.ok_or(Error::InvalidPoint).and_then(|s| s.try_into())?;
+
+        Ok(Self::new(a, b))
     }
 }
 
 impl From<SecretKey> for rpc::SecretKey {
     fn from(k: SecretKey) -> Self {
         Self {
-            a: Some(rpc::Scalar::from(k.a)),
-            b: Some(rpc::Scalar::from(k.b)),
+            a: Some(k.a.into()),
+            b: Some(k.b.into()),
         }
     }
 }
 
-impl From<Vec<u8>> for SecretKey {
-    fn from(bytes: Vec<u8>) -> Self {
-        let mut hasher = Sha512::default();
+const SK_SIZE: usize = utils::JUBJUB_SCALAR_SERIALIZED_SIZE * 2;
 
-        hasher.input(bytes.as_slice());
+impl Into<[u8; SK_SIZE]> for &SecretKey {
+    fn into(self) -> [u8; SK_SIZE] {
+        let mut bytes = [0x00u8; SK_SIZE];
 
-        let s = Scalar::from_hash(hasher);
-        let mut rng = StdRng::from_seed(s.to_bytes());
+        utils::serialize_jubjub_scalar(&self.a, &mut bytes[0..SK_SIZE / 2])
+            .expect("In-memory write");
 
-        let mut a = [0x00u8; 32];
-        rng.fill_bytes(&mut a);
-        utils::clamp_bytes(&mut a);
-        let a = Scalar::from_bits(a);
+        utils::serialize_jubjub_scalar(&self.b, &mut bytes[SK_SIZE / 2..SK_SIZE])
+            .expect("In-memory write");
 
-        let mut b = [0x00u8; 32];
-        rng.fill_bytes(&mut b);
-        utils::clamp_bytes(&mut b);
-        let b = Scalar::from_bits(b);
+        bytes
+    }
+}
 
-        SecretKey::new(a, b)
+impl From<&[u8]> for SecretKey {
+    fn from(bytes: &[u8]) -> Self {
+        SecretKey::from_rng(&mut utils::generate_rng(bytes))
     }
 }
 
 impl From<String> for SecretKey {
     fn from(s: String) -> Self {
-        Self::from(s.into_bytes())
+        Self::from(s.into_bytes().as_slice())
     }
 }
 
 impl fmt::LowerHex for SecretKey {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let a = hex::encode(self.a.as_bytes());
-        let b = hex::encode(self.b.as_bytes());
+        let bytes: [u8; SK_SIZE] = self.into();
+
+        let a = hex::encode(&bytes[0..SK_SIZE / 2]);
+        let b = hex::encode(&bytes[SK_SIZE / 2..SK_SIZE]);
 
         write!(f, "{}{}", a, b)
     }
@@ -107,8 +116,10 @@ impl fmt::LowerHex for SecretKey {
 
 impl fmt::UpperHex for SecretKey {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let a = hex::encode_upper(self.a.as_bytes());
-        let b = hex::encode_upper(self.b.as_bytes());
+        let bytes: [u8; SK_SIZE] = self.into();
+
+        let a = hex::encode_upper(&bytes[0..SK_SIZE / 2]);
+        let b = hex::encode_upper(&bytes[SK_SIZE / 2..SK_SIZE]);
 
         write!(f, "{}{}", a, b)
     }

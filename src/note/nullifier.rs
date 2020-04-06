@@ -1,44 +1,22 @@
-use crate::Scalar;
+use crate::BlsScalar;
 
-use std::hash::{Hash, Hasher};
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Nullifier(pub BlsScalar);
 
-#[derive(Debug, Clone, Copy, Default, Eq)]
-/// Nullifier deterministically constructed from a given note and its secret. One, and only one,
-/// Nullifier can be constructed from Note + secret
-///
-/// Only the owner of the secret is able to construct a nullifier for a given note
-pub struct Nullifier {
-    /// Scalar representing the nullifier
-    pub x: Scalar,
-}
-
-impl Nullifier {
-    /// [`Nullifier`] constructor
-    pub fn new(x: Scalar) -> Self {
-        Self { x }
-    }
-
-    #[allow(clippy::trivially_copy_pass_by_ref)] // Idx
-    /// Inner scalar representation of the nullifier
-    pub fn point(&self) -> &Scalar {
-        &self.x
+impl From<BlsScalar> for Nullifier {
+    fn from(s: BlsScalar) -> Self {
+        Nullifier(s)
     }
 }
 
-impl Hash for Nullifier {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.x.as_bytes().hash(state);
-    }
-}
-
-impl PartialEq for Nullifier {
-    fn eq(&self, other: &Self) -> bool {
-        self.x == other.x
+impl Into<BlsScalar> for Nullifier {
+    fn into(self) -> BlsScalar {
+        self.0
     }
 }
 
 impl AsRef<[u8]> for Nullifier {
     fn as_ref(&self) -> &[u8] {
-        self.x.as_bytes()
+        unimplemented!()
     }
 }
