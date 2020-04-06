@@ -12,29 +12,19 @@ macro_rules! value_commitment_preimage {
         $bitflags:ident,
         $pi:ident,
         $zero:ident,
-        $acc:ident
+        $acc:ident,
+        $cc:ident
     ) => {
         $perm.copy_from_slice(&$zero_perm);
         $perm[0] = $bitflags;
         $perm[1] = $item.value;
         $perm[2] = $item.blinding_factor;
 
-        let (p_composer, p_pi, c) = GadgetStrategy::poseidon_gadget($composer, $pi, &mut $perm);
+        let (p_composer, p_pi, p_c) = GadgetStrategy::poseidon_gadget($composer, $pi, &mut $perm);
 
         $composer = p_composer;
         $pi = p_pi;
-
-        $pi.next().map(|p| *p = BlsScalar::zero());
-        $composer.add_gate(
-            $item.value_commitment,
-            c,
-            $zero,
-            -BlsScalar::one(),
-            BlsScalar::one(),
-            BlsScalar::one(),
-            BlsScalar::zero(),
-            BlsScalar::zero(),
-        );
+        $cc = p_c;
 
         $pi.next().map(|p| *p = BlsScalar::zero());
         $acc = $composer.add(
@@ -58,23 +48,60 @@ pub fn balance<'a, P>(
 where
     P: Iterator<Item = &'a mut BlsScalar>,
 {
-    let zero = composer.add_input(BlsScalar::zero());
-    let bitflags = composer.add_input(BlsScalar::from(3u8));
+    let zero = tx.zero;
+    let bitflags = tx.three;
     let zero_perm = [zero; hades252::WIDTH];
     let mut perm = [zero; hades252::WIDTH];
+    let mut c;
 
     let mut inputs = zero;
     let mut outputs = zero;
 
     for item in tx.inputs.iter() {
-        value_commitment_preimage!(item, composer, perm, zero_perm, bitflags, pi, zero, inputs);
+        value_commitment_preimage!(item, composer, perm, zero_perm, bitflags, pi, zero, inputs, c);
+
+        pi.next().map(|p| *p = BlsScalar::zero());
+        composer.add_gate(
+            item.value_commitment,
+            c,
+            zero,
+            -BlsScalar::one(),
+            BlsScalar::one(),
+            BlsScalar::one(),
+            BlsScalar::zero(),
+            BlsScalar::zero(),
+        );
     }
 
     let fee = tx.fee;
-    value_commitment_preimage!(fee, composer, perm, zero_perm, bitflags, pi, zero, outputs);
+    value_commitment_preimage!(fee, composer, perm, zero_perm, bitflags, pi, zero, outputs, c);
+
+    pi.next().map(|p| *p = fee.value_commitment_scalar);
+    composer.add_gate(
+        c,
+        zero,
+        zero,
+        -BlsScalar::one(),
+        BlsScalar::one(),
+        BlsScalar::one(),
+        BlsScalar::zero(),
+        fee.value_commitment_scalar,
+    );
 
     for item in tx.outputs.iter() {
-        value_commitment_preimage!(item, composer, perm, zero_perm, bitflags, pi, zero, outputs);
+        value_commitment_preimage!(item, composer, perm, zero_perm, bitflags, pi, zero, outputs, c);
+
+        pi.next().map(|p| *p = item.value_commitment_scalar);
+        composer.add_gate(
+            c,
+            zero,
+            zero,
+            -BlsScalar::one(),
+            BlsScalar::one(),
+            BlsScalar::one(),
+            BlsScalar::zero(),
+            item.value_commitment_scalar,
+        );
     }
 
     pi.next().map(|p| *p = BlsScalar::zero());
@@ -97,49 +124,6 @@ mod tests {
     use crate::{utils, zk, NoteGenerator, SecretKey, Transaction, TransparentNote};
 
     #[test]
-    fn tx_balance() {
-        utils::init();
-        zk::init();
-
-        let mut tx = Transaction::default();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 28;
-        let note = TransparentNote::output(&pk, value).0;
-        tx.push_input(note.to_transaction_input(sk)).unwrap();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 33;
-        let note = TransparentNote::output(&pk, value).0;
-        tx.push_input(note.to_transaction_input(sk)).unwrap();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 22;
-        let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
-            .unwrap();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 24;
-        let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
-            .unwrap();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 15;
-        let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
-
-        tx.prove().unwrap();
-        tx.verify().unwrap();
-    }
-
-    #[test]
     fn tx_balance_invalid() {
         utils::init();
         zk::init();
@@ -148,13 +132,7 @@ mod tests {
 
         let sk = SecretKey::default();
         let pk = sk.public_key();
-        let value = 26;
-        let note = TransparentNote::output(&pk, value).0;
-        tx.push_input(note.to_transaction_input(sk)).unwrap();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 33;
+        let value = 60;
         let note = TransparentNote::output(&pk, value).0;
         tx.push_input(note.to_transaction_input(sk)).unwrap();
 

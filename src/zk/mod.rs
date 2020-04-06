@@ -1,5 +1,5 @@
 use crate::{
-    utils, BlsScalar, Error, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
+    crypto, utils, BlsScalar, Db, Error, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
     MAX_OUTPUT_NOTES_PER_TRANSACTION,
 };
 
@@ -9,6 +9,7 @@ use algebra::bytes::{FromBytes, ToBytes};
 use algebra::curves::bls12_381::Bls12_381;
 use algebra::curves::bls12_381::G1Affine;
 use ff_fft::EvaluationDomain;
+use kelvin::Blake2b;
 use merlin::Transcript;
 use plonk::cs::composer::StandardComposer;
 use plonk::cs::{proof::Proof as PlonkProof, Composer as _, PreProcessedCircuit};
@@ -17,10 +18,15 @@ use poly_commit::kzg10::{Commitment, Powers, VerifierKey};
 
 pub use plonk::cs::constraint_system::Variable;
 
+/// [`ZkMerkleProof`] definition
+pub mod merkle;
 /// [`ZkTransaction`] definition
 pub mod transaction;
 
+pub use merkle::ZkMerkleProof;
 pub use transaction::{ZkTransaction, ZkTransactionInput, ZkTransactionOutput};
+
+pub const CAPACITY: usize = 8192 * 8;
 
 /// Length of the public inputs
 #[rustfmt::skip]
@@ -34,7 +40,13 @@ pub const PI_LEN: usize = {
     (HADES_SIZE * 3 + 1) * MAX_NOTES +
 
     // Tx balance
-    (HADES_SIZE + 2) * MAX_NOTES_FEE + 1
+    (HADES_SIZE + 2) * MAX_NOTES_FEE + 1 +
+
+    // Nullifier
+    (HADES_SIZE + 1) * MAX_INPUT_NOTES_PER_TRANSACTION +
+
+    // Merkle
+    MAX_INPUT_NOTES_PER_TRANSACTION * crypto::TREE_HEIGHT * (5 * crypto::ARITY + 3 + HADES_SIZE)
 };
 
 lazy_static::lazy_static! {
@@ -183,9 +195,9 @@ pub fn bytes_to_proof(bytes: &[u8]) -> Result<Proof, Error> {
 
 /// Initialize the zk static data
 pub fn init() {
-    let public_parameters = srs::setup(32768 * 4, &mut rand::thread_rng());
-    let (ck, vk) = srs::trim(&public_parameters, 32768 * 4).unwrap();
-    let domain: EvaluationDomain<BlsScalar> = EvaluationDomain::new(32768 * 4).unwrap();
+    let public_parameters = srs::setup(CAPACITY, &mut utils::generate_rng(b"phoenix-plonk-srs"));
+    let (ck, vk) = srs::trim(&public_parameters, CAPACITY).unwrap();
+    let domain: EvaluationDomain<BlsScalar> = EvaluationDomain::new(CAPACITY).unwrap();
 
     unsafe {
         utils::lazy_static_write(&*DOMAIN, domain);
@@ -204,17 +216,10 @@ pub fn init() {
 
 /// Generate a new circuit
 pub fn gen_circuit(tx: &mut Transaction) -> (Transcript, Composer, Circuit) {
+    let composer = Composer::with_expected_size(CAPACITY);
+    let mut composer = inner_circuit(composer, tx);
+
     let mut transcript = gen_transcript();
-    let mut composer = Composer::new();
-
-    let tx_zk = ZkTransaction::from_tx(&mut composer, tx);
-    let pi = tx.public_inputs_mut().iter_mut();
-
-    let (composer, pi) = gadgets::preimage(composer, &tx_zk, pi);
-    let (mut composer, _) = gadgets::balance(composer, &tx_zk, pi);
-
-    composer.add_dummy_constraints();
-
     let circuit = composer.preprocess(&*CK, &mut transcript, &*DOMAIN);
 
     (transcript, composer, circuit)
@@ -225,14 +230,51 @@ pub fn circuit() -> &'static Circuit {
     unsafe { &*PREPROCESSED_CIRCUIT.as_ptr() }
 }
 
+fn inner_circuit(mut composer: Composer, tx: &mut Transaction) -> Composer {
+    let db: Db<Blake2b> = Db::default();
+    let tx_zk = ZkTransaction::from_tx(&mut composer, tx, &db);
+    let pi = tx.public_inputs_mut().iter_mut();
+
+    #[cfg(feature = "circuit-sanity")]
+    let (composer, pi) = gadgets::sanity(composer, &tx_zk, pi);
+
+    #[cfg(feature = "circuit-merkle")]
+    let (composer, pi) = gadgets::merkle(composer, &tx_zk, pi);
+
+    #[cfg(feature = "circuit-preimage")]
+    let (composer, pi) = gadgets::preimage(composer, &tx_zk, pi);
+
+    #[cfg(feature = "circuit-balance")]
+    let (composer, pi) = gadgets::balance(composer, &tx_zk, pi);
+
+    #[cfg(feature = "circuit-nullifier")]
+    let (composer, pi) = gadgets::nullifier(composer, &tx_zk, pi);
+
+    #[cfg(feature = "circuit-skr")]
+    let composer = gadgets::sk_r(composer, &tx_zk);
+
+    let _ = tx_zk;
+    let _ = pi;
+    let mut composer = composer;
+
+    composer.fill_capacity_with_dummy_constraints(CAPACITY);
+
+    composer
+}
+
 fn gen_transcript() -> Transcript {
     Transcript::new(b"dusk-phoenix-plonk")
 }
 
 /// Generate a new transaction zk proof
 pub fn prove(tx: &mut Transaction) -> Proof {
-    let (mut transcript, mut composer, circuit) = gen_circuit(tx);
-    composer.prove(&*CK, &circuit, &mut transcript)
+    let composer = Composer::with_expected_size(CAPACITY);
+    let mut composer = inner_circuit(composer, tx);
+
+    let mut transcript = TRANSCRIPT.clone();
+    let preprocessed_circuit = circuit();
+
+    composer.prove(&*CK, preprocessed_circuit, &mut transcript)
 }
 
 /// Verify a proof with a pre-generated circuit

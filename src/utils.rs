@@ -10,8 +10,13 @@ use algebra::curves::jubjub::JubJubParameters;
 use algebra::curves::models::TEModelParameters;
 use algebra::curves::{AffineCurve, ProjectiveCurve};
 use algebra::serialize::{CanonicalDeserialize, CanonicalSerialize};
+use algebra::ToBytes;
 use kelvin::{ByteHash, Source};
+use num_traits::{One, Zero};
+use rand::rngs::StdRng;
+use rand::SeedableRng;
 use rand::{Rng, RngCore};
+use sha2::{Digest, Sha256};
 use sodiumoxide::crypto::secretbox;
 
 lazy_static::lazy_static! {
@@ -90,6 +95,10 @@ pub fn gen_random_bls_scalar_from_rng<R: RngCore>(rng: &mut R) -> BlsScalar {
 /// Both [`JubJubScalar`] and [`BlsScalar`] are represented internally by a [`BigInteger256`]
 pub fn scalar_as_slice<'a>(s: &'a BigInteger256) -> &'a [u8] {
     unsafe { slice::from_raw_parts(s.0.as_ptr() as *const u8, 32) }
+}
+
+pub fn jubjub_projective_basepoint() -> &'static JubJubProjective {
+    &JUBJUB_BASEPOINT_PROJECTIVE
 }
 
 /// Multiply a [`JubJubScalar`] by the JubJub generator point
@@ -191,35 +200,11 @@ pub fn deserialize_bls_scalar(bytes: &[u8]) -> Result<BlsScalar, Error> {
     Ok(BlsScalar::deserialize(bytes, &mut [])?)
 }
 
-//
-////
-/////// Generate a random key-clamped scalar from [`OsRng`]
-////pub fn gen_random_clamped_scalar() -> Scalar {
-////    let mut s = [0x00u8; 32];
-////    OsRng.fill_bytes(&mut s);
-////
-////    clamp_bytes(&mut s);
-////
-////    Scalar::from_bits(s)
-////}
-////
-/////// Clamp a slice of bytes for key generation
-////pub fn clamp_bytes(b: &mut [u8; 32]) {
-////    b[0] &= 248;
-////    b[31] &= 127;
-////    b[31] |= 64;
-////}
-////
-/////// Get the Y coordinate of a ristretto field element and return it as a scalar
-////pub fn ristretto_to_scalar(p: RistrettoPoint) -> Scalar {
-////    Scalar::from_bits(p.compress().to_bytes())
-////}
-////
 /// Generate a new random nonce
 pub fn gen_nonce() -> Nonce {
     secretbox::gen_nonce()
 }
-////
+
 /// Safely transpose a slice of any size to a `[u8; 24]`
 pub fn safe_24_chunk(bytes: &[u8]) -> [u8; 24] {
     let mut s = [0x00u8; 24];
@@ -229,16 +214,6 @@ pub fn safe_24_chunk(bytes: &[u8]) -> [u8; 24] {
 
     s
 }
-////
-/////// Safely transpose a slice of any size to a `[u8; 32]`
-////pub fn safe_32_chunk(bytes: &[u8]) -> [u8; 32] {
-////    let mut s = [0x00u8; 32];
-////    let chunk = cmp::min(bytes.len(), 32);
-////
-////    (&mut s[0..chunk]).copy_from_slice(&bytes[0..chunk]);
-////
-////    s
-////}
 
 /// Safely transpose a slice of any size to a `[u8; 48]`
 pub fn safe_48_chunk(bytes: &[u8]) -> [u8; 48] {
@@ -249,8 +224,99 @@ pub fn safe_48_chunk(bytes: &[u8]) -> [u8; 48] {
 
     s
 }
-////
-/////// Generate a ristretto field element from a scalar
-////pub fn mul_by_basepoint_ristretto(s: &Scalar) -> RistrettoPoint {
-////    &constants::RISTRETTO_BASEPOINT_TABLE * s
-////}
+
+/// Decompose a [`JubJubScalar`] to a set of bits represented by [`BlsScalar`]
+pub fn jubjub_scalar_to_bls_bits(scalar: &JubJubScalar) -> [BlsScalar; 256] {
+    let mut bytes = [0x00u8; 32];
+    scalar.write(&mut bytes[..]).expect("In-memory write");
+
+    // Compute bit-array
+    let mut res = [BlsScalar::zero(); 256];
+
+    let mut res_iter = res.iter_mut();
+    bytes.iter_mut().for_each(|b| {
+        (0..8).for_each(|_| {
+            let r = res_iter.next();
+            if (*b) & 1u8 == 1 {
+                r.map(|r| *r = BlsScalar::one());
+            }
+            *b >>= 1;
+        });
+    });
+
+    res
+}
+
+/// Decompose a [`JubJubScalar`] to a set of bits
+pub fn jubjub_scalar_to_bits(scalar: &JubJubScalar) -> [u8; 256] {
+    let mut bytes = [0x00u8; 32];
+    scalar.write(&mut bytes[..]).expect("In-memory write");
+
+    // Compute bit-array
+    let mut res = [0x00u8; 256];
+
+    let mut res_iter = res.iter_mut();
+    bytes.iter_mut().for_each(|b| {
+        (0..8).for_each(|_| {
+            let r = res_iter.next();
+            if (*b) & 1u8 == 1 {
+                r.map(|r| *r = 1);
+            }
+            *b >>= 1;
+        });
+    });
+
+    res
+}
+
+/// Decompose a [`BlsScalar`] to a set of bits
+pub fn bls_scalar_to_bits(scalar: &BlsScalar) -> [u8; 256] {
+    let mut bytes = [0x00u8; 32];
+    scalar.write(&mut bytes[..]).expect("In-memory write");
+
+    // Compute bit-array
+    let mut res = [0x00u8; 256];
+
+    let mut res_iter = res.iter_mut();
+    bytes.iter_mut().for_each(|b| {
+        (0..8).for_each(|_| {
+            let r = res_iter.next();
+            if (*b) & 1u8 == 1 {
+                r.map(|r| *r = 1u8);
+            }
+            *b >>= 1;
+        });
+    });
+
+    res
+}
+
+/// Decompose a [`JubJubScalar`] into bits and reconstruct a [`BlsScalar`] from them
+pub fn bls_scalar_from_jubjub_bits(s: &JubJubScalar) -> BlsScalar {
+    let two = BlsScalar::from(2u8);
+    let mut result = BlsScalar::zero();
+
+    jubjub_scalar_to_bits(s)
+        .iter()
+        .fold(BlsScalar::one(), |mut acc, bit| {
+            acc *= &two;
+            if bit == &1u8 {
+                result += &acc;
+            }
+            acc
+        });
+
+    result
+}
+
+/// Generate a [`StdRng`] from a given slice of bytes
+pub fn generate_rng(bytes: &[u8]) -> StdRng {
+    let mut hasher = Sha256::default();
+    hasher.input(bytes);
+    let bytes = hasher.result();
+
+    let mut seed = [0x00u8; 32];
+    seed.copy_from_slice(&bytes[0..32]);
+
+    StdRng::from_seed(seed)
+}

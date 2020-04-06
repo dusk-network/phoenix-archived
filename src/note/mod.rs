@@ -8,6 +8,8 @@ use std::fmt::Debug;
 use std::ops::Mul;
 use std::path::Path;
 
+use algebra::curves::{AffineCurve, ProjectiveCurve};
+
 /// Nullifier definition
 pub mod nullifier;
 /// Obfuscated note definitions
@@ -85,7 +87,7 @@ pub trait NoteGenerator:
         TransactionOutput::new(self.into(), value, blinding_factor, pk)
     }
 
-    /// Create a `PKr = r · A + B` for the diffie-hellman key exchange
+    /// Generate a random `r` and call [`Self::new_pk_r`]
     fn generate_pk_r(pk: &PublicKey) -> (JubJubScalar, JubJubProjective, JubJubProjective) {
         let r = utils::gen_random_scalar();
 
@@ -94,12 +96,16 @@ pub trait NoteGenerator:
         (r, R, pk_r)
     }
 
-    /// Create a `PKr = r · A + B` for the diffie-hellman key exchange
+    /// Generate a new `PKr = H(a · R) · G + B` from a given `r`
     fn new_pk_r(r: &JubJubScalar, pk: &PublicKey) -> (JubJubProjective, JubJubProjective) {
         let R = utils::mul_by_basepoint_jubjub(r);
 
         let rA = pk.A.mul(r);
+        let rA = crypto::hash_jubjub_projective_to_jubjub_scalar(&rA);
+        let rA = utils::mul_by_basepoint_jubjub(&rA);
+
         let pk_r = rA + pk.B;
+        let pk_r = pk_r.into_affine().into_projective();
 
         (R, pk_r)
     }
@@ -129,9 +135,13 @@ pub trait NoteGenerator:
 /// Phoenix note methods. Both transparent and obfuscated notes implements this
 pub trait Note: Debug + Send + Sync {
     /// Create a unique nullifier for the note
-    fn generate_nullifier(&self, _sk: &SecretKey) -> Nullifier {
-        // TODO - Set nullifier as `H(a, b, idx)`
-        crypto::hash_merkle(&[BlsScalar::from(self.idx())]).into()
+    fn generate_nullifier(&self, sk: &SecretKey) -> Nullifier {
+        let sk_r = self.sk_r(sk);
+        let sk_r = utils::bls_scalar_from_jubjub_bits(&sk_r);
+
+        let idx = BlsScalar::from(self.idx());
+
+        crypto::hash_merkle(&[sk_r, idx]).into()
     }
 
     /// Fully decrypt the note (value and blinding factor) with the provided [`ViewKey`], and
@@ -183,11 +193,13 @@ pub trait Note: Debug + Send + Sync {
 
     /// Return a hash represented by `H(value_commitment, idx, H([R]), H([PKr]))`
     fn hash(&self) -> BlsScalar {
+        let pk_r = self.pk_r().into_affine();
+
         crypto::hash_merkle(&[
             *self.value_commitment(),
             BlsScalar::from(self.idx()),
-            crypto::hash_jubjub_projective(self.R()),
-            crypto::hash_jubjub_projective(self.pk_r()),
+            pk_r.x,
+            pk_r.y,
         ])
     }
 
@@ -221,12 +233,23 @@ pub trait Note: Debug + Send + Sync {
     /// Return the public DHKE combined with the secret key of the owner of the note
     fn pk_r(&self) -> &JubJubProjective;
 
+    /// Generate a `sk_r = H(a · R) + b`
+    fn sk_r(&self, sk: &SecretKey) -> JubJubScalar {
+        let aR = self.R().mul(&sk.a);
+        let aR = crypto::hash_jubjub_projective_to_jubjub_scalar(&aR);
+
+        aR + sk.b
+    }
+
     /// Return true if the note was constructed with the same secret that constructed the provided
     /// view key
     ///
-    /// This holds true if `a · R + B == PKr`
+    /// This holds true if `H(a · R) + B == PKr`
     fn is_owned_by(&self, vk: &ViewKey) -> bool {
         let aR = self.R().mul(&vk.a);
+        let aR = crypto::hash_jubjub_projective_to_jubjub_scalar(&aR);
+        let aR = utils::mul_by_basepoint_jubjub(&aR);
+
         let pk_r = aR + vk.B;
 
         self.pk_r() == &pk_r

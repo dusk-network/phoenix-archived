@@ -3,10 +3,7 @@ use crate::{rpc, utils, Error, JubJubScalar, PublicKey, ViewKey};
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
 
-use rand::rngs::StdRng;
 use rand::RngCore;
-use rand::SeedableRng;
-use sha2::{Digest, Sha256};
 
 /// Secret pair of a and b
 ///
@@ -96,15 +93,7 @@ impl Into<[u8; SK_SIZE]> for &SecretKey {
 
 impl From<&[u8]> for SecretKey {
     fn from(bytes: &[u8]) -> Self {
-        let mut hasher = Sha256::default();
-        hasher.input(bytes);
-        let bytes = hasher.result();
-
-        let mut seed = [0x00u8; 32];
-        seed.copy_from_slice(&bytes[0..32]);
-        let mut rng = StdRng::from_seed(seed);
-
-        SecretKey::from_rng(&mut rng)
+        SecretKey::from_rng(&mut utils::generate_rng(bytes))
     }
 }
 

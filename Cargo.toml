@@ -1,8 +1,24 @@
 [package]
 name = "phoenix"
-version = "0.1.0"
+version = "2.0.0"
 authors = ["Victor Lopez <vhrlopes@gmail.com>"]
 edition = "2018"
+
+[features]
+default = [
+    "circuit-merkle",
+    "circuit-preimage",
+    "circuit-balance",
+    "circuit-nullifier",
+    "circuit-sanity",
+    "circuit-skr"
+]
+circuit-merkle = []
+circuit-preimage = []
+circuit-balance = []
+circuit-nullifier = []
+circuit-sanity = []
+circuit-skr = []
 
 [dependencies]
 merlin = "2.0"
@@ -39,5 +55,34 @@ branch = "plonk_zexe"
 git = "https://github.com/dusk-network/plonk.git"
 branch = "fast_prover_zexe"
 
+[dependencies.plonk_gadgets]
+git = "https://github.com/dusk-network/plonk_gadgets.git"
+branch = "vlopes11/ecc_gadgets"
+
 [build-dependencies]
 tonic-build = { version = "0.1", default-features = false, features = ["transport"] }
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "phoenix"
+harness = false
+
+[profile.release]
+opt-level = 3
+incremental = false
+codegen-units = 1
+debug = false
+lto = true
+overflow-checks = false
+debug-assertions = false
+
+[profile.bench]
+opt-level = 3
+incremental = false
+codegen-units = 1
+debug = false
+lto = true
+overflow-checks = false
+debug-assertions = false

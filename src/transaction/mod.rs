@@ -1,5 +1,6 @@
 use crate::{
-    crypto, rpc, utils, zk, BlsScalar, Error, Note, NoteGenerator, PublicKey, TransparentNote,
+    crypto, rpc, utils, zk, BlsScalar, Error, Note, NoteGenerator, ObfuscatedNote, PublicKey,
+    SecretKey, TransparentNote,
 };
 
 use std::convert::TryFrom;
@@ -7,8 +8,10 @@ use std::path::Path;
 use std::{fmt, ptr};
 
 use num_traits::Zero;
+use rand::distributions::{Distribution, Standard};
+use rand::Rng;
 
-pub const MAX_INPUT_NOTES_PER_TRANSACTION: usize = 2;
+pub const MAX_INPUT_NOTES_PER_TRANSACTION: usize = 1;
 pub const MAX_OUTPUT_NOTES_PER_TRANSACTION: usize = 2;
 
 /// Maximum allowed number of notes per transaction.
@@ -24,11 +27,9 @@ lazy_static::lazy_static! {
 
 /// Transaction item definitions
 pub mod item;
-//
-//#[cfg(test)]
-//mod tests;
-//
+
 /// A phoenix transaction
+#[derive(Clone)]
 pub struct Transaction {
     fee: TransactionOutput,
     idx_inputs: usize,
@@ -50,6 +51,59 @@ impl Default for Transaction {
             proof: None,
             public_inputs: vec![BlsScalar::zero(); zk::PI_LEN],
         }
+    }
+}
+
+impl Distribution<Transaction> for Standard {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Transaction {
+        let mut input_values = [0u64; MAX_INPUT_NOTES_PER_TRANSACTION];
+        let max = u64::max_value() / (MAX_INPUT_NOTES_PER_TRANSACTION as u64) - 1;
+        input_values.iter_mut().for_each(|i| {
+            *i = rng.gen_range(0, max);
+        });
+        let inputs: u64 = input_values.iter().sum();
+
+        let mut output_values = [0u64; MAX_OUTPUT_NOTES_PER_TRANSACTION];
+        output_values.iter_mut().fold(inputs, |sum, o| {
+            *o = rng.gen_range(0, sum);
+            sum - *o
+        });
+        let outputs: u64 = output_values.iter().sum();
+
+        let fee = inputs - outputs;
+        debug_assert!(inputs - outputs - fee == 0);
+
+        let mut tx = Transaction::default();
+
+        input_values.iter().for_each(|i| {
+            let value = *i;
+            if value > 0 {
+                let sk = SecretKey::default();
+                let pk = sk.public_key();
+                let note = TransparentNote::output(&pk, value).0;
+                tx.push_input(note.to_transaction_input(sk))
+                    .unwrap_or_default();
+            }
+        });
+
+        output_values.iter().for_each(|o| {
+            let value = *o;
+            if value > 0 {
+                let sk = SecretKey::default();
+                let pk = sk.public_key();
+
+                let (note, blinding_factor) = ObfuscatedNote::output(&pk, value);
+                tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
+                    .unwrap_or_default();
+            }
+        });
+
+        let sk = SecretKey::default();
+        let pk = sk.public_key();
+        let (note, blinding_factor) = TransparentNote::output(&pk, fee);
+        tx.set_fee(note.to_transaction_output(fee, blinding_factor, pk));
+
+        tx
     }
 }
 

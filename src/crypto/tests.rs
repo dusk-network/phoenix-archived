@@ -41,6 +41,8 @@ fn decrypt_with_wrong_key_should_fail() {
 
 #[test]
 fn decrypt_obfuscated_note() {
+    utils::init();
+
     let value = 25;
 
     let sk = SecretKey::default();
