@@ -1099,7 +1099,7 @@ dependencies = [
 
 [[package]]
 name = "phoenix"
-version = "0.1.0"
+version = "2.0.0"
 dependencies = [
  "algebra 0.1.0 (git+https://github.com/scipr-lab/zexe/)",
  "bytehash 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
