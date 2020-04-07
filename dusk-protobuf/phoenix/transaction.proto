@@ -1,0 +1,26 @@
+syntax = "proto3";
+package phoenix;
+
+import "field.proto";
+import "keys.proto";
+import "note.proto";
+
+message TransactionInput {
+  fixed64 pos = 1;
+  SecretKey sk = 2;
+}
+
+message TransactionOutput {
+  Note note = 1;
+  PublicKey pk = 2;
+  fixed64 value = 3;
+  Scalar blinding_factor = 4;
+}
+
+message Transaction {
+  repeated Nullifier nullifiers = 1;
+  repeated TransactionOutput outputs = 2;
+  TransactionOutput fee = 3;
+  bytes proof = 4;
+  repeated Scalar public_inputs = 5;
+}
