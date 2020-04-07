@@ -1,0 +1,56 @@
+syntax="proto3";
+package monitor;
+
+message SemverRequest {
+    uint32 major = 1;
+    uint32 minor = 2;
+    uint32 patch = 3;
+}
+
+message SlowdownAlert {
+    uint32 timeSinceLastBlockSec = 1;
+    uint64 lastKnownHeight = 2;
+    bytes lastKnownHash = 3;
+}
+
+enum Level {
+    WARN=0;
+    ERROR=1;
+    FATAL=2;
+    PANIC=3;
+}
+
+message Field {
+    string field = 1;
+    string value = 2;
+}
+
+message ErrorAlert {
+    Level level = 1;
+    string msg = 2;
+    string timestampMillis=3; //Jan _2 15:04:05.000
+    string file=4;
+    uint32 line=5;
+    string function=6;
+    repeated Field fields=7;
+}
+
+message EmptyRequest {};
+
+message EmptyResponse {};
+
+message BlockUpdate {
+    uint64 height = 1;
+    bytes hash=2;
+    int64 timestamp=3;
+    uint32 txAmount=4;
+    uint32 blockTimeSec=5;
+}
+
+service Monitor {
+    rpc Hello(SemverRequest) returns (EmptyResponse) {};
+    rpc Bye(EmptyRequest) returns (EmptyResponse) {};
+    rpc NotifyBlock(BlockUpdate) returns (EmptyResponse) {};
+    rpc NotifySlowdown(SlowdownAlert) returns (EmptyResponse) {};
+    rpc NotifyError(ErrorAlert) returns (EmptyResponse) {};
+}
