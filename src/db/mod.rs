@@ -183,7 +183,7 @@ impl<H: ByteHash> Db<H> {
             .map_err(|e| e.into())
     }
 
-    pub fn notes(self) -> HAMTMap<Idx, NoteVariant, H> {
+    pub fn notes(self) -> HAMTMap<u64, NoteVariant, H> {
         self.notes
     }
 }
