@@ -4,8 +4,12 @@
 package phoenix
 
 import (
+	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -925,4 +929,624 @@ var fileDescriptor_a1c51cd95b21b6dd = []byte{
 	0x06, 0x0d, 0x19, 0xae, 0x48, 0x43, 0x9b, 0xf0, 0x57, 0xea, 0x68, 0x55, 0x71, 0x6e, 0x5d, 0xdc,
 	0xcf, 0xfe, 0xe1, 0x1e, 0xfc, 0x17, 0x00, 0x00, 0xff, 0xff, 0x0b, 0x2c, 0x15, 0xed, 0x33, 0x0b,
 	0x00, 0x00,
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConnInterface
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion6
+
+// PhoenixClient is the client API for Phoenix service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type PhoenixClient interface {
+	Echo(ctx context.Context, in *EchoMethod, opts ...grpc.CallOption) (*EchoMethod, error)
+	GenerateSecretKey(ctx context.Context, in *GenerateSecretKeyRequest, opts ...grpc.CallOption) (*SecretKey, error)
+	Keys(ctx context.Context, in *SecretKey, opts ...grpc.CallOption) (*KeysResponse, error)
+	Nullifier(ctx context.Context, in *NullifierRequest, opts ...grpc.CallOption) (*NullifierResponse, error)
+	NullifierStatus(ctx context.Context, in *NullifierStatusRequest, opts ...grpc.CallOption) (*NullifierStatusResponse, error)
+	FetchNote(ctx context.Context, in *Idx, opts ...grpc.CallOption) (*Note, error)
+	DecryptNote(ctx context.Context, in *DecryptNoteRequest, opts ...grpc.CallOption) (*DecryptedNote, error)
+	OwnedNotes(ctx context.Context, in *OwnedNotesRequest, opts ...grpc.CallOption) (*OwnedNotesResponse, error)
+	FullScanOwnedNotes(ctx context.Context, in *ViewKey, opts ...grpc.CallOption) (*OwnedNotesResponse, error)
+	NewTransactionInput(ctx context.Context, in *NewTransactionInputRequest, opts ...grpc.CallOption) (*TransactionInput, error)
+	NewTransactionOutput(ctx context.Context, in *NewTransactionOutputRequest, opts ...grpc.CallOption) (*TransactionOutput, error)
+	NewTransaction(ctx context.Context, in *NewTransactionRequest, opts ...grpc.CallOption) (*Transaction, error)
+	SetFeePk(ctx context.Context, in *SetFeePkRequest, opts ...grpc.CallOption) (*Transaction, error)
+	VerifyTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error)
+	VerifyTransactionRoot(ctx context.Context, in *VerifyTransactionRootRequest, opts ...grpc.CallOption) (*VerifyTransactionRootResponse, error)
+	StoreTransactions(ctx context.Context, in *StoreTransactionsRequest, opts ...grpc.CallOption) (*StoreTransactionsResponse, error)
+}
+
+type phoenixClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewPhoenixClient(cc grpc.ClientConnInterface) PhoenixClient {
+	return &phoenixClient{cc}
+}
+
+func (c *phoenixClient) Echo(ctx context.Context, in *EchoMethod, opts ...grpc.CallOption) (*EchoMethod, error) {
+	out := new(EchoMethod)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/Echo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) GenerateSecretKey(ctx context.Context, in *GenerateSecretKeyRequest, opts ...grpc.CallOption) (*SecretKey, error) {
+	out := new(SecretKey)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/GenerateSecretKey", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) Keys(ctx context.Context, in *SecretKey, opts ...grpc.CallOption) (*KeysResponse, error) {
+	out := new(KeysResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/Keys", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) Nullifier(ctx context.Context, in *NullifierRequest, opts ...grpc.CallOption) (*NullifierResponse, error) {
+	out := new(NullifierResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/Nullifier", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) NullifierStatus(ctx context.Context, in *NullifierStatusRequest, opts ...grpc.CallOption) (*NullifierStatusResponse, error) {
+	out := new(NullifierStatusResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/NullifierStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) FetchNote(ctx context.Context, in *Idx, opts ...grpc.CallOption) (*Note, error) {
+	out := new(Note)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/FetchNote", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) DecryptNote(ctx context.Context, in *DecryptNoteRequest, opts ...grpc.CallOption) (*DecryptedNote, error) {
+	out := new(DecryptedNote)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/DecryptNote", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) OwnedNotes(ctx context.Context, in *OwnedNotesRequest, opts ...grpc.CallOption) (*OwnedNotesResponse, error) {
+	out := new(OwnedNotesResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/OwnedNotes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) FullScanOwnedNotes(ctx context.Context, in *ViewKey, opts ...grpc.CallOption) (*OwnedNotesResponse, error) {
+	out := new(OwnedNotesResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/FullScanOwnedNotes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) NewTransactionInput(ctx context.Context, in *NewTransactionInputRequest, opts ...grpc.CallOption) (*TransactionInput, error) {
+	out := new(TransactionInput)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/NewTransactionInput", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) NewTransactionOutput(ctx context.Context, in *NewTransactionOutputRequest, opts ...grpc.CallOption) (*TransactionOutput, error) {
+	out := new(TransactionOutput)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/NewTransactionOutput", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) NewTransaction(ctx context.Context, in *NewTransactionRequest, opts ...grpc.CallOption) (*Transaction, error) {
+	out := new(Transaction)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/NewTransaction", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) SetFeePk(ctx context.Context, in *SetFeePkRequest, opts ...grpc.CallOption) (*Transaction, error) {
+	out := new(Transaction)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/SetFeePk", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) VerifyTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error) {
+	out := new(VerifyTransactionResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/VerifyTransaction", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) VerifyTransactionRoot(ctx context.Context, in *VerifyTransactionRootRequest, opts ...grpc.CallOption) (*VerifyTransactionRootResponse, error) {
+	out := new(VerifyTransactionRootResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/VerifyTransactionRoot", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *phoenixClient) StoreTransactions(ctx context.Context, in *StoreTransactionsRequest, opts ...grpc.CallOption) (*StoreTransactionsResponse, error) {
+	out := new(StoreTransactionsResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/StoreTransactions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// PhoenixServer is the server API for Phoenix service.
+type PhoenixServer interface {
+	Echo(context.Context, *EchoMethod) (*EchoMethod, error)
+	GenerateSecretKey(context.Context, *GenerateSecretKeyRequest) (*SecretKey, error)
+	Keys(context.Context, *SecretKey) (*KeysResponse, error)
+	Nullifier(context.Context, *NullifierRequest) (*NullifierResponse, error)
+	NullifierStatus(context.Context, *NullifierStatusRequest) (*NullifierStatusResponse, error)
+	FetchNote(context.Context, *Idx) (*Note, error)
+	DecryptNote(context.Context, *DecryptNoteRequest) (*DecryptedNote, error)
+	OwnedNotes(context.Context, *OwnedNotesRequest) (*OwnedNotesResponse, error)
+	FullScanOwnedNotes(context.Context, *ViewKey) (*OwnedNotesResponse, error)
+	NewTransactionInput(context.Context, *NewTransactionInputRequest) (*TransactionInput, error)
+	NewTransactionOutput(context.Context, *NewTransactionOutputRequest) (*TransactionOutput, error)
+	NewTransaction(context.Context, *NewTransactionRequest) (*Transaction, error)
+	SetFeePk(context.Context, *SetFeePkRequest) (*Transaction, error)
+	VerifyTransaction(context.Context, *Transaction) (*VerifyTransactionResponse, error)
+	VerifyTransactionRoot(context.Context, *VerifyTransactionRootRequest) (*VerifyTransactionRootResponse, error)
+	StoreTransactions(context.Context, *StoreTransactionsRequest) (*StoreTransactionsResponse, error)
+}
+
+// UnimplementedPhoenixServer can be embedded to have forward compatible implementations.
+type UnimplementedPhoenixServer struct {
+}
+
+func (*UnimplementedPhoenixServer) Echo(ctx context.Context, req *EchoMethod) (*EchoMethod, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Echo not implemented")
+}
+func (*UnimplementedPhoenixServer) GenerateSecretKey(ctx context.Context, req *GenerateSecretKeyRequest) (*SecretKey, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateSecretKey not implemented")
+}
+func (*UnimplementedPhoenixServer) Keys(ctx context.Context, req *SecretKey) (*KeysResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Keys not implemented")
+}
+func (*UnimplementedPhoenixServer) Nullifier(ctx context.Context, req *NullifierRequest) (*NullifierResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Nullifier not implemented")
+}
+func (*UnimplementedPhoenixServer) NullifierStatus(ctx context.Context, req *NullifierStatusRequest) (*NullifierStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NullifierStatus not implemented")
+}
+func (*UnimplementedPhoenixServer) FetchNote(ctx context.Context, req *Idx) (*Note, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchNote not implemented")
+}
+func (*UnimplementedPhoenixServer) DecryptNote(ctx context.Context, req *DecryptNoteRequest) (*DecryptedNote, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DecryptNote not implemented")
+}
+func (*UnimplementedPhoenixServer) OwnedNotes(ctx context.Context, req *OwnedNotesRequest) (*OwnedNotesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OwnedNotes not implemented")
+}
+func (*UnimplementedPhoenixServer) FullScanOwnedNotes(ctx context.Context, req *ViewKey) (*OwnedNotesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FullScanOwnedNotes not implemented")
+}
+func (*UnimplementedPhoenixServer) NewTransactionInput(ctx context.Context, req *NewTransactionInputRequest) (*TransactionInput, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewTransactionInput not implemented")
+}
+func (*UnimplementedPhoenixServer) NewTransactionOutput(ctx context.Context, req *NewTransactionOutputRequest) (*TransactionOutput, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewTransactionOutput not implemented")
+}
+func (*UnimplementedPhoenixServer) NewTransaction(ctx context.Context, req *NewTransactionRequest) (*Transaction, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewTransaction not implemented")
+}
+func (*UnimplementedPhoenixServer) SetFeePk(ctx context.Context, req *SetFeePkRequest) (*Transaction, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetFeePk not implemented")
+}
+func (*UnimplementedPhoenixServer) VerifyTransaction(ctx context.Context, req *Transaction) (*VerifyTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyTransaction not implemented")
+}
+func (*UnimplementedPhoenixServer) VerifyTransactionRoot(ctx context.Context, req *VerifyTransactionRootRequest) (*VerifyTransactionRootResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyTransactionRoot not implemented")
+}
+func (*UnimplementedPhoenixServer) StoreTransactions(ctx context.Context, req *StoreTransactionsRequest) (*StoreTransactionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StoreTransactions not implemented")
+}
+
+func RegisterPhoenixServer(s *grpc.Server, srv PhoenixServer) {
+	s.RegisterService(&_Phoenix_serviceDesc, srv)
+}
+
+func _Phoenix_Echo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EchoMethod)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).Echo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/Echo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).Echo(ctx, req.(*EchoMethod))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_GenerateSecretKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateSecretKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).GenerateSecretKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/GenerateSecretKey",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).GenerateSecretKey(ctx, req.(*GenerateSecretKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_Keys_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SecretKey)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).Keys(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/Keys",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).Keys(ctx, req.(*SecretKey))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_Nullifier_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NullifierRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).Nullifier(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/Nullifier",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).Nullifier(ctx, req.(*NullifierRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_NullifierStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NullifierStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).NullifierStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/NullifierStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).NullifierStatus(ctx, req.(*NullifierStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_FetchNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Idx)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).FetchNote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/FetchNote",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).FetchNote(ctx, req.(*Idx))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_DecryptNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DecryptNoteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).DecryptNote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/DecryptNote",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).DecryptNote(ctx, req.(*DecryptNoteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_OwnedNotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OwnedNotesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).OwnedNotes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/OwnedNotes",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).OwnedNotes(ctx, req.(*OwnedNotesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_FullScanOwnedNotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ViewKey)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).FullScanOwnedNotes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/FullScanOwnedNotes",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).FullScanOwnedNotes(ctx, req.(*ViewKey))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_NewTransactionInput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewTransactionInputRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).NewTransactionInput(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/NewTransactionInput",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).NewTransactionInput(ctx, req.(*NewTransactionInputRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_NewTransactionOutput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewTransactionOutputRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).NewTransactionOutput(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/NewTransactionOutput",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).NewTransactionOutput(ctx, req.(*NewTransactionOutputRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_NewTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).NewTransaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/NewTransaction",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).NewTransaction(ctx, req.(*NewTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_SetFeePk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetFeePkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).SetFeePk(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/SetFeePk",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).SetFeePk(ctx, req.(*SetFeePkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_VerifyTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Transaction)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).VerifyTransaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/VerifyTransaction",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).VerifyTransaction(ctx, req.(*Transaction))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_VerifyTransactionRoot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyTransactionRootRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).VerifyTransactionRoot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/VerifyTransactionRoot",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).VerifyTransactionRoot(ctx, req.(*VerifyTransactionRootRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Phoenix_StoreTransactions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StoreTransactionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhoenixServer).StoreTransactions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Phoenix/StoreTransactions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhoenixServer).StoreTransactions(ctx, req.(*StoreTransactionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _Phoenix_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "phoenix.Phoenix",
+	HandlerType: (*PhoenixServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Echo",
+			Handler:    _Phoenix_Echo_Handler,
+		},
+		{
+			MethodName: "GenerateSecretKey",
+			Handler:    _Phoenix_GenerateSecretKey_Handler,
+		},
+		{
+			MethodName: "Keys",
+			Handler:    _Phoenix_Keys_Handler,
+		},
+		{
+			MethodName: "Nullifier",
+			Handler:    _Phoenix_Nullifier_Handler,
+		},
+		{
+			MethodName: "NullifierStatus",
+			Handler:    _Phoenix_NullifierStatus_Handler,
+		},
+		{
+			MethodName: "FetchNote",
+			Handler:    _Phoenix_FetchNote_Handler,
+		},
+		{
+			MethodName: "DecryptNote",
+			Handler:    _Phoenix_DecryptNote_Handler,
+		},
+		{
+			MethodName: "OwnedNotes",
+			Handler:    _Phoenix_OwnedNotes_Handler,
+		},
+		{
+			MethodName: "FullScanOwnedNotes",
+			Handler:    _Phoenix_FullScanOwnedNotes_Handler,
+		},
+		{
+			MethodName: "NewTransactionInput",
+			Handler:    _Phoenix_NewTransactionInput_Handler,
+		},
+		{
+			MethodName: "NewTransactionOutput",
+			Handler:    _Phoenix_NewTransactionOutput_Handler,
+		},
+		{
+			MethodName: "NewTransaction",
+			Handler:    _Phoenix_NewTransaction_Handler,
+		},
+		{
+			MethodName: "SetFeePk",
+			Handler:    _Phoenix_SetFeePk_Handler,
+		},
+		{
+			MethodName: "VerifyTransaction",
+			Handler:    _Phoenix_VerifyTransaction_Handler,
+		},
+		{
+			MethodName: "VerifyTransactionRoot",
+			Handler:    _Phoenix_VerifyTransactionRoot_Handler,
+		},
+		{
+			MethodName: "StoreTransactions",
+			Handler:    _Phoenix_StoreTransactions_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "phoenix.proto",
 }

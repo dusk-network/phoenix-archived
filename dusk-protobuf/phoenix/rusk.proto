@@ -6,6 +6,7 @@ syntax = "proto3";
 package phoenix;
 
 import "transaction.proto";
+import "keys.proto";
 
 message EchoRequest {}
 message EchoResponse {}

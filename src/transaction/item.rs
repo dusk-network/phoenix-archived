@@ -1,6 +1,6 @@
 use crate::{
-    db, rpc, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator, NoteVariant, Nullifier,
-    PublicKey, SecretKey, TransparentNote,
+    db, rpc, utils, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator, NoteVariant,
+    Nullifier, PublicKey, SecretKey, TransparentNote,
 };
 
 use std::cmp::Ordering;
@@ -202,6 +202,18 @@ impl From<TransactionInput> for rpc::TransactionInput {
         rpc::TransactionInput {
             pos: item.note().idx(),
             sk: Some(item.sk.into()),
+        }
+    }
+}
+
+impl From<TransactionInput> for rpc::Nullifier {
+    fn from(item: TransactionInput) -> Self {
+        let mut scalar_buf = [0u8; 32];
+        utils::serialize_bls_scalar(&item.nullifier.0, &mut scalar_buf).unwrap();
+        rpc::Nullifier {
+            h: Some(rpc::Scalar {
+                data: scalar_buf.to_vec(),
+            }),
         }
     }
 }
