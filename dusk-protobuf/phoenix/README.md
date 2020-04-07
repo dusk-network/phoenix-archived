@@ -42,15 +42,10 @@
     - [Phoenix](#phoenix.Phoenix)
 
 - [rusk.proto](#rusk.proto)
-    - [Provisioner](#phoenix.Provisioner)
     - [EchoRequest](#phoenix.EchoRequest)
     - [EchoResponse](#phoenix.EchoResponse)
     - [ValidateStateTransitionRequest](#phoenix.ValidateStateTransitionRequest)
     - [ValidateStateTransitionResponse](#phoenix.ValidateStateTransitionResponse)
-    - [DistributeRequest](#phoenix.DistributeRequest)
-    - [DistributeResponse](#phoenix.DistributeResponse)
-    - [WithdrawRequest](#phoenix.WithdrawRequest)
-    - [WithdrawResponse](#phoenix.WithdrawResponse)
     - [Rusk](#phoenix.Rusk)
 
 - [transaction.proto](#transaction.proto)
@@ -299,12 +294,6 @@
 
 ## rusk.proto
 
-### Provisioner
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| address | [bytes](#bytes) | | Address of a provisioner |
-
 ### EchoRequest
 
 ### EchoResponse
@@ -320,35 +309,6 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | success | [bool](#bool) |  | Status of the state transition |
-
-### DistributeRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| total_reward | [fixed64](#fixed64) | | Total reward to be distributed from the block reward and fee. |
-| addresses | [Provisioner](#phoenix.Provisioner) | repeated | Addresses of provisioners who helped to finalize the block. |
-| pk | [PublicKey](#phoenix.PublicKey) | | Public key of the block generator, who generated the winning block. |
-
-### DistributeResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| success | [bool](#bool) |  | Status of the distribution request |
-
-### WithdrawRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| signature | [Transaction](#phoenix.Transaction) | repeated | An Ed25519 signature of the `address`, and a `nonce`. |
-| address | [Transaction](#phoenix.Transaction) | repeated | The BLS public key of the provisioner who wishes to withdraw their funds. |
-| value | [Transaction](#phoenix.Transaction) | repeated | The amount of funds to withdraw. |
-| pk | [PublicKey](#phoenix.PublicKey) | | Public key of the provisioner who wishes to withdraw their funds. |
-
-### WithdrawResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| success | [bool](#bool) |  | Status of the withdraw request |
 
 ### Rusk
 
