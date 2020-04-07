@@ -35,3 +35,10 @@ impl From<rpc::Nullifier> for Nullifier {
         Nullifier(scalar)
     }
 }
+
+impl From<&rpc::Nullifier> for Nullifier {
+    fn from(n: &rpc::Nullifier) -> Self {
+        let scalar = utils::deserialize_bls_scalar(n.h.as_ref().unwrap().data.as_slice()).unwrap();
+        Nullifier(scalar)
+    }
+}

@@ -382,7 +382,7 @@ impl Transaction {
         tx.nullifiers
             .iter()
             .map(|i| {
-                let nul = Nullifier::from(i.clone());
+                let nul = Nullifier::from(i);
                 let mut item = TransactionInput::default();
                 item.nullifier = nul;
                 transaction.push_input(item)
