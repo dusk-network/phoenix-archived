@@ -1,6 +1,6 @@
 use crate::{
-    crypto, rpc, utils, zk, BlsScalar, Error, Note, NoteGenerator, ObfuscatedNote, PublicKey,
-    SecretKey, TransparentNote,
+    crypto, rpc, utils, zk, BlsScalar, Error, Note, NoteGenerator, Nullifier, ObfuscatedNote,
+    PublicKey, SecretKey, TransparentNote,
 };
 
 use std::convert::TryFrom;
@@ -379,11 +379,13 @@ impl Transaction {
             transaction.set_fee(TransactionOutput::try_from(f)?);
         }
 
-        tx.inputs
+        tx.nullifiers
             .iter()
             .map(|i| {
-                TransactionInput::try_from_rpc_transaction_input(db_path.as_ref(), i.clone())
-                    .and_then(|i| transaction.push_input(i))
+                let nul = Nullifier::from(i.clone());
+                let mut item = TransactionInput::default();
+                item.nullifier = nul;
+                transaction.push_input(item)
             })
             .collect::<Result<_, _>>()?;
 
@@ -405,7 +407,7 @@ impl TryFrom<Transaction> for rpc::Transaction {
     type Error = Error;
 
     fn try_from(tx: Transaction) -> Result<rpc::Transaction, Self::Error> {
-        let inputs = tx.inputs.iter().map(|i| (*i).into()).collect();
+        let nullifiers = tx.inputs.iter().map(|i| (*i).into()).collect();
         let outputs = tx.outputs.iter().map(|o| (*o).into()).collect();
         let fee = Some(tx.fee.into());
 
@@ -418,7 +420,7 @@ impl TryFrom<Transaction> for rpc::Transaction {
         let public_inputs = vec![];
 
         Ok(rpc::Transaction {
-            inputs,
+            nullifiers,
             outputs,
             fee,
             proof,
