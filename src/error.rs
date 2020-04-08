@@ -87,10 +87,10 @@ impl Into<fmt::Error> for Error {
     }
 }
 
-impl Into<tonic::Status> for Error {
-    fn into(self) -> tonic::Status {
+impl From<Error> for tonic::Status {
+    fn from(e: Error) -> Self {
         // TODO - Improve the error mapping to tonic codes
-        tonic::Status::new(tonic::Code::Internal, format!("{}", self))
+        tonic::Status::new(tonic::Code::Internal, format!("{}", e))
     }
 }
 
