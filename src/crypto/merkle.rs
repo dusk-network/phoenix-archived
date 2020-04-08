@@ -1,4 +1,4 @@
-use crate::{BlsScalar, Note, NoteVariant};
+use crate::{BlsScalar, Error, Note, NoteVariant};
 
 use hades252::strategies::{ScalarStrategy, Strategy};
 use num_traits::Zero;
@@ -40,6 +40,9 @@ pub trait MerkleProofProvider {
     /// query_level(1,2) -> [Some(j), Some(k), Some(l)]
     /// query_level(2,0) -> [Some(m), None, None]
     fn query_level(&self, depth: u32, idx: usize) -> [Option<BlsScalar>; ARITY];
+
+    /// Return the merkle root of the state
+    fn root(&self) -> Result<BlsScalar, Error>;
 }
 
 fn leaves_to_perm(leaves: [Option<BlsScalar>; ARITY], perm: &mut [BlsScalar; hades252::WIDTH]) {

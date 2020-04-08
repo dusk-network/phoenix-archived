@@ -1,6 +1,6 @@
 use crate::{
-    rpc, BlsScalar, Error, JubJubProjective, Nonce, Note, NoteType, ObfuscatedNote,
-    TransparentNote, ViewKey,
+    rpc, BlsScalar, Error, JubJubProjective, Nonce, Note, NoteGenerator, NoteType, ObfuscatedNote,
+    SecretKey, TransactionInput, TransparentNote, ViewKey,
 };
 
 use std::convert::{TryFrom, TryInto};
@@ -12,6 +12,17 @@ use kelvin::{ByteHash, Content, Sink, Source};
 pub enum NoteVariant {
     Transparent(TransparentNote),
     Obfuscated(ObfuscatedNote),
+}
+
+impl NoteVariant {
+    /// Create a new transaction input item provided the secret key for the nullifier generation
+    /// and value / blinding factor decrypt
+    pub fn to_transaction_input(self, sk: SecretKey) -> TransactionInput {
+        match self {
+            NoteVariant::Transparent(note) => note.to_transaction_input(sk),
+            NoteVariant::Obfuscated(note) => note.to_transaction_input(sk),
+        }
+    }
 }
 
 impl Default for NoteVariant {

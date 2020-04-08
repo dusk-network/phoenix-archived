@@ -1,6 +1,6 @@
-use crate::{rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce};
+use crate::{rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, Nullifier};
 
-use std::convert::TryFrom;
+use std::convert::{TryFrom, TryInto};
 
 impl From<JubJubScalar> for rpc::Scalar {
     fn from(s: JubJubScalar) -> Self {
@@ -31,6 +31,24 @@ impl From<BlsScalar> for rpc::Scalar {
         rpc::Scalar {
             data: data.to_vec(),
         }
+    }
+}
+
+impl From<Nullifier> for rpc::Nullifier {
+    fn from(n: Nullifier) -> Self {
+        rpc::Nullifier {
+            h: Some(n.0.into()),
+        }
+    }
+}
+
+impl TryFrom<rpc::Nullifier> for Nullifier {
+    type Error = Error;
+
+    fn try_from(n: rpc::Nullifier) -> Result<Self, Self::Error> {
+        n.h.ok_or(Error::InvalidParameters)
+            .and_then(|s| s.try_into())
+            .map(|s: BlsScalar| s.into())
     }
 }
 
