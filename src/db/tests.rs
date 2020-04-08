@@ -1,5 +1,5 @@
 use crate::{
-    utils, Db, Note, NoteGenerator, NoteVariant, ObfuscatedNote, SecretKey, TransparentNote,
+    utils, Note, NoteGenerator, NoteVariant, NotesDb, ObfuscatedNote, SecretKey, TransparentNote,
 };
 
 use std::env::temp_dir;
@@ -23,14 +23,14 @@ fn transparent_note_serialization() {
     db.push("transparent_note_serialization");
 
     let mut root = Root::<_, Blake2b>::new(db.as_path()).unwrap();
-    let mut state: Db<_> = root.restore().unwrap();
+    let mut state: NotesDb = root.restore().unwrap();
 
     let idx = state.store_unspent_note(note_variant).unwrap();
 
     root.set_root(&mut state).unwrap();
 
     let root = Root::<_, Blake2b>::new(db.as_path()).unwrap();
-    let state: Db<_> = root.restore().unwrap();
+    let state: NotesDb = root.restore().unwrap();
 
     let db_note_variant = state.fetch_note(idx).unwrap();
 
@@ -64,14 +64,14 @@ fn obfuscated_note_serialization() {
     db.push("obfuscated_note_serialization");
 
     let mut root = Root::<_, Blake2b>::new(db.as_path()).unwrap();
-    let mut state: Db<_> = root.restore().unwrap();
+    let mut state: NotesDb = root.restore().unwrap();
 
     let idx = state.store_unspent_note(note_variant).unwrap();
 
     root.set_root(&mut state).unwrap();
 
     let root = Root::<_, Blake2b>::new(db.as_path()).unwrap();
-    let state: Db<_> = root.restore().unwrap();
+    let state: NotesDb = root.restore().unwrap();
 
     let db_note_variant = state.fetch_note(idx).unwrap();
 

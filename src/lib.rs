@@ -1,6 +1,8 @@
 #![allow(non_snake_case)]
 #![feature(maybe_uninit_extra)]
 
+use kelvin::Blake2b;
+
 pub use algebra::curves::jubjub::{JubJubAffine, JubJubProjective};
 pub use algebra::fields::bls12_381::fr::Fr as BlsScalar;
 pub use algebra::fields::jubjub::fr::Fr as JubJubScalar;
@@ -15,6 +17,9 @@ pub use transaction::{
     Transaction, TransactionInput, TransactionItem, TransactionOutput,
     MAX_INPUT_NOTES_PER_TRANSACTION, MAX_NOTES_PER_TRANSACTION, MAX_OUTPUT_NOTES_PER_TRANSACTION,
 };
+
+/// Type used for notes storage
+pub type NotesDb = Db<Blake2b>;
 
 /// Crypto primitives
 pub mod crypto;

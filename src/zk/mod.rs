@@ -1,5 +1,5 @@
 use crate::{
-    crypto, utils, BlsScalar, Db, Error, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
+    crypto, utils, BlsScalar, Error, NotesDb, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
     MAX_OUTPUT_NOTES_PER_TRANSACTION,
 };
 
@@ -9,7 +9,6 @@ use algebra::bytes::{FromBytes, ToBytes};
 use algebra::curves::bls12_381::Bls12_381;
 use algebra::curves::bls12_381::G1Affine;
 use ff_fft::EvaluationDomain;
-use kelvin::Blake2b;
 use merlin::Transcript;
 use plonk::cs::composer::StandardComposer;
 use plonk::cs::{proof::Proof as PlonkProof, Composer as _, PreProcessedCircuit};
@@ -231,7 +230,7 @@ pub fn circuit() -> &'static Circuit {
 }
 
 fn inner_circuit(mut composer: Composer, tx: &mut Transaction) -> Composer {
-    let db: Db<Blake2b> = Db::default();
+    let db = NotesDb::default();
     let tx_zk = ZkTransaction::from_tx(&mut composer, tx, &db);
     let pi = tx.public_inputs_mut().iter_mut();
 
