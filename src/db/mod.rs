@@ -109,10 +109,14 @@ pub fn store_bulk_transactions<P: AsRef<Path>>(
 
 /// Store a note. Return the position of the stored note on the tree.
 pub fn store_unspent_note<P: AsRef<Path>>(path: P, note: NoteVariant) -> Result<u64, Error> {
-    let root = Root::<_, Blake2b>::new(path.as_ref())?;
+    let mut root = Root::<_, Blake2b>::new(path.as_ref())?;
     let mut state: Db<_> = root.restore()?;
 
-    state.store_unspent_note(note)
+    let idx = state.store_unspent_note(note)?;
+
+    root.set_root(&mut state)?;
+
+    Ok(idx)
 }
 
 // TODO: for the following two functions, i needed to clone the
@@ -124,12 +128,7 @@ pub fn fetch_note<P: AsRef<Path>>(path: P, idx: u64) -> Result<NoteVariant, Erro
     let root = Root::<_, Blake2b>::new(path.as_ref())?;
     let state: Db<_> = root.restore()?;
 
-    state
-        .notes
-        .clone()
-        .get(&idx)?
-        .map(|n| n.clone())
-        .ok_or(Error::Generic)
+    state.fetch_note(idx)
 }
 
 /// Verify the existence of a provided nullifier on the set
@@ -203,7 +202,7 @@ impl<H: ByteHash> Db<H> {
         self.notes
             .get(&idx)?
             .map(|n| n.clone())
-            .ok_or(Error::Generic)
+            .ok_or(Error::NotFound)
     }
 
     /// Verify the existence of a provided nullifier on the set

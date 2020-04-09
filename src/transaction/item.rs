@@ -8,6 +8,8 @@ use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::path::Path;
 
+use num_traits::Zero;
+
 /// A transaction item constains sensitive data for a proof creation, and must be obfuscated before
 /// network propagation.
 ///
@@ -82,7 +84,7 @@ impl TransactionInput {
         db_path: P,
         item: rpc::TransactionInput,
     ) -> Result<Self, Error> {
-        let sk: SecretKey = item.sk.unwrap_or_default().try_into()?;
+        let sk: SecretKey = item.sk.ok_or(Error::InvalidParameters)?.try_into()?;
 
         db::fetch_note(db_path, item.pos).map(|note| match note {
             NoteVariant::Transparent(n) => n.to_transaction_input(sk),
@@ -148,6 +150,14 @@ impl TransactionOutput {
 
     pub fn pk(&self) -> &PublicKey {
         &self.pk
+    }
+
+    /// Remove all the sensitive info from the transaction used to build the zk proof so it can be
+    /// safely broadcasted
+    pub fn clear_sensitive_info(&mut self) {
+        self.value = 0;
+        self.blinding_factor = BlsScalar::zero();
+        self.pk = PublicKey::default();
     }
 }
 

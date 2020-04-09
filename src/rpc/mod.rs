@@ -2,3 +2,6 @@
 pub mod types;
 
 tonic::include_proto!("phoenix");
+
+#[cfg(test)]
+mod tests;

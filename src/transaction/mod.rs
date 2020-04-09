@@ -315,6 +315,16 @@ impl Transaction {
         self.proof.replace(proof);
     }
 
+    /// Remove all the sensitive info from the transaction used to build the zk proof so it can be
+    /// safely broadcasted
+    pub fn clear_sensitive_info(&mut self) {
+        self.idx_inputs = 0;
+        self.inputs = [*DEFAULT_INPUT; MAX_INPUT_NOTES_PER_TRANSACTION];
+        self.outputs
+            .iter_mut()
+            .for_each(|o| o.clear_sensitive_info());
+    }
+
     /// Verify a previously proven transaction with [`Transaction::prove`].
     ///
     /// Doesn't depend on the transaction items secret data. Depends only on the constructed
@@ -397,8 +407,11 @@ impl Transaction {
             })
             .collect::<Result<_, _>>()?;
 
-        let proof = zk::bytes_to_proof(tx.proof.as_slice())?;
-        transaction.set_proof(proof);
+        let proof = tx.proof;
+        if !proof.is_empty() {
+            let proof = zk::bytes_to_proof(proof.as_slice())?;
+            transaction.set_proof(proof);
+        }
 
         Ok(transaction)
     }
@@ -408,8 +421,30 @@ impl TryFrom<Transaction> for rpc::Transaction {
     type Error = Error;
 
     fn try_from(tx: Transaction) -> Result<rpc::Transaction, Self::Error> {
-        let inputs = tx.inputs.iter().map(|i| (*i).into()).collect();
-        let outputs = tx.outputs.iter().map(|o| (*o).into()).collect();
+        let inputs = tx
+            .inputs
+            .iter()
+            .filter_map(|o| {
+                if o.value() > 0 {
+                    Some((*o).into())
+                } else {
+                    None
+                }
+            })
+            .collect();
+
+        let outputs = tx
+            .outputs
+            .iter()
+            .filter_map(|o| {
+                if o.value() > 0 {
+                    Some((*o).into())
+                } else {
+                    None
+                }
+            })
+            .collect();
+
         let fee = Some(tx.fee.into());
 
         let proof = tx
