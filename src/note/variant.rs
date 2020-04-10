@@ -1,6 +1,6 @@
 use crate::{
-    rpc, BlsScalar, Error, JubJubProjective, Nonce, Note, NoteGenerator, NoteType, ObfuscatedNote,
-    SecretKey, TransactionInput, TransparentNote, ViewKey,
+    crypto, rpc, BlsScalar, Error, JubJubProjective, Nonce, Note, NoteGenerator, NoteType,
+    ObfuscatedNote, SecretKey, TransactionInput, TransparentNote, ViewKey,
 };
 
 use std::convert::{TryFrom, TryInto};
@@ -17,10 +17,14 @@ pub enum NoteVariant {
 impl NoteVariant {
     /// Create a new transaction input item provided the secret key for the nullifier generation
     /// and value / blinding factor decrypt
-    pub fn to_transaction_input(self, sk: SecretKey) -> TransactionInput {
+    pub fn to_transaction_input(
+        self,
+        merkle_opening: crypto::MerkleProof,
+        sk: SecretKey,
+    ) -> TransactionInput {
         match self {
-            NoteVariant::Transparent(note) => note.to_transaction_input(sk),
-            NoteVariant::Obfuscated(note) => note.to_transaction_input(sk),
+            NoteVariant::Transparent(note) => note.to_transaction_input(merkle_opening, sk),
+            NoteVariant::Obfuscated(note) => note.to_transaction_input(merkle_opening, sk),
         }
     }
 }

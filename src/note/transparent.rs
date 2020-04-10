@@ -4,7 +4,7 @@ use crate::{
 };
 
 use std::convert::{TryFrom, TryInto};
-use std::io::{self, Write};
+use std::io::{self, Read, Write};
 
 use kelvin::{ByteHash, Content, Sink, Source};
 
@@ -53,6 +53,24 @@ impl TransparentNote {
             value,
             blinding_factor,
         }
+    }
+}
+
+impl Read for TransparentNote {
+    fn read(&mut self, mut buf: &mut [u8]) -> io::Result<usize> {
+        let mut n = 0;
+
+        buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| utils::serialize_bls_scalar(&self.value_commitment, c))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+        buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+
+        unimplemented!();
+
+        Ok(n)
     }
 }
 

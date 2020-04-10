@@ -37,7 +37,8 @@ pub struct Transaction {
     idx_outputs: usize,
     outputs: [TransactionOutput; MAX_OUTPUT_NOTES_PER_TRANSACTION],
     proof: Option<zk::Proof>,
-    public_inputs: Vec<BlsScalar>,
+    public_inputs: zk::ZkPublicInputs,
+    public_inputs_raw: Vec<BlsScalar>,
 }
 
 impl Default for Transaction {
@@ -49,7 +50,8 @@ impl Default for Transaction {
             idx_outputs: 0,
             outputs: [*DEFAULT_OUTPUT; MAX_OUTPUT_NOTES_PER_TRANSACTION],
             proof: None,
-            public_inputs: vec![BlsScalar::zero(); zk::PI_LEN],
+            public_inputs: zk::ZkPublicInputs::default(),
+            public_inputs_raw: vec![BlsScalar::zero(); zk::PI_LEN],
         }
     }
 }
@@ -81,7 +83,9 @@ impl Distribution<Transaction> for Standard {
                 let sk = SecretKey::default();
                 let pk = sk.public_key();
                 let note = TransparentNote::output(&pk, value).0;
-                tx.push_input(note.to_transaction_input(sk))
+
+                let merkle_opening = crypto::MerkleProof::mock(note.hash());
+                tx.push_input(note.to_transaction_input(merkle_opening, sk))
                     .unwrap_or_default();
             }
         });
@@ -276,12 +280,20 @@ impl Transaction {
         }
     }
 
-    pub fn public_inputs(&self) -> &Vec<BlsScalar> {
+    pub fn public_inputs(&self) -> &zk::ZkPublicInputs {
         &self.public_inputs
     }
 
-    pub fn public_inputs_mut(&mut self) -> &mut Vec<BlsScalar> {
-        &mut self.public_inputs
+    pub fn public_inputs_raw(&self) -> &Vec<BlsScalar> {
+        &self.public_inputs_raw
+    }
+
+    pub fn set_public_inputs_raw(&mut self, pi: Vec<BlsScalar>) {
+        self.public_inputs_raw = pi;
+    }
+
+    pub fn public_inputs_raw_mut(&mut self) -> &mut Vec<BlsScalar> {
+        &mut self.public_inputs_raw
     }
 
     /// Perform the zk proof, and save internally the created r1cs circuit and the commitment
@@ -298,6 +310,8 @@ impl Transaction {
         }
 
         self.sort_items();
+        let public_inputs = zk::ZkPublicInputs::from(&*self);
+        self.public_inputs = public_inputs;
 
         let proof = zk::prove(self);
         self.proof.replace(proof);
@@ -333,8 +347,9 @@ impl Transaction {
     /// The transaction items will be sorted for verification correctness
     pub fn verify(&self) -> Result<(), Error> {
         let proof = self.proof.as_ref().ok_or(Error::Generic)?;
+        let pi = self.public_inputs.generate_pi();
 
-        if zk::verify(proof, &self.public_inputs[..]) {
+        if zk::verify(proof, pi.as_slice()) {
             Ok(())
         } else {
             Err(Error::Generic)

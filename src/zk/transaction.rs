@@ -1,5 +1,5 @@
 use crate::{
-    crypto, utils, zk, BlsScalar, Note, Transaction, TransactionInput, TransactionItem,
+    utils, zk, BlsScalar, Note, Transaction, TransactionInput, TransactionItem,
     MAX_INPUT_NOTES_PER_TRANSACTION, MAX_OUTPUT_NOTES_PER_TRANSACTION,
 };
 
@@ -55,11 +55,7 @@ impl ZkTransaction {
         }
     }
 
-    pub fn from_tx<T: crypto::MerkleProofProvider>(
-        composer: &mut zk::Composer,
-        tx: &Transaction,
-        tree: &T,
-    ) -> Self {
+    pub fn from_tx(composer: &mut zk::Composer, tx: &Transaction) -> Self {
         let zero = composer.add_input(BlsScalar::zero());
         let one = composer.add_input(BlsScalar::one());
         let two = composer.add_input(BlsScalar::from(2u8));
@@ -78,7 +74,7 @@ impl ZkTransaction {
             .iter()
             .zip(inputs.iter_mut())
             .for_each(|(tx_input, i)| {
-                *i = ZkTransactionInput::from_tx_input(composer, tx_input, tree);
+                *i = ZkTransactionInput::from_tx_input(composer, tx_input);
             });
 
         tx.all_outputs()
@@ -169,11 +165,7 @@ impl ZkTransactionInput {
         }
     }
 
-    pub fn from_tx_input<T: crypto::MerkleProofProvider>(
-        composer: &mut zk::Composer,
-        item: &TransactionInput,
-        tree: &T,
-    ) -> Self {
+    pub fn from_tx_input(composer: &mut zk::Composer, item: &TransactionInput) -> Self {
         let value = BlsScalar::from(item.value());
         let value = composer.add_input(value);
 
@@ -204,9 +196,8 @@ impl ZkTransactionInput {
 
         let nullifier = item.nullifier.into();
 
-        let merkle = crypto::MerkleProof::new(tree, item.note());
-        let merkle_root = merkle.levels[crypto::TREE_HEIGHT - 1].data[1];
-        let merkle = zk::ZkMerkleProof::new(composer, &merkle);
+        let merkle = zk::ZkMerkleProof::new(composer, &item.merkle_opening);
+        let merkle_root = *item.merkle_opening.root();
 
         Self::new(
             value,

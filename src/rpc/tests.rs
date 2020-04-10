@@ -21,7 +21,9 @@ fn rpc_transaction() {
     let note = TransparentNote::output(&pk, value).0;
     let variant: NoteVariant = note.into();
     db::store_unspent_note(&db_path, variant).unwrap();
-    tx.push_input(note.to_transaction_input(sk)).unwrap();
+    let merkle_opening = db::merkle_opening(&db_path, &variant).unwrap();
+    tx.push_input(note.to_transaction_input(merkle_opening, sk))
+        .unwrap();
 
     let sk = SecretKey::default();
     let pk = sk.public_key();

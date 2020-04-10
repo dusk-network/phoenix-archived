@@ -54,20 +54,35 @@ impl<H: ByteHash> Content<H> for Db<H> {
 }
 
 impl<H: ByteHash> crypto::MerkleProofProvider for Db<H> {
-    fn query_level(&self, _depth: u32, _idx: usize) -> [Option<BlsScalar>; crypto::ARITY] {
+    fn query_level(
+        &self,
+        _depth: u32,
+        _idx: usize,
+    ) -> Result<[Option<BlsScalar>; crypto::ARITY], Error> {
         // TODO - Implement
         let mut rng = rand::thread_rng();
 
         let mut leaves = [None; crypto::ARITY];
         leaves.iter_mut().for_each(|l| *l = rng.gen());
 
-        leaves
+        Ok(leaves)
     }
 
     fn root(&self) -> Result<BlsScalar, Error> {
         // TODO - Implement
         Ok((&mut rand::thread_rng()).gen())
     }
+}
+
+/// Generate a [`MerkleProof`] provided a note and a db path
+pub fn merkle_opening<P: AsRef<Path>>(
+    path: P,
+    note: &NoteVariant,
+) -> Result<crypto::MerkleProof, Error> {
+    let root = Root::<_, Blake2b>::new(path.as_ref())?;
+    let state: Db<_> = root.restore()?;
+
+    state.opening(note)
 }
 
 /// Store a provided [`Transaction`]. Return the position of the note on the tree.

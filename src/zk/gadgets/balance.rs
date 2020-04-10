@@ -121,7 +121,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::{utils, zk, NoteGenerator, SecretKey, Transaction, TransparentNote};
+    use crate::{crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
 
     #[test]
     fn tx_balance_invalid() {
@@ -134,7 +134,9 @@ mod tests {
         let pk = sk.public_key();
         let value = 60;
         let note = TransparentNote::output(&pk, value).0;
-        tx.push_input(note.to_transaction_input(sk)).unwrap();
+        let merkle_opening = crypto::MerkleProof::mock(note.hash());
+        tx.push_input(note.to_transaction_input(merkle_opening, sk))
+            .unwrap();
 
         let sk = SecretKey::default();
         let pk = sk.public_key();

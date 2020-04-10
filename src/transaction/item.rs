@@ -1,6 +1,6 @@
 use crate::{
-    db, rpc, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator, NoteVariant, Nullifier,
-    PublicKey, SecretKey, TransparentNote,
+    crypto, db, rpc, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator, NoteVariant,
+    Nullifier, PublicKey, SecretKey, TransparentNote,
 };
 
 use std::cmp::Ordering;
@@ -36,6 +36,7 @@ pub struct TransactionInput {
     blinding_factor: BlsScalar,
     pub nullifier: Nullifier,
     pub sk: SecretKey,
+    pub merkle_opening: crypto::MerkleProof,
 }
 
 impl Default for TransactionInput {
@@ -48,8 +49,10 @@ impl Default for TransactionInput {
         let nonce = Nonce([5u8; 24]);
         let blinding_factor = BlsScalar::from(7u8);
 
+        let merkle_opening = crypto::MerkleProof::default();
+
         TransparentNote::deterministic_output(&r, nonce, &pk, value, blinding_factor)
-            .to_transaction_input(sk)
+            .to_transaction_input(merkle_opening, sk)
     }
 }
 
@@ -60,6 +63,7 @@ impl TransactionInput {
         value: u64,
         blinding_factor: BlsScalar,
         sk: SecretKey,
+        merkle_opening: crypto::MerkleProof,
     ) -> Self {
         Self {
             note,
@@ -67,6 +71,7 @@ impl TransactionInput {
             value,
             blinding_factor,
             sk,
+            merkle_opening,
         }
     }
 
@@ -86,10 +91,15 @@ impl TransactionInput {
     ) -> Result<Self, Error> {
         let sk: SecretKey = item.sk.ok_or(Error::InvalidParameters)?.try_into()?;
 
-        db::fetch_note(db_path, item.pos).map(|note| match note {
-            NoteVariant::Transparent(n) => n.to_transaction_input(sk),
-            NoteVariant::Obfuscated(n) => n.to_transaction_input(sk),
-        })
+        let note = db::fetch_note(db_path.as_ref(), item.pos)?;
+        let merkle_opening = db::merkle_opening(db_path.as_ref(), &note)?;
+
+        let txi = match note {
+            NoteVariant::Transparent(n) => n.to_transaction_input(merkle_opening, sk),
+            NoteVariant::Obfuscated(n) => n.to_transaction_input(merkle_opening, sk),
+        };
+
+        Ok(txi)
     }
 }
 

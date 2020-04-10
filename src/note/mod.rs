@@ -64,14 +64,25 @@ pub trait NoteGenerator:
 
     /// Create a new transaction input item provided the secret key for the nullifier generation
     /// and value / blinding factor decrypt
-    fn to_transaction_input(self, sk: SecretKey) -> TransactionInput {
+    fn to_transaction_input(
+        self,
+        merkle_opening: crypto::MerkleProof,
+        sk: SecretKey,
+    ) -> TransactionInput {
         let vk = sk.view_key();
 
         let nullifier = self.generate_nullifier(&sk);
         let value = self.value(Some(&vk));
         let blinding_factor = self.blinding_factor(Some(&vk));
 
-        TransactionInput::new(self.into(), nullifier, value, blinding_factor, sk)
+        TransactionInput::new(
+            self.into(),
+            nullifier,
+            value,
+            blinding_factor,
+            sk,
+            merkle_opening,
+        )
     }
 
     /// Create a new transaction output item provided the target value, blinding factor and pk for

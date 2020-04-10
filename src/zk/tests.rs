@@ -1,4 +1,4 @@
-use crate::{utils, zk, NoteGenerator, SecretKey, Transaction, TransparentNote};
+use crate::{crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
 
 #[test]
 fn proof_serialization() {
@@ -11,7 +11,9 @@ fn proof_serialization() {
     let pk = sk.public_key();
     let value = 100;
     let note = TransparentNote::output(&pk, value).0;
-    tx.push_input(note.to_transaction_input(sk)).unwrap();
+    let merkle_opening = crypto::MerkleProof::mock(note.hash());
+    tx.push_input(note.to_transaction_input(merkle_opening, sk))
+        .unwrap();
 
     let sk = SecretKey::default();
     let pk = sk.public_key();
@@ -27,7 +29,7 @@ fn proof_serialization() {
     tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
 
     tx.prove().unwrap();
-    let pi = tx.public_inputs().clone();
+    let pi = tx.public_inputs_raw().clone();
 
     tx.verify().unwrap();
 
