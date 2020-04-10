@@ -45,70 +45,6 @@ func (NoteType) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_640dafe07df50d4e, []int{0}
 }
 
-type InputOutput int32
-
-const (
-	InputOutput_INPUT  InputOutput = 0
-	InputOutput_OUTPUT InputOutput = 1
-)
-
-var InputOutput_name = map[int32]string{
-	0: "INPUT",
-	1: "OUTPUT",
-}
-
-var InputOutput_value = map[string]int32{
-	"INPUT":  0,
-	"OUTPUT": 1,
-}
-
-func (x InputOutput) String() string {
-	return proto.EnumName(InputOutput_name, int32(x))
-}
-
-func (InputOutput) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_640dafe07df50d4e, []int{1}
-}
-
-type Idx struct {
-	Pos                  uint64   `protobuf:"varint,1,opt,name=pos,proto3" json:"pos,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Idx) Reset()         { *m = Idx{} }
-func (m *Idx) String() string { return proto.CompactTextString(m) }
-func (*Idx) ProtoMessage()    {}
-func (*Idx) Descriptor() ([]byte, []int) {
-	return fileDescriptor_640dafe07df50d4e, []int{0}
-}
-
-func (m *Idx) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Idx.Unmarshal(m, b)
-}
-func (m *Idx) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Idx.Marshal(b, m, deterministic)
-}
-func (m *Idx) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Idx.Merge(m, src)
-}
-func (m *Idx) XXX_Size() int {
-	return xxx_messageInfo_Idx.Size(m)
-}
-func (m *Idx) XXX_DiscardUnknown() {
-	xxx_messageInfo_Idx.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Idx proto.InternalMessageInfo
-
-func (m *Idx) GetPos() uint64 {
-	if m != nil {
-		return m.Pos
-	}
-	return 0
-}
-
 type Nullifier struct {
 	H                    *Scalar  `protobuf:"bytes,1,opt,name=h,proto3" json:"h,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -120,7 +56,7 @@ func (m *Nullifier) Reset()         { *m = Nullifier{} }
 func (m *Nullifier) String() string { return proto.CompactTextString(m) }
 func (*Nullifier) ProtoMessage()    {}
 func (*Nullifier) Descriptor() ([]byte, []int) {
-	return fileDescriptor_640dafe07df50d4e, []int{1}
+	return fileDescriptor_640dafe07df50d4e, []int{0}
 }
 
 func (m *Nullifier) XXX_Unmarshal(b []byte) error {
@@ -149,14 +85,16 @@ func (m *Nullifier) GetH() *Scalar {
 }
 
 type Note struct {
-	NoteType                NoteType         `protobuf:"varint,1,opt,name=note_type,json=noteType,proto3,enum=phoenix.NoteType" json:"note_type,omitempty"`
-	Pos                     *Idx             `protobuf:"bytes,2,opt,name=pos,proto3" json:"pos,omitempty"`
-	Io                      InputOutput      `protobuf:"varint,3,opt,name=io,proto3,enum=phoenix.InputOutput" json:"io,omitempty"`
-	Nonce                   *Nonce           `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
-	RG                      *CompressedPoint `protobuf:"bytes,5,opt,name=r_g,json=rG,proto3" json:"r_g,omitempty"`
-	PkR                     *CompressedPoint `protobuf:"bytes,6,opt,name=pk_r,json=pkR,proto3" json:"pk_r,omitempty"`
-	Commitment              *CompressedPoint `protobuf:"bytes,7,opt,name=commitment,proto3" json:"commitment,omitempty"`
-	EncryptedBlindingFactor []byte           `protobuf:"bytes,8,opt,name=encrypted_blinding_factor,json=encryptedBlindingFactor,proto3" json:"encrypted_blinding_factor,omitempty"`
+	NoteType        NoteType         `protobuf:"varint,1,opt,name=note_type,json=noteType,proto3,enum=phoenix.NoteType" json:"note_type,omitempty"`
+	Pos             uint64           `protobuf:"fixed64,2,opt,name=pos,proto3" json:"pos,omitempty"`
+	Nonce           *Nonce           `protobuf:"bytes,3,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	RG              *CompressedPoint `protobuf:"bytes,4,opt,name=r_g,json=rG,proto3" json:"r_g,omitempty"`
+	PkR             *CompressedPoint `protobuf:"bytes,5,opt,name=pk_r,json=pkR,proto3" json:"pk_r,omitempty"`
+	ValueCommitment *Scalar          `protobuf:"bytes,6,opt,name=value_commitment,json=valueCommitment,proto3" json:"value_commitment,omitempty"`
+	// Types that are valid to be assigned to BlindingFactor:
+	//	*Note_TransparentBlindingFactor
+	//	*Note_EncryptedBlindingFactor
+	BlindingFactor isNote_BlindingFactor `protobuf_oneof:"blinding_factor"`
 	// Types that are valid to be assigned to Value:
 	//	*Note_TransparentValue
 	//	*Note_EncryptedValue
@@ -170,7 +108,7 @@ func (m *Note) Reset()         { *m = Note{} }
 func (m *Note) String() string { return proto.CompactTextString(m) }
 func (*Note) ProtoMessage()    {}
 func (*Note) Descriptor() ([]byte, []int) {
-	return fileDescriptor_640dafe07df50d4e, []int{2}
+	return fileDescriptor_640dafe07df50d4e, []int{1}
 }
 
 func (m *Note) XXX_Unmarshal(b []byte) error {
@@ -198,18 +136,11 @@ func (m *Note) GetNoteType() NoteType {
 	return NoteType_TRANSPARENT
 }
 
-func (m *Note) GetPos() *Idx {
+func (m *Note) GetPos() uint64 {
 	if m != nil {
 		return m.Pos
 	}
-	return nil
-}
-
-func (m *Note) GetIo() InputOutput {
-	if m != nil {
-		return m.Io
-	}
-	return InputOutput_INPUT
+	return 0
 }
 
 func (m *Note) GetNonce() *Nonce {
@@ -233,16 +164,46 @@ func (m *Note) GetPkR() *CompressedPoint {
 	return nil
 }
 
-func (m *Note) GetCommitment() *CompressedPoint {
+func (m *Note) GetValueCommitment() *Scalar {
 	if m != nil {
-		return m.Commitment
+		return m.ValueCommitment
+	}
+	return nil
+}
+
+type isNote_BlindingFactor interface {
+	isNote_BlindingFactor()
+}
+
+type Note_TransparentBlindingFactor struct {
+	TransparentBlindingFactor *Scalar `protobuf:"bytes,7,opt,name=transparent_blinding_factor,json=transparentBlindingFactor,proto3,oneof"`
+}
+
+type Note_EncryptedBlindingFactor struct {
+	EncryptedBlindingFactor []byte `protobuf:"bytes,8,opt,name=encrypted_blinding_factor,json=encryptedBlindingFactor,proto3,oneof"`
+}
+
+func (*Note_TransparentBlindingFactor) isNote_BlindingFactor() {}
+
+func (*Note_EncryptedBlindingFactor) isNote_BlindingFactor() {}
+
+func (m *Note) GetBlindingFactor() isNote_BlindingFactor {
+	if m != nil {
+		return m.BlindingFactor
+	}
+	return nil
+}
+
+func (m *Note) GetTransparentBlindingFactor() *Scalar {
+	if x, ok := m.GetBlindingFactor().(*Note_TransparentBlindingFactor); ok {
+		return x.TransparentBlindingFactor
 	}
 	return nil
 }
 
 func (m *Note) GetEncryptedBlindingFactor() []byte {
-	if m != nil {
-		return m.EncryptedBlindingFactor
+	if x, ok := m.GetBlindingFactor().(*Note_EncryptedBlindingFactor); ok {
+		return x.EncryptedBlindingFactor
 	}
 	return nil
 }
@@ -252,7 +213,7 @@ type isNote_Value interface {
 }
 
 type Note_TransparentValue struct {
-	TransparentValue uint64 `protobuf:"varint,9,opt,name=transparent_value,json=transparentValue,proto3,oneof"`
+	TransparentValue uint64 `protobuf:"fixed64,9,opt,name=transparent_value,json=transparentValue,proto3,oneof"`
 }
 
 type Note_EncryptedValue struct {
@@ -287,22 +248,26 @@ func (m *Note) GetEncryptedValue() []byte {
 // XXX_OneofWrappers is for the internal use of the proto package.
 func (*Note) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
+		(*Note_TransparentBlindingFactor)(nil),
+		(*Note_EncryptedBlindingFactor)(nil),
 		(*Note_TransparentValue)(nil),
 		(*Note_EncryptedValue)(nil),
 	}
 }
 
 type DecryptedNote struct {
-	NoteType                NoteType         `protobuf:"varint,1,opt,name=note_type,json=noteType,proto3,enum=phoenix.NoteType" json:"note_type,omitempty"`
-	Pos                     *Idx             `protobuf:"bytes,2,opt,name=pos,proto3" json:"pos,omitempty"`
-	Value                   uint64           `protobuf:"varint,3,opt,name=value,proto3" json:"value,omitempty"`
-	Io                      InputOutput      `protobuf:"varint,4,opt,name=io,proto3,enum=phoenix.InputOutput" json:"io,omitempty"`
-	Nonce                   *Nonce           `protobuf:"bytes,5,opt,name=nonce,proto3" json:"nonce,omitempty"`
-	RG                      *CompressedPoint `protobuf:"bytes,6,opt,name=r_g,json=rG,proto3" json:"r_g,omitempty"`
-	PkR                     *CompressedPoint `protobuf:"bytes,7,opt,name=pk_r,json=pkR,proto3" json:"pk_r,omitempty"`
-	Commitment              *CompressedPoint `protobuf:"bytes,8,opt,name=commitment,proto3" json:"commitment,omitempty"`
-	BlindingFactor          *Scalar          `protobuf:"bytes,9,opt,name=blinding_factor,json=blindingFactor,proto3" json:"blinding_factor,omitempty"`
-	EncryptedBlindingFactor []byte           `protobuf:"bytes,10,opt,name=encrypted_blinding_factor,json=encryptedBlindingFactor,proto3" json:"encrypted_blinding_factor,omitempty"`
+	NoteType        NoteType         `protobuf:"varint,1,opt,name=note_type,json=noteType,proto3,enum=phoenix.NoteType" json:"note_type,omitempty"`
+	Pos             uint64           `protobuf:"fixed64,2,opt,name=pos,proto3" json:"pos,omitempty"`
+	Value           uint64           `protobuf:"fixed64,3,opt,name=value,proto3" json:"value,omitempty"`
+	Nonce           *Nonce           `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	RG              *CompressedPoint `protobuf:"bytes,5,opt,name=r_g,json=rG,proto3" json:"r_g,omitempty"`
+	PkR             *CompressedPoint `protobuf:"bytes,6,opt,name=pk_r,json=pkR,proto3" json:"pk_r,omitempty"`
+	ValueCommitment *Scalar          `protobuf:"bytes,7,opt,name=value_commitment,json=valueCommitment,proto3" json:"value_commitment,omitempty"`
+	BlindingFactor  *Scalar          `protobuf:"bytes,8,opt,name=blinding_factor,json=blindingFactor,proto3" json:"blinding_factor,omitempty"`
+	// Types that are valid to be assigned to RawBlindingFactor:
+	//	*DecryptedNote_TransparentBlindingFactor
+	//	*DecryptedNote_EncryptedBlindingFactor
+	RawBlindingFactor isDecryptedNote_RawBlindingFactor `protobuf_oneof:"rawBlindingFactor"`
 	// Types that are valid to be assigned to RawValue:
 	//	*DecryptedNote_TransparentValue
 	//	*DecryptedNote_EncryptedValue
@@ -316,7 +281,7 @@ func (m *DecryptedNote) Reset()         { *m = DecryptedNote{} }
 func (m *DecryptedNote) String() string { return proto.CompactTextString(m) }
 func (*DecryptedNote) ProtoMessage()    {}
 func (*DecryptedNote) Descriptor() ([]byte, []int) {
-	return fileDescriptor_640dafe07df50d4e, []int{3}
+	return fileDescriptor_640dafe07df50d4e, []int{2}
 }
 
 func (m *DecryptedNote) XXX_Unmarshal(b []byte) error {
@@ -344,11 +309,11 @@ func (m *DecryptedNote) GetNoteType() NoteType {
 	return NoteType_TRANSPARENT
 }
 
-func (m *DecryptedNote) GetPos() *Idx {
+func (m *DecryptedNote) GetPos() uint64 {
 	if m != nil {
 		return m.Pos
 	}
-	return nil
+	return 0
 }
 
 func (m *DecryptedNote) GetValue() uint64 {
@@ -356,13 +321,6 @@ func (m *DecryptedNote) GetValue() uint64 {
 		return m.Value
 	}
 	return 0
-}
-
-func (m *DecryptedNote) GetIo() InputOutput {
-	if m != nil {
-		return m.Io
-	}
-	return InputOutput_INPUT
 }
 
 func (m *DecryptedNote) GetNonce() *Nonce {
@@ -386,9 +344,9 @@ func (m *DecryptedNote) GetPkR() *CompressedPoint {
 	return nil
 }
 
-func (m *DecryptedNote) GetCommitment() *CompressedPoint {
+func (m *DecryptedNote) GetValueCommitment() *Scalar {
 	if m != nil {
-		return m.Commitment
+		return m.ValueCommitment
 	}
 	return nil
 }
@@ -400,9 +358,39 @@ func (m *DecryptedNote) GetBlindingFactor() *Scalar {
 	return nil
 }
 
-func (m *DecryptedNote) GetEncryptedBlindingFactor() []byte {
+type isDecryptedNote_RawBlindingFactor interface {
+	isDecryptedNote_RawBlindingFactor()
+}
+
+type DecryptedNote_TransparentBlindingFactor struct {
+	TransparentBlindingFactor *Scalar `protobuf:"bytes,9,opt,name=transparent_blinding_factor,json=transparentBlindingFactor,proto3,oneof"`
+}
+
+type DecryptedNote_EncryptedBlindingFactor struct {
+	EncryptedBlindingFactor []byte `protobuf:"bytes,10,opt,name=encrypted_blinding_factor,json=encryptedBlindingFactor,proto3,oneof"`
+}
+
+func (*DecryptedNote_TransparentBlindingFactor) isDecryptedNote_RawBlindingFactor() {}
+
+func (*DecryptedNote_EncryptedBlindingFactor) isDecryptedNote_RawBlindingFactor() {}
+
+func (m *DecryptedNote) GetRawBlindingFactor() isDecryptedNote_RawBlindingFactor {
 	if m != nil {
-		return m.EncryptedBlindingFactor
+		return m.RawBlindingFactor
+	}
+	return nil
+}
+
+func (m *DecryptedNote) GetTransparentBlindingFactor() *Scalar {
+	if x, ok := m.GetRawBlindingFactor().(*DecryptedNote_TransparentBlindingFactor); ok {
+		return x.TransparentBlindingFactor
+	}
+	return nil
+}
+
+func (m *DecryptedNote) GetEncryptedBlindingFactor() []byte {
+	if x, ok := m.GetRawBlindingFactor().(*DecryptedNote_EncryptedBlindingFactor); ok {
+		return x.EncryptedBlindingFactor
 	}
 	return nil
 }
@@ -412,7 +400,7 @@ type isDecryptedNote_RawValue interface {
 }
 
 type DecryptedNote_TransparentValue struct {
-	TransparentValue uint64 `protobuf:"varint,11,opt,name=transparent_value,json=transparentValue,proto3,oneof"`
+	TransparentValue uint64 `protobuf:"fixed64,11,opt,name=transparent_value,json=transparentValue,proto3,oneof"`
 }
 
 type DecryptedNote_EncryptedValue struct {
@@ -447,6 +435,8 @@ func (m *DecryptedNote) GetEncryptedValue() []byte {
 // XXX_OneofWrappers is for the internal use of the proto package.
 func (*DecryptedNote) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
+		(*DecryptedNote_TransparentBlindingFactor)(nil),
+		(*DecryptedNote_EncryptedBlindingFactor)(nil),
 		(*DecryptedNote_TransparentValue)(nil),
 		(*DecryptedNote_EncryptedValue)(nil),
 	}
@@ -454,8 +444,6 @@ func (*DecryptedNote) XXX_OneofWrappers() []interface{} {
 
 func init() {
 	proto.RegisterEnum("phoenix.NoteType", NoteType_name, NoteType_value)
-	proto.RegisterEnum("phoenix.InputOutput", InputOutput_name, InputOutput_value)
-	proto.RegisterType((*Idx)(nil), "phoenix.Idx")
 	proto.RegisterType((*Nullifier)(nil), "phoenix.Nullifier")
 	proto.RegisterType((*Note)(nil), "phoenix.Note")
 	proto.RegisterType((*DecryptedNote)(nil), "phoenix.DecryptedNote")
@@ -466,37 +454,35 @@ func init() {
 }
 
 var fileDescriptor_640dafe07df50d4e = []byte{
-	// 497 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x94, 0xcd, 0x6e, 0xda, 0x4c,
-	0x14, 0x86, 0x31, 0x36, 0x7f, 0x07, 0x3e, 0x43, 0x46, 0x91, 0xe2, 0xaf, 0x52, 0xab, 0x08, 0xb1,
-	0x48, 0x88, 0xca, 0x22, 0xdd, 0x44, 0xdd, 0x41, 0x7e, 0x1a, 0x36, 0x06, 0x0d, 0xa6, 0x5b, 0xcb,
-	0xd8, 0x43, 0x18, 0xc5, 0xcc, 0x8c, 0x86, 0x71, 0x0b, 0x57, 0xd5, 0x8b, 0xe9, 0x0d, 0x55, 0x1e,
-	0xbb, 0x0e, 0xad, 0xda, 0x26, 0x54, 0xea, 0xee, 0xc0, 0xfb, 0x70, 0x5e, 0xa4, 0xe7, 0xd8, 0x00,
-	0x8c, 0x2b, 0x32, 0x10, 0x92, 0x2b, 0x8e, 0x6a, 0x62, 0xc5, 0x09, 0xa3, 0xdb, 0x57, 0xcd, 0x25,
-	0x25, 0x71, 0x94, 0x7d, 0xdb, 0x3d, 0x01, 0x73, 0x1c, 0x6d, 0x51, 0x07, 0x4c, 0xc1, 0x37, 0x8e,
-	0x71, 0x6a, 0x9c, 0x59, 0x38, 0x1d, 0xbb, 0x7d, 0x68, 0xb8, 0x49, 0x1c, 0xd3, 0x25, 0x25, 0x12,
-	0xbd, 0x06, 0x63, 0xa5, 0xc3, 0xe6, 0x65, 0x7b, 0x90, 0xef, 0x19, 0xcc, 0xc2, 0x20, 0x0e, 0x24,
-	0x36, 0x56, 0xdd, 0xaf, 0x26, 0x58, 0x2e, 0x57, 0x04, 0x0d, 0xa0, 0x91, 0x36, 0xfa, 0x6a, 0x27,
-	0x88, 0xe6, 0xed, 0xcb, 0xa3, 0x82, 0x4f, 0x09, 0x6f, 0x27, 0x08, 0xae, 0xb3, 0x7c, 0x42, 0x6f,
-	0xb2, 0xda, 0xb2, 0xde, 0xdc, 0x2a, 0xc8, 0x71, 0xb4, 0xd5, 0x7f, 0x02, 0xf5, 0xa0, 0x4c, 0xb9,
-	0x63, 0xea, 0x45, 0xc7, 0x4f, 0x31, 0x13, 0x89, 0x9a, 0x24, 0x4a, 0x24, 0x0a, 0x97, 0x29, 0x47,
-	0x3d, 0xa8, 0x30, 0xce, 0x42, 0xe2, 0x58, 0x7a, 0x8f, 0xbd, 0xd7, 0xc8, 0x42, 0x82, 0xb3, 0x10,
-	0x9d, 0x83, 0x29, 0xfd, 0x07, 0xa7, 0xa2, 0x19, 0xa7, 0x60, 0xae, 0xf9, 0x5a, 0x48, 0xb2, 0xd9,
-	0x90, 0x68, 0xca, 0x29, 0x53, 0xb8, 0x2c, 0x3f, 0xa0, 0x0b, 0xb0, 0xc4, 0xa3, 0x2f, 0x9d, 0xea,
-	0x33, 0xac, 0x29, 0x1e, 0x31, 0xba, 0x02, 0x08, 0xf9, 0x7a, 0x4d, 0xd5, 0x9a, 0x30, 0xe5, 0xd4,
-	0x9e, 0xf9, 0xc9, 0x1e, 0x8b, 0xde, 0xc3, 0xff, 0x84, 0x85, 0x72, 0x27, 0x14, 0x89, 0xfc, 0x45,
-	0x4c, 0x59, 0x44, 0xd9, 0x83, 0xbf, 0x0c, 0x42, 0xc5, 0xa5, 0x53, 0x3f, 0x35, 0xce, 0x5a, 0xf8,
-	0xa4, 0x00, 0x46, 0x79, 0x7e, 0xa7, 0x63, 0xf4, 0x16, 0x8e, 0x94, 0x0c, 0xd8, 0x46, 0x04, 0x92,
-	0x30, 0xe5, 0x7f, 0x0a, 0xe2, 0x84, 0x38, 0x8d, 0x54, 0xdf, 0x7d, 0x09, 0x77, 0xf6, 0xa2, 0x8f,
-	0x69, 0x82, 0xce, 0xa1, 0xfd, 0x54, 0x95, 0xc1, 0x90, 0x16, 0xdc, 0x97, 0xb0, 0x5d, 0x04, 0x1a,
-	0x1d, 0xd5, 0xa0, 0xa2, 0x81, 0xee, 0x17, 0x0b, 0xfe, 0xbb, 0x21, 0x79, 0xf6, 0x4f, 0xf4, 0x1e,
-	0xe7, 0x55, 0xda, 0xb0, 0x85, 0xb3, 0x0f, 0xb9, 0x74, 0xeb, 0xa5, 0xd2, 0x2b, 0x2f, 0x90, 0x5e,
-	0x3d, 0x40, 0x7a, 0xed, 0x70, 0xe9, 0xf5, 0x03, 0xa4, 0x5f, 0x41, 0xfb, 0x67, 0xd5, 0x8d, 0x5f,
-	0x3f, 0x58, 0xf6, 0xe2, 0x47, 0xe5, 0x7f, 0x3c, 0x17, 0xf8, 0x8b, 0x73, 0x69, 0x1e, 0x72, 0x2e,
-	0xad, 0xdf, 0x9c, 0x0b, 0x40, 0x5d, 0x06, 0x9f, 0xf5, 0xdc, 0xbf, 0x80, 0xfa, 0xf7, 0x2b, 0x40,
-	0x6d, 0x68, 0x7a, 0x78, 0xe8, 0xce, 0xa6, 0x43, 0x7c, 0xeb, 0x7a, 0x9d, 0x12, 0xb2, 0x01, 0x26,
-	0xa3, 0xbb, 0xf9, 0xec, 0x7a, 0xe8, 0xdd, 0xde, 0x74, 0x8c, 0x7e, 0x0f, 0x9a, 0x7b, 0x4e, 0x51,
-	0x03, 0x2a, 0x63, 0x77, 0x3a, 0x4f, 0x49, 0x80, 0xea, 0x64, 0xee, 0xa5, 0xb3, 0xb1, 0xa8, 0xea,
-	0xd7, 0xd4, 0xbb, 0x6f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xda, 0x40, 0x42, 0xeb, 0xca, 0x04, 0x00,
-	0x00,
+	// 478 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x94, 0x4f, 0x6f, 0xda, 0x30,
+	0x18, 0x87, 0x71, 0x09, 0x01, 0x5e, 0xba, 0x24, 0x78, 0x93, 0xe6, 0x6e, 0x9a, 0x84, 0xd0, 0x0e,
+	0xb4, 0xd5, 0x38, 0x74, 0x97, 0x69, 0xda, 0x85, 0xd0, 0x76, 0x9c, 0x58, 0x67, 0xd8, 0xae, 0x51,
+	0x08, 0xa6, 0x44, 0x0d, 0xb6, 0x65, 0xdc, 0x75, 0x7c, 0x84, 0x7d, 0xd2, 0x7d, 0x8d, 0x29, 0x26,
+	0x4b, 0xd3, 0x96, 0xaa, 0x7f, 0xc4, 0xcd, 0xc9, 0xfb, 0xfc, 0xde, 0xd7, 0xb1, 0x1f, 0x05, 0x80,
+	0x0b, 0xcd, 0xba, 0x52, 0x09, 0x2d, 0x70, 0x55, 0xce, 0x05, 0xe3, 0xf1, 0xef, 0x37, 0x8d, 0x59,
+	0xcc, 0x92, 0xe9, 0xfa, 0x6d, 0xfb, 0x00, 0xea, 0xc3, 0xcb, 0x24, 0x89, 0x67, 0x31, 0x53, 0xf8,
+	0x1d, 0xa0, 0x39, 0x41, 0x2d, 0xd4, 0x69, 0x1c, 0xb9, 0xdd, 0x0c, 0xef, 0x8e, 0xa2, 0x30, 0x09,
+	0x15, 0x45, 0xf3, 0xf6, 0x1f, 0x0b, 0xac, 0xa1, 0xd0, 0x0c, 0x77, 0xa1, 0x9e, 0x36, 0x0e, 0xf4,
+	0x4a, 0x32, 0xc3, 0x3b, 0x47, 0xcd, 0x9c, 0x4f, 0x89, 0xf1, 0x4a, 0x32, 0x5a, 0xe3, 0xd9, 0x0a,
+	0x7b, 0x50, 0x96, 0x62, 0x49, 0x76, 0x5a, 0xa8, 0x63, 0xd3, 0x74, 0x89, 0xdf, 0x43, 0x85, 0x0b,
+	0x1e, 0x31, 0x52, 0x36, 0xd3, 0x9c, 0x42, 0x9a, 0x47, 0x8c, 0xae, 0x8b, 0x78, 0x1f, 0xca, 0x2a,
+	0x38, 0x27, 0x96, 0x61, 0x48, 0xce, 0xf4, 0xc5, 0x42, 0x2a, 0xb6, 0x5c, 0xb2, 0xe9, 0x99, 0x88,
+	0xb9, 0xa6, 0x3b, 0xea, 0x2b, 0x3e, 0x04, 0x4b, 0x5e, 0x04, 0x8a, 0x54, 0x1e, 0x60, 0xcb, 0xf2,
+	0x82, 0xe2, 0xcf, 0xe0, 0xfd, 0x0a, 0x93, 0x4b, 0x16, 0x44, 0x62, 0xb1, 0x88, 0xf5, 0x82, 0x71,
+	0x4d, 0xec, 0xcd, 0x9f, 0xed, 0x1a, 0xb0, 0x9f, 0x73, 0xf8, 0x3b, 0xbc, 0xd5, 0x2a, 0xe4, 0x4b,
+	0x19, 0x2a, 0xc6, 0x75, 0x30, 0x49, 0x62, 0x3e, 0x8d, 0xf9, 0x79, 0x30, 0x0b, 0x23, 0x2d, 0x14,
+	0xa9, 0x6e, 0x6c, 0x33, 0x28, 0xd1, 0xbd, 0x42, 0xca, 0xcf, 0x42, 0xa7, 0x26, 0x83, 0xbf, 0xc0,
+	0x1e, 0xe3, 0x91, 0x5a, 0x49, 0xcd, 0xa6, 0x77, 0x1a, 0xd6, 0x5a, 0xa8, 0xb3, 0x3b, 0x28, 0xd1,
+	0xd7, 0x39, 0x72, 0x2b, 0xfd, 0x01, 0x9a, 0xc5, 0x0d, 0x99, 0xfd, 0x92, 0x7a, 0x7a, 0xd4, 0x03,
+	0x44, 0xbd, 0x42, 0xe9, 0x67, 0x5a, 0xc1, 0xfb, 0xe0, 0x5e, 0x0f, 0x5b, 0xc3, 0x60, 0x46, 0x20,
+	0xea, 0xe4, 0x05, 0x83, 0xfa, 0x4d, 0x70, 0x6f, 0xed, 0xc6, 0xaf, 0x42, 0xc5, 0x64, 0xda, 0x7f,
+	0x2d, 0x78, 0x71, 0xcc, 0x32, 0x7c, 0x4b, 0x52, 0xbc, 0xca, 0x9a, 0x1b, 0x29, 0x6c, 0xba, 0x7e,
+	0xb8, 0x56, 0xc5, 0x7a, 0x84, 0x2a, 0x95, 0x27, 0xa8, 0x62, 0x3f, 0x57, 0x95, 0xea, 0x23, 0x55,
+	0xf9, 0x74, 0xe7, 0xfc, 0xcc, 0x6d, 0x6e, 0x88, 0x3a, 0x93, 0x9b, 0x77, 0xfa, 0x80, 0x64, 0xf5,
+	0x6d, 0x4b, 0x06, 0xcf, 0x92, 0xac, 0xf1, 0x14, 0xc9, 0x76, 0xef, 0x91, 0xec, 0x25, 0x34, 0x55,
+	0x78, 0x75, 0x73, 0x9c, 0x0f, 0x50, 0x53, 0xe1, 0x95, 0x01, 0x0e, 0x0e, 0xa1, 0xf6, 0xdf, 0x1e,
+	0xec, 0x42, 0x63, 0x4c, 0x7b, 0xc3, 0xd1, 0x59, 0x8f, 0x9e, 0x0c, 0xc7, 0x5e, 0x09, 0x3b, 0x00,
+	0xdf, 0xfc, 0xd3, 0x1f, 0xa3, 0x7e, 0x6f, 0x7c, 0x72, 0xec, 0xa1, 0x89, 0x6d, 0xfe, 0x6a, 0x1f,
+	0xff, 0x05, 0x00, 0x00, 0xff, 0xff, 0xe5, 0xe4, 0x45, 0xf6, 0xf9, 0x04, 0x00, 0x00,
 }
