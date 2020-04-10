@@ -6,6 +6,7 @@ use crate::{
 use std::cmp::Ordering;
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
+use std::io::{self, Read, Write};
 use std::path::Path;
 
 use num_traits::Zero;
@@ -15,7 +16,7 @@ use num_traits::Zero;
 ///
 /// The secret is required on this structure for the proof generation
 pub trait TransactionItem:
-    fmt::Debug + Default + Clone + Copy + PartialEq + Eq + PartialOrd + Ord
+    fmt::Debug + Default + Clone + Copy + PartialEq + Eq + PartialOrd + Ord + io::Read + io::Write
 {
     fn note(&self) -> &NoteVariant;
     fn value(&self) -> u64;
@@ -105,6 +106,22 @@ impl TransactionInput {
     }
 }
 
+impl Read for TransactionInput {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        self.nullifier.read(buf)
+    }
+}
+
+impl Write for TransactionInput {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        self.nullifier.write(buf)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
 impl TransactionItem for TransactionInput {
     fn note(&self) -> &NoteVariant {
         &self.note
@@ -170,6 +187,22 @@ impl TransactionOutput {
 
     pub fn pk(&self) -> &PublicKey {
         &self.pk
+    }
+}
+
+impl Read for TransactionOutput {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        self.note.read(buf)
+    }
+}
+
+impl Write for TransactionOutput {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        self.note.write(buf)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
     }
 }
 
