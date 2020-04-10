@@ -5,6 +5,7 @@ use crate::{
 
 use std::convert::TryFrom;
 use std::fmt::Debug;
+use std::io;
 use std::ops::Mul;
 use std::path::Path;
 
@@ -144,7 +145,7 @@ pub trait NoteGenerator:
 }
 
 /// Phoenix note methods. Both transparent and obfuscated notes implements this
-pub trait Note: Debug + Send + Sync {
+pub trait Note: Debug + Send + Sync + io::Read + io::Write {
     /// Create a unique nullifier for the note
     fn generate_nullifier(&self, sk: &SecretKey) -> Nullifier {
         let sk_r = self.sk_r(sk);

@@ -19,15 +19,18 @@ fn transparent_note() {
     let pk = sk.public_key();
     let value = 25;
 
-    let (mut note, _) = TransparentNote::output(&pk, value);
+    let (note, _) = TransparentNote::output(&pk, value);
 
     let mut bytes = vec![0x00u8; 2048];
-    note.read(bytes.as_mut_slice()).unwrap();
+    let mut variant: NoteVariant = note.into();
+    variant.read(bytes.as_mut_slice()).unwrap();
 
-    let mut deser_note = TransparentNote::default();
+    let deser_note = TransparentNote::default();
     assert_ne!(note, deser_note);
+    let mut deser_note: NoteVariant = deser_note.into();
 
     deser_note.write(bytes.as_slice()).unwrap();
+    let deser_note = TransparentNote::try_from(deser_note).unwrap();
     assert_eq!(note, deser_note);
 
     let note = deser_note;
@@ -44,15 +47,18 @@ fn obfuscated_note() {
     let vk = sk.view_key();
     let value = 25;
 
-    let (mut note, _) = ObfuscatedNote::output(&pk, value);
+    let (note, _) = ObfuscatedNote::output(&pk, value);
 
     let mut bytes = vec![0x00u8; 2048];
-    note.read(bytes.as_mut_slice()).unwrap();
+    let mut variant: NoteVariant = note.into();
+    variant.read(bytes.as_mut_slice()).unwrap();
 
-    let mut deser_note = ObfuscatedNote::default();
+    let deser_note = ObfuscatedNote::default();
     assert_ne!(note, deser_note);
+    let mut deser_note: NoteVariant = deser_note.into();
 
     deser_note.write(bytes.as_slice()).unwrap();
+    let deser_note = ObfuscatedNote::try_from(deser_note).unwrap();
     assert_eq!(note, deser_note);
 
     let note = deser_note;
