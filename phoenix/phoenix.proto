@@ -45,7 +45,7 @@ message NewTransactionOutputRequest {
 }
 
 message NewTransactionRequest {
-  repeated Note inputs = 1;
+  repeated DecryptedNote inputs = 1;
   PublicKey recipient = 2;
   fixed64 value = 3;
   fixed64 fee = 4;
