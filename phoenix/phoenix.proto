@@ -57,10 +57,11 @@ message NewTransactionOutputRequest {
 }
 
 message NewTransactionRequest {
-  repeated DecryptedNote inputs = 1;
-  PublicKey recipient = 2;
-  fixed64 value = 3;
-  fixed64 fee = 4;
+  SecretKey sk = 1;
+  repeated DecryptedNote inputs = 2;
+  PublicKey recipient = 3;
+  fixed64 value = 4;
+  fixed64 fee = 5;
 }
 
 message VerifyTransactionResponse {}
