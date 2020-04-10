@@ -27,6 +27,8 @@ pub trait TransactionItem:
     fn hash(&self) -> BlsScalar {
         self.note().hash()
     }
+
+    fn clear_sensitive_info(&mut self);
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -123,6 +125,14 @@ impl TransactionItem for TransactionInput {
     fn as_output(&self) -> Option<&Self> {
         None
     }
+
+    fn clear_sensitive_info(&mut self) {
+        self.note = NoteVariant::default();
+        self.value = 0;
+        self.blinding_factor = BlsScalar::zero();
+        self.sk = SecretKey::default();
+        self.merkle_opening = crypto::MerkleProof::default();
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -161,14 +171,6 @@ impl TransactionOutput {
     pub fn pk(&self) -> &PublicKey {
         &self.pk
     }
-
-    /// Remove all the sensitive info from the transaction used to build the zk proof so it can be
-    /// safely broadcasted
-    pub fn clear_sensitive_info(&mut self) {
-        self.value = 0;
-        self.blinding_factor = BlsScalar::zero();
-        self.pk = PublicKey::default();
-    }
 }
 
 impl TransactionItem for TransactionOutput {
@@ -190,6 +192,12 @@ impl TransactionItem for TransactionOutput {
 
     fn as_output(&self) -> Option<&Self> {
         Some(&self)
+    }
+
+    fn clear_sensitive_info(&mut self) {
+        self.value = 0;
+        self.blinding_factor = BlsScalar::zero();
+        self.pk = PublicKey::default();
     }
 }
 

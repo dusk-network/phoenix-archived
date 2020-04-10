@@ -332,8 +332,10 @@ impl Transaction {
     /// Remove all the sensitive info from the transaction used to build the zk proof so it can be
     /// safely broadcasted
     pub fn clear_sensitive_info(&mut self) {
-        self.idx_inputs = 0;
-        self.inputs = [*DEFAULT_INPUT; MAX_INPUT_NOTES_PER_TRANSACTION];
+        self.inputs
+            .iter_mut()
+            .for_each(|o| o.clear_sensitive_info());
+
         self.outputs
             .iter_mut()
             .for_each(|o| o.clear_sensitive_info());
