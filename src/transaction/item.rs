@@ -118,7 +118,7 @@ impl Write for TransactionInput {
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        Ok(())
+        self.nullifier.flush()
     }
 }
 
@@ -202,7 +202,7 @@ impl Write for TransactionOutput {
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        Ok(())
+        self.note.flush()
     }
 }
 

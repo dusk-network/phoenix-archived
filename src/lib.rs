@@ -15,6 +15,7 @@ pub use sodiumoxide::crypto::secretbox::xsalsa20poly1305::{Nonce, NONCEBYTES};
 pub use transaction::{
     Transaction, TransactionInput, TransactionItem, TransactionOutput,
     MAX_INPUT_NOTES_PER_TRANSACTION, MAX_NOTES_PER_TRANSACTION, MAX_OUTPUT_NOTES_PER_TRANSACTION,
+    TX_SERIALIZED_SIZE,
 };
 
 /// Crypto primitives

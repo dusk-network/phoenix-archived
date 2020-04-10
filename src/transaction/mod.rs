@@ -4,6 +4,7 @@ use crate::{
 };
 
 use std::convert::TryFrom;
+use std::io::{self, Read, Write};
 use std::path::Path;
 use std::{fmt, ptr};
 
@@ -17,6 +18,9 @@ pub const MAX_OUTPUT_NOTES_PER_TRANSACTION: usize = 2;
 /// Maximum allowed number of notes per transaction.
 pub const MAX_NOTES_PER_TRANSACTION: usize =
     MAX_INPUT_NOTES_PER_TRANSACTION + MAX_OUTPUT_NOTES_PER_TRANSACTION;
+
+/// Serialized bytes size
+pub const TX_SERIALIZED_SIZE: usize = 1876;
 
 pub use item::{TransactionInput, TransactionItem, TransactionOutput};
 
@@ -38,7 +42,6 @@ pub struct Transaction {
     outputs: [TransactionOutput; MAX_OUTPUT_NOTES_PER_TRANSACTION],
     proof: Option<zk::Proof>,
     public_inputs: zk::ZkPublicInputs,
-    public_inputs_raw: Vec<BlsScalar>,
 }
 
 impl Default for Transaction {
@@ -51,8 +54,116 @@ impl Default for Transaction {
             outputs: [*DEFAULT_OUTPUT; MAX_OUTPUT_NOTES_PER_TRANSACTION],
             proof: None,
             public_inputs: zk::ZkPublicInputs::default(),
-            public_inputs_raw: vec![BlsScalar::zero(); zk::PI_LEN],
         }
+    }
+}
+
+impl Read for Transaction {
+    fn read(&mut self, mut buf: &mut [u8]) -> io::Result<usize> {
+        self.clear_sensitive_info();
+
+        let mut n = 0;
+
+        let proof = self
+            .proof
+            .as_ref()
+            .map(zk::proof_to_bytes)
+            .unwrap_or(Ok([0x00u8; zk::SERIALIZED_PROOF_SIZE]))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        let b = (&proof[..]).read(buf)?;
+        n += b;
+        buf = &mut buf[b..];
+
+        let b = self.public_inputs.read(buf)?;
+        n += b;
+        buf = &mut buf[b..];
+
+        let inputs = self.idx_inputs.to_le_bytes();
+        let b = (&inputs[..]).read(buf)?;
+        n += b;
+        buf = &mut buf[b..];
+
+        for i in 0..MAX_INPUT_NOTES_PER_TRANSACTION {
+            let b = self.inputs[i].read(buf)?;
+            n += b;
+            buf = &mut buf[b..];
+        }
+
+        let outputs = self.idx_outputs.to_le_bytes();
+        let b = (&outputs[..]).read(buf)?;
+        n += b;
+        buf = &mut buf[b..];
+
+        for i in 0..MAX_OUTPUT_NOTES_PER_TRANSACTION {
+            let b = self.outputs[i].read(buf)?;
+            n += b;
+            buf = &mut buf[b..];
+        }
+
+        let b = self.fee.read(buf)?;
+        n += b;
+
+        Ok(n)
+    }
+}
+
+impl Write for Transaction {
+    fn write(&mut self, mut buf: &[u8]) -> io::Result<usize> {
+        let mut n = 0;
+
+        let mut proof = [0x00u8; zk::SERIALIZED_PROOF_SIZE];
+        let b = (&mut proof[..]).write(buf)?;
+        let proof = zk::bytes_to_proof(&proof[..]).map_err::<io::Error, _>(|e| e.into())?;
+        self.proof.replace(proof);
+        n += b;
+        buf = &buf[b..];
+
+        let b = self.public_inputs.write(buf)?;
+        n += b;
+        buf = &buf[b..];
+
+        let mut inputs = 0usize.to_le_bytes();
+        let b = (&mut inputs[..]).write(buf)?;
+        self.idx_inputs = usize::from_le_bytes(inputs);
+        n += b;
+        buf = &buf[b..];
+
+        for i in 0..MAX_INPUT_NOTES_PER_TRANSACTION {
+            let b = self.inputs[i].write(buf)?;
+            n += b;
+            buf = &buf[b..];
+        }
+
+        let mut outputs = 0usize.to_le_bytes();
+        let b = (&mut outputs[..]).write(buf)?;
+        self.idx_outputs = usize::from_le_bytes(outputs);
+        n += b;
+        buf = &buf[b..];
+
+        for i in 0..MAX_OUTPUT_NOTES_PER_TRANSACTION {
+            let b = self.outputs[i].write(buf)?;
+            n += b;
+            buf = &buf[b..];
+        }
+
+        let b = self.fee.write(buf)?;
+        n += b;
+
+        Ok(n)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        self.public_inputs.flush()?;
+
+        for i in 0..MAX_INPUT_NOTES_PER_TRANSACTION {
+            self.inputs[i].flush()?;
+        }
+
+        for i in 0..MAX_OUTPUT_NOTES_PER_TRANSACTION {
+            self.outputs[i].flush()?;
+        }
+
+        self.fee.flush()
     }
 }
 
@@ -284,18 +395,6 @@ impl Transaction {
         &self.public_inputs
     }
 
-    pub fn public_inputs_raw(&self) -> &Vec<BlsScalar> {
-        &self.public_inputs_raw
-    }
-
-    pub fn set_public_inputs_raw(&mut self, pi: Vec<BlsScalar>) {
-        self.public_inputs_raw = pi;
-    }
-
-    pub fn public_inputs_raw_mut(&mut self) -> &mut Vec<BlsScalar> {
-        &mut self.public_inputs_raw
-    }
-
     /// Perform the zk proof, and save internally the created r1cs circuit and the commitment
     /// points.
     ///
@@ -470,6 +569,7 @@ impl TryFrom<Transaction> for rpc::Transaction {
             .transpose()?
             .unwrap_or_default();
 
+        // TOD - Serialize and deserialize the pi
         let public_inputs = vec![];
 
         Ok(rpc::Transaction {

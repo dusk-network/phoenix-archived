@@ -279,7 +279,6 @@ pub fn prove(tx: &mut Transaction) -> Proof {
     let mut pi = public_inputs().clone();
 
     let mut composer = inner_circuit(composer, tx, pi.iter_mut());
-    tx.set_public_inputs_raw(pi);
 
     let mut transcript = TRANSCRIPT.clone();
     let preprocessed_circuit = circuit();

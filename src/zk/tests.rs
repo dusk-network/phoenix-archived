@@ -1,4 +1,9 @@
-use crate::{crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
+use crate::{
+    crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote,
+    TX_SERIALIZED_SIZE,
+};
+
+use std::io::{Read, Write};
 
 #[test]
 fn proof_serialization() {
@@ -15,9 +20,17 @@ fn proof_serialization() {
     tx.push_input(note.to_transaction_input(merkle_opening, sk))
         .unwrap();
 
+    // TODO - Test also with a single output
     let sk = SecretKey::default();
     let pk = sk.public_key();
-    let value = 97;
+    let value = 95;
+    let (note, blinding_factor) = TransparentNote::output(&pk, value);
+    tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
+        .unwrap();
+
+    let sk = SecretKey::default();
+    let pk = sk.public_key();
+    let value = 2;
     let (note, blinding_factor) = TransparentNote::output(&pk, value);
     tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
         .unwrap();
@@ -29,12 +42,16 @@ fn proof_serialization() {
     tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
 
     tx.prove().unwrap();
-    let pi = tx.public_inputs_raw().clone();
-
     tx.verify().unwrap();
 
-    let bytes = zk::proof_to_bytes(tx.proof().unwrap()).unwrap();
-    let proof = zk::bytes_to_proof(&bytes).unwrap();
+    let mut bytes = vec![0x00u8; TX_SERIALIZED_SIZE - 1];
+    assert!(tx.read(bytes.as_mut_slice()).is_err());
 
-    assert!(zk::verify(&proof, pi.as_slice()));
+    let mut bytes = vec![0x00u8; TX_SERIALIZED_SIZE];
+    tx.read(bytes.as_mut_slice()).unwrap();
+
+    let mut tx = Transaction::default();
+    tx.write(bytes.as_slice()).unwrap();
+
+    tx.verify().unwrap();
 }
