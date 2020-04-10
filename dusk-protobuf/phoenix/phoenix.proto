@@ -45,9 +45,10 @@ message NewTransactionOutputRequest {
 }
 
 message NewTransactionRequest {
-  repeated TransactionInput inputs = 1;
-  repeated TransactionOutput outputs = 2;
-  fixed64 fee = 3;
+  repeated Note inputs = 1;
+  PublicKey recipient = 2;
+  fixed64 value = 3;
+  fixed64 fee = 4;
 }
 
 message VerifyTransactionResponse {}
