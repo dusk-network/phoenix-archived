@@ -166,45 +166,6 @@ func (m *ValidateStateTransitionResponse) GetSuccess() bool {
 	return false
 }
 
-type EchoMethod struct {
-	M                    string   `protobuf:"bytes,1,opt,name=m,proto3" json:"m,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *EchoMethod) Reset()         { *m = EchoMethod{} }
-func (m *EchoMethod) String() string { return proto.CompactTextString(m) }
-func (*EchoMethod) ProtoMessage()    {}
-func (*EchoMethod) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{4}
-}
-
-func (m *EchoMethod) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_EchoMethod.Unmarshal(m, b)
-}
-func (m *EchoMethod) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_EchoMethod.Marshal(b, m, deterministic)
-}
-func (m *EchoMethod) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EchoMethod.Merge(m, src)
-}
-func (m *EchoMethod) XXX_Size() int {
-	return xxx_messageInfo_EchoMethod.Size(m)
-}
-func (m *EchoMethod) XXX_DiscardUnknown() {
-	xxx_messageInfo_EchoMethod.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_EchoMethod proto.InternalMessageInfo
-
-func (m *EchoMethod) GetM() string {
-	if m != nil {
-		return m.M
-	}
-	return ""
-}
-
 type GenerateSecretKeyRequest struct {
 	B                    []byte   `protobuf:"bytes,1,opt,name=b,proto3" json:"b,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -216,7 +177,7 @@ func (m *GenerateSecretKeyRequest) Reset()         { *m = GenerateSecretKeyReque
 func (m *GenerateSecretKeyRequest) String() string { return proto.CompactTextString(m) }
 func (*GenerateSecretKeyRequest) ProtoMessage()    {}
 func (*GenerateSecretKeyRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{5}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{4}
 }
 
 func (m *GenerateSecretKeyRequest) XXX_Unmarshal(b []byte) error {
@@ -256,7 +217,7 @@ func (m *NullifierRequest) Reset()         { *m = NullifierRequest{} }
 func (m *NullifierRequest) String() string { return proto.CompactTextString(m) }
 func (*NullifierRequest) ProtoMessage()    {}
 func (*NullifierRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{6}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{5}
 }
 
 func (m *NullifierRequest) XXX_Unmarshal(b []byte) error {
@@ -302,7 +263,7 @@ func (m *NullifierResponse) Reset()         { *m = NullifierResponse{} }
 func (m *NullifierResponse) String() string { return proto.CompactTextString(m) }
 func (*NullifierResponse) ProtoMessage()    {}
 func (*NullifierResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{7}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{6}
 }
 
 func (m *NullifierResponse) XXX_Unmarshal(b []byte) error {
@@ -341,7 +302,7 @@ func (m *NullifierStatusRequest) Reset()         { *m = NullifierStatusRequest{}
 func (m *NullifierStatusRequest) String() string { return proto.CompactTextString(m) }
 func (*NullifierStatusRequest) ProtoMessage()    {}
 func (*NullifierStatusRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{8}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{7}
 }
 
 func (m *NullifierStatusRequest) XXX_Unmarshal(b []byte) error {
@@ -380,7 +341,7 @@ func (m *NullifierStatusResponse) Reset()         { *m = NullifierStatusResponse
 func (m *NullifierStatusResponse) String() string { return proto.CompactTextString(m) }
 func (*NullifierStatusResponse) ProtoMessage()    {}
 func (*NullifierStatusResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{9}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{8}
 }
 
 func (m *NullifierStatusResponse) XXX_Unmarshal(b []byte) error {
@@ -419,7 +380,7 @@ func (m *FetchNoteRequest) Reset()         { *m = FetchNoteRequest{} }
 func (m *FetchNoteRequest) String() string { return proto.CompactTextString(m) }
 func (*FetchNoteRequest) ProtoMessage()    {}
 func (*FetchNoteRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{10}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{9}
 }
 
 func (m *FetchNoteRequest) XXX_Unmarshal(b []byte) error {
@@ -459,7 +420,7 @@ func (m *DecryptNoteRequest) Reset()         { *m = DecryptNoteRequest{} }
 func (m *DecryptNoteRequest) String() string { return proto.CompactTextString(m) }
 func (*DecryptNoteRequest) ProtoMessage()    {}
 func (*DecryptNoteRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{11}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{10}
 }
 
 func (m *DecryptNoteRequest) XXX_Unmarshal(b []byte) error {
@@ -506,7 +467,7 @@ func (m *OwnedNotesRequest) Reset()         { *m = OwnedNotesRequest{} }
 func (m *OwnedNotesRequest) String() string { return proto.CompactTextString(m) }
 func (*OwnedNotesRequest) ProtoMessage()    {}
 func (*OwnedNotesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{12}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{11}
 }
 
 func (m *OwnedNotesRequest) XXX_Unmarshal(b []byte) error {
@@ -552,7 +513,7 @@ func (m *OwnedNotesResponse) Reset()         { *m = OwnedNotesResponse{} }
 func (m *OwnedNotesResponse) String() string { return proto.CompactTextString(m) }
 func (*OwnedNotesResponse) ProtoMessage()    {}
 func (*OwnedNotesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{13}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{12}
 }
 
 func (m *OwnedNotesResponse) XXX_Unmarshal(b []byte) error {
@@ -592,7 +553,7 @@ func (m *NewTransactionInputRequest) Reset()         { *m = NewTransactionInputR
 func (m *NewTransactionInputRequest) String() string { return proto.CompactTextString(m) }
 func (*NewTransactionInputRequest) ProtoMessage()    {}
 func (*NewTransactionInputRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{14}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{13}
 }
 
 func (m *NewTransactionInputRequest) XXX_Unmarshal(b []byte) error {
@@ -640,7 +601,7 @@ func (m *NewTransactionOutputRequest) Reset()         { *m = NewTransactionOutpu
 func (m *NewTransactionOutputRequest) String() string { return proto.CompactTextString(m) }
 func (*NewTransactionOutputRequest) ProtoMessage()    {}
 func (*NewTransactionOutputRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{15}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{14}
 }
 
 func (m *NewTransactionOutputRequest) XXX_Unmarshal(b []byte) error {
@@ -697,7 +658,7 @@ func (m *NewTransactionRequest) Reset()         { *m = NewTransactionRequest{} }
 func (m *NewTransactionRequest) String() string { return proto.CompactTextString(m) }
 func (*NewTransactionRequest) ProtoMessage()    {}
 func (*NewTransactionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{16}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{15}
 }
 
 func (m *NewTransactionRequest) XXX_Unmarshal(b []byte) error {
@@ -763,7 +724,7 @@ func (m *VerifyTransactionResponse) Reset()         { *m = VerifyTransactionResp
 func (m *VerifyTransactionResponse) String() string { return proto.CompactTextString(m) }
 func (*VerifyTransactionResponse) ProtoMessage()    {}
 func (*VerifyTransactionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{17}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{16}
 }
 
 func (m *VerifyTransactionResponse) XXX_Unmarshal(b []byte) error {
@@ -796,7 +757,7 @@ func (m *VerifyTransactionRootRequest) Reset()         { *m = VerifyTransactionR
 func (m *VerifyTransactionRootRequest) String() string { return proto.CompactTextString(m) }
 func (*VerifyTransactionRootRequest) ProtoMessage()    {}
 func (*VerifyTransactionRootRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{18}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{17}
 }
 
 func (m *VerifyTransactionRootRequest) XXX_Unmarshal(b []byte) error {
@@ -841,7 +802,7 @@ func (m *VerifyTransactionRootResponse) Reset()         { *m = VerifyTransaction
 func (m *VerifyTransactionRootResponse) String() string { return proto.CompactTextString(m) }
 func (*VerifyTransactionRootResponse) ProtoMessage()    {}
 func (*VerifyTransactionRootResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{19}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{18}
 }
 
 func (m *VerifyTransactionRootResponse) XXX_Unmarshal(b []byte) error {
@@ -873,7 +834,7 @@ func (m *StoreTransactionsRequest) Reset()         { *m = StoreTransactionsReque
 func (m *StoreTransactionsRequest) String() string { return proto.CompactTextString(m) }
 func (*StoreTransactionsRequest) ProtoMessage()    {}
 func (*StoreTransactionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{20}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{19}
 }
 
 func (m *StoreTransactionsRequest) XXX_Unmarshal(b []byte) error {
@@ -913,7 +874,7 @@ func (m *StoreTransactionsResponse) Reset()         { *m = StoreTransactionsResp
 func (m *StoreTransactionsResponse) String() string { return proto.CompactTextString(m) }
 func (*StoreTransactionsResponse) ProtoMessage()    {}
 func (*StoreTransactionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{21}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{20}
 }
 
 func (m *StoreTransactionsResponse) XXX_Unmarshal(b []byte) error {
@@ -960,7 +921,7 @@ func (m *SetFeePkRequest) Reset()         { *m = SetFeePkRequest{} }
 func (m *SetFeePkRequest) String() string { return proto.CompactTextString(m) }
 func (*SetFeePkRequest) ProtoMessage()    {}
 func (*SetFeePkRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{22}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{21}
 }
 
 func (m *SetFeePkRequest) XXX_Unmarshal(b []byte) error {
@@ -1007,7 +968,7 @@ func (m *KeysResponse) Reset()         { *m = KeysResponse{} }
 func (m *KeysResponse) String() string { return proto.CompactTextString(m) }
 func (*KeysResponse) ProtoMessage()    {}
 func (*KeysResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a1c51cd95b21b6dd, []int{23}
+	return fileDescriptor_a1c51cd95b21b6dd, []int{22}
 }
 
 func (m *KeysResponse) XXX_Unmarshal(b []byte) error {
@@ -1047,7 +1008,6 @@ func init() {
 	proto.RegisterType((*EchoResponse)(nil), "phoenix.EchoResponse")
 	proto.RegisterType((*ValidateStateTransitionRequest)(nil), "phoenix.ValidateStateTransitionRequest")
 	proto.RegisterType((*ValidateStateTransitionResponse)(nil), "phoenix.ValidateStateTransitionResponse")
-	proto.RegisterType((*EchoMethod)(nil), "phoenix.EchoMethod")
 	proto.RegisterType((*GenerateSecretKeyRequest)(nil), "phoenix.GenerateSecretKeyRequest")
 	proto.RegisterType((*NullifierRequest)(nil), "phoenix.NullifierRequest")
 	proto.RegisterType((*NullifierResponse)(nil), "phoenix.NullifierResponse")
@@ -1074,70 +1034,67 @@ func init() {
 }
 
 var fileDescriptor_a1c51cd95b21b6dd = []byte{
-	// 1000 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x57, 0xdb, 0x6e, 0xdb, 0x46,
-	0x13, 0x16, 0x25, 0xf9, 0xa0, 0x91, 0x7c, 0xd0, 0xc4, 0x4e, 0x64, 0xfa, 0xff, 0x63, 0x67, 0x9d,
-	0xa6, 0xbe, 0x28, 0x8c, 0x42, 0x46, 0x0f, 0x40, 0x7b, 0x55, 0xc4, 0x4e, 0xda, 0xb4, 0xb6, 0x41,
-	0x0b, 0x2e, 0x12, 0x14, 0x28, 0x64, 0x7a, 0x04, 0x11, 0x92, 0x49, 0x96, 0x5c, 0xda, 0x11, 0xfa,
-	0x00, 0x7d, 0x9a, 0x3e, 0x45, 0xd1, 0xf7, 0x2a, 0x96, 0x5c, 0x2e, 0x97, 0x22, 0x69, 0xab, 0xe8,
-	0x1d, 0xb9, 0xf3, 0xcd, 0x37, 0x33, 0x1f, 0x67, 0x67, 0x24, 0x58, 0xf3, 0xc7, 0x1e, 0xb9, 0xce,
-	0xc7, 0x23, 0x3f, 0xf0, 0xb8, 0x87, 0x2b, 0xf2, 0xd5, 0x6c, 0x8f, 0x1c, 0x9a, 0xde, 0x24, 0xa7,
-	0x26, 0x4c, 0x68, 0x16, 0xa6, 0xcf, 0xae, 0xc7, 0x49, 0x3e, 0x77, 0x79, 0x30, 0x74, 0xc3, 0xa1,
-	0xcd, 0x1d, 0xcf, 0x4d, 0x8e, 0xd8, 0x1a, 0xb4, 0x4f, 0xec, 0xb1, 0x67, 0xd1, 0x6f, 0x11, 0x85,
-	0x9c, 0xad, 0x43, 0x27, 0x79, 0x0d, 0x7d, 0xcf, 0x0d, 0x89, 0xbd, 0x85, 0xe7, 0x57, 0xc3, 0xa9,
-	0x73, 0x33, 0xe4, 0x74, 0xc9, 0x87, 0x9c, 0x06, 0x82, 0xc0, 0x11, 0xfe, 0xd2, 0x03, 0x5f, 0x41,
-	0x83, 0x7f, 0x0c, 0x7b, 0xc6, 0x7e, 0xe3, 0xb0, 0xdd, 0xdf, 0x3a, 0x4a, 0xd3, 0x1b, 0x64, 0x91,
-	0x2c, 0x01, 0x60, 0xdf, 0xc0, 0x5e, 0x25, 0x53, 0x12, 0x0c, 0x7b, 0xb0, 0x12, 0x46, 0xb6, 0x4d,
-	0xa1, 0xa0, 0x33, 0x0e, 0x57, 0xad, 0xf4, 0x95, 0x99, 0x00, 0x22, 0xad, 0x9f, 0x88, 0x8f, 0xbd,
-	0x1b, 0xec, 0x80, 0x71, 0x1b, 0x23, 0x5a, 0x96, 0x71, 0xcb, 0x0e, 0xa1, 0xf7, 0x86, 0x5c, 0x0a,
-	0x04, 0x31, 0xd9, 0x01, 0xf1, 0x77, 0x34, 0x4b, 0x93, 0xeb, 0x80, 0x71, 0x1d, 0x23, 0x3b, 0x96,
-	0x71, 0xcd, 0xde, 0xc3, 0xe6, 0x59, 0x34, 0x9d, 0x3a, 0x23, 0x87, 0x82, 0x14, 0xf1, 0x02, 0x9a,
-	0x42, 0xa0, 0x18, 0xd4, 0xee, 0xaf, 0xa9, 0xfc, 0xcf, 0x3c, 0x4e, 0x56, 0x6c, 0x42, 0x06, 0xf5,
-	0x70, 0xd2, 0xab, 0xc7, 0x00, 0x54, 0x80, 0x2c, 0x56, 0x3d, 0x9c, 0xb0, 0x13, 0xe8, 0x6a, 0xd4,
-	0xb2, 0x9e, 0xcf, 0xa1, 0xe5, 0xa6, 0x87, 0x32, 0x40, 0xe6, 0x9f, 0xc1, 0x33, 0x10, 0xfb, 0x01,
-	0x9e, 0xaa, 0x73, 0xa1, 0x52, 0x14, 0xa6, 0x79, 0xfe, 0x7b, 0xae, 0x63, 0x78, 0x56, 0xe0, 0xca,
-	0x84, 0x8e, 0xdc, 0xd0, 0x27, 0x97, 0xa7, 0x42, 0xcb, 0x57, 0xf6, 0x12, 0x36, 0x4f, 0x89, 0xdb,
-	0xe3, 0xb8, 0x7c, 0x19, 0x7a, 0x13, 0x1a, 0xbe, 0x97, 0x7c, 0x92, 0x65, 0x4b, 0x3c, 0xb2, 0xf7,
-	0x80, 0xaf, 0xc9, 0x0e, 0x66, 0x3e, 0xd7, 0x71, 0x0b, 0x48, 0xb9, 0x0f, 0xf5, 0xbb, 0x54, 0xca,
-	0x4d, 0x05, 0xb8, 0x72, 0xe8, 0x3e, 0x16, 0xf2, 0x6e, 0xc2, 0x3e, 0x40, 0xf7, 0xfc, 0xde, 0xa5,
-	0x1b, 0xe1, 0xa4, 0x8a, 0x4f, 0xdc, 0x8c, 0x6a, 0x37, 0x3c, 0x80, 0x25, 0x11, 0x20, 0xec, 0xd5,
-	0xe3, 0x3e, 0x9c, 0x0b, 0x9e, 0xd8, 0xd8, 0x77, 0x80, 0x3a, 0xb7, 0x14, 0xe3, 0xb3, 0xd4, 0x35,
-	0x69, 0xe1, 0xa7, 0xca, 0x55, 0x96, 0x98, 0xe0, 0x53, 0x0e, 0x0b, 0xcc, 0x33, 0xba, 0xd7, 0xba,
-	0xfb, 0x7b, 0xd7, 0x8f, 0x78, 0xa5, 0x54, 0x0b, 0x35, 0xcf, 0x1f, 0x06, 0xec, 0xe6, 0x49, 0xcf,
-	0x23, 0xae, 0xb1, 0x1e, 0x41, 0x4b, 0x04, 0xff, 0x95, 0xcf, 0xfc, 0x44, 0xdd, 0xf5, 0x7e, 0x37,
-	0x57, 0xe0, 0x60, 0xe6, 0x93, 0xb5, 0xea, 0xca, 0x27, 0x11, 0xd3, 0x2f, 0xc6, 0xbc, 0x88, 0xae,
-	0xa7, 0x8e, 0x1d, 0xc7, 0xf4, 0x27, 0xb8, 0x05, 0x4b, 0x77, 0xc3, 0x69, 0x44, 0xbd, 0x46, 0x9c,
-	0x6b, 0xf2, 0xc2, 0xfe, 0x36, 0x60, 0x3b, 0x9f, 0x49, 0x9a, 0x43, 0x52, 0x87, 0xf1, 0x50, 0x1d,
-	0x78, 0x04, 0xcb, 0x8e, 0x50, 0x23, 0xfd, 0x0a, 0x55, 0x52, 0x4a, 0x94, 0xe8, 0xe9, 0x80, 0x6c,
-	0xc7, 0x77, 0x44, 0x23, 0x36, 0x2a, 0xd3, 0xcd, 0x40, 0x59, 0xd6, 0x4d, 0x2d, 0x6b, 0xa1, 0xfa,
-	0x88, 0xa8, 0xb7, 0x94, 0xa8, 0x3e, 0x22, 0x62, 0xbb, 0xb0, 0x73, 0x45, 0x81, 0x33, 0x9a, 0xe5,
-	0x2a, 0x91, 0x33, 0xed, 0x77, 0xf8, 0x5f, 0xd1, 0xe8, 0x79, 0x4a, 0xee, 0x2f, 0xa1, 0xad, 0xcd,
-	0x49, 0x59, 0x73, 0xf9, 0x64, 0xd3, 0x81, 0x78, 0x00, 0xcd, 0xc0, 0xf3, 0xb8, 0x14, 0x7e, 0x23,
-	0x13, 0xc9, 0x1e, 0x4e, 0x87, 0x81, 0x15, 0x1b, 0xd9, 0x1e, 0xfc, 0xbf, 0x22, 0xb8, 0xcc, 0x6e,
-	0x00, 0xbd, 0x4b, 0xee, 0x05, 0xa4, 0xd9, 0xd5, 0x3d, 0xf8, 0x1a, 0x3a, 0x5a, 0xc0, 0x87, 0x87,
-	0x6e, 0x0e, 0xc9, 0x08, 0x76, 0x4a, 0x58, 0xe5, 0x0d, 0x38, 0xc8, 0xdf, 0x80, 0xd2, 0xcb, 0xb3,
-	0x58, 0x75, 0xb7, 0xb0, 0x71, 0x49, 0xfc, 0x94, 0xe8, 0x62, 0xf2, 0x5f, 0xd5, 0x5c, 0xa0, 0x89,
-	0xd9, 0x00, 0x3a, 0xef, 0x68, 0x96, 0x15, 0xf2, 0xf8, 0x9c, 0x58, 0x80, 0xb5, 0xff, 0x57, 0x0b,
-	0x56, 0x2e, 0x12, 0x0b, 0xf6, 0xa1, 0x29, 0x16, 0x0f, 0x3e, 0x51, 0xd8, 0x6c, 0x0f, 0x99, 0x65,
-	0x87, 0xac, 0x86, 0x3f, 0x42, 0xb7, 0xb0, 0x90, 0xf0, 0x85, 0xc2, 0x56, 0x2d, 0x2b, 0xb3, 0xe4,
-	0x5a, 0xb1, 0x1a, 0x1e, 0x43, 0x53, 0xd4, 0x88, 0x25, 0x56, 0x73, 0x5b, 0x9d, 0xe9, 0x32, 0xb0,
-	0x1a, 0xbe, 0x86, 0x96, 0x9a, 0xfd, 0xb8, 0x53, 0xb2, 0x27, 0x64, 0x48, 0xb3, 0xcc, 0xa4, 0x58,
-	0xae, 0x60, 0x63, 0x6e, 0x83, 0xe0, 0x5e, 0xd1, 0x21, 0xb7, 0xa7, 0xcc, 0xfd, 0x6a, 0x80, 0xe2,
-	0xfd, 0x0a, 0x5a, 0x6a, 0xc9, 0x68, 0xd9, 0xcd, 0x2f, 0x1e, 0x33, 0xdf, 0x88, 0x71, 0x59, 0x6d,
-	0x6d, 0xef, 0xe0, 0xee, 0xfc, 0x7c, 0xd1, 0x9d, 0x2b, 0x86, 0x0f, 0xab, 0xe1, 0x1b, 0x80, 0x6c,
-	0x0d, 0x60, 0x26, 0x41, 0x61, 0xef, 0x98, 0xbb, 0xa5, 0x36, 0x55, 0xc7, 0x09, 0xe0, 0x69, 0x34,
-	0x9d, 0x5e, 0xda, 0x43, 0x57, 0x23, 0x2c, 0x34, 0xde, 0x63, 0x34, 0x3f, 0xc3, 0x93, 0x92, 0x95,
-	0x82, 0x07, 0x59, 0xf5, 0x95, 0x0b, 0xc7, 0xdc, 0x29, 0xbb, 0x48, 0x31, 0x82, 0xd5, 0xf0, 0x03,
-	0x6c, 0x95, 0xad, 0x15, 0x7c, 0x59, 0xc1, 0x9c, 0xdb, 0x3a, 0x5a, 0x6f, 0x14, 0x20, 0xac, 0x86,
-	0x6f, 0x61, 0x3d, 0xef, 0x8c, 0xcf, 0x2b, 0x58, 0x53, 0xbe, 0xd2, 0x3b, 0xcf, 0x6a, 0xf8, 0x2d,
-	0xac, 0xa6, 0x33, 0x03, 0x7b, 0x5a, 0x93, 0xe7, 0xc6, 0x48, 0xa5, 0xf7, 0x39, 0x74, 0x0b, 0xf3,
-	0x14, 0x4b, 0xc1, 0x26, 0xcb, 0x3e, 0x4c, 0xe5, 0x6e, 0xa8, 0xe1, 0x18, 0xb6, 0x4b, 0x07, 0x34,
-	0x7e, 0xf2, 0x80, 0x7b, 0xb6, 0x3d, 0xcc, 0x57, 0x8f, 0xc1, 0x54, 0xa4, 0x5f, 0xa0, 0x5b, 0x98,
-	0xc9, 0xda, 0x9c, 0xa8, 0xda, 0x02, 0x5a, 0x1d, 0x95, 0x23, 0x9d, 0xd5, 0xfa, 0x7f, 0x1a, 0xd0,
-	0xb4, 0xa2, 0x70, 0x82, 0x5f, 0xc8, 0x11, 0xb6, 0x95, 0x9b, 0x56, 0x29, 0xd9, 0xf6, 0xdc, 0xa9,
-	0xca, 0xce, 0x85, 0x67, 0x15, 0xbf, 0xd7, 0xf1, 0xd3, 0xac, 0xc4, 0x07, 0xff, 0x1b, 0x98, 0x87,
-	0x8f, 0x03, 0xd3, 0x78, 0xd7, 0xcb, 0xf1, 0xff, 0x91, 0xe3, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff,
-	0xdb, 0x6e, 0xff, 0xc4, 0xe1, 0x0c, 0x00, 0x00,
+	// 956 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x57, 0x6d, 0x4f, 0xdc, 0x46,
+	0x10, 0xf6, 0x71, 0x07, 0x81, 0xb9, 0xe3, 0xe5, 0xa6, 0x90, 0x18, 0xd3, 0x06, 0xb2, 0xa4, 0x29,
+	0x1f, 0x2a, 0x54, 0x81, 0xfa, 0x22, 0xb5, 0x9f, 0xaa, 0x40, 0xd2, 0xa6, 0x82, 0xc8, 0x9c, 0xa8,
+	0x12, 0x55, 0xaa, 0x8c, 0x99, 0x13, 0xd6, 0xb9, 0xb6, 0x6b, 0xaf, 0x21, 0xa7, 0xfe, 0x80, 0xfe,
+	0xa0, 0xfe, 0x86, 0xfe, 0xaf, 0x6a, 0xed, 0xb5, 0xbd, 0x3e, 0x7b, 0xe1, 0xaa, 0x7c, 0xb3, 0xbd,
+	0xcf, 0x3c, 0x33, 0xf3, 0xdc, 0xec, 0x3c, 0x3a, 0x58, 0x8d, 0x6e, 0x42, 0x0a, 0xbc, 0x0f, 0x87,
+	0x51, 0x1c, 0xf2, 0x10, 0x1f, 0xc9, 0x57, 0xab, 0x3f, 0xf6, 0xc8, 0xbf, 0xce, 0xbf, 0x5a, 0x30,
+	0xa1, 0x69, 0x52, 0x3c, 0x07, 0x21, 0x27, 0xf9, 0x3c, 0xe4, 0xb1, 0x13, 0x24, 0x8e, 0xcb, 0xbd,
+	0x30, 0xc8, 0x3f, 0xb1, 0x55, 0xe8, 0x9f, 0xb8, 0x37, 0xa1, 0x4d, 0x7f, 0xa6, 0x94, 0x70, 0xb6,
+	0x06, 0x83, 0xfc, 0x35, 0x89, 0xc2, 0x20, 0x21, 0xf6, 0x1a, 0x9e, 0x5e, 0x3a, 0xbe, 0x77, 0xed,
+	0x70, 0xba, 0xe0, 0x0e, 0xa7, 0x91, 0x20, 0xf0, 0x44, 0xbc, 0x8c, 0xc0, 0x17, 0xd0, 0xe5, 0x1f,
+	0x12, 0xb3, 0xb3, 0xd7, 0x3d, 0xe8, 0x1f, 0x6d, 0x1e, 0x16, 0xe5, 0x8d, 0xaa, 0x4c, 0xb6, 0x00,
+	0xb0, 0xef, 0x61, 0x57, 0xcb, 0x94, 0x27, 0x43, 0x13, 0x1e, 0x25, 0xa9, 0xeb, 0x52, 0x22, 0xe8,
+	0x3a, 0x07, 0xcb, 0x76, 0xf1, 0xca, 0x0e, 0xc0, 0x7c, 0x45, 0x01, 0xc5, 0x22, 0x98, 0xdc, 0x98,
+	0xf8, 0x1b, 0x9a, 0x16, 0x05, 0x0c, 0xa0, 0x73, 0x95, 0xe1, 0x07, 0x76, 0xe7, 0x8a, 0xbd, 0x83,
+	0x8d, 0xb3, 0xd4, 0xf7, 0xbd, 0xb1, 0x47, 0x71, 0x81, 0x78, 0x06, 0x3d, 0x21, 0x42, 0x06, 0xea,
+	0x1f, 0xad, 0x96, 0x35, 0x9e, 0x85, 0x9c, 0xec, 0xec, 0x08, 0x19, 0x2c, 0x24, 0x13, 0x73, 0x21,
+	0x03, 0x60, 0x09, 0xa8, 0x72, 0x2d, 0x24, 0x13, 0x76, 0x02, 0x43, 0x85, 0x5a, 0xd6, 0xfc, 0x15,
+	0xac, 0x04, 0xc5, 0x47, 0x99, 0xa0, 0x8a, 0xaf, 0xe0, 0x15, 0x88, 0xfd, 0x0c, 0x8f, 0xcb, 0xef,
+	0x42, 0x89, 0x34, 0x29, 0xea, 0xfc, 0xff, 0x5c, 0xc7, 0xf0, 0xa4, 0xc1, 0x55, 0x89, 0x99, 0x06,
+	0x49, 0x44, 0x01, 0x2f, 0xc4, 0x94, 0xaf, 0xec, 0x39, 0x6c, 0x9c, 0x12, 0x77, 0x6f, 0xb2, 0xf6,
+	0x65, 0xea, 0x0d, 0xe8, 0x46, 0x61, 0x2e, 0xfb, 0x92, 0x2d, 0x1e, 0xd9, 0x3b, 0xc0, 0x97, 0xe4,
+	0xc6, 0xd3, 0x88, 0xab, 0xb8, 0x39, 0xa4, 0xdc, 0x83, 0x85, 0xdb, 0x42, 0xca, 0x8d, 0x12, 0x70,
+	0xe9, 0xd1, 0x5d, 0x26, 0xe4, 0xed, 0x84, 0xbd, 0x87, 0xe1, 0xf9, 0x5d, 0x40, 0xd7, 0x22, 0xa8,
+	0x6c, 0x3e, 0x0f, 0xeb, 0xe8, 0xc3, 0x70, 0x1f, 0x16, 0x45, 0x82, 0xc4, 0x5c, 0xc8, 0x66, 0x6d,
+	0x26, 0x79, 0x7e, 0xc6, 0x7e, 0x04, 0x54, 0xb9, 0xa5, 0x18, 0x5f, 0x16, 0xa1, 0xf9, 0x98, 0x3e,
+	0x2e, 0x43, 0x65, 0x8b, 0x39, 0xbe, 0xe0, 0xb0, 0xc1, 0x3a, 0xa3, 0x3b, 0x65, 0x82, 0x7f, 0x0a,
+	0xa2, 0x94, 0x6b, 0xa5, 0x9a, 0x6b, 0x78, 0xfe, 0xee, 0xc0, 0x4e, 0x9d, 0xf4, 0x3c, 0xe5, 0x0a,
+	0xeb, 0x21, 0xac, 0x88, 0xe4, 0xbf, 0xf3, 0x69, 0x94, 0xab, 0xbb, 0x76, 0x34, 0xac, 0x35, 0x38,
+	0x9a, 0x46, 0x64, 0x2f, 0x07, 0xf2, 0x49, 0xe4, 0x8c, 0x9a, 0x39, 0xdf, 0xa6, 0x57, 0xbe, 0xe7,
+	0x66, 0x39, 0xa3, 0x09, 0x6e, 0xc2, 0xe2, 0xad, 0xe3, 0xa7, 0x64, 0x76, 0xb3, 0x5a, 0xf3, 0x17,
+	0xf6, 0x6f, 0x07, 0xb6, 0xea, 0x95, 0x14, 0x35, 0xe4, 0x7d, 0x74, 0xee, 0xeb, 0x03, 0x0f, 0x61,
+	0xc9, 0x13, 0x6a, 0x14, 0xbf, 0x82, 0x4e, 0x4a, 0x89, 0x12, 0x33, 0x1d, 0x93, 0xeb, 0x45, 0x9e,
+	0x18, 0xc4, 0xae, 0xb6, 0xdc, 0x0a, 0x54, 0x55, 0xdd, 0x53, 0xaa, 0x16, 0xaa, 0x8f, 0x89, 0xcc,
+	0xc5, 0x5c, 0xf5, 0x31, 0x11, 0xdb, 0x81, 0xed, 0x4b, 0x8a, 0xbd, 0xf1, 0xb4, 0xd6, 0x89, 0xdc,
+	0x5b, 0x7f, 0xc1, 0xa7, 0xcd, 0xc3, 0x30, 0x2c, 0xe5, 0xfe, 0x06, 0xfa, 0xca, 0x2e, 0x94, 0x3d,
+	0xb7, 0x6f, 0x2f, 0x15, 0x88, 0xfb, 0xd0, 0x8b, 0xc3, 0x90, 0x4b, 0xe1, 0xd7, 0x2b, 0x91, 0x5c,
+	0xc7, 0x77, 0x62, 0x3b, 0x3b, 0x64, 0xbb, 0xf0, 0x99, 0x26, 0xb9, 0xac, 0x6e, 0x04, 0xe6, 0x05,
+	0x0f, 0x63, 0x52, 0xce, 0xcb, 0x7b, 0xf0, 0x1d, 0x0c, 0x94, 0x84, 0xf7, 0x2f, 0xd6, 0x1a, 0x92,
+	0x11, 0x6c, 0xb7, 0xb0, 0xca, 0x1b, 0xb0, 0x5f, 0xbf, 0x01, 0xad, 0x97, 0x67, 0xbe, 0xee, 0xfe,
+	0x80, 0xf5, 0x0b, 0xe2, 0xa7, 0x44, 0x6f, 0x27, 0x1f, 0xab, 0xe6, 0x1c, 0x43, 0xcc, 0x46, 0x30,
+	0x78, 0x43, 0xd3, 0xaa, 0x91, 0x87, 0xf7, 0xc4, 0x1c, 0xac, 0x47, 0xff, 0x00, 0xf4, 0xec, 0x34,
+	0x99, 0xe0, 0xd7, 0xd0, 0x13, 0x86, 0x87, 0x55, 0xb5, 0x8a, 0x1d, 0x5a, 0x5b, 0x33, 0x5f, 0xe5,
+	0xef, 0x67, 0x60, 0x00, 0x4f, 0x34, 0x6e, 0x86, 0x5f, 0x54, 0x45, 0xdd, 0xeb, 0x9c, 0xd6, 0xc1,
+	0xc3, 0xc0, 0x32, 0xdf, 0x2f, 0x30, 0x6c, 0x18, 0x20, 0x3e, 0x2b, 0x09, 0x74, 0xe6, 0x68, 0xb5,
+	0x5c, 0x63, 0x66, 0xe0, 0x31, 0xf4, 0x84, 0xa6, 0xd8, 0x72, 0xaa, 0xb4, 0xac, 0xca, 0xce, 0x0c,
+	0x7c, 0x09, 0x2b, 0xa5, 0xd7, 0xe0, 0x76, 0x8b, 0x2f, 0xc9, 0x94, 0x56, 0xdb, 0x51, 0xc9, 0x72,
+	0x09, 0xeb, 0x33, 0x8e, 0x85, 0xbb, 0xcd, 0x80, 0x9a, 0x2f, 0x5a, 0x7b, 0x7a, 0x40, 0xc9, 0xfb,
+	0x2d, 0xac, 0x94, 0xa6, 0xa6, 0x54, 0x37, 0x6b, 0x74, 0x56, 0x7d, 0xf0, 0xb3, 0xb6, 0xfa, 0x8a,
+	0xcf, 0xe1, 0xce, 0xec, 0x3e, 0x53, 0x83, 0x35, 0xcb, 0x8e, 0x19, 0xf8, 0x0a, 0xa0, 0xb2, 0x1d,
+	0xac, 0x24, 0x68, 0xf8, 0x9c, 0xb5, 0xd3, 0x7a, 0x56, 0xf6, 0x71, 0x02, 0x78, 0x9a, 0xfa, 0xfe,
+	0x85, 0xeb, 0x04, 0x0a, 0x61, 0x63, 0xd0, 0x1f, 0xa2, 0xf9, 0x15, 0x3e, 0x69, 0xb1, 0x30, 0xdc,
+	0xaf, 0xba, 0xd7, 0x1a, 0x9c, 0xb5, 0xdd, 0x76, 0x71, 0x33, 0x04, 0x33, 0xf0, 0x3d, 0x6c, 0xb6,
+	0xd9, 0x18, 0x3e, 0xd7, 0x30, 0xd7, 0x5c, 0x4e, 0x99, 0x8d, 0x06, 0x84, 0x19, 0xf8, 0x1a, 0xd6,
+	0xea, 0xc1, 0xf8, 0x54, 0xc3, 0x5a, 0xf0, 0xb5, 0xee, 0x18, 0x66, 0xe0, 0x0f, 0xb0, 0x5c, 0xec,
+	0x28, 0x34, 0x95, 0x21, 0xaf, 0xad, 0x2d, 0x6d, 0xf4, 0x39, 0x0c, 0x1b, 0xfb, 0x1b, 0x5b, 0xc1,
+	0x16, 0xab, 0x7e, 0x18, 0xad, 0x17, 0x19, 0x78, 0x03, 0x5b, 0xad, 0x86, 0x80, 0x9f, 0xdf, 0x13,
+	0x5e, 0xb9, 0x95, 0xf5, 0xe2, 0x21, 0x58, 0x99, 0xe9, 0x37, 0x18, 0x36, 0x3c, 0x40, 0xd9, 0x13,
+	0x3a, 0xd7, 0x51, 0xfa, 0xd0, 0x5a, 0x08, 0x33, 0xae, 0x96, 0xb2, 0xff, 0x0c, 0xc7, 0xff, 0x05,
+	0x00, 0x00, 0xff, 0xff, 0x10, 0xdb, 0xa3, 0x70, 0x85, 0x0c, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1148,11 +1105,16 @@ var _ grpc.ClientConnInterface
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion6
 
-// PhoenixClient is the client API for Phoenix service.
+// RuskClient is the client API for Rusk service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type PhoenixClient interface {
-	Echo(ctx context.Context, in *EchoMethod, opts ...grpc.CallOption) (*EchoMethod, error)
+type RuskClient interface {
+	// Simple echo request
+	Echo(ctx context.Context, in *EchoRequest, opts ...grpc.CallOption) (*EchoResponse, error)
+	// Validate a set of transactions, returning false if at least one of the
+	// listed transactions is inconsistent
+	ValidateStateTransition(ctx context.Context, in *ValidateStateTransitionRequest, opts ...grpc.CallOption) (*ValidateStateTransitionResponse, error)
+	// Phoenix stuff
 	GenerateSecretKey(ctx context.Context, in *GenerateSecretKeyRequest, opts ...grpc.CallOption) (*SecretKey, error)
 	Keys(ctx context.Context, in *SecretKey, opts ...grpc.CallOption) (*KeysResponse, error)
 	Nullifier(ctx context.Context, in *NullifierRequest, opts ...grpc.CallOption) (*NullifierResponse, error)
@@ -1168,607 +1130,6 @@ type PhoenixClient interface {
 	VerifyTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error)
 	VerifyTransactionRoot(ctx context.Context, in *VerifyTransactionRootRequest, opts ...grpc.CallOption) (*VerifyTransactionRootResponse, error)
 	StoreTransactions(ctx context.Context, in *StoreTransactionsRequest, opts ...grpc.CallOption) (*StoreTransactionsResponse, error)
-}
-
-type phoenixClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewPhoenixClient(cc grpc.ClientConnInterface) PhoenixClient {
-	return &phoenixClient{cc}
-}
-
-func (c *phoenixClient) Echo(ctx context.Context, in *EchoMethod, opts ...grpc.CallOption) (*EchoMethod, error) {
-	out := new(EchoMethod)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/Echo", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) GenerateSecretKey(ctx context.Context, in *GenerateSecretKeyRequest, opts ...grpc.CallOption) (*SecretKey, error) {
-	out := new(SecretKey)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/GenerateSecretKey", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) Keys(ctx context.Context, in *SecretKey, opts ...grpc.CallOption) (*KeysResponse, error) {
-	out := new(KeysResponse)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/Keys", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) Nullifier(ctx context.Context, in *NullifierRequest, opts ...grpc.CallOption) (*NullifierResponse, error) {
-	out := new(NullifierResponse)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/Nullifier", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) NullifierStatus(ctx context.Context, in *NullifierStatusRequest, opts ...grpc.CallOption) (*NullifierStatusResponse, error) {
-	out := new(NullifierStatusResponse)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/NullifierStatus", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) FetchNote(ctx context.Context, in *FetchNoteRequest, opts ...grpc.CallOption) (*Note, error) {
-	out := new(Note)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/FetchNote", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) DecryptNote(ctx context.Context, in *DecryptNoteRequest, opts ...grpc.CallOption) (*DecryptedNote, error) {
-	out := new(DecryptedNote)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/DecryptNote", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) OwnedNotes(ctx context.Context, in *OwnedNotesRequest, opts ...grpc.CallOption) (*OwnedNotesResponse, error) {
-	out := new(OwnedNotesResponse)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/OwnedNotes", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) FullScanOwnedNotes(ctx context.Context, in *ViewKey, opts ...grpc.CallOption) (*OwnedNotesResponse, error) {
-	out := new(OwnedNotesResponse)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/FullScanOwnedNotes", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) NewTransactionInput(ctx context.Context, in *NewTransactionInputRequest, opts ...grpc.CallOption) (*TransactionInput, error) {
-	out := new(TransactionInput)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/NewTransactionInput", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) NewTransactionOutput(ctx context.Context, in *NewTransactionOutputRequest, opts ...grpc.CallOption) (*TransactionOutput, error) {
-	out := new(TransactionOutput)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/NewTransactionOutput", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) NewTransaction(ctx context.Context, in *NewTransactionRequest, opts ...grpc.CallOption) (*Transaction, error) {
-	out := new(Transaction)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/NewTransaction", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) SetFeePk(ctx context.Context, in *SetFeePkRequest, opts ...grpc.CallOption) (*Transaction, error) {
-	out := new(Transaction)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/SetFeePk", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) VerifyTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error) {
-	out := new(VerifyTransactionResponse)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/VerifyTransaction", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) VerifyTransactionRoot(ctx context.Context, in *VerifyTransactionRootRequest, opts ...grpc.CallOption) (*VerifyTransactionRootResponse, error) {
-	out := new(VerifyTransactionRootResponse)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/VerifyTransactionRoot", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *phoenixClient) StoreTransactions(ctx context.Context, in *StoreTransactionsRequest, opts ...grpc.CallOption) (*StoreTransactionsResponse, error) {
-	out := new(StoreTransactionsResponse)
-	err := c.cc.Invoke(ctx, "/phoenix.Phoenix/StoreTransactions", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// PhoenixServer is the server API for Phoenix service.
-type PhoenixServer interface {
-	Echo(context.Context, *EchoMethod) (*EchoMethod, error)
-	GenerateSecretKey(context.Context, *GenerateSecretKeyRequest) (*SecretKey, error)
-	Keys(context.Context, *SecretKey) (*KeysResponse, error)
-	Nullifier(context.Context, *NullifierRequest) (*NullifierResponse, error)
-	NullifierStatus(context.Context, *NullifierStatusRequest) (*NullifierStatusResponse, error)
-	FetchNote(context.Context, *FetchNoteRequest) (*Note, error)
-	DecryptNote(context.Context, *DecryptNoteRequest) (*DecryptedNote, error)
-	OwnedNotes(context.Context, *OwnedNotesRequest) (*OwnedNotesResponse, error)
-	FullScanOwnedNotes(context.Context, *ViewKey) (*OwnedNotesResponse, error)
-	NewTransactionInput(context.Context, *NewTransactionInputRequest) (*TransactionInput, error)
-	NewTransactionOutput(context.Context, *NewTransactionOutputRequest) (*TransactionOutput, error)
-	NewTransaction(context.Context, *NewTransactionRequest) (*Transaction, error)
-	SetFeePk(context.Context, *SetFeePkRequest) (*Transaction, error)
-	VerifyTransaction(context.Context, *Transaction) (*VerifyTransactionResponse, error)
-	VerifyTransactionRoot(context.Context, *VerifyTransactionRootRequest) (*VerifyTransactionRootResponse, error)
-	StoreTransactions(context.Context, *StoreTransactionsRequest) (*StoreTransactionsResponse, error)
-}
-
-// UnimplementedPhoenixServer can be embedded to have forward compatible implementations.
-type UnimplementedPhoenixServer struct {
-}
-
-func (*UnimplementedPhoenixServer) Echo(ctx context.Context, req *EchoMethod) (*EchoMethod, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Echo not implemented")
-}
-func (*UnimplementedPhoenixServer) GenerateSecretKey(ctx context.Context, req *GenerateSecretKeyRequest) (*SecretKey, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateSecretKey not implemented")
-}
-func (*UnimplementedPhoenixServer) Keys(ctx context.Context, req *SecretKey) (*KeysResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Keys not implemented")
-}
-func (*UnimplementedPhoenixServer) Nullifier(ctx context.Context, req *NullifierRequest) (*NullifierResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Nullifier not implemented")
-}
-func (*UnimplementedPhoenixServer) NullifierStatus(ctx context.Context, req *NullifierStatusRequest) (*NullifierStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method NullifierStatus not implemented")
-}
-func (*UnimplementedPhoenixServer) FetchNote(ctx context.Context, req *FetchNoteRequest) (*Note, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FetchNote not implemented")
-}
-func (*UnimplementedPhoenixServer) DecryptNote(ctx context.Context, req *DecryptNoteRequest) (*DecryptedNote, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DecryptNote not implemented")
-}
-func (*UnimplementedPhoenixServer) OwnedNotes(ctx context.Context, req *OwnedNotesRequest) (*OwnedNotesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method OwnedNotes not implemented")
-}
-func (*UnimplementedPhoenixServer) FullScanOwnedNotes(ctx context.Context, req *ViewKey) (*OwnedNotesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FullScanOwnedNotes not implemented")
-}
-func (*UnimplementedPhoenixServer) NewTransactionInput(ctx context.Context, req *NewTransactionInputRequest) (*TransactionInput, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method NewTransactionInput not implemented")
-}
-func (*UnimplementedPhoenixServer) NewTransactionOutput(ctx context.Context, req *NewTransactionOutputRequest) (*TransactionOutput, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method NewTransactionOutput not implemented")
-}
-func (*UnimplementedPhoenixServer) NewTransaction(ctx context.Context, req *NewTransactionRequest) (*Transaction, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method NewTransaction not implemented")
-}
-func (*UnimplementedPhoenixServer) SetFeePk(ctx context.Context, req *SetFeePkRequest) (*Transaction, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetFeePk not implemented")
-}
-func (*UnimplementedPhoenixServer) VerifyTransaction(ctx context.Context, req *Transaction) (*VerifyTransactionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyTransaction not implemented")
-}
-func (*UnimplementedPhoenixServer) VerifyTransactionRoot(ctx context.Context, req *VerifyTransactionRootRequest) (*VerifyTransactionRootResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyTransactionRoot not implemented")
-}
-func (*UnimplementedPhoenixServer) StoreTransactions(ctx context.Context, req *StoreTransactionsRequest) (*StoreTransactionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StoreTransactions not implemented")
-}
-
-func RegisterPhoenixServer(s *grpc.Server, srv PhoenixServer) {
-	s.RegisterService(&_Phoenix_serviceDesc, srv)
-}
-
-func _Phoenix_Echo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EchoMethod)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).Echo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/Echo",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).Echo(ctx, req.(*EchoMethod))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_GenerateSecretKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GenerateSecretKeyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).GenerateSecretKey(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/GenerateSecretKey",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).GenerateSecretKey(ctx, req.(*GenerateSecretKeyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_Keys_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SecretKey)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).Keys(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/Keys",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).Keys(ctx, req.(*SecretKey))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_Nullifier_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NullifierRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).Nullifier(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/Nullifier",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).Nullifier(ctx, req.(*NullifierRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_NullifierStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NullifierStatusRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).NullifierStatus(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/NullifierStatus",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).NullifierStatus(ctx, req.(*NullifierStatusRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_FetchNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FetchNoteRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).FetchNote(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/FetchNote",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).FetchNote(ctx, req.(*FetchNoteRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_DecryptNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DecryptNoteRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).DecryptNote(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/DecryptNote",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).DecryptNote(ctx, req.(*DecryptNoteRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_OwnedNotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OwnedNotesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).OwnedNotes(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/OwnedNotes",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).OwnedNotes(ctx, req.(*OwnedNotesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_FullScanOwnedNotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ViewKey)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).FullScanOwnedNotes(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/FullScanOwnedNotes",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).FullScanOwnedNotes(ctx, req.(*ViewKey))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_NewTransactionInput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NewTransactionInputRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).NewTransactionInput(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/NewTransactionInput",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).NewTransactionInput(ctx, req.(*NewTransactionInputRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_NewTransactionOutput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NewTransactionOutputRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).NewTransactionOutput(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/NewTransactionOutput",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).NewTransactionOutput(ctx, req.(*NewTransactionOutputRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_NewTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NewTransactionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).NewTransaction(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/NewTransaction",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).NewTransaction(ctx, req.(*NewTransactionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_SetFeePk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetFeePkRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).SetFeePk(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/SetFeePk",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).SetFeePk(ctx, req.(*SetFeePkRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_VerifyTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Transaction)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).VerifyTransaction(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/VerifyTransaction",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).VerifyTransaction(ctx, req.(*Transaction))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_VerifyTransactionRoot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(VerifyTransactionRootRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).VerifyTransactionRoot(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/VerifyTransactionRoot",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).VerifyTransactionRoot(ctx, req.(*VerifyTransactionRootRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Phoenix_StoreTransactions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StoreTransactionsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PhoenixServer).StoreTransactions(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/phoenix.Phoenix/StoreTransactions",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PhoenixServer).StoreTransactions(ctx, req.(*StoreTransactionsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Phoenix_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "phoenix.Phoenix",
-	HandlerType: (*PhoenixServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Echo",
-			Handler:    _Phoenix_Echo_Handler,
-		},
-		{
-			MethodName: "GenerateSecretKey",
-			Handler:    _Phoenix_GenerateSecretKey_Handler,
-		},
-		{
-			MethodName: "Keys",
-			Handler:    _Phoenix_Keys_Handler,
-		},
-		{
-			MethodName: "Nullifier",
-			Handler:    _Phoenix_Nullifier_Handler,
-		},
-		{
-			MethodName: "NullifierStatus",
-			Handler:    _Phoenix_NullifierStatus_Handler,
-		},
-		{
-			MethodName: "FetchNote",
-			Handler:    _Phoenix_FetchNote_Handler,
-		},
-		{
-			MethodName: "DecryptNote",
-			Handler:    _Phoenix_DecryptNote_Handler,
-		},
-		{
-			MethodName: "OwnedNotes",
-			Handler:    _Phoenix_OwnedNotes_Handler,
-		},
-		{
-			MethodName: "FullScanOwnedNotes",
-			Handler:    _Phoenix_FullScanOwnedNotes_Handler,
-		},
-		{
-			MethodName: "NewTransactionInput",
-			Handler:    _Phoenix_NewTransactionInput_Handler,
-		},
-		{
-			MethodName: "NewTransactionOutput",
-			Handler:    _Phoenix_NewTransactionOutput_Handler,
-		},
-		{
-			MethodName: "NewTransaction",
-			Handler:    _Phoenix_NewTransaction_Handler,
-		},
-		{
-			MethodName: "SetFeePk",
-			Handler:    _Phoenix_SetFeePk_Handler,
-		},
-		{
-			MethodName: "VerifyTransaction",
-			Handler:    _Phoenix_VerifyTransaction_Handler,
-		},
-		{
-			MethodName: "VerifyTransactionRoot",
-			Handler:    _Phoenix_VerifyTransactionRoot_Handler,
-		},
-		{
-			MethodName: "StoreTransactions",
-			Handler:    _Phoenix_StoreTransactions_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "phoenix.proto",
-}
-
-// RuskClient is the client API for Rusk service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type RuskClient interface {
-	// Simple echo request
-	Echo(ctx context.Context, in *EchoRequest, opts ...grpc.CallOption) (*EchoResponse, error)
-	// Validate a set of transactions, returning false if at least one of the
-	// listed transactions is inconsistent
-	ValidateStateTransition(ctx context.Context, in *ValidateStateTransitionRequest, opts ...grpc.CallOption) (*ValidateStateTransitionResponse, error)
 }
 
 type ruskClient struct {
@@ -1797,6 +1158,141 @@ func (c *ruskClient) ValidateStateTransition(ctx context.Context, in *ValidateSt
 	return out, nil
 }
 
+func (c *ruskClient) GenerateSecretKey(ctx context.Context, in *GenerateSecretKeyRequest, opts ...grpc.CallOption) (*SecretKey, error) {
+	out := new(SecretKey)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/GenerateSecretKey", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) Keys(ctx context.Context, in *SecretKey, opts ...grpc.CallOption) (*KeysResponse, error) {
+	out := new(KeysResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/Keys", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) Nullifier(ctx context.Context, in *NullifierRequest, opts ...grpc.CallOption) (*NullifierResponse, error) {
+	out := new(NullifierResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/Nullifier", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) NullifierStatus(ctx context.Context, in *NullifierStatusRequest, opts ...grpc.CallOption) (*NullifierStatusResponse, error) {
+	out := new(NullifierStatusResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/NullifierStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) FetchNote(ctx context.Context, in *FetchNoteRequest, opts ...grpc.CallOption) (*Note, error) {
+	out := new(Note)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/FetchNote", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) DecryptNote(ctx context.Context, in *DecryptNoteRequest, opts ...grpc.CallOption) (*DecryptedNote, error) {
+	out := new(DecryptedNote)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/DecryptNote", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) OwnedNotes(ctx context.Context, in *OwnedNotesRequest, opts ...grpc.CallOption) (*OwnedNotesResponse, error) {
+	out := new(OwnedNotesResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/OwnedNotes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) FullScanOwnedNotes(ctx context.Context, in *ViewKey, opts ...grpc.CallOption) (*OwnedNotesResponse, error) {
+	out := new(OwnedNotesResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/FullScanOwnedNotes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) NewTransactionInput(ctx context.Context, in *NewTransactionInputRequest, opts ...grpc.CallOption) (*TransactionInput, error) {
+	out := new(TransactionInput)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/NewTransactionInput", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) NewTransactionOutput(ctx context.Context, in *NewTransactionOutputRequest, opts ...grpc.CallOption) (*TransactionOutput, error) {
+	out := new(TransactionOutput)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/NewTransactionOutput", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) NewTransaction(ctx context.Context, in *NewTransactionRequest, opts ...grpc.CallOption) (*Transaction, error) {
+	out := new(Transaction)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/NewTransaction", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) SetFeePk(ctx context.Context, in *SetFeePkRequest, opts ...grpc.CallOption) (*Transaction, error) {
+	out := new(Transaction)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/SetFeePk", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) VerifyTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error) {
+	out := new(VerifyTransactionResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/VerifyTransaction", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) VerifyTransactionRoot(ctx context.Context, in *VerifyTransactionRootRequest, opts ...grpc.CallOption) (*VerifyTransactionRootResponse, error) {
+	out := new(VerifyTransactionRootResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/VerifyTransactionRoot", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) StoreTransactions(ctx context.Context, in *StoreTransactionsRequest, opts ...grpc.CallOption) (*StoreTransactionsResponse, error) {
+	out := new(StoreTransactionsResponse)
+	err := c.cc.Invoke(ctx, "/phoenix.Rusk/StoreTransactions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RuskServer is the server API for Rusk service.
 type RuskServer interface {
 	// Simple echo request
@@ -1804,6 +1300,22 @@ type RuskServer interface {
 	// Validate a set of transactions, returning false if at least one of the
 	// listed transactions is inconsistent
 	ValidateStateTransition(context.Context, *ValidateStateTransitionRequest) (*ValidateStateTransitionResponse, error)
+	// Phoenix stuff
+	GenerateSecretKey(context.Context, *GenerateSecretKeyRequest) (*SecretKey, error)
+	Keys(context.Context, *SecretKey) (*KeysResponse, error)
+	Nullifier(context.Context, *NullifierRequest) (*NullifierResponse, error)
+	NullifierStatus(context.Context, *NullifierStatusRequest) (*NullifierStatusResponse, error)
+	FetchNote(context.Context, *FetchNoteRequest) (*Note, error)
+	DecryptNote(context.Context, *DecryptNoteRequest) (*DecryptedNote, error)
+	OwnedNotes(context.Context, *OwnedNotesRequest) (*OwnedNotesResponse, error)
+	FullScanOwnedNotes(context.Context, *ViewKey) (*OwnedNotesResponse, error)
+	NewTransactionInput(context.Context, *NewTransactionInputRequest) (*TransactionInput, error)
+	NewTransactionOutput(context.Context, *NewTransactionOutputRequest) (*TransactionOutput, error)
+	NewTransaction(context.Context, *NewTransactionRequest) (*Transaction, error)
+	SetFeePk(context.Context, *SetFeePkRequest) (*Transaction, error)
+	VerifyTransaction(context.Context, *Transaction) (*VerifyTransactionResponse, error)
+	VerifyTransactionRoot(context.Context, *VerifyTransactionRootRequest) (*VerifyTransactionRootResponse, error)
+	StoreTransactions(context.Context, *StoreTransactionsRequest) (*StoreTransactionsResponse, error)
 }
 
 // UnimplementedRuskServer can be embedded to have forward compatible implementations.
@@ -1815,6 +1327,51 @@ func (*UnimplementedRuskServer) Echo(ctx context.Context, req *EchoRequest) (*Ec
 }
 func (*UnimplementedRuskServer) ValidateStateTransition(ctx context.Context, req *ValidateStateTransitionRequest) (*ValidateStateTransitionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateStateTransition not implemented")
+}
+func (*UnimplementedRuskServer) GenerateSecretKey(ctx context.Context, req *GenerateSecretKeyRequest) (*SecretKey, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateSecretKey not implemented")
+}
+func (*UnimplementedRuskServer) Keys(ctx context.Context, req *SecretKey) (*KeysResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Keys not implemented")
+}
+func (*UnimplementedRuskServer) Nullifier(ctx context.Context, req *NullifierRequest) (*NullifierResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Nullifier not implemented")
+}
+func (*UnimplementedRuskServer) NullifierStatus(ctx context.Context, req *NullifierStatusRequest) (*NullifierStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NullifierStatus not implemented")
+}
+func (*UnimplementedRuskServer) FetchNote(ctx context.Context, req *FetchNoteRequest) (*Note, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchNote not implemented")
+}
+func (*UnimplementedRuskServer) DecryptNote(ctx context.Context, req *DecryptNoteRequest) (*DecryptedNote, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DecryptNote not implemented")
+}
+func (*UnimplementedRuskServer) OwnedNotes(ctx context.Context, req *OwnedNotesRequest) (*OwnedNotesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OwnedNotes not implemented")
+}
+func (*UnimplementedRuskServer) FullScanOwnedNotes(ctx context.Context, req *ViewKey) (*OwnedNotesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FullScanOwnedNotes not implemented")
+}
+func (*UnimplementedRuskServer) NewTransactionInput(ctx context.Context, req *NewTransactionInputRequest) (*TransactionInput, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewTransactionInput not implemented")
+}
+func (*UnimplementedRuskServer) NewTransactionOutput(ctx context.Context, req *NewTransactionOutputRequest) (*TransactionOutput, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewTransactionOutput not implemented")
+}
+func (*UnimplementedRuskServer) NewTransaction(ctx context.Context, req *NewTransactionRequest) (*Transaction, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewTransaction not implemented")
+}
+func (*UnimplementedRuskServer) SetFeePk(ctx context.Context, req *SetFeePkRequest) (*Transaction, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetFeePk not implemented")
+}
+func (*UnimplementedRuskServer) VerifyTransaction(ctx context.Context, req *Transaction) (*VerifyTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyTransaction not implemented")
+}
+func (*UnimplementedRuskServer) VerifyTransactionRoot(ctx context.Context, req *VerifyTransactionRootRequest) (*VerifyTransactionRootResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyTransactionRoot not implemented")
+}
+func (*UnimplementedRuskServer) StoreTransactions(ctx context.Context, req *StoreTransactionsRequest) (*StoreTransactionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StoreTransactions not implemented")
 }
 
 func RegisterRuskServer(s *grpc.Server, srv RuskServer) {
@@ -1857,6 +1414,276 @@ func _Rusk_ValidateStateTransition_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Rusk_GenerateSecretKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateSecretKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).GenerateSecretKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/GenerateSecretKey",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).GenerateSecretKey(ctx, req.(*GenerateSecretKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_Keys_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SecretKey)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).Keys(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/Keys",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).Keys(ctx, req.(*SecretKey))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_Nullifier_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NullifierRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).Nullifier(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/Nullifier",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).Nullifier(ctx, req.(*NullifierRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_NullifierStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NullifierStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).NullifierStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/NullifierStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).NullifierStatus(ctx, req.(*NullifierStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_FetchNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchNoteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).FetchNote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/FetchNote",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).FetchNote(ctx, req.(*FetchNoteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_DecryptNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DecryptNoteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).DecryptNote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/DecryptNote",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).DecryptNote(ctx, req.(*DecryptNoteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_OwnedNotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OwnedNotesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).OwnedNotes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/OwnedNotes",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).OwnedNotes(ctx, req.(*OwnedNotesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_FullScanOwnedNotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ViewKey)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).FullScanOwnedNotes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/FullScanOwnedNotes",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).FullScanOwnedNotes(ctx, req.(*ViewKey))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_NewTransactionInput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewTransactionInputRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).NewTransactionInput(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/NewTransactionInput",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).NewTransactionInput(ctx, req.(*NewTransactionInputRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_NewTransactionOutput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewTransactionOutputRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).NewTransactionOutput(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/NewTransactionOutput",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).NewTransactionOutput(ctx, req.(*NewTransactionOutputRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_NewTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).NewTransaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/NewTransaction",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).NewTransaction(ctx, req.(*NewTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_SetFeePk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetFeePkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).SetFeePk(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/SetFeePk",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).SetFeePk(ctx, req.(*SetFeePkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_VerifyTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Transaction)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).VerifyTransaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/VerifyTransaction",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).VerifyTransaction(ctx, req.(*Transaction))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_VerifyTransactionRoot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyTransactionRootRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).VerifyTransactionRoot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/VerifyTransactionRoot",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).VerifyTransactionRoot(ctx, req.(*VerifyTransactionRootRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_StoreTransactions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StoreTransactionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).StoreTransactions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/phoenix.Rusk/StoreTransactions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).StoreTransactions(ctx, req.(*StoreTransactionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Rusk_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "phoenix.Rusk",
 	HandlerType: (*RuskServer)(nil),
@@ -1868,6 +1695,66 @@ var _Rusk_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ValidateStateTransition",
 			Handler:    _Rusk_ValidateStateTransition_Handler,
+		},
+		{
+			MethodName: "GenerateSecretKey",
+			Handler:    _Rusk_GenerateSecretKey_Handler,
+		},
+		{
+			MethodName: "Keys",
+			Handler:    _Rusk_Keys_Handler,
+		},
+		{
+			MethodName: "Nullifier",
+			Handler:    _Rusk_Nullifier_Handler,
+		},
+		{
+			MethodName: "NullifierStatus",
+			Handler:    _Rusk_NullifierStatus_Handler,
+		},
+		{
+			MethodName: "FetchNote",
+			Handler:    _Rusk_FetchNote_Handler,
+		},
+		{
+			MethodName: "DecryptNote",
+			Handler:    _Rusk_DecryptNote_Handler,
+		},
+		{
+			MethodName: "OwnedNotes",
+			Handler:    _Rusk_OwnedNotes_Handler,
+		},
+		{
+			MethodName: "FullScanOwnedNotes",
+			Handler:    _Rusk_FullScanOwnedNotes_Handler,
+		},
+		{
+			MethodName: "NewTransactionInput",
+			Handler:    _Rusk_NewTransactionInput_Handler,
+		},
+		{
+			MethodName: "NewTransactionOutput",
+			Handler:    _Rusk_NewTransactionOutput_Handler,
+		},
+		{
+			MethodName: "NewTransaction",
+			Handler:    _Rusk_NewTransaction_Handler,
+		},
+		{
+			MethodName: "SetFeePk",
+			Handler:    _Rusk_SetFeePk_Handler,
+		},
+		{
+			MethodName: "VerifyTransaction",
+			Handler:    _Rusk_VerifyTransaction_Handler,
+		},
+		{
+			MethodName: "VerifyTransactionRoot",
+			Handler:    _Rusk_VerifyTransactionRoot_Handler,
+		},
+		{
+			MethodName: "StoreTransactions",
+			Handler:    _Rusk_StoreTransactions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
