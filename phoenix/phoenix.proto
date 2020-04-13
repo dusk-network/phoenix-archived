@@ -18,8 +18,6 @@ message ValidateStateTransitionResponse {
   bool success = 1;
 }
 
-message EchoMethod { string m = 1; }
-
 message GenerateSecretKeyRequest { bytes b = 1; }
 
 message NullifierRequest {
@@ -88,9 +86,15 @@ message KeysResponse {
   PublicKey pk = 2;
 }
 
-service Phoenix {
-  rpc Echo(EchoMethod) returns (EchoMethod) {}
+service Rusk {
+  // Simple echo request
+  rpc Echo(EchoRequest) returns (EchoResponse) {}
+  // Validate a set of transactions, returning false if at least one of the
+  // listed transactions is inconsistent
+  rpc ValidateStateTransition(ValidateStateTransitionRequest)
+      returns (ValidateStateTransitionResponse) {}
 
+  // Phoenix stuff
   rpc GenerateSecretKey(GenerateSecretKeyRequest) returns (SecretKey) {}
   rpc Keys(SecretKey) returns (KeysResponse) {}
 
@@ -114,13 +118,4 @@ service Phoenix {
       returns (VerifyTransactionRootResponse) {}
   rpc StoreTransactions(StoreTransactionsRequest)
       returns (StoreTransactionsResponse) {}
-}
-
-service Rusk {
-  // Simple echo request
-  rpc Echo(EchoRequest) returns (EchoResponse) {}
-  // Validate a set of transactions, returning false if at least one of the
-  // listed transactions is inconsistent
-  rpc ValidateStateTransition(ValidateStateTransitionRequest)
-      returns (ValidateStateTransitionResponse) {}
 }
