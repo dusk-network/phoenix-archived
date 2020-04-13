@@ -42,16 +42,6 @@ impl From<Nullifier> for rpc::Nullifier {
     }
 }
 
-impl TryFrom<rpc::Nullifier> for Nullifier {
-    type Error = Error;
-
-    fn try_from(n: rpc::Nullifier) -> Result<Self, Self::Error> {
-        n.h.ok_or(Error::InvalidParameters)
-            .and_then(|s| s.try_into())
-            .map(|s: BlsScalar| s.into())
-    }
-}
-
 impl TryFrom<rpc::Scalar> for BlsScalar {
     type Error = Error;
 

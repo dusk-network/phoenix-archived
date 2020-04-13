@@ -31,14 +31,6 @@ impl Nullifier {
     }
 }
 
-impl From<Nullifier> for rpc::Nullifier {
-    fn from(n: Nullifier) -> Self {
-        rpc::Nullifier {
-            h: Some(n.0.into()),
-        }
-    }
-}
-
 impl From<rpc::Nullifier> for Nullifier {
     fn from(n: rpc::Nullifier) -> Self {
         let scalar = utils::deserialize_bls_scalar(n.h.unwrap().data.as_slice()).unwrap();

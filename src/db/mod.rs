@@ -267,38 +267,3 @@ impl<H: ByteHash> Iterator for DbNotesIterator<H> {
         }
     }
 }
-
-// TODO - Very naive implementation, optimize to Kelvin
-pub struct DbNotesIterator<H: ByteHash> {
-    notes: HAMTMap<u64, NoteVariant, H>,
-    cur: u64,
-}
-
-impl<H: ByteHash> TryFrom<PathBuf> for DbNotesIterator<H> {
-    type Error = Error;
-
-    fn try_from(path: PathBuf) -> Result<Self, Self::Error> {
-        let root = Root::<_, H>::new(&path)?;
-        let state: Db<H> = root.restore()?;
-
-        let notes = state.notes.clone();
-        let cur = 0;
-
-        Ok(DbNotesIterator { notes, cur })
-    }
-}
-
-impl<H: ByteHash> Iterator for DbNotesIterator<H> {
-    type Item = NoteVariant;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let idx = self.cur;
-        self.cur += 1;
-
-        match self.notes.get(&idx) {
-            Ok(n) => n.map(|n| n.clone()),
-            // TODO - Report error
-            Err(_) => None,
-        }
-    }
-}

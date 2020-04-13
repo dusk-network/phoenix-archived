@@ -1,6 +1,6 @@
 use crate::{
-    crypto, db, rpc, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator, NoteVariant,
-    Nullifier, PublicKey, SecretKey, TransparentNote,
+    crypto, db, rpc, utils, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator,
+    NoteVariant, Nullifier, PublicKey, SecretKey, TransparentNote,
 };
 
 use std::cmp::Ordering;

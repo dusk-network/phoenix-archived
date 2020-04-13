@@ -12,12 +12,11 @@ use num_traits::Zero;
 use rand::distributions::{Distribution, Standard};
 use rand::Rng;
 
+pub const MAX_NOTES_PER_TRANSACTION: usize = 1 + 2;
 pub const MAX_INPUT_NOTES_PER_TRANSACTION: usize = 1;
 pub const MAX_OUTPUT_NOTES_PER_TRANSACTION: usize = 2;
 
 /// Maximum allowed number of notes per transaction.
-pub const MAX_NOTES_PER_TRANSACTION: usize =
-    MAX_INPUT_NOTES_PER_TRANSACTION + MAX_OUTPUT_NOTES_PER_TRANSACTION;
 
 /// Serialized bytes size
 pub const TX_SERIALIZED_SIZE: usize = 1876;
@@ -395,6 +394,10 @@ impl Transaction {
         &self.public_inputs
     }
 
+    pub fn set_public_inputs(&mut self, pi: zk::ZkPublicInputs) {
+        self.public_inputs = pi;
+    }
+
     /// Perform the zk proof, and save internally the created r1cs circuit and the commitment
     /// points.
     ///
@@ -536,7 +539,7 @@ impl TryFrom<Transaction> for rpc::Transaction {
     type Error = Error;
 
     fn try_from(tx: Transaction) -> Result<rpc::Transaction, Self::Error> {
-        let inputs = tx
+        let nullifiers = tx
             .inputs
             .iter()
             .filter_map(|o| {
