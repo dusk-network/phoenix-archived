@@ -3,25 +3,18 @@ use crate::{rpc, utils, Error, JubJubProjective, SecretKey};
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
 
+use unprolix::{Constructor, Getters, Setters};
+
 /// Public pair of a·G and b·G
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]
 pub struct PublicKey {
-    /// Public field element
-    pub A: JubJubProjective,
-    /// Public field element
-    pub B: JubJubProjective,
+    A: JubJubProjective,
+    B: JubJubProjective,
 }
 
 impl Default for PublicKey {
     fn default() -> Self {
         SecretKey::default().public_key()
-    }
-}
-
-impl PublicKey {
-    /// [`PublicKey`] constructor
-    pub fn new(A: JubJubProjective, B: JubJubProjective) -> Self {
-        PublicKey { A, B }
     }
 }
 

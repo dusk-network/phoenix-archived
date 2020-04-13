@@ -7,54 +7,27 @@ use std::mem;
 
 use algebra::curves::ProjectiveCurve;
 use num_traits::{One, Zero};
+use unprolix::{Constructor, Getters, Setters};
 
 /// Structure reflecting a [`Transaction`] committed to a circuit
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Constructor, Getters, Setters)]
 pub struct ZkTransaction {
-    pub inputs: [ZkTransactionInput; MAX_INPUT_NOTES_PER_TRANSACTION],
-    pub outputs: [ZkTransactionOutput; MAX_OUTPUT_NOTES_PER_TRANSACTION],
-    pub fee: ZkTransactionOutput,
+    inputs: [ZkTransactionInput; MAX_INPUT_NOTES_PER_TRANSACTION],
+    outputs: [ZkTransactionOutput; MAX_OUTPUT_NOTES_PER_TRANSACTION],
+    fee: ZkTransactionOutput,
 
-    pub basepoint_affine_x: zk::Variable,
-    pub basepoint_affine_y: zk::Variable,
-    pub basepoint_affine_xy: zk::Variable,
+    basepoint_affine_x: zk::Variable,
+    basepoint_affine_y: zk::Variable,
+    basepoint_affine_xy: zk::Variable,
 
-    pub zero: zk::Variable,
-    pub one: zk::Variable,
-    pub two: zk::Variable,
-    pub three: zk::Variable,
-    pub fifteen: zk::Variable,
+    zero: zk::Variable,
+    one: zk::Variable,
+    two: zk::Variable,
+    three: zk::Variable,
+    fifteen: zk::Variable,
 }
 
 impl ZkTransaction {
-    pub fn new(
-        inputs: [ZkTransactionInput; MAX_INPUT_NOTES_PER_TRANSACTION],
-        outputs: [ZkTransactionOutput; MAX_OUTPUT_NOTES_PER_TRANSACTION],
-        fee: ZkTransactionOutput,
-        basepoint_affine_x: zk::Variable,
-        basepoint_affine_y: zk::Variable,
-        basepoint_affine_xy: zk::Variable,
-        zero: zk::Variable,
-        one: zk::Variable,
-        two: zk::Variable,
-        three: zk::Variable,
-        fifteen: zk::Variable,
-    ) -> Self {
-        Self {
-            inputs,
-            outputs,
-            fee,
-            basepoint_affine_x,
-            basepoint_affine_y,
-            basepoint_affine_xy,
-            zero,
-            one,
-            two,
-            three,
-            fifteen,
-        }
-    }
-
     pub fn from_tx(composer: &mut zk::Composer, tx: &Transaction) -> Self {
         let zero = composer.add_input(BlsScalar::zero());
         let one = composer.add_input(BlsScalar::one());
@@ -103,68 +76,28 @@ impl ZkTransaction {
 }
 
 /// Set of [`zk::Variable`] that represents a tx item in a circuit
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Constructor, Getters, Setters)]
 pub struct ZkTransactionInput {
-    pub value: zk::Variable,
-    pub blinding_factor: zk::Variable,
-    pub value_commitment: zk::Variable,
-    pub idx: zk::Variable,
+    value: zk::Variable,
+    blinding_factor: zk::Variable,
+    value_commitment: zk::Variable,
+    idx: zk::Variable,
 
-    pub pk_r_affine_x: zk::Variable,
-    pub pk_r_affine_y: zk::Variable,
-    pub pk_r_affine_xy: zk::Variable,
+    pk_r_affine_x: zk::Variable,
+    pk_r_affine_y: zk::Variable,
+    pk_r_affine_xy: zk::Variable,
 
-    pub note_hash_scalar: BlsScalar,
-    pub note_hash: zk::Variable,
+    note_hash_scalar: BlsScalar,
+    note_hash: zk::Variable,
 
-    pub sk_r: [zk::Variable; 256],
-    pub nullifier: BlsScalar,
+    sk_r: [zk::Variable; 256],
+    nullifier: BlsScalar,
 
-    pub merkle: zk::ZkMerkleProof,
-    pub merkle_root: BlsScalar,
+    merkle: zk::ZkMerkleProof,
+    merkle_root: BlsScalar,
 }
 
 impl ZkTransactionInput {
-    pub fn new(
-        value: zk::Variable,
-        blinding_factor: zk::Variable,
-        value_commitment: zk::Variable,
-        idx: zk::Variable,
-
-        pk_r_affine_x: zk::Variable,
-        pk_r_affine_y: zk::Variable,
-        pk_r_affine_xy: zk::Variable,
-
-        note_hash_scalar: BlsScalar,
-        note_hash: zk::Variable,
-
-        sk_r: [zk::Variable; 256],
-        nullifier: BlsScalar,
-
-        merkle: zk::ZkMerkleProof,
-        merkle_root: BlsScalar,
-    ) -> Self {
-        Self {
-            value,
-            blinding_factor,
-            value_commitment,
-            idx,
-
-            pk_r_affine_x,
-            pk_r_affine_y,
-            pk_r_affine_xy,
-
-            note_hash_scalar,
-            note_hash,
-
-            sk_r,
-            nullifier,
-
-            merkle,
-            merkle_root,
-        }
-    }
-
     pub fn from_tx_input(composer: &mut zk::Composer, item: &TransactionInput) -> Self {
         let value = BlsScalar::from(item.value());
         let value = composer.add_input(value);
@@ -218,50 +151,22 @@ impl ZkTransactionInput {
 }
 
 /// Set of [`zk::Variable`] that represents a tx item in a circuit
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Constructor, Getters, Setters)]
 pub struct ZkTransactionOutput {
-    pub value: zk::Variable,
-    pub blinding_factor: zk::Variable,
-    pub value_commitment: zk::Variable,
-    pub value_commitment_scalar: BlsScalar,
-    pub idx: zk::Variable,
+    value: zk::Variable,
+    blinding_factor: zk::Variable,
+    value_commitment: zk::Variable,
+    value_commitment_scalar: BlsScalar,
+    idx: zk::Variable,
 
-    pub pk_r_affine_x: zk::Variable,
-    pub pk_r_affine_x_scalar: BlsScalar,
+    pk_r_affine_x: zk::Variable,
+    pk_r_affine_x_scalar: BlsScalar,
 
-    pub note_hash_scalar: BlsScalar,
-    pub note_hash: zk::Variable,
+    note_hash_scalar: BlsScalar,
+    note_hash: zk::Variable,
 }
 
 impl ZkTransactionOutput {
-    pub fn new(
-        value: zk::Variable,
-        blinding_factor: zk::Variable,
-        value_commitment: zk::Variable,
-        value_commitment_scalar: BlsScalar,
-        idx: zk::Variable,
-
-        pk_r_affine_x: zk::Variable,
-        pk_r_affine_x_scalar: BlsScalar,
-
-        note_hash_scalar: BlsScalar,
-        note_hash: zk::Variable,
-    ) -> Self {
-        Self {
-            value,
-            blinding_factor,
-            value_commitment,
-            value_commitment_scalar,
-            idx,
-
-            pk_r_affine_x,
-            pk_r_affine_x_scalar,
-
-            note_hash_scalar,
-            note_hash,
-        }
-    }
-
     pub fn from_tx_item<I: TransactionItem>(composer: &mut zk::Composer, item: &I) -> Self {
         let value = BlsScalar::from(item.value());
         let value = composer.add_input(value);

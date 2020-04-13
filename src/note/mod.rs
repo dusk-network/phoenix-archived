@@ -112,11 +112,11 @@ pub trait NoteGenerator:
     fn new_pk_r(r: &JubJubScalar, pk: &PublicKey) -> (JubJubProjective, JubJubProjective) {
         let R = utils::mul_by_basepoint_jubjub(r);
 
-        let rA = pk.A.mul(r);
+        let rA = pk.A().mul(r);
         let rA = crypto::hash_jubjub_projective_to_jubjub_scalar(&rA);
         let rA = utils::mul_by_basepoint_jubjub(&rA);
 
-        let pk_r = rA + pk.B;
+        let pk_r = rA + pk.B();
         let pk_r = pk_r.into_affine().into_projective();
 
         (R, pk_r)
@@ -247,10 +247,10 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
 
     /// Generate a `sk_r = H(a · R) + b`
     fn sk_r(&self, sk: &SecretKey) -> JubJubScalar {
-        let aR = self.R().mul(&sk.a);
+        let aR = self.R().mul(sk.a());
         let aR = crypto::hash_jubjub_projective_to_jubjub_scalar(&aR);
 
-        aR + sk.b
+        aR + sk.b()
     }
 
     /// Return true if the note was constructed with the same secret that constructed the provided
@@ -258,11 +258,11 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
     ///
     /// This holds true if `H(a · R) + B == PKr`
     fn is_owned_by(&self, vk: &ViewKey) -> bool {
-        let aR = self.R().mul(&vk.a);
+        let aR = self.R().mul(vk.a());
         let aR = crypto::hash_jubjub_projective_to_jubjub_scalar(&aR);
         let aR = utils::mul_by_basepoint_jubjub(&aR);
 
-        let pk_r = aR + vk.B;
+        let pk_r = aR + vk.B();
 
         self.pk_r() == &pk_r
     }

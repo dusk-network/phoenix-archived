@@ -4,16 +4,15 @@ use std::convert::{TryFrom, TryInto};
 use std::fmt;
 
 use rand::RngCore;
+use unprolix::{Constructor, Getters, Setters};
 
 /// Secret pair of a and b
 ///
 /// It is used to create a note nullifier via secret b
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]
 pub struct SecretKey {
-    /// Secret scalar
-    pub a: JubJubScalar,
-    /// Secret scalar
-    pub b: JubJubScalar,
+    a: JubJubScalar,
+    b: JubJubScalar,
 }
 
 impl Default for SecretKey {
@@ -26,11 +25,6 @@ impl Default for SecretKey {
 }
 
 impl SecretKey {
-    /// [`SecretKey`] constructor
-    pub fn new(a: JubJubScalar, b: JubJubScalar) -> Self {
-        SecretKey { a, b }
-    }
-
     /// Deterministically create a new [`SecretKey`] from a random number generator
     pub fn from_rng<R: RngCore>(rng: &mut R) -> Self {
         let a = utils::gen_random_scalar_from_rng(rng);
