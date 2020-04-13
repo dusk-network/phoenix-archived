@@ -4,6 +4,7 @@ use crate::{
 };
 
 use std::convert::TryFrom;
+use std::io::{Read, Write};
 
 use kelvin::{
     tests::{arbitrary as a, fuzz_content, fuzz_content_iterations},
@@ -20,6 +21,19 @@ fn transparent_note() {
 
     let (note, _) = TransparentNote::output(&pk, value);
 
+    let mut bytes = vec![0x00u8; 2048];
+    let mut variant: NoteVariant = note.into();
+    variant.read(bytes.as_mut_slice()).unwrap();
+
+    let deser_note = TransparentNote::default();
+    assert_ne!(note, deser_note);
+    let mut deser_note: NoteVariant = deser_note.into();
+
+    deser_note.write(bytes.as_slice()).unwrap();
+    let deser_note = TransparentNote::try_from(deser_note).unwrap();
+    assert_eq!(note, deser_note);
+
+    let note = deser_note;
     assert_eq!(note.note(), NoteType::Transparent);
     assert_eq!(value, note.value(None));
 }
@@ -34,6 +48,20 @@ fn obfuscated_note() {
     let value = 25;
 
     let (note, _) = ObfuscatedNote::output(&pk, value);
+
+    let mut bytes = vec![0x00u8; 2048];
+    let mut variant: NoteVariant = note.into();
+    variant.read(bytes.as_mut_slice()).unwrap();
+
+    let deser_note = ObfuscatedNote::default();
+    assert_ne!(note, deser_note);
+    let mut deser_note: NoteVariant = deser_note.into();
+
+    deser_note.write(bytes.as_slice()).unwrap();
+    let deser_note = ObfuscatedNote::try_from(deser_note).unwrap();
+    assert_eq!(note, deser_note);
+
+    let note = deser_note;
     assert_eq!(note.note(), NoteType::Obfuscated);
 
     let rpc_note = rpc::Note::from(note.clone());

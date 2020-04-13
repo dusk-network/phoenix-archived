@@ -39,6 +39,8 @@ pub enum Error {
     InvalidParameters,
     /// Maximum number of notes per transaction exceeded
     MaximumNotes,
+    /// The queried information was not found
+    NotFound,
 }
 
 impl Error {

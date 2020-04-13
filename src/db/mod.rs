@@ -1,6 +1,6 @@
 use crate::{
-    crypto, BlsScalar, Error, Note, NoteVariant, Nullifier, Transaction, TransactionItem,
-    MAX_NOTES_PER_TRANSACTION,
+    crypto, crypto::MerkleProofProvider, BlsScalar, Error, Note, NoteVariant, Nullifier,
+    Transaction, TransactionItem, MAX_NOTES_PER_TRANSACTION,
 };
 
 use std::convert::TryFrom;
@@ -15,6 +15,8 @@ use kelvin_radix::DefaultRadixMap as RadixMap;
 use rand::Rng;
 use tracing::trace;
 
+/// Type used for notes storage
+pub type NotesDb = Db<Blake2b>;
 /// Type used for notes iterator
 pub type NotesIter = DbNotesIterator<Blake2b>;
 
@@ -52,15 +54,35 @@ impl<H: ByteHash> Content<H> for Db<H> {
 }
 
 impl<H: ByteHash> crypto::MerkleProofProvider for Db<H> {
-    fn query_level(&self, _depth: u32, _idx: usize) -> [Option<BlsScalar>; crypto::ARITY] {
+    fn query_level(
+        &self,
+        _depth: u32,
+        _idx: usize,
+    ) -> Result<[Option<BlsScalar>; crypto::ARITY], Error> {
         // TODO - Implement
         let mut rng = rand::thread_rng();
 
         let mut leaves = [None; crypto::ARITY];
         leaves.iter_mut().for_each(|l| *l = rng.gen());
 
-        leaves
+        Ok(leaves)
     }
+
+    fn root(&self) -> Result<BlsScalar, Error> {
+        // TODO - Implement
+        Ok((&mut rand::thread_rng()).gen())
+    }
+}
+
+/// Generate a [`MerkleProof`] provided a note and a db path
+pub fn merkle_opening<P: AsRef<Path>>(
+    path: P,
+    note: &NoteVariant,
+) -> Result<crypto::MerkleProof, Error> {
+    let root = Root::<_, Blake2b>::new(path.as_ref())?;
+    let state: Db<_> = root.restore()?;
+
+    state.opening(note)
 }
 
 /// Store a provided [`Transaction`]. Return the position of the note on the tree.
@@ -100,6 +122,18 @@ pub fn store_bulk_transactions<P: AsRef<Path>>(
     Ok(idx)
 }
 
+/// Store a note. Return the position of the stored note on the tree.
+pub fn store_unspent_note<P: AsRef<Path>>(path: P, note: NoteVariant) -> Result<u64, Error> {
+    let mut root = Root::<_, Blake2b>::new(path.as_ref())?;
+    let mut state: Db<_> = root.restore()?;
+
+    let idx = state.store_unspent_note(note)?;
+
+    root.set_root(&mut state)?;
+
+    Ok(idx)
+}
+
 // TODO: for the following two functions, i needed to clone the
 // data structure in question in order to be able to take the value
 // out of this function without the compiler yelling at me.
@@ -109,12 +143,7 @@ pub fn fetch_note<P: AsRef<Path>>(path: P, idx: u64) -> Result<NoteVariant, Erro
     let root = Root::<_, Blake2b>::new(path.as_ref())?;
     let state: Db<_> = root.restore()?;
 
-    state
-        .notes
-        .clone()
-        .get(&idx)?
-        .map(|n| n.clone())
-        .ok_or(Error::Generic)
+    state.fetch_note(idx)
 }
 
 /// Verify the existence of a provided nullifier on the set
@@ -133,7 +162,19 @@ pub fn fetch_nullifier<P: AsRef<Path>>(
         .map_err(|e| e.into())
 }
 
+/// Return the merkle root of the current state
+pub fn root<P: AsRef<Path>>(path: P) -> Result<BlsScalar, Error> {
+    let root = Root::<_, Blake2b>::new(path.as_ref())?;
+    let state: Db<_> = root.restore()?;
+
+    state.root()
+}
+
 impl<H: ByteHash> Db<H> {
+    pub fn new<P: AsRef<Path>>(db_path: P) -> Result<Db<H>, Error> {
+        Ok(Root::<_, _>::new(db_path.as_ref()).and_then(|root| root.restore())?)
+    }
+
     pub fn store_transaction(
         &mut self,
         transaction: &Transaction,
@@ -176,7 +217,7 @@ impl<H: ByteHash> Db<H> {
         self.notes
             .get(&idx)?
             .map(|n| n.clone())
-            .ok_or(Error::Generic)
+            .ok_or(Error::NotFound)
     }
 
     /// Verify the existence of a provided nullifier on the set
@@ -189,6 +230,41 @@ impl<H: ByteHash> Db<H> {
 
     pub fn notes(self) -> HAMTMap<u64, NoteVariant, H> {
         self.notes
+    }
+}
+
+// TODO - Very naive implementation, optimize to Kelvin
+pub struct DbNotesIterator<H: ByteHash> {
+    notes: HAMTMap<u64, NoteVariant, H>,
+    cur: u64,
+}
+
+impl<H: ByteHash> TryFrom<PathBuf> for DbNotesIterator<H> {
+    type Error = Error;
+
+    fn try_from(path: PathBuf) -> Result<Self, Self::Error> {
+        let root = Root::<_, H>::new(&path)?;
+        let state: Db<H> = root.restore()?;
+
+        let notes = state.notes.clone();
+        let cur = 0;
+
+        Ok(DbNotesIterator { notes, cur })
+    }
+}
+
+impl<H: ByteHash> Iterator for DbNotesIterator<H> {
+    type Item = NoteVariant;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let idx = self.cur;
+        self.cur += 1;
+
+        match self.notes.get(&idx) {
+            Ok(n) => n.map(|n| n.clone()),
+            // TODO - Report error
+            Err(_) => None,
+        }
     }
 }
 

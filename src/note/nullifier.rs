@@ -1,5 +1,7 @@
 use crate::{rpc, utils, BlsScalar, Error};
 
+use std::io::{self, Read, Write};
+
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Nullifier(pub BlsScalar);
 
@@ -48,5 +50,38 @@ impl From<&rpc::Nullifier> for Nullifier {
     fn from(n: &rpc::Nullifier) -> Self {
         let scalar = utils::deserialize_bls_scalar(n.h.as_ref().unwrap().data.as_slice()).unwrap();
         Nullifier(scalar)
+    }
+}
+
+impl Read for Nullifier {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| utils::serialize_bls_scalar(&self.0, c))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        let n = utils::BLS_SCALAR_SERIALIZED_SIZE;
+
+        Ok(n)
+    }
+}
+
+impl Write for Nullifier {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        let nullifier = buf
+            .chunks(utils::BLS_SCALAR_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(utils::deserialize_bls_scalar)
+            .map_err::<io::Error, _>(|e| e.into())?;
+        let n = utils::BLS_SCALAR_SERIALIZED_SIZE;
+
+        (*self).0 = nullifier;
+
+        Ok(n)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
     }
 }

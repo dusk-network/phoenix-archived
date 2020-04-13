@@ -1,19 +1,22 @@
 use crate::{
-    db, rpc, utils, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator, NoteVariant,
+    crypto, db, rpc, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator, NoteVariant,
     Nullifier, PublicKey, SecretKey, TransparentNote,
 };
 
 use std::cmp::Ordering;
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
+use std::io::{self, Read, Write};
 use std::path::Path;
+
+use num_traits::Zero;
 
 /// A transaction item constains sensitive data for a proof creation, and must be obfuscated before
 /// network propagation.
 ///
 /// The secret is required on this structure for the proof generation
 pub trait TransactionItem:
-    fmt::Debug + Default + Clone + Copy + PartialEq + Eq + PartialOrd + Ord
+    fmt::Debug + Default + Clone + Copy + PartialEq + Eq + PartialOrd + Ord + io::Read + io::Write
 {
     fn note(&self) -> &NoteVariant;
     fn value(&self) -> u64;
@@ -25,6 +28,8 @@ pub trait TransactionItem:
     fn hash(&self) -> BlsScalar {
         self.note().hash()
     }
+
+    fn clear_sensitive_info(&mut self);
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -34,6 +39,7 @@ pub struct TransactionInput {
     blinding_factor: BlsScalar,
     pub nullifier: Nullifier,
     pub sk: SecretKey,
+    pub merkle_opening: crypto::MerkleProof,
 }
 
 impl Default for TransactionInput {
@@ -46,8 +52,10 @@ impl Default for TransactionInput {
         let nonce = Nonce([5u8; 24]);
         let blinding_factor = BlsScalar::from(7u8);
 
+        let merkle_opening = crypto::MerkleProof::default();
+
         TransparentNote::deterministic_output(&r, nonce, &pk, value, blinding_factor)
-            .to_transaction_input(sk)
+            .to_transaction_input(merkle_opening, sk)
     }
 }
 
@@ -58,6 +66,7 @@ impl TransactionInput {
         value: u64,
         blinding_factor: BlsScalar,
         sk: SecretKey,
+        merkle_opening: crypto::MerkleProof,
     ) -> Self {
         Self {
             note,
@@ -65,6 +74,7 @@ impl TransactionInput {
             value,
             blinding_factor,
             sk,
+            merkle_opening,
         }
     }
 
@@ -82,12 +92,33 @@ impl TransactionInput {
         db_path: P,
         item: rpc::TransactionInput,
     ) -> Result<Self, Error> {
-        let sk: SecretKey = item.sk.unwrap_or_default().try_into()?;
+        let sk: SecretKey = item.sk.ok_or(Error::InvalidParameters)?.try_into()?;
 
-        db::fetch_note(db_path, item.pos).map(|note| match note {
-            NoteVariant::Transparent(n) => n.to_transaction_input(sk),
-            NoteVariant::Obfuscated(n) => n.to_transaction_input(sk),
-        })
+        let note = db::fetch_note(db_path.as_ref(), item.pos)?;
+        let merkle_opening = db::merkle_opening(db_path.as_ref(), &note)?;
+
+        let txi = match note {
+            NoteVariant::Transparent(n) => n.to_transaction_input(merkle_opening, sk),
+            NoteVariant::Obfuscated(n) => n.to_transaction_input(merkle_opening, sk),
+        };
+
+        Ok(txi)
+    }
+}
+
+impl Read for TransactionInput {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        self.nullifier.read(buf)
+    }
+}
+
+impl Write for TransactionInput {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        self.nullifier.write(buf)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        self.nullifier.flush()
     }
 }
 
@@ -110,6 +141,14 @@ impl TransactionItem for TransactionInput {
 
     fn as_output(&self) -> Option<&Self> {
         None
+    }
+
+    fn clear_sensitive_info(&mut self) {
+        self.note = NoteVariant::default();
+        self.value = 0;
+        self.blinding_factor = BlsScalar::zero();
+        self.sk = SecretKey::default();
+        self.merkle_opening = crypto::MerkleProof::default();
     }
 }
 
@@ -151,6 +190,22 @@ impl TransactionOutput {
     }
 }
 
+impl Read for TransactionOutput {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        self.note.read(buf)
+    }
+}
+
+impl Write for TransactionOutput {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        self.note.write(buf)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        self.note.flush()
+    }
+}
+
 impl TransactionItem for TransactionOutput {
     fn note(&self) -> &NoteVariant {
         &self.note
@@ -170,6 +225,12 @@ impl TransactionItem for TransactionOutput {
 
     fn as_output(&self) -> Option<&Self> {
         Some(&self)
+    }
+
+    fn clear_sensitive_info(&mut self) {
+        self.value = 0;
+        self.blinding_factor = BlsScalar::zero();
+        self.pk = PublicKey::default();
     }
 }
 

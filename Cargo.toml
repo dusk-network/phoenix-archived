@@ -64,6 +64,7 @@ tonic-build = { version = "0.1", default-features = false, features = ["transpor
 
 [dev-dependencies]
 criterion = "0.3"
+tempdir = "0.3"
 
 [[bench]]
 name = "phoenix"
@@ -86,3 +87,6 @@ debug = false
 lto = true
 overflow-checks = false
 debug-assertions = false
+
+[profile.dev]
+overflow-checks = false

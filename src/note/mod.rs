@@ -5,6 +5,7 @@ use crate::{
 
 use std::convert::TryFrom;
 use std::fmt::Debug;
+use std::io;
 use std::ops::Mul;
 use std::path::Path;
 
@@ -64,14 +65,25 @@ pub trait NoteGenerator:
 
     /// Create a new transaction input item provided the secret key for the nullifier generation
     /// and value / blinding factor decrypt
-    fn to_transaction_input(self, sk: SecretKey) -> TransactionInput {
+    fn to_transaction_input(
+        self,
+        merkle_opening: crypto::MerkleProof,
+        sk: SecretKey,
+    ) -> TransactionInput {
         let vk = sk.view_key();
 
         let nullifier = self.generate_nullifier(&sk);
         let value = self.value(Some(&vk));
         let blinding_factor = self.blinding_factor(Some(&vk));
 
-        TransactionInput::new(self.into(), nullifier, value, blinding_factor, sk)
+        TransactionInput::new(
+            self.into(),
+            nullifier,
+            value,
+            blinding_factor,
+            sk,
+            merkle_opening,
+        )
     }
 
     /// Create a new transaction output item provided the target value, blinding factor and pk for
@@ -133,7 +145,7 @@ pub trait NoteGenerator:
 }
 
 /// Phoenix note methods. Both transparent and obfuscated notes implements this
-pub trait Note: Debug + Send + Sync {
+pub trait Note: Debug + Send + Sync + io::Read + io::Write {
     /// Create a unique nullifier for the note
     fn generate_nullifier(&self, sk: &SecretKey) -> Nullifier {
         let sk_r = self.sk_r(sk);

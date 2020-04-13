@@ -91,7 +91,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::{utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
+    use crate::{crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
 
     #[test]
     fn tx_input_nullifier_invalid() {
@@ -104,7 +104,8 @@ mod tests {
         let pk = sk.public_key();
         let value = 61;
         let note = TransparentNote::output(&pk, value).0;
-        let mut txi = note.to_transaction_input(sk);
+        let merkle_opening = crypto::MerkleProof::mock(note.hash());
+        let mut txi = note.to_transaction_input(merkle_opening, sk);
         txi.nullifier = note.generate_nullifier(&SecretKey::default());
         tx.push_input(txi).unwrap();
 

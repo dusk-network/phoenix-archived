@@ -1,10 +1,10 @@
 use crate::{
     crypto, rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, Note,
-    NoteGenerator, NoteType, PublicKey, ViewKey,
+    NoteGenerator, NoteType, PublicKey, ViewKey, NONCEBYTES,
 };
 
 use std::convert::{TryFrom, TryInto};
-use std::io::{self, Write};
+use std::io::{self, Read, Write};
 
 use kelvin::{ByteHash, Content, Sink, Source};
 
@@ -53,6 +53,163 @@ impl TransparentNote {
             value,
             blinding_factor,
         }
+    }
+}
+
+impl Read for TransparentNote {
+    fn read(&mut self, mut buf: &mut [u8]) -> io::Result<usize> {
+        let mut n = 0;
+
+        buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| utils::serialize_bls_scalar(&self.value_commitment, c))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+        buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+
+        buf.chunks_mut(NONCEBYTES)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|mut c| Ok(c.write(&self.nonce.0)?))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += NONCEBYTES;
+        buf = &mut buf[NONCEBYTES..];
+
+        buf.chunks_mut(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| utils::serialize_compressed_jubjub(&self.R, c))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
+        buf = &mut buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
+
+        buf.chunks_mut(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| utils::serialize_compressed_jubjub(&self.pk_r, c))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
+        buf = &mut buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
+
+        buf.chunks_mut(8)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|mut c| Ok(c.write(&self.idx.to_le_bytes())?))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += 8;
+        buf = &mut buf[8..];
+
+        buf.chunks_mut(8)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|mut c| Ok(c.write(&self.value.to_le_bytes())?))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += 8;
+        buf = &mut buf[8..];
+
+        buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| utils::serialize_bls_scalar(&self.blinding_factor, c))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+
+        Ok(n)
+    }
+}
+
+impl Write for TransparentNote {
+    fn write(&mut self, mut buf: &[u8]) -> io::Result<usize> {
+        let mut n = 0;
+
+        let value_commitment = buf
+            .chunks(utils::BLS_SCALAR_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(utils::deserialize_bls_scalar)
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+        buf = &buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+
+        let nonce = buf
+            .chunks(NONCEBYTES)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| {
+                let mut n = [0x00u8; NONCEBYTES];
+                (&mut n[..]).write(c)?;
+                Ok(Nonce(n))
+            })
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += NONCEBYTES;
+        buf = &buf[NONCEBYTES..];
+
+        let R = buf
+            .chunks(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(utils::deserialize_compressed_jubjub)
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
+        buf = &buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
+
+        let pk_r = buf
+            .chunks(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(utils::deserialize_compressed_jubjub)
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
+        buf = &buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
+
+        let idx = buf
+            .chunks(8)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| {
+                let mut i = [0x00u8; 8];
+                (&mut i[..]).write(c)?;
+                Ok(u64::from_le_bytes(i))
+            })
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += 8;
+        buf = &buf[8..];
+
+        let value = buf
+            .chunks(8)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| {
+                let mut v = [0x00u8; 8];
+                (&mut v[..]).write(c)?;
+                Ok(u64::from_le_bytes(v))
+            })
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += 8;
+        buf = &buf[8..];
+
+        let blinding_factor = buf
+            .chunks(utils::BLS_SCALAR_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(utils::deserialize_bls_scalar)
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+
+        self.value_commitment = value_commitment;
+        self.nonce = nonce;
+        self.R = R;
+        self.pk_r = pk_r;
+        self.idx = idx;
+        self.value = value;
+        self.blinding_factor = blinding_factor;
+
+        Ok(n)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
     }
 }
 

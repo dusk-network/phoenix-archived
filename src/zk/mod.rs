@@ -1,5 +1,5 @@
 use crate::{
-    crypto, utils, BlsScalar, Db, Error, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
+    crypto, utils, BlsScalar, Error, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
     MAX_OUTPUT_NOTES_PER_TRANSACTION,
 };
 
@@ -9,8 +9,8 @@ use algebra::bytes::{FromBytes, ToBytes};
 use algebra::curves::bls12_381::Bls12_381;
 use algebra::curves::bls12_381::G1Affine;
 use ff_fft::EvaluationDomain;
-use kelvin::Blake2b;
 use merlin::Transcript;
+use num_traits::Zero;
 use plonk::cs::composer::StandardComposer;
 use plonk::cs::{proof::Proof as PlonkProof, Composer as _, PreProcessedCircuit};
 use plonk::srs;
@@ -20,10 +20,13 @@ pub use plonk::cs::constraint_system::Variable;
 
 /// [`ZkMerkleProof`] definition
 pub mod merkle;
+/// [`ZkPublicInputs`] defintion
+pub mod public_inputs;
 /// [`ZkTransaction`] definition
 pub mod transaction;
 
 pub use merkle::ZkMerkleProof;
+pub use public_inputs::ZkPublicInputs;
 pub use transaction::{ZkTransaction, ZkTransactionInput, ZkTransactionOutput};
 
 pub const CAPACITY: usize = 8192 * 8;
@@ -55,6 +58,8 @@ lazy_static::lazy_static! {
     static ref VK: VerifierKey<Bls12_381> = unsafe { mem::zeroed() };
     static ref TRANSCRIPT: Transcript = unsafe { mem::zeroed() };
     static ref PREPROCESSED_CIRCUIT: MaybeUninit<Circuit> =
+        MaybeUninit::uninit();
+    static ref PUBLIC_INPUTS: MaybeUninit<Vec<BlsScalar>> =
         MaybeUninit::uninit();
 }
 
@@ -206,23 +211,19 @@ pub fn init() {
     }
 
     let mut tx = Transaction::default();
-    let (transcript, _, circuit) = gen_circuit(&mut tx);
+    let mut pi = vec![BlsScalar::zero(); 54220];
 
-    unsafe {
-        utils::lazy_static_write(&*TRANSCRIPT, transcript);
-        utils::lazy_static_maybeuninit_write(&*PREPROCESSED_CIRCUIT, circuit);
-    }
-}
-
-/// Generate a new circuit
-pub fn gen_circuit(tx: &mut Transaction) -> (Transcript, Composer, Circuit) {
     let composer = Composer::with_expected_size(CAPACITY);
-    let mut composer = inner_circuit(composer, tx);
+    let mut composer = inner_circuit(composer, &mut tx, pi.iter_mut());
 
     let mut transcript = gen_transcript();
     let circuit = composer.preprocess(&*CK, &mut transcript, &*DOMAIN);
 
-    (transcript, composer, circuit)
+    unsafe {
+        utils::lazy_static_write(&*TRANSCRIPT, transcript);
+        utils::lazy_static_maybeuninit_write(&*PREPROCESSED_CIRCUIT, circuit);
+        utils::lazy_static_maybeuninit_write(&*PUBLIC_INPUTS, pi);
+    }
 }
 
 /// Full transaction circuit
@@ -230,10 +231,16 @@ pub fn circuit() -> &'static Circuit {
     unsafe { &*PREPROCESSED_CIRCUIT.as_ptr() }
 }
 
-fn inner_circuit(mut composer: Composer, tx: &mut Transaction) -> Composer {
-    let db: Db<Blake2b> = Db::default();
-    let tx_zk = ZkTransaction::from_tx(&mut composer, tx, &db);
-    let pi = tx.public_inputs_mut().iter_mut();
+/// Base public inputs vector
+pub fn public_inputs() -> &'static Vec<BlsScalar> {
+    unsafe { &*PUBLIC_INPUTS.as_ptr() }
+}
+
+fn inner_circuit<'a, P>(mut composer: Composer, tx: &Transaction, pi: P) -> Composer
+where
+    P: Iterator<Item = &'a mut BlsScalar>,
+{
+    let tx_zk = ZkTransaction::from_tx(&mut composer, tx);
 
     #[cfg(feature = "circuit-sanity")]
     let (composer, pi) = gadgets::sanity(composer, &tx_zk, pi);
@@ -269,7 +276,9 @@ fn gen_transcript() -> Transcript {
 /// Generate a new transaction zk proof
 pub fn prove(tx: &mut Transaction) -> Proof {
     let composer = Composer::with_expected_size(CAPACITY);
-    let mut composer = inner_circuit(composer, tx);
+    let mut pi = public_inputs().clone();
+
+    let mut composer = inner_circuit(composer, tx, pi.iter_mut());
 
     let mut transcript = TRANSCRIPT.clone();
     let preprocessed_circuit = circuit();
