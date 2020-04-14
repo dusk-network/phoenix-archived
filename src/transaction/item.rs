@@ -263,8 +263,8 @@ impl From<TransactionInput> for rpc::TransactionInput {
         let merkle_root = *item.merkle_opening.root();
         let merkle_root = Some(merkle_root.into());
 
-        let note = Some(item.note.into());
         let nullifier = Some(item.nullifier.into());
+        let note = Some(item.note.into());
 
         rpc::TransactionInput {
             merkle_root,

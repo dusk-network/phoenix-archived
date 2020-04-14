@@ -7,33 +7,18 @@ use std::io::{self, Read, Write};
 
 use algebra::curves::ProjectiveCurve;
 use num_traits::Zero;
+use unprolix::{Constructor, Getters, Setters};
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]
 pub struct ZkPublicInputs {
-    pub fee_value_commitment: BlsScalar,
-    pub merkle_roots: [BlsScalar; MAX_INPUT_NOTES_PER_TRANSACTION],
-    pub nullifiers: [Nullifier; MAX_INPUT_NOTES_PER_TRANSACTION],
-    pub outputs_value_commitments: [BlsScalar; MAX_OUTPUT_NOTES_PER_TRANSACTION],
-    pub outputs_pk_r_affine_x: [BlsScalar; MAX_OUTPUT_NOTES_PER_TRANSACTION],
+    fee_value_commitment: BlsScalar,
+    merkle_roots: [BlsScalar; MAX_INPUT_NOTES_PER_TRANSACTION],
+    nullifiers: [Nullifier; MAX_INPUT_NOTES_PER_TRANSACTION],
+    outputs_value_commitments: [BlsScalar; MAX_OUTPUT_NOTES_PER_TRANSACTION],
+    outputs_pk_r_affine_x: [BlsScalar; MAX_OUTPUT_NOTES_PER_TRANSACTION],
 }
 
 impl ZkPublicInputs {
-    pub fn new(
-        fee_value_commitment: BlsScalar,
-        merkle_roots: [BlsScalar; MAX_INPUT_NOTES_PER_TRANSACTION],
-        nullifiers: [Nullifier; MAX_INPUT_NOTES_PER_TRANSACTION],
-        outputs_value_commitments: [BlsScalar; MAX_OUTPUT_NOTES_PER_TRANSACTION],
-        outputs_pk_r_affine_x: [BlsScalar; MAX_OUTPUT_NOTES_PER_TRANSACTION],
-    ) -> Self {
-        Self {
-            fee_value_commitment,
-            merkle_roots,
-            nullifiers,
-            outputs_value_commitments,
-            outputs_pk_r_affine_x,
-        }
-    }
-
     pub fn generate_pi(&self) -> Vec<BlsScalar> {
         // TODO - Structure should be updated according to the set features
         let mut pi = zk::public_inputs().clone();

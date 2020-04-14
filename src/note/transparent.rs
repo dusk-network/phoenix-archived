@@ -7,9 +7,10 @@ use std::convert::{TryFrom, TryInto};
 use std::io::{self, Read, Write};
 
 use kelvin::{ByteHash, Content, Sink, Source};
+use unprolix::Constructor;
 
 /// A note that does not encrypt its value
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Constructor)]
 pub struct TransparentNote {
     value_commitment: BlsScalar,
     nonce: Nonce,
@@ -30,29 +31,6 @@ impl Eq for TransparentNote {}
 impl Default for TransparentNote {
     fn default() -> Self {
         TransparentNote::output(&PublicKey::default(), 0).0
-    }
-}
-
-impl TransparentNote {
-    /// [`TransparentNote`] constructor
-    pub fn new(
-        value_commitment: BlsScalar,
-        nonce: Nonce,
-        R: JubJubProjective,
-        pk_r: JubJubProjective,
-        idx: u64,
-        value: u64,
-        blinding_factor: BlsScalar,
-    ) -> Self {
-        Self {
-            value_commitment,
-            nonce,
-            R,
-            pk_r,
-            idx,
-            value,
-            blinding_factor,
-        }
     }
 }
 

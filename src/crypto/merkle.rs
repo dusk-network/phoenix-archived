@@ -2,6 +2,7 @@ use crate::{BlsScalar, Error, Note, NoteVariant};
 
 use hades252::strategies::{ScalarStrategy, Strategy};
 use num_traits::Zero;
+use unprolix::{Constructor, Getters, Setters};
 
 pub const ARITY: usize = hades252::WIDTH - 1;
 pub const TREE_HEIGHT: usize = 17;
@@ -81,16 +82,12 @@ fn leaves_to_perm(leaves: [Option<BlsScalar>; ARITY], perm: &mut [BlsScalar; had
     perm[0] = BlsScalar::from(bitflags);
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]
 pub struct MerkleProof {
-    pub levels: [MerkleLevel; TREE_HEIGHT],
+    levels: [MerkleLevel; TREE_HEIGHT],
 }
 
 impl MerkleProof {
-    pub fn new<T: MerkleProofProvider>(levels: [MerkleLevel; TREE_HEIGHT]) -> Self {
-        Self { levels }
-    }
-
     pub fn root(&self) -> &BlsScalar {
         &self.levels[TREE_HEIGHT - 1].data[1]
     }
@@ -129,8 +126,9 @@ impl MerkleProof {
     }
 }
 
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Constructor, Getters, Setters)]
 pub struct MerkleLevel {
-    pub idx: usize,
-    pub data: [BlsScalar; hades252::WIDTH],
+    #[unprolix(copy)]
+    idx: usize,
+    data: [BlsScalar; hades252::WIDTH],
 }

@@ -3,10 +3,11 @@ use crate::{crypto, zk, BlsScalar};
 use std::mem;
 
 use num_traits::{One, Zero};
+use unprolix::{Constructor, Getters, Setters};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Getters, Setters)]
 pub struct ZkMerkleProof {
-    pub levels: [ZkMerkleLevel; crypto::TREE_HEIGHT],
+    levels: [ZkMerkleLevel; crypto::TREE_HEIGHT],
 }
 
 impl ZkMerkleProof {
@@ -17,11 +18,11 @@ impl ZkMerkleProof {
         let zero = [zero; crypto::ARITY];
 
         merkle
-            .levels
+            .levels()
             .iter()
             .zip(levels.iter_mut())
             .for_each(|(m, l)| {
-                m.data
+                m.data()
                     .iter()
                     .zip(l.perm.iter_mut())
                     .for_each(|(scalar, var)| {
@@ -29,20 +30,20 @@ impl ZkMerkleProof {
                     });
 
                 l.bitflags.copy_from_slice(&zero);
-                l.bitflags[m.idx] = one;
+                l.bitflags[m.idx()] = one;
 
-                l.current = composer.add_input(m.data[m.idx + 1]);
+                l.current = composer.add_input(m.data()[m.idx() + 1]);
             });
 
         Self { levels }
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Constructor, Getters, Setters)]
 pub struct ZkMerkleLevel {
-    pub bitflags: [zk::Variable; crypto::ARITY],
-    pub perm: [zk::Variable; hades252::WIDTH],
-    pub current: zk::Variable,
+    bitflags: [zk::Variable; crypto::ARITY],
+    perm: [zk::Variable; hades252::WIDTH],
+    current: zk::Variable,
 }
 
 impl Default for ZkMerkleLevel {

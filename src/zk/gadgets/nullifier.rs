@@ -12,19 +12,19 @@ pub fn nullifier<'a, P>(
 where
     P: Iterator<Item = &'a mut BlsScalar>,
 {
-    let zero = tx.zero;
-    let one = tx.one;
-    let two = tx.two;
+    let zero = *tx.zero();
+    let one = *tx.one();
+    let two = *tx.two();
 
     let mut zero_perm = [zero; hades252::WIDTH];
     let mut perm = [zero; hades252::WIDTH];
 
-    zero_perm[0] = tx.three;
+    zero_perm[0] = *tx.three();
 
-    for item in tx.inputs.iter() {
-        let mut sk_r_prime = tx.zero;
+    for item in tx.inputs().iter() {
+        let mut sk_r_prime = *tx.zero();
 
-        item.sk_r.iter().fold(one, |mut acc, bit| {
+        item.sk_r().iter().fold(one, |mut acc, bit| {
             pi.next().map(|p| *p = BlsScalar::zero());
             composer.bool_gate(*bit);
 
@@ -66,11 +66,11 @@ where
 
         perm.copy_from_slice(&zero_perm);
         perm[1] = sk_r_prime;
-        perm[2] = item.idx;
+        perm[2] = *item.idx();
         let (mut p_composer, mut p_pi, n) =
             GadgetStrategy::poseidon_gadget(composer, pi, &mut perm);
 
-        p_pi.next().map(|p| *p = item.nullifier);
+        p_pi.next().map(|p| *p = *item.nullifier());
         p_composer.add_gate(
             n,
             zero,
@@ -79,7 +79,7 @@ where
             BlsScalar::one(),
             BlsScalar::one(),
             BlsScalar::zero(),
-            item.nullifier,
+            *item.nullifier(),
         );
 
         composer = p_composer;

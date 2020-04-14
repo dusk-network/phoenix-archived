@@ -8,6 +8,7 @@ use std::io::{self, Read, Write};
 use std::{cmp, fmt};
 
 use kelvin::{ByteHash, Content, Sink, Source};
+use unprolix::Constructor;
 
 /// Size of the encrypted value
 pub const ENCRYPTED_VALUE_SIZE: usize = 24;
@@ -15,7 +16,7 @@ pub const ENCRYPTED_VALUE_SIZE: usize = 24;
 pub const ENCRYPTED_BLINDING_FACTOR_SIZE: usize = 48;
 
 /// A note that hides its value and blinding factor
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Constructor)]
 pub struct ObfuscatedNote {
     value_commitment: BlsScalar,
     nonce: Nonce,
@@ -42,29 +43,6 @@ impl Eq for ObfuscatedNote {}
 impl Default for ObfuscatedNote {
     fn default() -> Self {
         ObfuscatedNote::output(&PublicKey::default(), 0).0
-    }
-}
-
-impl ObfuscatedNote {
-    /// [`ObfuscatedNote`] constructor
-    pub fn new(
-        value_commitment: BlsScalar,
-        nonce: Nonce,
-        R: JubJubProjective,
-        pk_r: JubJubProjective,
-        idx: u64,
-        encrypted_value: [u8; ENCRYPTED_VALUE_SIZE],
-        encrypted_blinding_factor: [u8; ENCRYPTED_BLINDING_FACTOR_SIZE],
-    ) -> Self {
-        ObfuscatedNote {
-            value_commitment,
-            nonce,
-            R,
-            pk_r,
-            idx,
-            encrypted_value,
-            encrypted_blinding_factor,
-        }
     }
 }
 

@@ -57,12 +57,12 @@ pub fn encrypt<V: AsRef<[u8]>>(
     nonce: &Nonce,
     value: V,
 ) -> Vec<u8> {
-    secretbox::seal(value.as_ref(), nonce, &dhke(r, &pk.A))
+    secretbox::seal(value.as_ref(), nonce, &dhke(r, pk.A()))
 }
 
 /// Decrypt a message using `r_g` as public of the sender, and `vk` as secret for the receiver
 pub fn decrypt(R: &JubJubProjective, vk: &ViewKey, nonce: &Nonce, value: &[u8]) -> Vec<u8> {
-    secretbox::open(value, nonce, &dhke(&vk.a, R)).unwrap_or({
+    secretbox::open(value, nonce, &dhke(vk.a(), R)).unwrap_or({
         let mut value = value.to_vec();
         value.shuffle(&mut rand::thread_rng());
         value
