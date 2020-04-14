@@ -1,5 +1,5 @@
 syntax = "proto3";
-package phoenix;
+package rusk;
 
 message Scalar { bytes data = 1; }
 message CompressedPoint { bytes y = 1; }

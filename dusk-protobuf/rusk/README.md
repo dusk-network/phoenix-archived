@@ -303,6 +303,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | txs | [Transaction](#phoenix.Transaction) | repeated | List of transactions to be validated |
+
 ### ValidateStateTransitionResponse
 
 | Field | Type | Label | Description |
@@ -322,7 +323,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| inputs | [TransactionInput](#phoenix.TransactionInput) | repeated |  |
+| nullifiers | [Nullifier](#phoenix.Nullifier) | repeated |  |
 | outputs | [TransactionOutput](#phoenix.TransactionOutput) | repeated |  |
 | fee | [TransactionOutput](#phoenix.TransactionOutput) |  |  |
 | proof | [bytes](#bytes) |  |  |
