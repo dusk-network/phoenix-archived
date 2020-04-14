@@ -295,7 +295,7 @@ impl Transaction {
 
     /// Append an input to the transaction
     pub fn push_input(&mut self, item: TransactionInput) -> Result<(), Error> {
-        if self.idx_inputs > MAX_INPUT_NOTES_PER_TRANSACTION {
+        if self.idx_inputs >= MAX_INPUT_NOTES_PER_TRANSACTION {
             return Err(Error::MaximumNotes);
         }
 
@@ -307,7 +307,7 @@ impl Transaction {
 
     /// Append an output to the transaction
     pub fn push_output(&mut self, item: TransactionOutput) -> Result<(), Error> {
-        if self.idx_outputs > MAX_OUTPUT_NOTES_PER_TRANSACTION {
+        if self.idx_outputs >= MAX_OUTPUT_NOTES_PER_TRANSACTION {
             return Err(Error::MaximumNotes);
         }
 
