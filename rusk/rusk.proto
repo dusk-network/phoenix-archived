@@ -1,5 +1,5 @@
 syntax = "proto3";
-package phoenix;
+package rusk;
 
 import "field.proto";
 import "keys.proto";
@@ -11,7 +11,7 @@ message EchoResponse {}
 
 message ValidateStateTransitionRequest {
   // List of transactions to be validated
-  repeated phoenix.Transaction txs = 1;
+  repeated rusk.Transaction txs = 1;
 }
 message ValidateStateTransitionResponse {
   // Status of the state transition
