@@ -1,6 +1,6 @@
 use crate::{rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, Nullifier};
 
-use std::convert::{TryFrom, TryInto};
+use std::convert::TryFrom;
 
 impl From<JubJubScalar> for rpc::Scalar {
     fn from(s: JubJubScalar) -> Self {

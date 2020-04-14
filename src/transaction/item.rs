@@ -260,7 +260,16 @@ impl Ord for TransactionOutput {
 
 impl From<TransactionInput> for rpc::TransactionInput {
     fn from(item: TransactionInput) -> rpc::TransactionInput {
+        let merkle_root = *item.merkle_opening.root();
+        let merkle_root = Some(merkle_root.into());
+
+        let note = Some(item.note.into());
+        let nullifier = Some(item.nullifier.into());
+
         rpc::TransactionInput {
+            merkle_root,
+            note,
+            nullifier,
             pos: item.note().idx(),
             sk: Some(item.sk.into()),
         }

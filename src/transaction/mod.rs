@@ -499,7 +499,7 @@ impl Transaction {
 
     /// Attempt to create a transaction from a rpc request.
     pub fn try_from_rpc_transaction<P: AsRef<Path>>(
-        db_path: P,
+        _db_path: P,
         tx: rpc::Transaction,
     ) -> Result<Self, Error> {
         let mut transaction = Transaction::default();
@@ -508,10 +508,10 @@ impl Transaction {
             transaction.set_fee(TransactionOutput::try_from(f)?);
         }
 
-        tx.nullifiers
-            .iter()
+        tx.inputs
+            .into_iter()
             .map(|i| {
-                let nul = Nullifier::from(i);
+                let nul = Nullifier::from(i.nullifier.ok_or(Error::InvalidParameters)?);
                 let mut item = TransactionInput::default();
                 item.nullifier = nul;
                 transaction.push_input(item)
@@ -539,12 +539,12 @@ impl TryFrom<Transaction> for rpc::Transaction {
     type Error = Error;
 
     fn try_from(tx: Transaction) -> Result<rpc::Transaction, Self::Error> {
-        let nullifiers = tx
+        let inputs = tx
             .inputs
             .iter()
-            .filter_map(|o| {
-                if o.value() > 0 {
-                    Some((*o).into())
+            .filter_map(|i| {
+                if i.value() > 0 {
+                    Some((*i).into())
                 } else {
                     None
                 }
@@ -575,7 +575,7 @@ impl TryFrom<Transaction> for rpc::Transaction {
         let public_inputs = vec![];
 
         Ok(rpc::Transaction {
-            nullifiers,
+            inputs,
             outputs,
             fee,
             proof,
