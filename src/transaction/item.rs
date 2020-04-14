@@ -81,6 +81,24 @@ impl TransactionInput {
         }
     }
 
+    pub fn obfuscated(nullifier: Nullifier, merkle_root: BlsScalar) -> Self {
+        let note = Default::default();
+        let value = Default::default();
+        let blinding_factor = Default::default();
+        let sk = Default::default();
+        let merkle_opening = Default::default();
+
+        Self {
+            note,
+            nullifier,
+            value,
+            blinding_factor,
+            sk,
+            merkle_opening,
+            merkle_root,
+        }
+    }
+
     pub fn nullifier(&self) -> &Nullifier {
         &self.nullifier
     }
@@ -239,13 +257,13 @@ impl TransactionItem for TransactionOutput {
 
 impl PartialOrd for TransactionInput {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.note().hash().partial_cmp(&other.note().hash())
+        self.nullifier.partial_cmp(&other.nullifier)
     }
 }
 
 impl Ord for TransactionInput {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.note().hash().cmp(&other.note().hash())
+        self.nullifier.cmp(&other.nullifier)
     }
 }
 

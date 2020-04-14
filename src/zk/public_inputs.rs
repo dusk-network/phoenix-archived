@@ -161,7 +161,7 @@ impl From<&Transaction> for ZkPublicInputs {
             .iter()
             .zip(merkle_roots.iter_mut().zip(nullifiers.iter_mut()))
             .for_each(|(i, (r, n))| {
-                *r = *i.merkle_opening.root();
+                *r = i.merkle_root;
                 *n = *i.nullifier();
             });
 

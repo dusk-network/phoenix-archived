@@ -19,7 +19,7 @@ pub const MAX_OUTPUT_NOTES_PER_TRANSACTION: usize = 2;
 /// Maximum allowed number of notes per transaction.
 
 /// Serialized bytes size
-pub const TX_SERIALIZED_SIZE: usize = 1876;
+pub const TX_SERIALIZED_SIZE: usize = 1684;
 
 pub use item::{TransactionInput, TransactionItem, TransactionOutput};
 
@@ -40,7 +40,7 @@ pub struct Transaction {
     idx_outputs: usize,
     outputs: [TransactionOutput; MAX_OUTPUT_NOTES_PER_TRANSACTION],
     proof: Option<zk::Proof>,
-    public_inputs: zk::ZkPublicInputs,
+    public_inputs: Option<zk::ZkPublicInputs>,
 }
 
 impl Default for Transaction {
@@ -52,7 +52,7 @@ impl Default for Transaction {
             idx_outputs: 0,
             outputs: [*DEFAULT_OUTPUT; MAX_OUTPUT_NOTES_PER_TRANSACTION],
             proof: None,
-            public_inputs: zk::ZkPublicInputs::default(),
+            public_inputs: None,
         }
     }
 }
@@ -63,6 +63,7 @@ impl Read for Transaction {
 
         let mut n = 0;
 
+        // Serialize proof
         let proof = self
             .proof
             .as_ref()
@@ -73,21 +74,31 @@ impl Read for Transaction {
         n += b;
         buf = &mut buf[b..];
 
-        let b = self.public_inputs.read(buf)?;
-        n += b;
-        buf = &mut buf[b..];
-
+        // Serialize tx inputs (merkle root and nullifier)
         let inputs = self.idx_inputs.to_le_bytes();
         let b = (&inputs[..]).read(buf)?;
         n += b;
         buf = &mut buf[b..];
 
         for i in 0..MAX_INPUT_NOTES_PER_TRANSACTION {
-            let b = self.inputs[i].read(buf)?;
-            n += b;
-            buf = &mut buf[b..];
+            buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
+                .next()
+                .ok_or(Error::InvalidParameters)
+                .and_then(|c| utils::serialize_bls_scalar(&self.inputs[i].merkle_root, c))
+                .map_err::<io::Error, _>(|e| e.into())?;
+            n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+            buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+
+            buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
+                .next()
+                .ok_or(Error::InvalidParameters)
+                .and_then(|c| utils::serialize_bls_scalar(&self.inputs[i].nullifier.0, c))
+                .map_err::<io::Error, _>(|e| e.into())?;
+            n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+            buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
         }
 
+        // Serialize tx outputs
         let outputs = self.idx_outputs.to_le_bytes();
         let b = (&outputs[..]).read(buf)?;
         n += b;
@@ -110,6 +121,7 @@ impl Write for Transaction {
     fn write(&mut self, mut buf: &[u8]) -> io::Result<usize> {
         let mut n = 0;
 
+        // Deserialize proof
         let mut proof = [0x00u8; zk::SERIALIZED_PROOF_SIZE];
         let b = (&mut proof[..]).write(buf)?;
         let proof = zk::bytes_to_proof(&proof[..]).map_err::<io::Error, _>(|e| e.into())?;
@@ -117,10 +129,7 @@ impl Write for Transaction {
         n += b;
         buf = &buf[b..];
 
-        let b = self.public_inputs.write(buf)?;
-        n += b;
-        buf = &buf[b..];
-
+        // Deserialize tx inputs (merkle root and nullifier)
         let mut inputs = 0usize.to_le_bytes();
         let b = (&mut inputs[..]).write(buf)?;
         self.idx_inputs = usize::from_le_bytes(inputs);
@@ -128,11 +137,28 @@ impl Write for Transaction {
         buf = &buf[b..];
 
         for i in 0..MAX_INPUT_NOTES_PER_TRANSACTION {
-            let b = self.inputs[i].write(buf)?;
-            n += b;
-            buf = &buf[b..];
+            let merkle_root = buf
+                .chunks(utils::BLS_SCALAR_SERIALIZED_SIZE)
+                .next()
+                .ok_or(Error::InvalidParameters)
+                .and_then(utils::deserialize_bls_scalar)
+                .map_err::<io::Error, _>(|e| e.into())?;
+            n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+            buf = &buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+
+            let nullifier = buf
+                .chunks(utils::BLS_SCALAR_SERIALIZED_SIZE)
+                .next()
+                .ok_or(Error::InvalidParameters)
+                .and_then(utils::deserialize_bls_scalar)
+                .map_err::<io::Error, _>(|e| e.into())?;
+            n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+            buf = &buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+
+            self.inputs[i] = TransactionInput::obfuscated(nullifier.into(), merkle_root);
         }
 
+        // Deserialize tx outputs
         let mut outputs = 0usize.to_le_bytes();
         let b = (&mut outputs[..]).write(buf)?;
         self.idx_outputs = usize::from_le_bytes(outputs);
@@ -152,12 +178,6 @@ impl Write for Transaction {
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        self.public_inputs.flush()?;
-
-        for i in 0..MAX_INPUT_NOTES_PER_TRANSACTION {
-            self.inputs[i].flush()?;
-        }
-
         for i in 0..MAX_OUTPUT_NOTES_PER_TRANSACTION {
             self.outputs[i].flush()?;
         }
@@ -390,12 +410,10 @@ impl Transaction {
         }
     }
 
-    pub fn public_inputs(&self) -> &zk::ZkPublicInputs {
-        &self.public_inputs
-    }
-
-    pub fn set_public_inputs(&mut self, pi: zk::ZkPublicInputs) {
-        self.public_inputs = pi;
+    fn recalculate_pi(&mut self) {
+        self.sort_items();
+        let public_inputs = zk::ZkPublicInputs::from(&*self);
+        self.public_inputs.replace(public_inputs);
     }
 
     /// Perform the zk proof, and save internally the created r1cs circuit and the commitment
@@ -411,9 +429,7 @@ impl Transaction {
             return Err(Error::MaximumNotes);
         }
 
-        self.sort_items();
-        let public_inputs = zk::ZkPublicInputs::from(&*self);
-        self.public_inputs = public_inputs;
+        self.recalculate_pi();
 
         let proof = zk::prove(self);
         self.proof.replace(proof);
@@ -449,9 +465,15 @@ impl Transaction {
     /// circuit and commitment points.
     ///
     /// The transaction items will be sorted for verification correctness
-    pub fn verify(&self) -> Result<(), Error> {
+    pub fn verify(&mut self) -> Result<(), Error> {
+        if self.public_inputs.is_none() {
+            self.recalculate_pi();
+        }
+
+        let pi = self.public_inputs.ok_or(Error::InvalidParameters)?;
+        let pi = pi.generate_pi();
+
         let proof = self.proof.as_ref().ok_or(Error::Generic)?;
-        let pi = self.public_inputs.generate_pi();
 
         if zk::verify(proof, pi.as_slice()) {
             Ok(())
