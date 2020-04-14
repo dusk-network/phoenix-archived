@@ -597,15 +597,11 @@ impl TryFrom<Transaction> for rpc::Transaction {
             .transpose()?
             .unwrap_or_default();
 
-        // TOD - Serialize and deserialize the pi
-        let public_inputs = vec![];
-
         Ok(rpc::Transaction {
             inputs,
             outputs,
             fee,
             proof,
-            public_inputs,
         })
     }
 }
