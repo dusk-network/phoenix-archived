@@ -62,7 +62,8 @@ fn rpc_transaction() {
 
     rpc_transaction.fee = Some(fee.into());
 
-    let mut transaction = Transaction::try_from_rpc_transaction(&db_path, rpc_transaction).unwrap();
+    let mut transaction =
+        Transaction::try_from_rpc_transaction_db(&db_path, rpc_transaction).unwrap();
 
     // It is not possible to verify an unproven transaction
     assert!(transaction.verify().is_err());

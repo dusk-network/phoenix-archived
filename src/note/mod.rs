@@ -76,6 +76,8 @@ pub trait NoteGenerator:
         let value = self.value(Some(&vk));
         let blinding_factor = self.blinding_factor(Some(&vk));
 
+        let merkle_root = *merkle_opening.root();
+
         TransactionInput::new(
             self.into(),
             nullifier,
@@ -83,6 +85,7 @@ pub trait NoteGenerator:
             blinding_factor,
             sk,
             merkle_opening,
+            merkle_root,
         )
     }
 

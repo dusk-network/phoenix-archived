@@ -40,6 +40,7 @@ pub struct TransactionInput {
     pub nullifier: Nullifier,
     pub sk: SecretKey,
     pub merkle_opening: crypto::MerkleProof,
+    pub merkle_root: BlsScalar,
 }
 
 impl Default for TransactionInput {
@@ -67,6 +68,7 @@ impl TransactionInput {
         blinding_factor: BlsScalar,
         sk: SecretKey,
         merkle_opening: crypto::MerkleProof,
+        merkle_root: BlsScalar,
     ) -> Self {
         Self {
             note,
@@ -75,6 +77,7 @@ impl TransactionInput {
             blinding_factor,
             sk,
             merkle_opening,
+            merkle_root,
         }
     }
 
@@ -285,6 +288,31 @@ impl From<TransactionInput> for rpc::Nullifier {
                 data: scalar_buf.to_vec(),
             }),
         }
+    }
+}
+
+impl TryFrom<rpc::TransactionInput> for TransactionInput {
+    type Error = Error;
+
+    fn try_from(txi: rpc::TransactionInput) -> Result<Self, Self::Error> {
+        let note = txi.note.unwrap_or_default().try_into()?;
+        let nullifier = txi.nullifier.unwrap_or_default().into();
+        let sk = txi.sk.unwrap_or_default().try_into()?;
+        let merkle_root = txi.merkle_root.unwrap_or_default().try_into()?;
+
+        let merkle_opening = Default::default();
+        let value = Default::default();
+        let blinding_factor = Default::default();
+
+        Ok(Self::new(
+            note,
+            nullifier,
+            value,
+            blinding_factor,
+            sk,
+            merkle_opening,
+            merkle_root,
+        ))
     }
 }
 

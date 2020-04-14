@@ -1,6 +1,6 @@
 use crate::{
-    crypto, rpc, utils, zk, BlsScalar, Error, Note, NoteGenerator, Nullifier, ObfuscatedNote,
-    PublicKey, SecretKey, TransparentNote,
+    crypto, rpc, utils, zk, BlsScalar, Error, Note, NoteGenerator, ObfuscatedNote, PublicKey,
+    SecretKey, TransparentNote,
 };
 
 use std::convert::TryFrom;
@@ -498,8 +498,8 @@ impl Transaction {
     }
 
     /// Attempt to create a transaction from a rpc request.
-    pub fn try_from_rpc_transaction<P: AsRef<Path>>(
-        _db_path: P,
+    pub fn try_from_rpc_transaction_db<P: AsRef<Path> + Clone>(
+        db_path: P,
         tx: rpc::Transaction,
     ) -> Result<Self, Error> {
         let mut transaction = Transaction::default();
@@ -511,18 +511,44 @@ impl Transaction {
         tx.inputs
             .into_iter()
             .map(|i| {
-                let nul = Nullifier::from(i.nullifier.ok_or(Error::InvalidParameters)?);
-                let mut item = TransactionInput::default();
-                item.nullifier = nul;
-                transaction.push_input(item)
+                TransactionInput::try_from_rpc_transaction_input(db_path.clone(), i)
+                    .and_then(|i| transaction.push_input(i))
             })
             .collect::<Result<_, _>>()?;
 
         tx.outputs
-            .iter()
-            .map(|o| {
-                TransactionOutput::try_from(o.clone()).and_then(|o| transaction.push_output(o))
-            })
+            .into_iter()
+            .map(|o| TransactionOutput::try_from(o).and_then(|o| transaction.push_output(o)))
+            .collect::<Result<_, _>>()?;
+
+        let proof = tx.proof;
+        if !proof.is_empty() {
+            let proof = zk::bytes_to_proof(proof.as_slice())?;
+            transaction.set_proof(proof);
+        }
+
+        Ok(transaction)
+    }
+}
+
+impl TryFrom<rpc::Transaction> for Transaction {
+    type Error = Error;
+
+    fn try_from(tx: rpc::Transaction) -> Result<Transaction, Self::Error> {
+        let mut transaction = Transaction::default();
+
+        if let Some(f) = tx.fee {
+            transaction.set_fee(TransactionOutput::try_from(f)?);
+        }
+
+        tx.inputs
+            .into_iter()
+            .map(|i| TransactionInput::try_from(i).and_then(|i| transaction.push_input(i)))
+            .collect::<Result<_, _>>()?;
+
+        tx.outputs
+            .into_iter()
+            .map(|o| TransactionOutput::try_from(o).and_then(|o| transaction.push_output(o)))
             .collect::<Result<_, _>>()?;
 
         let proof = tx.proof;
