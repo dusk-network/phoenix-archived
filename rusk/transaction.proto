@@ -25,5 +25,4 @@ message Transaction {
   repeated TransactionOutput outputs = 2;
   TransactionOutput fee = 3;
   bytes proof = 4;
-  repeated Scalar public_inputs = 5;
 }
