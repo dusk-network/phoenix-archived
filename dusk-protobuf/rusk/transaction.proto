@@ -1,13 +1,16 @@
 syntax = "proto3";
-package phoenix;
+package rusk;
 
 import "field.proto";
 import "keys.proto";
 import "note.proto";
 
 message TransactionInput {
-  fixed64 pos = 1;
-  SecretKey sk = 2;
+  Note note = 1;
+  fixed64 pos = 2;
+  SecretKey sk = 3;
+  Nullifier nullifier = 4;
+  Scalar merkle_root = 5;
 }
 
 message TransactionOutput {
