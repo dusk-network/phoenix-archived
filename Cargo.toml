@@ -36,6 +36,7 @@ bytehash = "0.2"
 lazy_static = "1.4"
 num-traits = "0.2"
 unprolix = "0.1"
+hades252 = { git = "https://github.com/dusk-network/Hades252.git" }
 
 [dependencies.algebra]
 git = "https://github.com/scipr-lab/zexe/"
@@ -47,10 +48,6 @@ branch = "master"
 
 [dependencies.ff-fft]
 git = "https://github.com/scipr-lab/zexe/"
-
-[dependencies.hades252]
-git = "https://github.com/dusk-network/Hades252.git"
-branch = "plonk_zexe"
 
 [dependencies.plonk]
 git = "https://github.com/dusk-network/plonk.git"
