@@ -315,7 +315,7 @@ impl TryFrom<rpc::TransactionInput> for TransactionInput {
 
     fn try_from(txi: rpc::TransactionInput) -> Result<Self, Self::Error> {
         let note = txi.note.unwrap_or_default().try_into()?;
-        let nullifier = txi.nullifier.unwrap_or_default().into();
+        let nullifier = txi.nullifier.unwrap_or_default().try_into()?;
         let sk = txi.sk.unwrap_or_default().try_into()?;
         let merkle_root = txi.merkle_root.unwrap_or_default().try_into()?;
 

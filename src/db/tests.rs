@@ -1,5 +1,6 @@
 use crate::{
-    utils, Note, NoteGenerator, NoteVariant, NotesDb, ObfuscatedNote, SecretKey, TransparentNote,
+    db, utils, zk, Note, NoteGenerator, NoteVariant, NotesDb, ObfuscatedNote, SecretKey,
+    Transaction, TransparentNote,
 };
 
 use std::fs;
@@ -85,4 +86,133 @@ fn obfuscated_note_serialization() {
 
     // Clean up the db
     fs::remove_dir_all(&db).expect("could not remove temp db");
+}
+
+#[test]
+fn double_spending() {
+    utils::init();
+    zk::init();
+
+    let db_path = TempDir::new("double_spending").unwrap();
+
+    let mut tx = Transaction::default();
+
+    let sk_base = SecretKey::default();
+    let pk = sk_base.public_key();
+    let value = 100;
+    let note = TransparentNote::output(&pk, value).0;
+    let variant: NoteVariant = note.into();
+    let nullifier = variant.generate_nullifier(&sk_base);
+    assert!(db::fetch_nullifier(&db_path, &nullifier).unwrap().is_none());
+    let base_note_idx = db::store_unspent_note(&db_path, variant).unwrap();
+    assert!(db::fetch_nullifier(&db_path, &nullifier).unwrap().is_none());
+    let merkle_opening = db::merkle_opening(&db_path, &variant).unwrap();
+    tx.push_input(note.to_transaction_input(merkle_opening, sk_base))
+        .unwrap();
+
+    let sk_receiver = SecretKey::default();
+    let pk = sk_receiver.public_key();
+    let value = 95;
+    let (note, blinding_factor) = TransparentNote::output(&pk, value);
+    tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
+        .unwrap();
+
+    let sk = SecretKey::default();
+    let pk = sk.public_key();
+    let value = 2;
+    let (note, blinding_factor) = TransparentNote::output(&pk, value);
+    tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
+        .unwrap();
+
+    let sk = SecretKey::default();
+    let pk = sk.public_key();
+    let value = 3;
+    let (note, blinding_factor) = TransparentNote::output(&pk, value);
+    tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
+
+    tx.prove().unwrap();
+    tx.verify().unwrap();
+    let inserted = db::store_bulk_transactions(&db_path, &[tx]).unwrap();
+
+    let mut tx_ok = Transaction::default();
+
+    let vk = sk_receiver.view_key();
+    let note: Vec<NoteVariant> = inserted
+        .into_iter()
+        .map(|idx| db::fetch_note(&db_path, idx).unwrap())
+        .filter(|note| note.is_owned_by(&vk))
+        .collect();
+    assert_eq!(1, note.len());
+    let note = note[0];
+    assert_eq!(95, note.value(Some(&vk)));
+    let variant: NoteVariant = note.into();
+    let merkle_opening = db::merkle_opening(&db_path, &variant).unwrap();
+    tx_ok
+        .push_input(note.to_transaction_input(merkle_opening, sk_receiver))
+        .unwrap();
+
+    let sk = SecretKey::default();
+    let pk = sk.public_key();
+    let value = 85;
+    let (note, blinding_factor) = TransparentNote::output(&pk, value);
+    tx_ok
+        .push_output(note.to_transaction_output(value, blinding_factor, pk))
+        .unwrap();
+
+    let sk = SecretKey::default();
+    let pk = sk.public_key();
+    let value = 7;
+    let (note, blinding_factor) = TransparentNote::output(&pk, value);
+    tx_ok
+        .push_output(note.to_transaction_output(value, blinding_factor, pk))
+        .unwrap();
+
+    let sk = SecretKey::default();
+    let pk = sk.public_key();
+    let value = 3;
+    let (note, blinding_factor) = TransparentNote::output(&pk, value);
+    tx_ok.set_fee(note.to_transaction_output(value, blinding_factor, pk));
+
+    tx_ok.prove().unwrap();
+    tx_ok.verify().unwrap();
+
+    let mut tx_double_spending = Transaction::default();
+
+    let vk = sk_base.view_key();
+    let note = db::fetch_note(&db_path, base_note_idx).unwrap();
+    assert_eq!(100, note.value(Some(&vk)));
+    let merkle_opening = db::merkle_opening(&db_path, &note).unwrap();
+    tx_double_spending
+        .push_input(note.to_transaction_input(merkle_opening, sk_receiver))
+        .unwrap();
+
+    let sk = SecretKey::default();
+    let pk = sk.public_key();
+    let value = 95;
+    let (note, blinding_factor) = TransparentNote::output(&pk, value);
+    tx_double_spending
+        .push_output(note.to_transaction_output(value, blinding_factor, pk))
+        .unwrap();
+
+    let sk = SecretKey::default();
+    let pk = sk.public_key();
+    let value = 2;
+    let (note, blinding_factor) = TransparentNote::output(&pk, value);
+    tx_double_spending
+        .push_output(note.to_transaction_output(value, blinding_factor, pk))
+        .unwrap();
+
+    let sk = SecretKey::default();
+    let pk = sk.public_key();
+    let value = 3;
+    let (note, blinding_factor) = TransparentNote::output(&pk, value);
+    tx_double_spending.set_fee(note.to_transaction_output(value, blinding_factor, pk));
+
+    tx_double_spending.prove().unwrap();
+    tx_double_spending.verify().unwrap();
+
+    assert!(db::store_bulk_transactions(&db_path, &[tx_ok, tx_double_spending]).is_err());
+
+    // Clean up the db
+    fs::remove_dir_all(&db_path).expect("could not remove temp db");
 }

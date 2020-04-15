@@ -41,6 +41,8 @@ pub enum Error {
     MaximumNotes,
     /// The queried information was not found
     NotFound,
+    /// Attempt to double spend
+    DoubleSpending,
 }
 
 impl Error {

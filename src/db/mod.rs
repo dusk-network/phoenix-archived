@@ -154,12 +154,7 @@ pub fn fetch_nullifier<P: AsRef<Path>>(
     let root = Root::<_, Blake2b>::new(path.as_ref())?;
     let state: Db<_> = root.restore()?;
 
-    state
-        .nullifiers
-        .clone()
-        .get(nullifier)
-        .map(|_| Some(()))
-        .map_err(|e| e.into())
+    state.fetch_nullifier(nullifier)
 }
 
 /// Return the merkle root of the current state
@@ -179,6 +174,19 @@ impl<H: ByteHash> Db<H> {
         &mut self,
         transaction: &Transaction,
     ) -> Result<[Option<u64>; MAX_NOTES_PER_TRANSACTION], Error> {
+        transaction
+            .inputs()
+            .iter()
+            .try_fold::<_, _, Result<_, Error>>(None, |_, i| {
+                let n = *i.nullifier();
+
+                self.fetch_nullifier(&n)?
+                    .map(|_| Err(Error::DoubleSpending))
+                    .unwrap_or(Ok(()))?;
+
+                self.nullifiers.insert(n, ()).map_err(|e| e.into())
+            })?;
+
         let mut idx = [None; MAX_NOTES_PER_TRANSACTION];
 
         let mut idx_iter = idx.iter_mut();
@@ -221,7 +229,7 @@ impl<H: ByteHash> Db<H> {
     }
 
     /// Verify the existence of a provided nullifier on the set
-    pub fn fetch_nullifier(self, nullifier: &Nullifier) -> Result<Option<()>, Error> {
+    pub fn fetch_nullifier(&self, nullifier: &Nullifier) -> Result<Option<()>, Error> {
         self.nullifiers
             .get(nullifier)
             .map(|_| Some(()))

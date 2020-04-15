@@ -1,5 +1,6 @@
 use crate::{rpc, utils, BlsScalar, Error};
 
+use std::convert::{TryFrom, TryInto};
 use std::io::{self, Read, Write};
 
 use unprolix::{Getters, Setters};
@@ -46,19 +47,27 @@ impl Nullifier {
     }
 }
 
-impl From<rpc::Nullifier> for Nullifier {
-    fn from(n: rpc::Nullifier) -> Self {
-        let s = utils::deserialize_bls_scalar(n.h.unwrap().data.as_slice()).unwrap();
+impl TryFrom<rpc::Nullifier> for Nullifier {
+    type Error = Error;
 
-        Nullifier::new(s)
+    fn try_from(n: rpc::Nullifier) -> Result<Self, Error> {
+        let s = n.h.ok_or(Error::InvalidParameters)?.try_into()?;
+
+        Ok(Nullifier::new(s))
     }
 }
 
-impl From<&rpc::Nullifier> for Nullifier {
-    fn from(n: &rpc::Nullifier) -> Self {
-        let s = utils::deserialize_bls_scalar(n.h.as_ref().unwrap().data.as_slice()).unwrap();
+impl TryFrom<&rpc::Nullifier> for Nullifier {
+    type Error = Error;
 
-        Nullifier::new(s)
+    fn try_from(n: &rpc::Nullifier) -> Result<Self, Error> {
+        let s =
+            n.h.as_ref()
+                .cloned()
+                .ok_or(Error::InvalidParameters)?
+                .try_into()?;
+
+        Ok(Nullifier::new(s))
     }
 }
 
