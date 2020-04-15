@@ -1,5 +1,6 @@
 #![allow(non_snake_case)]
 #![feature(maybe_uninit_extra)]
+#![feature(try_trait)]
 
 pub use algebra::curves::jubjub::{JubJubAffine, JubJubProjective};
 pub use algebra::fields::bls12_381::fr::Fr as BlsScalar;

@@ -1,6 +1,7 @@
 use std::error;
 use std::fmt;
 use std::io;
+use std::option::NoneError;
 
 use algebra::serialize::SerializationError as JubJubSerializationError;
 
@@ -73,6 +74,12 @@ impl error::Error for Error {
             Error::JubJubSerialization(e) => Some(e),
             _ => None,
         }
+    }
+}
+
+impl From<NoneError> for Error {
+    fn from(_: NoneError) -> Error {
+        Error::Generic
     }
 }
 

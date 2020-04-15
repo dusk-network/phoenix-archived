@@ -83,3 +83,27 @@ impl TryFrom<rpc::Nonce> for Nonce {
         Nonce::from_slice(nonce.bs.as_slice()).ok_or(Error::InvalidParameters)
     }
 }
+
+impl From<&rpc::Scalar> for [u8; 32] {
+    fn from(s: &rpc::Scalar) -> Self {
+        let mut buf = [0u8; 32];
+        buf.copy_from_slice(&s.data);
+        buf
+    }
+}
+
+impl From<&rpc::CompressedPoint> for [u8; 32] {
+    fn from(s: &rpc::CompressedPoint) -> Self {
+        let mut buf = [0u8; 32];
+        buf.copy_from_slice(&s.y);
+        buf
+    }
+}
+
+impl From<&rpc::Nonce> for [u8; 24] {
+    fn from(s: &rpc::Nonce) -> Self {
+        let mut buf = [0u8; 32];
+        buf.copy_from_slice(&s.bs);
+        buf
+    }
+}
