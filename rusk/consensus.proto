@@ -1,0 +1,35 @@
+syntax = "proto3";
+package rusk;
+
+// Call from consensus
+message WithdrawRequest {
+  bytes bls_key = 1;
+  bytes sig = 2;
+  bytes msg = 3;
+}
+
+// Call from consensus
+message StakeRequest {
+  bytes bls_key = 1;
+  fixed64 value = 2;
+  fixed64 locktime = 3;
+}
+
+// Call from block generator
+message BidRequest {
+  bytes m = 1;
+  fixed64 value = 2;
+  fixed64 locktime = 3;
+}
+
+// Call from consensus
+message SlashRequest {
+  bytes bls_key = 1;
+  uint32 step = 2;
+  fixed64 height = 3;
+  bytes first_msg = 4;
+  bytes first_sig = 5;
+  bytes second_msg = 6;
+  bytes second_sig = 7;
+}
+  
