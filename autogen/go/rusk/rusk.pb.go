@@ -205,170 +205,7 @@ func (m *GenerateSecretKeyRequest) GetB() []byte {
 	return nil
 }
 
-type NullifierRequest struct {
-	Note                 *Note      `protobuf:"bytes,1,opt,name=note,proto3" json:"note,omitempty"`
-	Sk                   *SecretKey `protobuf:"bytes,2,opt,name=sk,proto3" json:"sk,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
-	XXX_unrecognized     []byte     `json:"-"`
-	XXX_sizecache        int32      `json:"-"`
-}
-
-func (m *NullifierRequest) Reset()         { *m = NullifierRequest{} }
-func (m *NullifierRequest) String() string { return proto.CompactTextString(m) }
-func (*NullifierRequest) ProtoMessage()    {}
-func (*NullifierRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{5}
-}
-
-func (m *NullifierRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_NullifierRequest.Unmarshal(m, b)
-}
-func (m *NullifierRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_NullifierRequest.Marshal(b, m, deterministic)
-}
-func (m *NullifierRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NullifierRequest.Merge(m, src)
-}
-func (m *NullifierRequest) XXX_Size() int {
-	return xxx_messageInfo_NullifierRequest.Size(m)
-}
-func (m *NullifierRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_NullifierRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_NullifierRequest proto.InternalMessageInfo
-
-func (m *NullifierRequest) GetNote() *Note {
-	if m != nil {
-		return m.Note
-	}
-	return nil
-}
-
-func (m *NullifierRequest) GetSk() *SecretKey {
-	if m != nil {
-		return m.Sk
-	}
-	return nil
-}
-
-type NullifierResponse struct {
-	Nullifier            *Nullifier `protobuf:"bytes,1,opt,name=nullifier,proto3" json:"nullifier,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
-	XXX_unrecognized     []byte     `json:"-"`
-	XXX_sizecache        int32      `json:"-"`
-}
-
-func (m *NullifierResponse) Reset()         { *m = NullifierResponse{} }
-func (m *NullifierResponse) String() string { return proto.CompactTextString(m) }
-func (*NullifierResponse) ProtoMessage()    {}
-func (*NullifierResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{6}
-}
-
-func (m *NullifierResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_NullifierResponse.Unmarshal(m, b)
-}
-func (m *NullifierResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_NullifierResponse.Marshal(b, m, deterministic)
-}
-func (m *NullifierResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NullifierResponse.Merge(m, src)
-}
-func (m *NullifierResponse) XXX_Size() int {
-	return xxx_messageInfo_NullifierResponse.Size(m)
-}
-func (m *NullifierResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_NullifierResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_NullifierResponse proto.InternalMessageInfo
-
-func (m *NullifierResponse) GetNullifier() *Nullifier {
-	if m != nil {
-		return m.Nullifier
-	}
-	return nil
-}
-
-type NullifierStatusRequest struct {
-	Nullifier            *Nullifier `protobuf:"bytes,1,opt,name=nullifier,proto3" json:"nullifier,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
-	XXX_unrecognized     []byte     `json:"-"`
-	XXX_sizecache        int32      `json:"-"`
-}
-
-func (m *NullifierStatusRequest) Reset()         { *m = NullifierStatusRequest{} }
-func (m *NullifierStatusRequest) String() string { return proto.CompactTextString(m) }
-func (*NullifierStatusRequest) ProtoMessage()    {}
-func (*NullifierStatusRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{7}
-}
-
-func (m *NullifierStatusRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_NullifierStatusRequest.Unmarshal(m, b)
-}
-func (m *NullifierStatusRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_NullifierStatusRequest.Marshal(b, m, deterministic)
-}
-func (m *NullifierStatusRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NullifierStatusRequest.Merge(m, src)
-}
-func (m *NullifierStatusRequest) XXX_Size() int {
-	return xxx_messageInfo_NullifierStatusRequest.Size(m)
-}
-func (m *NullifierStatusRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_NullifierStatusRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_NullifierStatusRequest proto.InternalMessageInfo
-
-func (m *NullifierStatusRequest) GetNullifier() *Nullifier {
-	if m != nil {
-		return m.Nullifier
-	}
-	return nil
-}
-
-type NullifierStatusResponse struct {
-	Unspent              bool     `protobuf:"varint,1,opt,name=unspent,proto3" json:"unspent,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *NullifierStatusResponse) Reset()         { *m = NullifierStatusResponse{} }
-func (m *NullifierStatusResponse) String() string { return proto.CompactTextString(m) }
-func (*NullifierStatusResponse) ProtoMessage()    {}
-func (*NullifierStatusResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{8}
-}
-
-func (m *NullifierStatusResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_NullifierStatusResponse.Unmarshal(m, b)
-}
-func (m *NullifierStatusResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_NullifierStatusResponse.Marshal(b, m, deterministic)
-}
-func (m *NullifierStatusResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NullifierStatusResponse.Merge(m, src)
-}
-func (m *NullifierStatusResponse) XXX_Size() int {
-	return xxx_messageInfo_NullifierStatusResponse.Size(m)
-}
-func (m *NullifierStatusResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_NullifierStatusResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_NullifierStatusResponse proto.InternalMessageInfo
-
-func (m *NullifierStatusResponse) GetUnspent() bool {
-	if m != nil {
-		return m.Unspent
-	}
-	return false
-}
-
+// TODO: ask what the below four structures are for
 type FetchNoteRequest struct {
 	Pos                  uint64   `protobuf:"fixed64,1,opt,name=pos,proto3" json:"pos,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -380,7 +217,7 @@ func (m *FetchNoteRequest) Reset()         { *m = FetchNoteRequest{} }
 func (m *FetchNoteRequest) String() string { return proto.CompactTextString(m) }
 func (*FetchNoteRequest) ProtoMessage()    {}
 func (*FetchNoteRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{9}
+	return fileDescriptor_211ec4e18343b18f, []int{5}
 }
 
 func (m *FetchNoteRequest) XXX_Unmarshal(b []byte) error {
@@ -420,7 +257,7 @@ func (m *DecryptNoteRequest) Reset()         { *m = DecryptNoteRequest{} }
 func (m *DecryptNoteRequest) String() string { return proto.CompactTextString(m) }
 func (*DecryptNoteRequest) ProtoMessage()    {}
 func (*DecryptNoteRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{10}
+	return fileDescriptor_211ec4e18343b18f, []int{6}
 }
 
 func (m *DecryptNoteRequest) XXX_Unmarshal(b []byte) error {
@@ -467,7 +304,7 @@ func (m *OwnedNotesRequest) Reset()         { *m = OwnedNotesRequest{} }
 func (m *OwnedNotesRequest) String() string { return proto.CompactTextString(m) }
 func (*OwnedNotesRequest) ProtoMessage()    {}
 func (*OwnedNotesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{11}
+	return fileDescriptor_211ec4e18343b18f, []int{7}
 }
 
 func (m *OwnedNotesRequest) XXX_Unmarshal(b []byte) error {
@@ -513,7 +350,7 @@ func (m *OwnedNotesResponse) Reset()         { *m = OwnedNotesResponse{} }
 func (m *OwnedNotesResponse) String() string { return proto.CompactTextString(m) }
 func (*OwnedNotesResponse) ProtoMessage()    {}
 func (*OwnedNotesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{12}
+	return fileDescriptor_211ec4e18343b18f, []int{8}
 }
 
 func (m *OwnedNotesResponse) XXX_Unmarshal(b []byte) error {
@@ -541,108 +378,7 @@ func (m *OwnedNotesResponse) GetNotes() []*DecryptedNote {
 	return nil
 }
 
-type NewTransactionInputRequest struct {
-	Pos                  uint64     `protobuf:"fixed64,1,opt,name=pos,proto3" json:"pos,omitempty"`
-	Sk                   *SecretKey `protobuf:"bytes,2,opt,name=sk,proto3" json:"sk,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
-	XXX_unrecognized     []byte     `json:"-"`
-	XXX_sizecache        int32      `json:"-"`
-}
-
-func (m *NewTransactionInputRequest) Reset()         { *m = NewTransactionInputRequest{} }
-func (m *NewTransactionInputRequest) String() string { return proto.CompactTextString(m) }
-func (*NewTransactionInputRequest) ProtoMessage()    {}
-func (*NewTransactionInputRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{13}
-}
-
-func (m *NewTransactionInputRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_NewTransactionInputRequest.Unmarshal(m, b)
-}
-func (m *NewTransactionInputRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_NewTransactionInputRequest.Marshal(b, m, deterministic)
-}
-func (m *NewTransactionInputRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NewTransactionInputRequest.Merge(m, src)
-}
-func (m *NewTransactionInputRequest) XXX_Size() int {
-	return xxx_messageInfo_NewTransactionInputRequest.Size(m)
-}
-func (m *NewTransactionInputRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_NewTransactionInputRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_NewTransactionInputRequest proto.InternalMessageInfo
-
-func (m *NewTransactionInputRequest) GetPos() uint64 {
-	if m != nil {
-		return m.Pos
-	}
-	return 0
-}
-
-func (m *NewTransactionInputRequest) GetSk() *SecretKey {
-	if m != nil {
-		return m.Sk
-	}
-	return nil
-}
-
-type NewTransactionOutputRequest struct {
-	NoteType             NoteType   `protobuf:"varint,1,opt,name=note_type,json=noteType,proto3,enum=rusk.NoteType" json:"note_type,omitempty"`
-	Pk                   *PublicKey `protobuf:"bytes,2,opt,name=pk,proto3" json:"pk,omitempty"`
-	Value                uint64     `protobuf:"fixed64,3,opt,name=value,proto3" json:"value,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
-	XXX_unrecognized     []byte     `json:"-"`
-	XXX_sizecache        int32      `json:"-"`
-}
-
-func (m *NewTransactionOutputRequest) Reset()         { *m = NewTransactionOutputRequest{} }
-func (m *NewTransactionOutputRequest) String() string { return proto.CompactTextString(m) }
-func (*NewTransactionOutputRequest) ProtoMessage()    {}
-func (*NewTransactionOutputRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{14}
-}
-
-func (m *NewTransactionOutputRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_NewTransactionOutputRequest.Unmarshal(m, b)
-}
-func (m *NewTransactionOutputRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_NewTransactionOutputRequest.Marshal(b, m, deterministic)
-}
-func (m *NewTransactionOutputRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NewTransactionOutputRequest.Merge(m, src)
-}
-func (m *NewTransactionOutputRequest) XXX_Size() int {
-	return xxx_messageInfo_NewTransactionOutputRequest.Size(m)
-}
-func (m *NewTransactionOutputRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_NewTransactionOutputRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_NewTransactionOutputRequest proto.InternalMessageInfo
-
-func (m *NewTransactionOutputRequest) GetNoteType() NoteType {
-	if m != nil {
-		return m.NoteType
-	}
-	return NoteType_TRANSPARENT
-}
-
-func (m *NewTransactionOutputRequest) GetPk() *PublicKey {
-	if m != nil {
-		return m.Pk
-	}
-	return nil
-}
-
-func (m *NewTransactionOutputRequest) GetValue() uint64 {
-	if m != nil {
-		return m.Value
-	}
-	return 0
-}
-
+// Call from CLI directly
 type NewTransactionRequest struct {
 	Sk                   *SecretKey       `protobuf:"bytes,1,opt,name=sk,proto3" json:"sk,omitempty"`
 	Inputs               []*DecryptedNote `protobuf:"bytes,2,rep,name=inputs,proto3" json:"inputs,omitempty"`
@@ -658,7 +394,7 @@ func (m *NewTransactionRequest) Reset()         { *m = NewTransactionRequest{} }
 func (m *NewTransactionRequest) String() string { return proto.CompactTextString(m) }
 func (*NewTransactionRequest) ProtoMessage()    {}
 func (*NewTransactionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{15}
+	return fileDescriptor_211ec4e18343b18f, []int{9}
 }
 
 func (m *NewTransactionRequest) XXX_Unmarshal(b []byte) error {
@@ -724,7 +460,7 @@ func (m *VerifyTransactionResponse) Reset()         { *m = VerifyTransactionResp
 func (m *VerifyTransactionResponse) String() string { return proto.CompactTextString(m) }
 func (*VerifyTransactionResponse) ProtoMessage()    {}
 func (*VerifyTransactionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{16}
+	return fileDescriptor_211ec4e18343b18f, []int{10}
 }
 
 func (m *VerifyTransactionResponse) XXX_Unmarshal(b []byte) error {
@@ -757,7 +493,7 @@ func (m *VerifyTransactionRootRequest) Reset()         { *m = VerifyTransactionR
 func (m *VerifyTransactionRootRequest) String() string { return proto.CompactTextString(m) }
 func (*VerifyTransactionRootRequest) ProtoMessage()    {}
 func (*VerifyTransactionRootRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{17}
+	return fileDescriptor_211ec4e18343b18f, []int{11}
 }
 
 func (m *VerifyTransactionRootRequest) XXX_Unmarshal(b []byte) error {
@@ -802,7 +538,7 @@ func (m *VerifyTransactionRootResponse) Reset()         { *m = VerifyTransaction
 func (m *VerifyTransactionRootResponse) String() string { return proto.CompactTextString(m) }
 func (*VerifyTransactionRootResponse) ProtoMessage()    {}
 func (*VerifyTransactionRootResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{18}
+	return fileDescriptor_211ec4e18343b18f, []int{12}
 }
 
 func (m *VerifyTransactionRootResponse) XXX_Unmarshal(b []byte) error {
@@ -823,139 +559,6 @@ func (m *VerifyTransactionRootResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_VerifyTransactionRootResponse proto.InternalMessageInfo
 
-type StoreTransactionsRequest struct {
-	Transactions         []*Transaction `protobuf:"bytes,1,rep,name=transactions,proto3" json:"transactions,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
-	XXX_unrecognized     []byte         `json:"-"`
-	XXX_sizecache        int32          `json:"-"`
-}
-
-func (m *StoreTransactionsRequest) Reset()         { *m = StoreTransactionsRequest{} }
-func (m *StoreTransactionsRequest) String() string { return proto.CompactTextString(m) }
-func (*StoreTransactionsRequest) ProtoMessage()    {}
-func (*StoreTransactionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{19}
-}
-
-func (m *StoreTransactionsRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_StoreTransactionsRequest.Unmarshal(m, b)
-}
-func (m *StoreTransactionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_StoreTransactionsRequest.Marshal(b, m, deterministic)
-}
-func (m *StoreTransactionsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_StoreTransactionsRequest.Merge(m, src)
-}
-func (m *StoreTransactionsRequest) XXX_Size() int {
-	return xxx_messageInfo_StoreTransactionsRequest.Size(m)
-}
-func (m *StoreTransactionsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_StoreTransactionsRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_StoreTransactionsRequest proto.InternalMessageInfo
-
-func (m *StoreTransactionsRequest) GetTransactions() []*Transaction {
-	if m != nil {
-		return m.Transactions
-	}
-	return nil
-}
-
-type StoreTransactionsResponse struct {
-	Notes                []*Note  `protobuf:"bytes,1,rep,name=notes,proto3" json:"notes,omitempty"`
-	Root                 *Scalar  `protobuf:"bytes,2,opt,name=root,proto3" json:"root,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *StoreTransactionsResponse) Reset()         { *m = StoreTransactionsResponse{} }
-func (m *StoreTransactionsResponse) String() string { return proto.CompactTextString(m) }
-func (*StoreTransactionsResponse) ProtoMessage()    {}
-func (*StoreTransactionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{20}
-}
-
-func (m *StoreTransactionsResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_StoreTransactionsResponse.Unmarshal(m, b)
-}
-func (m *StoreTransactionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_StoreTransactionsResponse.Marshal(b, m, deterministic)
-}
-func (m *StoreTransactionsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_StoreTransactionsResponse.Merge(m, src)
-}
-func (m *StoreTransactionsResponse) XXX_Size() int {
-	return xxx_messageInfo_StoreTransactionsResponse.Size(m)
-}
-func (m *StoreTransactionsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_StoreTransactionsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_StoreTransactionsResponse proto.InternalMessageInfo
-
-func (m *StoreTransactionsResponse) GetNotes() []*Note {
-	if m != nil {
-		return m.Notes
-	}
-	return nil
-}
-
-func (m *StoreTransactionsResponse) GetRoot() *Scalar {
-	if m != nil {
-		return m.Root
-	}
-	return nil
-}
-
-type SetFeePkRequest struct {
-	Transaction          *Transaction `protobuf:"bytes,1,opt,name=transaction,proto3" json:"transaction,omitempty"`
-	Pk                   *PublicKey   `protobuf:"bytes,2,opt,name=pk,proto3" json:"pk,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
-	XXX_unrecognized     []byte       `json:"-"`
-	XXX_sizecache        int32        `json:"-"`
-}
-
-func (m *SetFeePkRequest) Reset()         { *m = SetFeePkRequest{} }
-func (m *SetFeePkRequest) String() string { return proto.CompactTextString(m) }
-func (*SetFeePkRequest) ProtoMessage()    {}
-func (*SetFeePkRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{21}
-}
-
-func (m *SetFeePkRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SetFeePkRequest.Unmarshal(m, b)
-}
-func (m *SetFeePkRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SetFeePkRequest.Marshal(b, m, deterministic)
-}
-func (m *SetFeePkRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SetFeePkRequest.Merge(m, src)
-}
-func (m *SetFeePkRequest) XXX_Size() int {
-	return xxx_messageInfo_SetFeePkRequest.Size(m)
-}
-func (m *SetFeePkRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SetFeePkRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SetFeePkRequest proto.InternalMessageInfo
-
-func (m *SetFeePkRequest) GetTransaction() *Transaction {
-	if m != nil {
-		return m.Transaction
-	}
-	return nil
-}
-
-func (m *SetFeePkRequest) GetPk() *PublicKey {
-	if m != nil {
-		return m.Pk
-	}
-	return nil
-}
-
 type KeysResponse struct {
 	Vk                   *ViewKey   `protobuf:"bytes,1,opt,name=vk,proto3" json:"vk,omitempty"`
 	Pk                   *PublicKey `protobuf:"bytes,2,opt,name=pk,proto3" json:"pk,omitempty"`
@@ -968,7 +571,7 @@ func (m *KeysResponse) Reset()         { *m = KeysResponse{} }
 func (m *KeysResponse) String() string { return proto.CompactTextString(m) }
 func (*KeysResponse) ProtoMessage()    {}
 func (*KeysResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{22}
+	return fileDescriptor_211ec4e18343b18f, []int{13}
 }
 
 func (m *KeysResponse) XXX_Unmarshal(b []byte) error {
@@ -1009,23 +612,14 @@ func init() {
 	proto.RegisterType((*ValidateStateTransitionRequest)(nil), "rusk.ValidateStateTransitionRequest")
 	proto.RegisterType((*ValidateStateTransitionResponse)(nil), "rusk.ValidateStateTransitionResponse")
 	proto.RegisterType((*GenerateSecretKeyRequest)(nil), "rusk.GenerateSecretKeyRequest")
-	proto.RegisterType((*NullifierRequest)(nil), "rusk.NullifierRequest")
-	proto.RegisterType((*NullifierResponse)(nil), "rusk.NullifierResponse")
-	proto.RegisterType((*NullifierStatusRequest)(nil), "rusk.NullifierStatusRequest")
-	proto.RegisterType((*NullifierStatusResponse)(nil), "rusk.NullifierStatusResponse")
 	proto.RegisterType((*FetchNoteRequest)(nil), "rusk.FetchNoteRequest")
 	proto.RegisterType((*DecryptNoteRequest)(nil), "rusk.DecryptNoteRequest")
 	proto.RegisterType((*OwnedNotesRequest)(nil), "rusk.OwnedNotesRequest")
 	proto.RegisterType((*OwnedNotesResponse)(nil), "rusk.OwnedNotesResponse")
-	proto.RegisterType((*NewTransactionInputRequest)(nil), "rusk.NewTransactionInputRequest")
-	proto.RegisterType((*NewTransactionOutputRequest)(nil), "rusk.NewTransactionOutputRequest")
 	proto.RegisterType((*NewTransactionRequest)(nil), "rusk.NewTransactionRequest")
 	proto.RegisterType((*VerifyTransactionResponse)(nil), "rusk.VerifyTransactionResponse")
 	proto.RegisterType((*VerifyTransactionRootRequest)(nil), "rusk.VerifyTransactionRootRequest")
 	proto.RegisterType((*VerifyTransactionRootResponse)(nil), "rusk.VerifyTransactionRootResponse")
-	proto.RegisterType((*StoreTransactionsRequest)(nil), "rusk.StoreTransactionsRequest")
-	proto.RegisterType((*StoreTransactionsResponse)(nil), "rusk.StoreTransactionsResponse")
-	proto.RegisterType((*SetFeePkRequest)(nil), "rusk.SetFeePkRequest")
 	proto.RegisterType((*KeysResponse)(nil), "rusk.KeysResponse")
 }
 
@@ -1034,66 +628,49 @@ func init() {
 }
 
 var fileDescriptor_211ec4e18343b18f = []byte{
-	// 944 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0x5f, 0x6f, 0xdb, 0x36,
-	0x10, 0x97, 0xff, 0x24, 0x8b, 0xcf, 0x6e, 0x12, 0xb3, 0x4d, 0xa2, 0x2a, 0x4d, 0xe2, 0xb1, 0x1d,
-	0x90, 0xa1, 0x68, 0x87, 0x25, 0xd8, 0x5e, 0x06, 0xac, 0x58, 0xb1, 0xa6, 0x28, 0x0a, 0x24, 0xa9,
-	0x6c, 0xe4, 0x35, 0x90, 0x95, 0xf3, 0x22, 0x58, 0x90, 0x34, 0x89, 0x4a, 0xe6, 0xc7, 0x7d, 0xaf,
-	0x7d, 0x85, 0x7d, 0xa7, 0x81, 0x22, 0x29, 0x51, 0x96, 0x64, 0x6f, 0xd8, 0x1b, 0xc5, 0xbb, 0xfb,
-	0xdd, 0xdd, 0xcf, 0xc7, 0xfb, 0x19, 0x20, 0x4e, 0x93, 0xf9, 0xdb, 0x28, 0x0e, 0x59, 0x48, 0xba,
-	0xfc, 0x6c, 0xf5, 0x67, 0x1e, 0xfa, 0x77, 0xe2, 0xca, 0x82, 0x39, 0x2e, 0x12, 0x75, 0x0e, 0x42,
-	0x86, 0xf2, 0x3c, 0x64, 0xb1, 0x13, 0x24, 0x8e, 0xcb, 0xbc, 0x30, 0x10, 0x57, 0xf4, 0x09, 0xf4,
-	0x3f, 0xb8, 0xf7, 0xa1, 0x8d, 0xbf, 0xa7, 0x98, 0x30, 0xba, 0x0d, 0x03, 0xf1, 0x99, 0x44, 0x61,
-	0x90, 0x20, 0xfd, 0x00, 0xc7, 0x37, 0x8e, 0xef, 0xdd, 0x39, 0x0c, 0xc7, 0xcc, 0x61, 0x38, 0xe1,
-	0x00, 0x1e, 0x8f, 0x97, 0x11, 0xe4, 0x25, 0x74, 0xd8, 0x1f, 0x89, 0xd9, 0x1a, 0x75, 0x4e, 0xfb,
-	0x67, 0xc3, 0xb7, 0x59, 0x61, 0x93, 0x22, 0x8d, 0xcd, 0xad, 0xf4, 0x27, 0x38, 0x69, 0x84, 0x11,
-	0x99, 0x88, 0x09, 0x5f, 0x25, 0xa9, 0xeb, 0x62, 0xc2, 0xb1, 0x5a, 0xa7, 0x5b, 0xb6, 0xfa, 0xa4,
-	0xa7, 0x60, 0x7e, 0xc4, 0x00, 0x63, 0x1e, 0x8c, 0x6e, 0x8c, 0xec, 0x33, 0x2e, 0x54, 0xf6, 0x01,
-	0xb4, 0xa6, 0x99, 0xff, 0xc0, 0x6e, 0x4d, 0xe9, 0x18, 0x76, 0x2f, 0x53, 0xdf, 0xf7, 0x66, 0x1e,
-	0xc6, 0xca, 0xe3, 0x18, 0xba, 0x9c, 0x81, 0xcc, 0xa9, 0x7f, 0x06, 0xa2, 0xc0, 0xcb, 0x90, 0xa1,
-	0x9d, 0xdd, 0x93, 0x13, 0x68, 0x27, 0x73, 0xb3, 0x9d, 0x59, 0x77, 0x84, 0xb5, 0xc8, 0xd2, 0x4e,
-	0xe6, 0xf4, 0x3d, 0x0c, 0x35, 0x50, 0x59, 0xed, 0x1b, 0xe8, 0x05, 0xea, 0x52, 0x42, 0xcb, 0xe0,
-	0xc2, 0xb7, 0xf0, 0xa0, 0x1f, 0x61, 0x3f, 0xbf, 0xe7, 0x04, 0xa4, 0x89, 0x2a, 0xef, 0x3f, 0x02,
-	0x9d, 0xc3, 0x41, 0x05, 0xa8, 0x20, 0x30, 0x0d, 0x92, 0x08, 0x03, 0xa6, 0x08, 0x94, 0x9f, 0xf4,
-	0x15, 0xec, 0x5e, 0x20, 0x73, 0xef, 0xb3, 0xae, 0x65, 0xde, 0x5d, 0xe8, 0x44, 0xa1, 0xa0, 0x7a,
-	0xd3, 0xe6, 0x47, 0x3a, 0x06, 0xf2, 0x2b, 0xba, 0xf1, 0x22, 0x62, 0xba, 0xdf, 0x3a, 0xfa, 0x8e,
-	0xa0, 0xfd, 0xa0, 0xe8, 0x7b, 0x22, 0xac, 0x37, 0x1e, 0x3e, 0x66, 0xe4, 0x3d, 0xcc, 0xe9, 0x04,
-	0x86, 0x57, 0x8f, 0x01, 0xde, 0xf1, 0x88, 0xbc, 0x67, 0x11, 0xd3, 0x6a, 0x88, 0x21, 0x23, 0xd8,
-	0xe0, 0xd0, 0x89, 0xd9, 0xce, 0x66, 0x4a, 0xcf, 0x29, 0x0c, 0xf4, 0x1d, 0x10, 0x1d, 0x55, 0x12,
-	0xf0, 0xad, 0x8a, 0x13, 0xb3, 0xf8, 0x54, 0xc4, 0xc9, 0x9e, 0x84, 0xb3, 0x02, 0xb8, 0x02, 0xeb,
-	0x12, 0x1f, 0xb5, 0x31, 0xfd, 0x14, 0x44, 0x29, 0x6b, 0xe4, 0x66, 0xfd, 0x90, 0xfc, 0xd9, 0x82,
-	0xc3, 0x32, 0xe2, 0x55, 0xca, 0x34, 0xc8, 0xd7, 0xd0, 0xe3, 0x99, 0x6f, 0xd9, 0x22, 0x12, 0x5c,
-	0x6e, 0x9f, 0x6d, 0x17, 0x7d, 0x4d, 0x16, 0x11, 0xda, 0x5b, 0x81, 0x3c, 0xf1, 0x6c, 0xd1, 0x52,
-	0xb6, 0xeb, 0x74, 0xea, 0x7b, 0x6e, 0x96, 0x2d, 0x9a, 0x93, 0x67, 0xb0, 0xf1, 0xe0, 0xf8, 0x29,
-	0x9a, 0x9d, 0xac, 0x44, 0xf1, 0x41, 0xff, 0x6a, 0xc1, 0x5e, 0xb9, 0x06, 0x95, 0x5d, 0x94, 0xdf,
-	0x6a, 0x2c, 0x9f, 0xbc, 0x86, 0x4d, 0x8f, 0x33, 0xa0, 0x38, 0xaf, 0xe5, 0x4e, 0xba, 0xf0, 0x91,
-	0x8d, 0xd1, 0xf5, 0x22, 0x8f, 0x8f, 0x5a, 0xa7, 0xbe, 0xca, 0xc2, 0xa3, 0x28, 0xb6, 0xab, 0x15,
-	0xcb, 0x39, 0x9e, 0x21, 0x9a, 0x1b, 0x82, 0xe3, 0x19, 0x22, 0x3d, 0x84, 0xe7, 0x37, 0x18, 0x7b,
-	0xb3, 0x45, 0xa9, 0x01, 0xb9, 0x87, 0x52, 0x78, 0x51, 0x35, 0x86, 0x61, 0xce, 0xef, 0x39, 0xf4,
-	0xb5, 0xdd, 0x26, 0x5b, 0xad, 0xd9, 0x46, 0xba, 0x17, 0x19, 0x41, 0x37, 0x0e, 0x43, 0x26, 0x99,
-	0x1e, 0x48, 0x62, 0x5c, 0xc7, 0x77, 0x62, 0x3b, 0xb3, 0xd0, 0x13, 0x38, 0x6a, 0x48, 0x2b, 0xeb,
-	0xfa, 0x02, 0xe6, 0x98, 0x85, 0x31, 0x6a, 0xf6, 0x7c, 0xcc, 0x7f, 0x80, 0x81, 0x96, 0x6d, 0xc5,
-	0x8a, 0x2c, 0xb9, 0xd1, 0x5b, 0x78, 0x5e, 0x03, 0x29, 0x67, 0x7c, 0x54, 0x9e, 0xf1, 0xea, 0xdb,
-	0xf8, 0x17, 0x4d, 0xfd, 0x06, 0x3b, 0x63, 0x64, 0x17, 0x88, 0xd7, 0xf3, 0xff, 0x45, 0xdf, 0xba,
-	0x31, 0xa5, 0x97, 0x30, 0xf8, 0x8c, 0x8b, 0xa2, 0xf8, 0x35, 0xef, 0x7e, 0x1d, 0xde, 0xd9, 0xdf,
-	0x3d, 0xe8, 0xda, 0x69, 0x32, 0x27, 0xdf, 0x41, 0x97, 0xab, 0x14, 0x91, 0x15, 0x6a, 0x02, 0x66,
-	0x11, 0xfd, 0x4a, 0xfe, 0x48, 0x06, 0xb9, 0x87, 0x83, 0x06, 0xfd, 0x21, 0xaf, 0x64, 0x21, 0x2b,
-	0x55, 0xce, 0xfa, 0x66, 0x8d, 0x57, 0x9e, 0xe9, 0x02, 0x86, 0x15, 0xb1, 0x22, 0xc7, 0x22, 0xba,
-	0x49, 0xc5, 0xac, 0xe5, 0x37, 0x49, 0x0d, 0xf2, 0x06, 0xba, 0x9c, 0x3b, 0xb2, 0x6c, 0x52, 0x0d,
-	0xea, 0xc4, 0x52, 0x83, 0xfc, 0x0c, 0xbd, 0x5c, 0x17, 0xc8, 0xfe, 0xb2, 0x80, 0xc8, 0x34, 0x07,
-	0x95, 0xfb, 0x3c, 0xfe, 0x1a, 0x76, 0x96, 0x74, 0x85, 0xbc, 0x58, 0xf2, 0x2e, 0xe9, 0x96, 0x75,
-	0xd4, 0x60, 0xcd, 0x11, 0xbf, 0x87, 0x5e, 0x2e, 0x3a, 0xaa, 0xa2, 0x65, 0x15, 0xb2, 0xb4, 0xf9,
-	0xcd, 0x9a, 0xe8, 0x6b, 0x0a, 0x44, 0xcc, 0xd2, 0x12, 0xd2, 0xc3, 0xea, 0xd6, 0x13, 0x35, 0xc8,
-	0x2f, 0x00, 0x85, 0x2c, 0x10, 0xd9, 0x6d, 0x45, 0x7e, 0x2c, 0xb3, 0x6a, 0xc8, 0xab, 0x7e, 0x07,
-	0xe4, 0x22, 0xf5, 0xfd, 0xb1, 0xeb, 0x04, 0x1a, 0x54, 0x79, 0x58, 0x57, 0x02, 0x7c, 0x81, 0xa7,
-	0x35, 0xca, 0x42, 0x46, 0xb2, 0xd1, 0x46, 0xd1, 0xb1, 0xf6, 0x2b, 0xaf, 0x2d, 0x33, 0x53, 0x83,
-	0x4c, 0xe0, 0x59, 0x9d, 0xb4, 0x90, 0xaf, 0xeb, 0x30, 0x4b, 0xb2, 0xa3, 0x7e, 0xf1, 0x8a, 0x9d,
-	0x1a, 0xe4, 0x3d, 0x6c, 0x97, 0x23, 0xc9, 0x61, 0x1d, 0x9e, 0x42, 0xaa, 0x2e, 0x03, 0x6a, 0x90,
-	0x1f, 0x61, 0x4b, 0x6d, 0x12, 0xb2, 0xa7, 0x06, 0xb5, 0xb4, 0x59, 0xea, 0xe3, 0x3e, 0xc1, 0xb0,
-	0xb2, 0x56, 0x49, 0xd5, 0xd3, 0x3a, 0x91, 0xbc, 0x37, 0xca, 0x82, 0x41, 0xa6, 0xb0, 0x57, 0xbb,
-	0xa1, 0x09, 0x6d, 0x8a, 0x2d, 0x54, 0xc3, 0x7a, 0xb9, 0xd2, 0x27, 0xcf, 0x71, 0x03, 0xc3, 0xca,
-	0x46, 0x56, 0x6f, 0xba, 0x69, 0xfb, 0xab, 0xda, 0x1b, 0x57, 0x39, 0x35, 0xa6, 0x9b, 0xd9, 0x5f,
-	0xf0, 0xf3, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0xf3, 0x27, 0xa2, 0xd5, 0xce, 0x0b, 0x00, 0x00,
+	// 657 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x55, 0xdd, 0x4e, 0xdb, 0x4c,
+	0x10, 0x75, 0x1c, 0x87, 0xef, 0x63, 0x12, 0x28, 0x99, 0xfe, 0xe0, 0x9a, 0x42, 0xd0, 0x96, 0x4a,
+	0x54, 0x15, 0x54, 0x85, 0xcb, 0x4a, 0x45, 0xad, 0x0a, 0x55, 0x85, 0x44, 0x2b, 0x83, 0xb8, 0x77,
+	0xcc, 0x44, 0x58, 0xb6, 0x6c, 0xd7, 0xbb, 0x86, 0xe6, 0x65, 0xfa, 0x24, 0x7d, 0xb8, 0x6a, 0xbd,
+	0x6b, 0xb2, 0xc1, 0x31, 0xdc, 0xad, 0x77, 0xce, 0x9c, 0xf9, 0xd9, 0x73, 0x12, 0x80, 0xa2, 0xe4,
+	0xf1, 0x7e, 0x5e, 0x64, 0x22, 0x43, 0x47, 0x9e, 0xbd, 0xfe, 0x24, 0xa2, 0xe4, 0x4a, 0x5d, 0x79,
+	0x10, 0xd3, 0x94, 0xd7, 0xe7, 0x34, 0x13, 0xa4, 0xcf, 0x43, 0x51, 0x04, 0x29, 0x0f, 0x42, 0x11,
+	0x65, 0xa9, 0xba, 0x62, 0x2b, 0xd0, 0x3f, 0x0e, 0xaf, 0x33, 0x9f, 0x7e, 0x95, 0xc4, 0x05, 0x5b,
+	0x85, 0x81, 0xfa, 0xe4, 0x79, 0x96, 0x72, 0x62, 0xc7, 0xb0, 0x75, 0x19, 0x24, 0xd1, 0x55, 0x20,
+	0xe8, 0x5c, 0x04, 0x82, 0x2e, 0x24, 0x41, 0x24, 0xf3, 0x75, 0x06, 0xbe, 0x86, 0xae, 0xf8, 0xcd,
+	0xdd, 0xce, 0x76, 0x77, 0xb7, 0x7f, 0x30, 0xdc, 0xaf, 0x1a, 0xbb, 0x98, 0x95, 0xf1, 0x65, 0x94,
+	0x7d, 0x84, 0x51, 0x2b, 0x8d, 0xaa, 0x84, 0x2e, 0xfc, 0xc7, 0xcb, 0x30, 0x24, 0x2e, 0xb9, 0x3a,
+	0xbb, 0xff, 0xfb, 0xf5, 0x27, 0xdb, 0x05, 0xf7, 0x1b, 0xa5, 0x54, 0xc8, 0x64, 0x0a, 0x0b, 0x12,
+	0xa7, 0x34, 0xad, 0xab, 0x0f, 0xa0, 0x33, 0xae, 0xf0, 0x03, 0xbf, 0x33, 0x66, 0x3b, 0xb0, 0x76,
+	0x42, 0x22, 0xbc, 0x3e, 0xcb, 0x04, 0xd5, 0x88, 0x35, 0xe8, 0xe6, 0x99, 0xe2, 0x5c, 0xf2, 0xe5,
+	0x91, 0x9d, 0x03, 0x7e, 0xa5, 0xb0, 0x98, 0xe6, 0xc2, 0xc4, 0x6d, 0x81, 0x23, 0x37, 0x55, 0x01,
+	0xfb, 0x07, 0xa0, 0x06, 0xa9, 0x00, 0xd5, 0x3d, 0x6e, 0x82, 0x7d, 0x13, 0xbb, 0x76, 0x15, 0x5d,
+	0x51, 0xd1, 0xcb, 0x88, 0x6e, 0x65, 0x2f, 0xf6, 0x4d, 0xcc, 0x2e, 0x60, 0xf8, 0xe3, 0x36, 0xa5,
+	0x2b, 0x99, 0xc1, 0x6b, 0x4e, 0x95, 0xd3, 0x69, 0xc9, 0xc1, 0x6d, 0xe8, 0x49, 0x6a, 0xee, 0xda,
+	0xd5, 0xf2, 0xcc, 0x9a, 0x2a, 0xc0, 0x8e, 0x00, 0x4d, 0x56, 0xbd, 0xaa, 0xb7, 0x75, 0x9e, 0x5a,
+	0xfa, 0x53, 0x95, 0xa7, 0x67, 0x52, 0xe0, 0x9a, 0xe0, 0x6f, 0x07, 0x9e, 0x9f, 0xd1, 0xad, 0xf9,
+	0x20, 0xba, 0xb7, 0x11, 0xd8, 0xbc, 0xee, 0xed, 0x89, 0x62, 0x98, 0x6d, 0xd7, 0xe6, 0x31, 0xbe,
+	0x83, 0xa5, 0x28, 0xcd, 0x4b, 0x51, 0xb7, 0xb7, 0xb0, 0x8c, 0x86, 0xe0, 0x1e, 0x2c, 0x17, 0x14,
+	0x46, 0x79, 0x44, 0xa9, 0x70, 0xbb, 0x26, 0xe9, 0xcf, 0x72, 0x9c, 0x44, 0xa1, 0x24, 0x9d, 0x21,
+	0xf0, 0x19, 0xf4, 0x6e, 0x82, 0xa4, 0x24, 0xd7, 0xa9, 0x9e, 0x45, 0x7d, 0xc8, 0xa7, 0x9a, 0x10,
+	0xb9, 0x3d, 0xf5, 0x54, 0x13, 0x22, 0xb6, 0x01, 0x2f, 0x2f, 0xa9, 0x88, 0x26, 0xd3, 0xb9, 0x01,
+	0xb4, 0x36, 0x4b, 0x78, 0xd5, 0x0c, 0x66, 0x99, 0xa8, 0x27, 0x3c, 0x84, 0xbe, 0xa1, 0x77, 0x3d,
+	0xea, 0x02, 0x85, 0x9a, 0x28, 0xdc, 0x06, 0xa7, 0xc8, 0x32, 0xa1, 0x1f, 0x7a, 0xa0, 0x17, 0x13,
+	0x06, 0x49, 0x50, 0xf8, 0x55, 0x84, 0x8d, 0x60, 0xb3, 0xa5, 0xac, 0xee, 0xeb, 0x0c, 0x06, 0xa7,
+	0x34, 0x9d, 0x3d, 0xd7, 0x23, 0x2a, 0x18, 0x81, 0x9d, 0xd7, 0xc2, 0x6a, 0xec, 0xcc, 0xce, 0xe3,
+	0x83, 0x3f, 0x3d, 0x70, 0xfc, 0x92, 0xc7, 0xf8, 0x1e, 0x1c, 0x69, 0x4e, 0xd4, 0x33, 0x18, 0xbe,
+	0xf5, 0xd0, 0xbc, 0xd2, 0x7d, 0x58, 0x78, 0x0d, 0xeb, 0x2d, 0xb6, 0xc3, 0x1d, 0xdd, 0xc8, 0x83,
+	0xe6, 0xf6, 0xde, 0x3c, 0x82, 0xba, 0xab, 0x74, 0x02, 0xc3, 0x86, 0x47, 0x71, 0x4b, 0x65, 0xb7,
+	0x99, 0xd7, 0xbb, 0x2f, 0x3b, 0x66, 0xe1, 0x1e, 0x38, 0x72, 0x77, 0x78, 0x3f, 0x54, 0x0f, 0x68,
+	0x2e, 0x96, 0x59, 0xf8, 0x01, 0x96, 0xef, 0x0c, 0x8f, 0x2f, 0x14, 0xe4, 0xfe, 0x2f, 0x80, 0x67,
+	0xf8, 0x8a, 0x59, 0xf8, 0x09, 0xfa, 0x86, 0xfb, 0xd1, 0x9d, 0x53, 0xb5, 0x99, 0xb6, 0x48, 0xef,
+	0xcc, 0xc2, 0xcf, 0x00, 0x33, 0x4b, 0xe2, 0xba, 0x02, 0x35, 0xac, 0xef, 0xb9, 0xcd, 0xc0, 0x5d,
+	0xd7, 0x47, 0x80, 0x27, 0x65, 0x92, 0x9c, 0x87, 0x41, 0x6a, 0x50, 0xcd, 0x4b, 0xe3, 0x41, 0x82,
+	0x2f, 0xb0, 0x3a, 0x6f, 0x6a, 0xdc, 0xd0, 0x33, 0x2e, 0xb2, 0xba, 0xd7, 0xd4, 0x3c, 0xb3, 0xf0,
+	0x3b, 0x0c, 0x1b, 0x32, 0xc6, 0x26, 0xd2, 0x1b, 0xe9, 0xb6, 0x5a, 0x6d, 0x68, 0x8d, 0x97, 0xaa,
+	0xbf, 0x92, 0xc3, 0x7f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x5c, 0x37, 0x8d, 0xd7, 0x96, 0x06, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1116,19 +693,12 @@ type RuskClient interface {
 	// Phoenix stuff
 	GenerateSecretKey(ctx context.Context, in *GenerateSecretKeyRequest, opts ...grpc.CallOption) (*SecretKey, error)
 	Keys(ctx context.Context, in *SecretKey, opts ...grpc.CallOption) (*KeysResponse, error)
-	Nullifier(ctx context.Context, in *NullifierRequest, opts ...grpc.CallOption) (*NullifierResponse, error)
-	NullifierStatus(ctx context.Context, in *NullifierStatusRequest, opts ...grpc.CallOption) (*NullifierStatusResponse, error)
 	FetchNote(ctx context.Context, in *FetchNoteRequest, opts ...grpc.CallOption) (*Note, error)
 	DecryptNote(ctx context.Context, in *DecryptNoteRequest, opts ...grpc.CallOption) (*DecryptedNote, error)
 	OwnedNotes(ctx context.Context, in *OwnedNotesRequest, opts ...grpc.CallOption) (*OwnedNotesResponse, error)
 	FullScanOwnedNotes(ctx context.Context, in *ViewKey, opts ...grpc.CallOption) (*OwnedNotesResponse, error)
-	NewTransactionInput(ctx context.Context, in *NewTransactionInputRequest, opts ...grpc.CallOption) (*TransactionInput, error)
-	NewTransactionOutput(ctx context.Context, in *NewTransactionOutputRequest, opts ...grpc.CallOption) (*TransactionOutput, error)
 	NewTransaction(ctx context.Context, in *NewTransactionRequest, opts ...grpc.CallOption) (*Transaction, error)
-	SetFeePk(ctx context.Context, in *SetFeePkRequest, opts ...grpc.CallOption) (*Transaction, error)
 	VerifyTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error)
-	VerifyTransactionRoot(ctx context.Context, in *VerifyTransactionRootRequest, opts ...grpc.CallOption) (*VerifyTransactionRootResponse, error)
-	StoreTransactions(ctx context.Context, in *StoreTransactionsRequest, opts ...grpc.CallOption) (*StoreTransactionsResponse, error)
 }
 
 type ruskClient struct {
@@ -1175,24 +745,6 @@ func (c *ruskClient) Keys(ctx context.Context, in *SecretKey, opts ...grpc.CallO
 	return out, nil
 }
 
-func (c *ruskClient) Nullifier(ctx context.Context, in *NullifierRequest, opts ...grpc.CallOption) (*NullifierResponse, error) {
-	out := new(NullifierResponse)
-	err := c.cc.Invoke(ctx, "/rusk.Rusk/Nullifier", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *ruskClient) NullifierStatus(ctx context.Context, in *NullifierStatusRequest, opts ...grpc.CallOption) (*NullifierStatusResponse, error) {
-	out := new(NullifierStatusResponse)
-	err := c.cc.Invoke(ctx, "/rusk.Rusk/NullifierStatus", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *ruskClient) FetchNote(ctx context.Context, in *FetchNoteRequest, opts ...grpc.CallOption) (*Note, error) {
 	out := new(Note)
 	err := c.cc.Invoke(ctx, "/rusk.Rusk/FetchNote", in, out, opts...)
@@ -1229,24 +781,6 @@ func (c *ruskClient) FullScanOwnedNotes(ctx context.Context, in *ViewKey, opts .
 	return out, nil
 }
 
-func (c *ruskClient) NewTransactionInput(ctx context.Context, in *NewTransactionInputRequest, opts ...grpc.CallOption) (*TransactionInput, error) {
-	out := new(TransactionInput)
-	err := c.cc.Invoke(ctx, "/rusk.Rusk/NewTransactionInput", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *ruskClient) NewTransactionOutput(ctx context.Context, in *NewTransactionOutputRequest, opts ...grpc.CallOption) (*TransactionOutput, error) {
-	out := new(TransactionOutput)
-	err := c.cc.Invoke(ctx, "/rusk.Rusk/NewTransactionOutput", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *ruskClient) NewTransaction(ctx context.Context, in *NewTransactionRequest, opts ...grpc.CallOption) (*Transaction, error) {
 	out := new(Transaction)
 	err := c.cc.Invoke(ctx, "/rusk.Rusk/NewTransaction", in, out, opts...)
@@ -1256,36 +790,9 @@ func (c *ruskClient) NewTransaction(ctx context.Context, in *NewTransactionReque
 	return out, nil
 }
 
-func (c *ruskClient) SetFeePk(ctx context.Context, in *SetFeePkRequest, opts ...grpc.CallOption) (*Transaction, error) {
-	out := new(Transaction)
-	err := c.cc.Invoke(ctx, "/rusk.Rusk/SetFeePk", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *ruskClient) VerifyTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error) {
 	out := new(VerifyTransactionResponse)
 	err := c.cc.Invoke(ctx, "/rusk.Rusk/VerifyTransaction", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *ruskClient) VerifyTransactionRoot(ctx context.Context, in *VerifyTransactionRootRequest, opts ...grpc.CallOption) (*VerifyTransactionRootResponse, error) {
-	out := new(VerifyTransactionRootResponse)
-	err := c.cc.Invoke(ctx, "/rusk.Rusk/VerifyTransactionRoot", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *ruskClient) StoreTransactions(ctx context.Context, in *StoreTransactionsRequest, opts ...grpc.CallOption) (*StoreTransactionsResponse, error) {
-	out := new(StoreTransactionsResponse)
-	err := c.cc.Invoke(ctx, "/rusk.Rusk/StoreTransactions", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1302,19 +809,12 @@ type RuskServer interface {
 	// Phoenix stuff
 	GenerateSecretKey(context.Context, *GenerateSecretKeyRequest) (*SecretKey, error)
 	Keys(context.Context, *SecretKey) (*KeysResponse, error)
-	Nullifier(context.Context, *NullifierRequest) (*NullifierResponse, error)
-	NullifierStatus(context.Context, *NullifierStatusRequest) (*NullifierStatusResponse, error)
 	FetchNote(context.Context, *FetchNoteRequest) (*Note, error)
 	DecryptNote(context.Context, *DecryptNoteRequest) (*DecryptedNote, error)
 	OwnedNotes(context.Context, *OwnedNotesRequest) (*OwnedNotesResponse, error)
 	FullScanOwnedNotes(context.Context, *ViewKey) (*OwnedNotesResponse, error)
-	NewTransactionInput(context.Context, *NewTransactionInputRequest) (*TransactionInput, error)
-	NewTransactionOutput(context.Context, *NewTransactionOutputRequest) (*TransactionOutput, error)
 	NewTransaction(context.Context, *NewTransactionRequest) (*Transaction, error)
-	SetFeePk(context.Context, *SetFeePkRequest) (*Transaction, error)
 	VerifyTransaction(context.Context, *Transaction) (*VerifyTransactionResponse, error)
-	VerifyTransactionRoot(context.Context, *VerifyTransactionRootRequest) (*VerifyTransactionRootResponse, error)
-	StoreTransactions(context.Context, *StoreTransactionsRequest) (*StoreTransactionsResponse, error)
 }
 
 // UnimplementedRuskServer can be embedded to have forward compatible implementations.
@@ -1333,12 +833,6 @@ func (*UnimplementedRuskServer) GenerateSecretKey(ctx context.Context, req *Gene
 func (*UnimplementedRuskServer) Keys(ctx context.Context, req *SecretKey) (*KeysResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Keys not implemented")
 }
-func (*UnimplementedRuskServer) Nullifier(ctx context.Context, req *NullifierRequest) (*NullifierResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Nullifier not implemented")
-}
-func (*UnimplementedRuskServer) NullifierStatus(ctx context.Context, req *NullifierStatusRequest) (*NullifierStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method NullifierStatus not implemented")
-}
 func (*UnimplementedRuskServer) FetchNote(ctx context.Context, req *FetchNoteRequest) (*Note, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchNote not implemented")
 }
@@ -1351,26 +845,11 @@ func (*UnimplementedRuskServer) OwnedNotes(ctx context.Context, req *OwnedNotesR
 func (*UnimplementedRuskServer) FullScanOwnedNotes(ctx context.Context, req *ViewKey) (*OwnedNotesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FullScanOwnedNotes not implemented")
 }
-func (*UnimplementedRuskServer) NewTransactionInput(ctx context.Context, req *NewTransactionInputRequest) (*TransactionInput, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method NewTransactionInput not implemented")
-}
-func (*UnimplementedRuskServer) NewTransactionOutput(ctx context.Context, req *NewTransactionOutputRequest) (*TransactionOutput, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method NewTransactionOutput not implemented")
-}
 func (*UnimplementedRuskServer) NewTransaction(ctx context.Context, req *NewTransactionRequest) (*Transaction, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewTransaction not implemented")
 }
-func (*UnimplementedRuskServer) SetFeePk(ctx context.Context, req *SetFeePkRequest) (*Transaction, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetFeePk not implemented")
-}
 func (*UnimplementedRuskServer) VerifyTransaction(ctx context.Context, req *Transaction) (*VerifyTransactionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyTransaction not implemented")
-}
-func (*UnimplementedRuskServer) VerifyTransactionRoot(ctx context.Context, req *VerifyTransactionRootRequest) (*VerifyTransactionRootResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyTransactionRoot not implemented")
-}
-func (*UnimplementedRuskServer) StoreTransactions(ctx context.Context, req *StoreTransactionsRequest) (*StoreTransactionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StoreTransactions not implemented")
 }
 
 func RegisterRuskServer(s *grpc.Server, srv RuskServer) {
@@ -1449,42 +928,6 @@ func _Rusk_Keys_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Rusk_Nullifier_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NullifierRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RuskServer).Nullifier(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/rusk.Rusk/Nullifier",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RuskServer).Nullifier(ctx, req.(*NullifierRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Rusk_NullifierStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NullifierStatusRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RuskServer).NullifierStatus(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/rusk.Rusk/NullifierStatus",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RuskServer).NullifierStatus(ctx, req.(*NullifierStatusRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Rusk_FetchNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FetchNoteRequest)
 	if err := dec(in); err != nil {
@@ -1557,42 +1000,6 @@ func _Rusk_FullScanOwnedNotes_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Rusk_NewTransactionInput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NewTransactionInputRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RuskServer).NewTransactionInput(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/rusk.Rusk/NewTransactionInput",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RuskServer).NewTransactionInput(ctx, req.(*NewTransactionInputRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Rusk_NewTransactionOutput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NewTransactionOutputRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RuskServer).NewTransactionOutput(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/rusk.Rusk/NewTransactionOutput",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RuskServer).NewTransactionOutput(ctx, req.(*NewTransactionOutputRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Rusk_NewTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(NewTransactionRequest)
 	if err := dec(in); err != nil {
@@ -1611,24 +1018,6 @@ func _Rusk_NewTransaction_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Rusk_SetFeePk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetFeePkRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RuskServer).SetFeePk(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/rusk.Rusk/SetFeePk",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RuskServer).SetFeePk(ctx, req.(*SetFeePkRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Rusk_VerifyTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Transaction)
 	if err := dec(in); err != nil {
@@ -1643,42 +1032,6 @@ func _Rusk_VerifyTransaction_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RuskServer).VerifyTransaction(ctx, req.(*Transaction))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Rusk_VerifyTransactionRoot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(VerifyTransactionRootRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RuskServer).VerifyTransactionRoot(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/rusk.Rusk/VerifyTransactionRoot",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RuskServer).VerifyTransactionRoot(ctx, req.(*VerifyTransactionRootRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Rusk_StoreTransactions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StoreTransactionsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RuskServer).StoreTransactions(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/rusk.Rusk/StoreTransactions",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RuskServer).StoreTransactions(ctx, req.(*StoreTransactionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1704,14 +1057,6 @@ var _Rusk_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Rusk_Keys_Handler,
 		},
 		{
-			MethodName: "Nullifier",
-			Handler:    _Rusk_Nullifier_Handler,
-		},
-		{
-			MethodName: "NullifierStatus",
-			Handler:    _Rusk_NullifierStatus_Handler,
-		},
-		{
 			MethodName: "FetchNote",
 			Handler:    _Rusk_FetchNote_Handler,
 		},
@@ -1728,32 +1073,12 @@ var _Rusk_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Rusk_FullScanOwnedNotes_Handler,
 		},
 		{
-			MethodName: "NewTransactionInput",
-			Handler:    _Rusk_NewTransactionInput_Handler,
-		},
-		{
-			MethodName: "NewTransactionOutput",
-			Handler:    _Rusk_NewTransactionOutput_Handler,
-		},
-		{
 			MethodName: "NewTransaction",
 			Handler:    _Rusk_NewTransaction_Handler,
 		},
 		{
-			MethodName: "SetFeePk",
-			Handler:    _Rusk_SetFeePk_Handler,
-		},
-		{
 			MethodName: "VerifyTransaction",
 			Handler:    _Rusk_VerifyTransaction_Handler,
-		},
-		{
-			MethodName: "VerifyTransactionRoot",
-			Handler:    _Rusk_VerifyTransactionRoot_Handler,
-		},
-		{
-			MethodName: "StoreTransactions",
-			Handler:    _Rusk_StoreTransactions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

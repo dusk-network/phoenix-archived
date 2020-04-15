@@ -20,15 +20,7 @@ message ValidateStateTransitionResponse {
 
 message GenerateSecretKeyRequest { bytes b = 1; }
 
-message NullifierRequest {
-  Note note = 1;
-  SecretKey sk = 2;
-}
-message NullifierResponse { Nullifier nullifier = 1; }
-
-message NullifierStatusRequest { Nullifier nullifier = 1; }
-message NullifierStatusResponse { bool unspent = 1; }
-
+// TODO: ask what the below four structures are for
 message FetchNoteRequest { fixed64 pos = 1; }
 
 message DecryptNoteRequest {
@@ -43,17 +35,7 @@ message OwnedNotesRequest {
 
 message OwnedNotesResponse { repeated DecryptedNote notes = 1; }
 
-message NewTransactionInputRequest {
-  fixed64 pos = 1;
-  SecretKey sk = 2;
-}
-
-message NewTransactionOutputRequest {
-  NoteType note_type = 1;
-  PublicKey pk = 2;
-  fixed64 value = 3;
-}
-
+// Call from CLI directly
 message NewTransactionRequest {
   SecretKey sk = 1;
   repeated DecryptedNote inputs = 2;
@@ -69,17 +51,6 @@ message VerifyTransactionRootRequest {
   Scalar root = 2;
 }
 message VerifyTransactionRootResponse {}
-
-message StoreTransactionsRequest { repeated Transaction transactions = 1; }
-message StoreTransactionsResponse {
-  repeated Note notes = 1;
-  Scalar root = 2;
-}
-
-message SetFeePkRequest {
-  Transaction transaction = 1;
-  PublicKey pk = 2;
-}
 
 message KeysResponse {
   ViewKey vk = 1;
@@ -98,24 +69,12 @@ service Rusk {
   rpc GenerateSecretKey(GenerateSecretKeyRequest) returns (SecretKey) {}
   rpc Keys(SecretKey) returns (KeysResponse) {}
 
-  rpc Nullifier(NullifierRequest) returns (NullifierResponse) {}
-  rpc NullifierStatus(NullifierStatusRequest)
-      returns (NullifierStatusResponse) {}
   rpc FetchNote(FetchNoteRequest) returns (Note) {}
   rpc DecryptNote(DecryptNoteRequest) returns (DecryptedNote) {}
   rpc OwnedNotes(OwnedNotesRequest) returns (OwnedNotesResponse) {}
   rpc FullScanOwnedNotes(ViewKey) returns (OwnedNotesResponse) {}
 
-  rpc NewTransactionInput(NewTransactionInputRequest)
-      returns (TransactionInput) {}
-  rpc NewTransactionOutput(NewTransactionOutputRequest)
-      returns (TransactionOutput) {}
   rpc NewTransaction(NewTransactionRequest) returns (Transaction) {}
-  rpc SetFeePk(SetFeePkRequest) returns (Transaction) {}
 
   rpc VerifyTransaction(Transaction) returns (VerifyTransactionResponse) {}
-  rpc VerifyTransactionRoot(VerifyTransactionRootRequest)
-      returns (VerifyTransactionRootResponse) {}
-  rpc StoreTransactions(StoreTransactionsRequest)
-      returns (StoreTransactionsResponse) {}
 }
