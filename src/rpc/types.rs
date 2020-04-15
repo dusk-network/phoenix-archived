@@ -37,7 +37,7 @@ impl From<BlsScalar> for rpc::Scalar {
 impl From<Nullifier> for rpc::Nullifier {
     fn from(n: Nullifier) -> Self {
         rpc::Nullifier {
-            h: Some(n.0.into()),
+            h: Some((*n.s()).into()),
         }
     }
 }

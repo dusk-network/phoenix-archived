@@ -31,7 +31,7 @@ impl ZkPublicInputs {
         self.nullifiers
             .iter()
             .enumerate()
-            .for_each(|(i, nullifier)| pi[(i + 1) * 41347] = nullifier.0);
+            .for_each(|(i, nullifier)| pi[(i + 1) * 41347] = *nullifier.s());
 
         self.outputs_pk_r_affine_x
             .iter()
@@ -125,7 +125,7 @@ impl Read for ZkPublicInputs {
             chunk
                 .next()
                 .ok_or(Error::InvalidParameters)
-                .and_then(|c| utils::serialize_bls_scalar(&self.nullifiers[i].0, c))
+                .and_then(|c| utils::serialize_bls_scalar(self.nullifiers[i].s(), c))
                 .map_err::<io::Error, _>(|e| e.into())?;
             n += utils::BLS_SCALAR_SERIALIZED_SIZE;
         }

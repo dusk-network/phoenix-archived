@@ -300,7 +300,8 @@ impl From<TransactionInput> for rpc::TransactionInput {
 impl From<TransactionInput> for rpc::Nullifier {
     fn from(item: TransactionInput) -> Self {
         let mut scalar_buf = [0u8; 32];
-        utils::serialize_bls_scalar(&item.nullifier.0, &mut scalar_buf).unwrap();
+        utils::serialize_bls_scalar(item.nullifier.s(), &mut scalar_buf).expect("In-memory write");
+
         rpc::Nullifier {
             h: Some(rpc::Scalar {
                 data: scalar_buf.to_vec(),

@@ -92,7 +92,7 @@ impl Read for Transaction {
             buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
                 .next()
                 .ok_or(Error::InvalidParameters)
-                .and_then(|c| utils::serialize_bls_scalar(&self.inputs[i].nullifier.0, c))
+                .and_then(|c| utils::serialize_bls_scalar(self.inputs[i].nullifier.s(), c))
                 .map_err::<io::Error, _>(|e| e.into())?;
             n += utils::BLS_SCALAR_SERIALIZED_SIZE;
             buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
