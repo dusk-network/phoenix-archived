@@ -232,7 +232,7 @@ impl<H: ByteHash> Db<H> {
     pub fn fetch_nullifier(&self, nullifier: &Nullifier) -> Result<Option<()>, Error> {
         self.nullifiers
             .get(nullifier)
-            .map(|_| Some(()))
+            .map(|n| n.map(|_| ()))
             .map_err(|e| e.into())
     }
 

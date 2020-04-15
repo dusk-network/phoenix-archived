@@ -102,10 +102,7 @@ fn double_spending() {
     let value = 100;
     let note = TransparentNote::output(&pk, value).0;
     let variant: NoteVariant = note.into();
-    let nullifier = variant.generate_nullifier(&sk_base);
-    assert!(db::fetch_nullifier(&db_path, &nullifier).unwrap().is_none());
     let base_note_idx = db::store_unspent_note(&db_path, variant).unwrap();
-    assert!(db::fetch_nullifier(&db_path, &nullifier).unwrap().is_none());
     let merkle_opening = db::merkle_opening(&db_path, &variant).unwrap();
     tx.push_input(note.to_transaction_input(merkle_opening, sk_base))
         .unwrap();
@@ -132,6 +129,7 @@ fn double_spending() {
 
     tx.prove().unwrap();
     tx.verify().unwrap();
+
     let inserted = db::store_bulk_transactions(&db_path, &[tx]).unwrap();
 
     let mut tx_ok = Transaction::default();
@@ -183,7 +181,7 @@ fn double_spending() {
     assert_eq!(100, note.value(Some(&vk)));
     let merkle_opening = db::merkle_opening(&db_path, &note).unwrap();
     tx_double_spending
-        .push_input(note.to_transaction_input(merkle_opening, sk_receiver))
+        .push_input(note.to_transaction_input(merkle_opening, sk_base))
         .unwrap();
 
     let sk = SecretKey::default();
