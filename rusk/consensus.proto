@@ -23,17 +23,16 @@ message WithdrawRequest {
 // Call from consensus
 message StakeRequest {
   bytes bls_key = 1;
-  fixed64 value = 3;
-  fixed64 locktime = 4;
-  rusk.Transaction tx = 5;
+  fixed64 value = 2; // Should be the leftover value that was burned in `tx`
+  fixed64 expiration_height = 3;
+  rusk.Transaction tx = 4;
 }
 
-// Call from block generator
-message BidRequest {
-  bytes m = 1;
-  fixed64 value = 2;
-  fixed64 locktime = 3;
-  rusk.Transaction tx = 4;
+// Call from consensus
+message WithdrawStakeRequest {
+  bytes bls_key = 1;
+  bytes sig = 2;
+  rusk.Transaction tx = 3;
 }
 
 // Call from consensus
@@ -46,4 +45,27 @@ message SlashRequest {
   bytes second_msg = 6;
   bytes second_sig = 7;
   rusk.Transaction tx = 8;
+}
+
+// Call from block generator
+message BidRequest {
+  bytes m = 1;
+  bytes commitment = 2; 
+  bytes encrypted_value = 3;
+  bytes encrypted_blinder = 4;
+  fixed64 expiration_height = 5;
+  bytes pk = 6;
+  bytes r = 7;
+  bytes z = 8;
+  rusk.Transaction tx = 9;
+}
+
+// Call from block generator
+message WithdrawBidRequest {
+  bytes commitment = 1;
+  bytes encrypted_value = 2;
+  bytes encrypted_blinder = 3;
+  bytes bid = 4;
+  bytes sig = 5;
+  rusk.Transaction tx = 6;
 }

@@ -23,6 +23,8 @@ message ContractCall {
     rusk.BidRequest bid = 4;
     rusk.SlashRequest slash = 5;
     rusk.DistributeRequest distribute = 6;
+    rusk.WithdrawStakeRequest withdraw_stake = 7;
+    rusk.WithdrawBidRequest withdraw_bid = 8;
   }
 }
 
