@@ -1,18 +1,29 @@
 syntax = "proto3";
 package rusk;
 
+// Call during block generation
+message DistributeRequest {
+  fixed64 total_reward = 1;
+  bytes provisioners_addresses = 2;
+  PublicKey bg_pk = 3;
+  rusk.Transaction = 4;
+}
+
 // Call from consensus
 message WithdrawRequest {
-  bytes bls_key = 1;
+  bytes ed_key = 1;
   bytes sig = 2;
   bytes msg = 3;
+  rusk.Transaction = 4;
 }
 
 // Call from consensus
 message StakeRequest {
   bytes bls_key = 1;
-  fixed64 value = 2;
-  fixed64 locktime = 3;
+  bytes ed_key = 2;
+  fixed64 value = 3;
+  fixed64 locktime = 4;
+  rusk.Transaction = 5;
 }
 
 // Call from block generator
@@ -20,6 +31,7 @@ message BidRequest {
   bytes m = 1;
   fixed64 value = 2;
   fixed64 locktime = 3;
+  rusk.Transaction = 4;
 }
 
 // Call from consensus
@@ -31,5 +43,5 @@ message SlashRequest {
   bytes first_sig = 5;
   bytes second_msg = 6;
   bytes second_sig = 7;
+  rusk.Transaction = 8;
 }
-  
