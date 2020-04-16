@@ -1,6 +1,6 @@
 use crate::{
     crypto, rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, Note,
-    NoteGenerator, NoteType, PublicKey, ViewKey,
+    NoteGenerator, NoteType, PublicKey, ViewKey, NONCEBYTES,
 };
 
 use std::convert::{TryFrom, TryInto};
@@ -8,6 +8,7 @@ use std::io::{self, Read, Write};
 use std::{cmp, fmt};
 
 use kelvin::{ByteHash, Content, Sink, Source};
+use unprolix::Constructor;
 
 /// Size of the encrypted value
 pub const ENCRYPTED_VALUE_SIZE: usize = 24;
@@ -15,7 +16,7 @@ pub const ENCRYPTED_VALUE_SIZE: usize = 24;
 pub const ENCRYPTED_BLINDING_FACTOR_SIZE: usize = 48;
 
 /// A note that hides its value and blinding factor
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Constructor)]
 pub struct ObfuscatedNote {
     value_commitment: BlsScalar,
     nonce: Nonce,
@@ -45,26 +46,164 @@ impl Default for ObfuscatedNote {
     }
 }
 
-impl ObfuscatedNote {
-    /// [`ObfuscatedNote`] constructor
-    pub fn new(
-        value_commitment: BlsScalar,
-        nonce: Nonce,
-        R: JubJubProjective,
-        pk_r: JubJubProjective,
-        idx: u64,
-        encrypted_value: [u8; ENCRYPTED_VALUE_SIZE],
-        encrypted_blinding_factor: [u8; ENCRYPTED_BLINDING_FACTOR_SIZE],
-    ) -> Self {
-        ObfuscatedNote {
-            value_commitment,
-            nonce,
-            R,
-            pk_r,
-            idx,
-            encrypted_value,
-            encrypted_blinding_factor,
-        }
+impl Read for ObfuscatedNote {
+    fn read(&mut self, mut buf: &mut [u8]) -> io::Result<usize> {
+        let mut n = 0;
+
+        buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| utils::serialize_bls_scalar(&self.value_commitment, c))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+        buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+
+        buf.chunks_mut(NONCEBYTES)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|mut c| Ok(c.write(&self.nonce.0)?))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += NONCEBYTES;
+        buf = &mut buf[NONCEBYTES..];
+
+        buf.chunks_mut(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| utils::serialize_compressed_jubjub(&self.R, c))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
+        buf = &mut buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
+
+        buf.chunks_mut(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| utils::serialize_compressed_jubjub(&self.pk_r, c))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
+        buf = &mut buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
+
+        buf.chunks_mut(8)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|mut c| Ok(c.write(&self.idx.to_le_bytes())?))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += 8;
+        buf = &mut buf[8..];
+
+        buf.chunks_mut(ENCRYPTED_VALUE_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|mut c| Ok(c.write(&self.encrypted_value)?))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += ENCRYPTED_VALUE_SIZE;
+        buf = &mut buf[ENCRYPTED_VALUE_SIZE..];
+
+        buf.chunks_mut(ENCRYPTED_BLINDING_FACTOR_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|mut c| Ok(c.write(&self.encrypted_blinding_factor)?))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += ENCRYPTED_BLINDING_FACTOR_SIZE;
+
+        Ok(n)
+    }
+}
+
+impl Write for ObfuscatedNote {
+    fn write(&mut self, mut buf: &[u8]) -> io::Result<usize> {
+        let mut n = 0;
+
+        let value_commitment = buf
+            .chunks(utils::BLS_SCALAR_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(utils::deserialize_bls_scalar)
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+        buf = &buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+
+        let nonce = buf
+            .chunks(NONCEBYTES)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| {
+                let mut n = [0x00u8; NONCEBYTES];
+                (&mut n[..]).write(c)?;
+                Ok(Nonce(n))
+            })
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += NONCEBYTES;
+        buf = &buf[NONCEBYTES..];
+
+        let R = buf
+            .chunks(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(utils::deserialize_compressed_jubjub)
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
+        buf = &buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
+
+        let pk_r = buf
+            .chunks(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(utils::deserialize_compressed_jubjub)
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
+        buf = &buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
+
+        let idx = buf
+            .chunks(8)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| {
+                let mut i = [0x00u8; 8];
+                (&mut i[..]).write(c)?;
+                Ok(u64::from_le_bytes(i))
+            })
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += 8;
+        buf = &buf[8..];
+
+        let encrypted_value = buf
+            .chunks(ENCRYPTED_VALUE_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| {
+                let mut v = [0x00u8; ENCRYPTED_VALUE_SIZE];
+                (&mut v[..]).write(c)?;
+                Ok(v)
+            })
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += ENCRYPTED_VALUE_SIZE;
+        buf = &buf[ENCRYPTED_VALUE_SIZE..];
+
+        let encrypted_blinding_factor = buf
+            .chunks(ENCRYPTED_BLINDING_FACTOR_SIZE)
+            .next()
+            .ok_or(Error::InvalidParameters)
+            .and_then(|c| {
+                let mut v = [0x00u8; ENCRYPTED_BLINDING_FACTOR_SIZE];
+                (&mut v[..]).write(c)?;
+                Ok(v)
+            })
+            .map_err::<io::Error, _>(|e| e.into())?;
+        n += ENCRYPTED_BLINDING_FACTOR_SIZE;
+
+        self.value_commitment = value_commitment;
+        self.nonce = nonce;
+        self.R = R;
+        self.pk_r = pk_r;
+        self.idx = idx;
+        self.encrypted_value = encrypted_value;
+        self.encrypted_blinding_factor = encrypted_blinding_factor;
+
+        Ok(n)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
     }
 }
 

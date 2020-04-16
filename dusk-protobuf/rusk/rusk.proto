@@ -1,12 +1,22 @@
 syntax = "proto3";
-package phoenix;
+package rusk;
 
 import "field.proto";
 import "keys.proto";
 import "note.proto";
 import "transaction.proto";
 
-message EchoMethod { string m = 1; }
+message EchoRequest {}
+message EchoResponse {}
+
+message ValidateStateTransitionRequest {
+  // List of transactions to be validated
+  repeated rusk.Transaction txs = 1;
+}
+message ValidateStateTransitionResponse {
+  // Status of the state transition
+  bool success = 1;
+}
 
 message GenerateSecretKeyRequest { bytes b = 1; }
 
@@ -45,9 +55,11 @@ message NewTransactionOutputRequest {
 }
 
 message NewTransactionRequest {
-  repeated TransactionInput inputs = 1;
-  repeated TransactionOutput outputs = 2;
-  fixed64 fee = 3;
+  SecretKey sk = 1;
+  repeated DecryptedNote inputs = 2;
+  PublicKey recipient = 3;
+  fixed64 value = 4;
+  fixed64 fee = 5;
 }
 
 message VerifyTransactionResponse {}
@@ -74,9 +86,15 @@ message KeysResponse {
   PublicKey pk = 2;
 }
 
-service Phoenix {
-  rpc Echo(EchoMethod) returns (EchoMethod) {}
+service Rusk {
+  // Simple echo request
+  rpc Echo(EchoRequest) returns (EchoResponse) {}
+  // Validate a set of transactions, returning false if at least one of the
+  // listed transactions is inconsistent
+  rpc ValidateStateTransition(ValidateStateTransitionRequest)
+      returns (ValidateStateTransitionResponse) {}
 
+  // Phoenix stuff
   rpc GenerateSecretKey(GenerateSecretKeyRequest) returns (SecretKey) {}
   rpc Keys(SecretKey) returns (KeysResponse) {}
 

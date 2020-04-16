@@ -17,8 +17,8 @@ macro_rules! value_commitment_preimage {
     ) => {
         $perm.copy_from_slice(&$zero_perm);
         $perm[0] = $bitflags;
-        $perm[1] = $item.value;
-        $perm[2] = $item.blinding_factor;
+        $perm[1] = *$item.value();
+        $perm[2] = *$item.blinding_factor();
 
         let (p_composer, p_pi, p_c) = GadgetStrategy::poseidon_gadget($composer, $pi, &mut $perm);
 
@@ -29,7 +29,7 @@ macro_rules! value_commitment_preimage {
         $pi.next().map(|p| *p = BlsScalar::zero());
         $acc = $composer.add(
             $acc,
-            $item.value,
+            *$item.value(),
             BlsScalar::one(),
             BlsScalar::one(),
             -BlsScalar::one(),
@@ -48,8 +48,8 @@ pub fn balance<'a, P>(
 where
     P: Iterator<Item = &'a mut BlsScalar>,
 {
-    let zero = tx.zero;
-    let bitflags = tx.three;
+    let zero = *tx.zero();
+    let bitflags = *tx.three();
     let zero_perm = [zero; hades252::WIDTH];
     let mut perm = [zero; hades252::WIDTH];
     let mut c;
@@ -57,12 +57,12 @@ where
     let mut inputs = zero;
     let mut outputs = zero;
 
-    for item in tx.inputs.iter() {
+    for item in tx.inputs().iter() {
         value_commitment_preimage!(item, composer, perm, zero_perm, bitflags, pi, zero, inputs, c);
 
         pi.next().map(|p| *p = BlsScalar::zero());
         composer.add_gate(
-            item.value_commitment,
+            *item.value_commitment(),
             c,
             zero,
             -BlsScalar::one(),
@@ -73,10 +73,10 @@ where
         );
     }
 
-    let fee = tx.fee;
+    let fee = *tx.fee();
     value_commitment_preimage!(fee, composer, perm, zero_perm, bitflags, pi, zero, outputs, c);
 
-    pi.next().map(|p| *p = fee.value_commitment_scalar);
+    pi.next().map(|p| *p = *fee.value_commitment_scalar());
     composer.add_gate(
         c,
         zero,
@@ -85,13 +85,13 @@ where
         BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::zero(),
-        fee.value_commitment_scalar,
+        *fee.value_commitment_scalar(),
     );
 
-    for item in tx.outputs.iter() {
+    for item in tx.outputs().iter() {
         value_commitment_preimage!(item, composer, perm, zero_perm, bitflags, pi, zero, outputs, c);
 
-        pi.next().map(|p| *p = item.value_commitment_scalar);
+        pi.next().map(|p| *p = *item.value_commitment_scalar());
         composer.add_gate(
             c,
             zero,
@@ -100,7 +100,7 @@ where
             BlsScalar::one(),
             BlsScalar::one(),
             BlsScalar::zero(),
-            item.value_commitment_scalar,
+            *item.value_commitment_scalar(),
         );
     }
 
@@ -121,7 +121,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::{utils, zk, NoteGenerator, SecretKey, Transaction, TransparentNote};
+    use crate::{crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
 
     #[test]
     fn tx_balance_invalid() {
@@ -134,7 +134,9 @@ mod tests {
         let pk = sk.public_key();
         let value = 60;
         let note = TransparentNote::output(&pk, value).0;
-        tx.push_input(note.to_transaction_input(sk)).unwrap();
+        let merkle_opening = crypto::MerkleProof::mock(note.hash());
+        tx.push_input(note.to_transaction_input(merkle_opening, sk))
+            .unwrap();
 
         let sk = SecretKey::default();
         let pk = sk.public_key();

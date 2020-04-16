@@ -1,7 +1,8 @@
-use crate::{BlsScalar, Note, NoteVariant};
+use crate::{BlsScalar, Error, Note, NoteVariant};
 
 use hades252::strategies::{ScalarStrategy, Strategy};
 use num_traits::Zero;
+use unprolix::{Constructor, Getters, Setters};
 
 pub const ARITY: usize = hades252::WIDTH - 1;
 pub const TREE_HEIGHT: usize = 17;
@@ -39,7 +40,29 @@ pub trait MerkleProofProvider {
     /// query_level(0,7) -> [Some(g), None, None]
     /// query_level(1,2) -> [Some(j), Some(k), Some(l)]
     /// query_level(2,0) -> [Some(m), None, None]
-    fn query_level(&self, depth: u32, idx: usize) -> [Option<BlsScalar>; ARITY];
+    fn query_level(&self, depth: u32, idx: usize) -> Result<[Option<BlsScalar>; ARITY], Error>;
+
+    /// Create a merkle opening proof provided a note position
+    fn opening(&self, note: &NoteVariant) -> Result<MerkleProof, Error> {
+        let mut idx = note.idx() as usize;
+        let mut levels = [MerkleLevel::default(); TREE_HEIGHT];
+
+        for l in 0u32..TREE_HEIGHT as u32 {
+            let level = self.query_level(l, idx)?;
+
+            levels[l as usize].idx = idx;
+            leaves_to_perm(level, &mut levels[l as usize].data);
+
+            idx /= ARITY;
+            levels[l as usize].idx -= idx * ARITY;
+        }
+
+        // TODO - Kelvin should provide the correct proof
+        Ok(MerkleProof::mock(note.hash()))
+    }
+
+    /// Return the merkle root of the state
+    fn root(&self) -> Result<BlsScalar, Error>;
 }
 
 fn leaves_to_perm(leaves: [Option<BlsScalar>; ARITY], perm: &mut [BlsScalar; hades252::WIDTH]) {
@@ -59,42 +82,14 @@ fn leaves_to_perm(leaves: [Option<BlsScalar>; ARITY], perm: &mut [BlsScalar; had
     perm[0] = BlsScalar::from(bitflags);
 }
 
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]
 pub struct MerkleProof {
-    pub levels: [MerkleLevel; TREE_HEIGHT],
+    levels: [MerkleLevel; TREE_HEIGHT],
 }
 
 impl MerkleProof {
-    pub fn new<T: MerkleProofProvider>(tree: &T, note: &NoteVariant) -> Self {
-        let mut idx = note.idx() as usize;
-        let mut levels = [MerkleLevel::default(); TREE_HEIGHT];
-
-        (0u32..TREE_HEIGHT as u32).for_each(|l| {
-            let level = tree.query_level(l, idx);
-
-            levels[l as usize].idx = idx;
-            leaves_to_perm(level, &mut levels[l as usize].data);
-
-            idx /= ARITY;
-            levels[l as usize].idx -= idx * ARITY;
-        });
-
-        // TODO - Kelvin should provide the correct proof
-        {
-            let mut perm = [BlsScalar::zero(); hades252::WIDTH];
-            let mut prev_hash;
-
-            levels[0].data[levels[0].idx + 1] = note.hash();
-            perm.copy_from_slice(&levels[0].data);
-            prev_hash = ScalarStrategy::new().poseidon(&mut perm);
-
-            for idx in 1..TREE_HEIGHT {
-                levels[idx].data[levels[idx].idx + 1] = prev_hash;
-                perm.copy_from_slice(&levels[idx].data);
-                prev_hash = ScalarStrategy::new().poseidon(&mut perm);
-            }
-        }
-
-        MerkleProof { levels }
+    pub fn root(&self) -> &BlsScalar {
+        &self.levels[TREE_HEIGHT - 1].data[1]
     }
 
     pub fn verify(&self) -> bool {
@@ -112,10 +107,28 @@ impl MerkleProof {
             valid && v
         })
     }
+
+    pub fn mock(mut bit: BlsScalar) -> Self {
+        let mut merkle_proof = MerkleProof::default();
+        let mut perm = [BlsScalar::zero(); hades252::WIDTH];
+
+        merkle_proof.levels[0].data[merkle_proof.levels[0].idx + 1] = bit;
+        perm.copy_from_slice(&merkle_proof.levels[0].data);
+        bit = ScalarStrategy::new().poseidon(&mut perm);
+
+        for idx in 1..TREE_HEIGHT {
+            merkle_proof.levels[idx].data[merkle_proof.levels[idx].idx + 1] = bit;
+            perm.copy_from_slice(&merkle_proof.levels[idx].data);
+            bit = ScalarStrategy::new().poseidon(&mut perm);
+        }
+
+        merkle_proof
+    }
 }
 
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Constructor, Getters, Setters)]
 pub struct MerkleLevel {
-    pub idx: usize,
-    pub data: [BlsScalar; hades252::WIDTH],
+    #[unprolix(copy)]
+    idx: usize,
+    data: [BlsScalar; hades252::WIDTH],
 }

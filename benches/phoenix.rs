@@ -15,7 +15,7 @@ fn prove_random(txs: &[Transaction]) {
 }
 
 fn verify_random(proved_txs: &[Transaction]) {
-    let tx = proved_txs.choose(&mut rand::thread_rng()).cloned().unwrap();
+    let mut tx = proved_txs.choose(&mut rand::thread_rng()).cloned().unwrap();
 
     tx.verify().unwrap();
 }

@@ -1,4 +1,4 @@
-use crate::{rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce};
+use crate::{rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, Nullifier};
 
 use std::convert::TryFrom;
 
@@ -30,6 +30,14 @@ impl From<BlsScalar> for rpc::Scalar {
 
         rpc::Scalar {
             data: data.to_vec(),
+        }
+    }
+}
+
+impl From<Nullifier> for rpc::Nullifier {
+    fn from(n: Nullifier) -> Self {
+        rpc::Nullifier {
+            h: Some((*n.s()).into()),
         }
     }
 }

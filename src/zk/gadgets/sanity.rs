@@ -17,9 +17,9 @@ where
 
     pi.next().map(|p| *p = basepoint.x);
     composer.add_gate(
-        tx.basepoint_affine_x,
-        tx.zero,
-        tx.zero,
+        *tx.basepoint_affine_x(),
+        *tx.zero(),
+        *tx.zero(),
         -BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::one(),
@@ -29,9 +29,9 @@ where
 
     pi.next().map(|p| *p = basepoint.y);
     composer.add_gate(
-        tx.basepoint_affine_y,
-        tx.zero,
-        tx.zero,
+        *tx.basepoint_affine_y(),
+        *tx.zero(),
+        *tx.zero(),
         -BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::one(),
@@ -41,9 +41,9 @@ where
 
     pi.next().map(|p| *p = basepoint_affine_xy);
     composer.add_gate(
-        tx.basepoint_affine_xy,
-        tx.zero,
-        tx.zero,
+        *tx.basepoint_affine_xy(),
+        *tx.zero(),
+        *tx.zero(),
         -BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::one(),
@@ -53,9 +53,9 @@ where
 
     pi.next().map(|p| *p = BlsScalar::zero());
     composer.add_gate(
-        tx.zero,
-        tx.zero,
-        tx.zero,
+        *tx.zero(),
+        *tx.zero(),
+        *tx.zero(),
         BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::one(),
@@ -65,9 +65,9 @@ where
 
     pi.next().map(|p| *p = BlsScalar::one());
     composer.add_gate(
-        tx.one,
-        tx.zero,
-        tx.zero,
+        *tx.one(),
+        *tx.zero(),
+        *tx.zero(),
         -BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::one(),
@@ -77,9 +77,9 @@ where
 
     pi.next().map(|p| *p = BlsScalar::from(2u8));
     composer.add_gate(
-        tx.two,
-        tx.zero,
-        tx.zero,
+        *tx.two(),
+        *tx.zero(),
+        *tx.zero(),
         -BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::one(),
@@ -89,9 +89,9 @@ where
 
     pi.next().map(|p| *p = BlsScalar::from(3u8));
     composer.add_gate(
-        tx.three,
-        tx.zero,
-        tx.zero,
+        *tx.three(),
+        *tx.zero(),
+        *tx.zero(),
         -BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::one(),
@@ -101,9 +101,9 @@ where
 
     pi.next().map(|p| *p = BlsScalar::from(15u8));
     composer.add_gate(
-        tx.fifteen,
-        tx.zero,
-        tx.zero,
+        *tx.fifteen(),
+        *tx.zero(),
+        *tx.zero(),
         -BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::one(),

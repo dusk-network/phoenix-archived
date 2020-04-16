@@ -1,10 +1,10 @@
 use crate::{
-    rpc, BlsScalar, Error, JubJubProjective, Nonce, Note, NoteType, ObfuscatedNote,
-    TransparentNote, ViewKey,
+    crypto, rpc, BlsScalar, Error, JubJubProjective, Nonce, Note, NoteGenerator, NoteType,
+    ObfuscatedNote, SecretKey, TransactionInput, TransparentNote, ViewKey,
 };
 
 use std::convert::{TryFrom, TryInto};
-use std::io;
+use std::io::{self, Read, Write};
 
 use kelvin::{ByteHash, Content, Sink, Source};
 
@@ -12,6 +12,82 @@ use kelvin::{ByteHash, Content, Sink, Source};
 pub enum NoteVariant {
     Transparent(TransparentNote),
     Obfuscated(ObfuscatedNote),
+}
+
+impl NoteVariant {
+    /// Create a new transaction input item provided the secret key for the nullifier generation
+    /// and value / blinding factor decrypt
+    pub fn to_transaction_input(
+        self,
+        merkle_opening: crypto::MerkleProof,
+        sk: SecretKey,
+    ) -> TransactionInput {
+        match self {
+            NoteVariant::Transparent(note) => note.to_transaction_input(merkle_opening, sk),
+            NoteVariant::Obfuscated(note) => note.to_transaction_input(merkle_opening, sk),
+        }
+    }
+}
+
+impl Read for NoteVariant {
+    fn read(&mut self, mut buf: &mut [u8]) -> io::Result<usize> {
+        if buf.is_empty() {
+            return Err(Error::InvalidParameters.into());
+        }
+
+        let mut n = 0;
+
+        buf[0] = match self {
+            NoteVariant::Transparent(_) => 0x00,
+            NoteVariant::Obfuscated(_) => 0x01,
+        };
+        n += 1;
+        buf = &mut buf[1..];
+
+        n += match self {
+            NoteVariant::Transparent(n) => n.read(buf)?,
+            NoteVariant::Obfuscated(n) => n.read(buf)?,
+        };
+
+        Ok(n)
+    }
+}
+
+impl Write for NoteVariant {
+    fn write(&mut self, mut buf: &[u8]) -> io::Result<usize> {
+        if buf.is_empty() {
+            return Err(Error::InvalidParameters.into());
+        }
+
+        let mut n = 0;
+
+        let note = buf[0];
+        n += 1;
+        buf = &buf[1..];
+
+        match note {
+            0x00 => {
+                let mut note = TransparentNote::default();
+                n += note.write(buf)?;
+                *self = NoteVariant::Transparent(note);
+            }
+            0x01 => {
+                let mut note = ObfuscatedNote::default();
+                n += note.write(buf)?;
+                *self = NoteVariant::Obfuscated(note);
+            }
+            _ => return Err(Error::InvalidParameters.into()),
+        };
+
+        Ok(n)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        match self {
+            NoteVariant::Transparent(n) => n.flush(),
+            NoteVariant::Obfuscated(n) => n.flush(),
+        }
+    }
 }
 
 impl Default for NoteVariant {

@@ -1,9 +1,10 @@
 use crate::{
-    crypto, rpc, utils, zk, BlsScalar, Error, Note, NoteGenerator, Nullifier, ObfuscatedNote,
-    PublicKey, SecretKey, TransparentNote,
+    crypto, rpc, utils, zk, BlsScalar, Error, Note, NoteGenerator, ObfuscatedNote, PublicKey,
+    SecretKey, TransparentNote,
 };
 
 use std::convert::TryFrom;
+use std::io::{self, Read, Write};
 use std::path::Path;
 use std::{fmt, ptr};
 
@@ -11,12 +12,14 @@ use num_traits::Zero;
 use rand::distributions::{Distribution, Standard};
 use rand::Rng;
 
+pub const MAX_NOTES_PER_TRANSACTION: usize = 1 + 2;
 pub const MAX_INPUT_NOTES_PER_TRANSACTION: usize = 1;
 pub const MAX_OUTPUT_NOTES_PER_TRANSACTION: usize = 2;
 
 /// Maximum allowed number of notes per transaction.
-pub const MAX_NOTES_PER_TRANSACTION: usize =
-    MAX_INPUT_NOTES_PER_TRANSACTION + MAX_OUTPUT_NOTES_PER_TRANSACTION;
+
+/// Serialized bytes size
+pub const TX_SERIALIZED_SIZE: usize = 1684;
 
 pub use item::{TransactionInput, TransactionItem, TransactionOutput};
 
@@ -37,7 +40,7 @@ pub struct Transaction {
     idx_outputs: usize,
     outputs: [TransactionOutput; MAX_OUTPUT_NOTES_PER_TRANSACTION],
     proof: Option<zk::Proof>,
-    public_inputs: Vec<BlsScalar>,
+    public_inputs: Option<zk::ZkPublicInputs>,
 }
 
 impl Default for Transaction {
@@ -49,8 +52,137 @@ impl Default for Transaction {
             idx_outputs: 0,
             outputs: [*DEFAULT_OUTPUT; MAX_OUTPUT_NOTES_PER_TRANSACTION],
             proof: None,
-            public_inputs: vec![BlsScalar::zero(); zk::PI_LEN],
+            public_inputs: None,
         }
+    }
+}
+
+impl Read for Transaction {
+    fn read(&mut self, mut buf: &mut [u8]) -> io::Result<usize> {
+        self.clear_sensitive_info();
+
+        let mut n = 0;
+
+        // Serialize proof
+        let proof = self
+            .proof
+            .as_ref()
+            .map(zk::proof_to_bytes)
+            .unwrap_or(Ok([0x00u8; zk::SERIALIZED_PROOF_SIZE]))
+            .map_err::<io::Error, _>(|e| e.into())?;
+        let b = (&proof[..]).read(buf)?;
+        n += b;
+        buf = &mut buf[b..];
+
+        // Serialize tx inputs (merkle root and nullifier)
+        let inputs = self.idx_inputs.to_le_bytes();
+        let b = (&inputs[..]).read(buf)?;
+        n += b;
+        buf = &mut buf[b..];
+
+        for i in 0..MAX_INPUT_NOTES_PER_TRANSACTION {
+            buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
+                .next()
+                .ok_or(Error::InvalidParameters)
+                .and_then(|c| utils::serialize_bls_scalar(&self.inputs[i].merkle_root, c))
+                .map_err::<io::Error, _>(|e| e.into())?;
+            n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+            buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+
+            buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
+                .next()
+                .ok_or(Error::InvalidParameters)
+                .and_then(|c| utils::serialize_bls_scalar(self.inputs[i].nullifier.s(), c))
+                .map_err::<io::Error, _>(|e| e.into())?;
+            n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+            buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+        }
+
+        // Serialize tx outputs
+        let outputs = self.idx_outputs.to_le_bytes();
+        let b = (&outputs[..]).read(buf)?;
+        n += b;
+        buf = &mut buf[b..];
+
+        for i in 0..MAX_OUTPUT_NOTES_PER_TRANSACTION {
+            let b = self.outputs[i].read(buf)?;
+            n += b;
+            buf = &mut buf[b..];
+        }
+
+        let b = self.fee.read(buf)?;
+        n += b;
+
+        Ok(n)
+    }
+}
+
+impl Write for Transaction {
+    fn write(&mut self, mut buf: &[u8]) -> io::Result<usize> {
+        let mut n = 0;
+
+        // Deserialize proof
+        let mut proof = [0x00u8; zk::SERIALIZED_PROOF_SIZE];
+        let b = (&mut proof[..]).write(buf)?;
+        let proof = zk::bytes_to_proof(&proof[..]).map_err::<io::Error, _>(|e| e.into())?;
+        self.proof.replace(proof);
+        n += b;
+        buf = &buf[b..];
+
+        // Deserialize tx inputs (merkle root and nullifier)
+        let mut inputs = 0usize.to_le_bytes();
+        let b = (&mut inputs[..]).write(buf)?;
+        self.idx_inputs = usize::from_le_bytes(inputs);
+        n += b;
+        buf = &buf[b..];
+
+        for i in 0..MAX_INPUT_NOTES_PER_TRANSACTION {
+            let merkle_root = buf
+                .chunks(utils::BLS_SCALAR_SERIALIZED_SIZE)
+                .next()
+                .ok_or(Error::InvalidParameters)
+                .and_then(utils::deserialize_bls_scalar)
+                .map_err::<io::Error, _>(|e| e.into())?;
+            n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+            buf = &buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+
+            let nullifier = buf
+                .chunks(utils::BLS_SCALAR_SERIALIZED_SIZE)
+                .next()
+                .ok_or(Error::InvalidParameters)
+                .and_then(utils::deserialize_bls_scalar)
+                .map_err::<io::Error, _>(|e| e.into())?;
+            n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+            buf = &buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+
+            self.inputs[i] = TransactionInput::obfuscated(nullifier.into(), merkle_root);
+        }
+
+        // Deserialize tx outputs
+        let mut outputs = 0usize.to_le_bytes();
+        let b = (&mut outputs[..]).write(buf)?;
+        self.idx_outputs = usize::from_le_bytes(outputs);
+        n += b;
+        buf = &buf[b..];
+
+        for i in 0..MAX_OUTPUT_NOTES_PER_TRANSACTION {
+            let b = self.outputs[i].write(buf)?;
+            n += b;
+            buf = &buf[b..];
+        }
+
+        let b = self.fee.write(buf)?;
+        n += b;
+
+        Ok(n)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        for i in 0..MAX_OUTPUT_NOTES_PER_TRANSACTION {
+            self.outputs[i].flush()?;
+        }
+
+        self.fee.flush()
     }
 }
 
@@ -81,7 +213,9 @@ impl Distribution<Transaction> for Standard {
                 let sk = SecretKey::default();
                 let pk = sk.public_key();
                 let note = TransparentNote::output(&pk, value).0;
-                tx.push_input(note.to_transaction_input(sk))
+
+                let merkle_opening = crypto::MerkleProof::mock(note.hash());
+                tx.push_input(note.to_transaction_input(merkle_opening, sk))
                     .unwrap_or_default();
             }
         });
@@ -161,7 +295,7 @@ impl Transaction {
 
     /// Append an input to the transaction
     pub fn push_input(&mut self, item: TransactionInput) -> Result<(), Error> {
-        if self.idx_inputs > MAX_INPUT_NOTES_PER_TRANSACTION {
+        if self.idx_inputs >= MAX_INPUT_NOTES_PER_TRANSACTION {
             return Err(Error::MaximumNotes);
         }
 
@@ -173,7 +307,7 @@ impl Transaction {
 
     /// Append an output to the transaction
     pub fn push_output(&mut self, item: TransactionOutput) -> Result<(), Error> {
-        if self.idx_outputs > MAX_OUTPUT_NOTES_PER_TRANSACTION {
+        if self.idx_outputs >= MAX_OUTPUT_NOTES_PER_TRANSACTION {
             return Err(Error::MaximumNotes);
         }
 
@@ -276,12 +410,10 @@ impl Transaction {
         }
     }
 
-    pub fn public_inputs(&self) -> &Vec<BlsScalar> {
-        &self.public_inputs
-    }
-
-    pub fn public_inputs_mut(&mut self) -> &mut Vec<BlsScalar> {
-        &mut self.public_inputs
+    fn recalculate_pi(&mut self) {
+        self.sort_items();
+        let public_inputs = zk::ZkPublicInputs::from(&*self);
+        self.public_inputs.replace(public_inputs);
     }
 
     /// Perform the zk proof, and save internally the created r1cs circuit and the commitment
@@ -297,7 +429,7 @@ impl Transaction {
             return Err(Error::MaximumNotes);
         }
 
-        self.sort_items();
+        self.recalculate_pi();
 
         let proof = zk::prove(self);
         self.proof.replace(proof);
@@ -315,16 +447,35 @@ impl Transaction {
         self.proof.replace(proof);
     }
 
+    /// Remove all the sensitive info from the transaction used to build the zk proof so it can be
+    /// safely broadcasted
+    pub fn clear_sensitive_info(&mut self) {
+        self.inputs
+            .iter_mut()
+            .for_each(|o| o.clear_sensitive_info());
+
+        self.outputs
+            .iter_mut()
+            .for_each(|o| o.clear_sensitive_info());
+    }
+
     /// Verify a previously proven transaction with [`Transaction::prove`].
     ///
     /// Doesn't depend on the transaction items secret data. Depends only on the constructed
     /// circuit and commitment points.
     ///
     /// The transaction items will be sorted for verification correctness
-    pub fn verify(&self) -> Result<(), Error> {
+    pub fn verify(&mut self) -> Result<(), Error> {
+        if self.public_inputs.is_none() {
+            self.recalculate_pi();
+        }
+
+        let pi = self.public_inputs.ok_or(Error::InvalidParameters)?;
+        let pi = pi.generate_pi();
+
         let proof = self.proof.as_ref().ok_or(Error::Generic)?;
 
-        if zk::verify(proof, &self.public_inputs[..]) {
+        if zk::verify(proof, pi.as_slice()) {
             Ok(())
         } else {
             Err(Error::Generic)
@@ -369,7 +520,7 @@ impl Transaction {
     }
 
     /// Attempt to create a transaction from a rpc request.
-    pub fn try_from_rpc_transaction<P: AsRef<Path>>(
+    pub fn try_from_rpc_transaction_db<P: AsRef<Path> + Clone>(
         db_path: P,
         tx: rpc::Transaction,
     ) -> Result<Self, Error> {
@@ -379,25 +530,54 @@ impl Transaction {
             transaction.set_fee(TransactionOutput::try_from(f)?);
         }
 
-        tx.nullifiers
-            .iter()
+        tx.inputs
+            .into_iter()
             .map(|i| {
-                let nul = Nullifier::from(i);
-                let mut item = TransactionInput::default();
-                item.nullifier = nul;
-                transaction.push_input(item)
+                TransactionInput::try_from_rpc_transaction_input(db_path.clone(), i)
+                    .and_then(|i| transaction.push_input(i))
             })
             .collect::<Result<_, _>>()?;
 
         tx.outputs
-            .iter()
-            .map(|o| {
-                TransactionOutput::try_from(o.clone()).and_then(|o| transaction.push_output(o))
-            })
+            .into_iter()
+            .map(|o| TransactionOutput::try_from(o).and_then(|o| transaction.push_output(o)))
             .collect::<Result<_, _>>()?;
 
-        let proof = zk::bytes_to_proof(tx.proof.as_slice())?;
-        transaction.set_proof(proof);
+        let proof = tx.proof;
+        if !proof.is_empty() {
+            let proof = zk::bytes_to_proof(proof.as_slice())?;
+            transaction.set_proof(proof);
+        }
+
+        Ok(transaction)
+    }
+}
+
+impl TryFrom<rpc::Transaction> for Transaction {
+    type Error = Error;
+
+    fn try_from(tx: rpc::Transaction) -> Result<Transaction, Self::Error> {
+        let mut transaction = Transaction::default();
+
+        if let Some(f) = tx.fee {
+            transaction.set_fee(TransactionOutput::try_from(f)?);
+        }
+
+        tx.inputs
+            .into_iter()
+            .map(|i| TransactionInput::try_from(i).and_then(|i| transaction.push_input(i)))
+            .collect::<Result<_, _>>()?;
+
+        tx.outputs
+            .into_iter()
+            .map(|o| TransactionOutput::try_from(o).and_then(|o| transaction.push_output(o)))
+            .collect::<Result<_, _>>()?;
+
+        let proof = tx.proof;
+        if !proof.is_empty() {
+            let proof = zk::bytes_to_proof(proof.as_slice())?;
+            transaction.set_proof(proof);
+        }
 
         Ok(transaction)
     }
@@ -407,8 +587,30 @@ impl TryFrom<Transaction> for rpc::Transaction {
     type Error = Error;
 
     fn try_from(tx: Transaction) -> Result<rpc::Transaction, Self::Error> {
-        let nullifiers = tx.inputs.iter().map(|i| (*i).into()).collect();
-        let outputs = tx.outputs.iter().map(|o| (*o).into()).collect();
+        let inputs = tx
+            .inputs
+            .iter()
+            .filter_map(|i| {
+                if i.value() > 0 {
+                    Some((*i).into())
+                } else {
+                    None
+                }
+            })
+            .collect();
+
+        let outputs = tx
+            .outputs
+            .iter()
+            .filter_map(|o| {
+                if o.value() > 0 {
+                    Some((*o).into())
+                } else {
+                    None
+                }
+            })
+            .collect();
+
         let fee = Some(tx.fee.into());
 
         let proof = tx
@@ -417,14 +619,11 @@ impl TryFrom<Transaction> for rpc::Transaction {
             .transpose()?
             .unwrap_or_default();
 
-        let public_inputs = vec![];
-
         Ok(rpc::Transaction {
-            nullifiers,
+            inputs,
             outputs,
             fee,
             proof,
-            public_inputs,
         })
     }
 }

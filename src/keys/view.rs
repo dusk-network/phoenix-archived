@@ -3,16 +3,16 @@ use crate::{rpc, utils, Error, JubJubProjective, JubJubScalar, PublicKey, Secret
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
 
+use unprolix::{Constructor, Getters, Setters};
+
 /// Pair of a secret a and public b·G
 ///
 /// The notes are encrypted against secret a, so this is used to decrypt the blinding factor and
 /// value
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]
 pub struct ViewKey {
-    /// Secret scalar
-    pub a: JubJubScalar,
-    /// Public field element
-    pub B: JubJubProjective,
+    a: JubJubScalar,
+    B: JubJubProjective,
 }
 
 impl Default for ViewKey {
@@ -22,11 +22,6 @@ impl Default for ViewKey {
 }
 
 impl ViewKey {
-    /// [`ViewKey`] constructor
-    pub fn new(a: JubJubScalar, B: JubJubProjective) -> Self {
-        ViewKey { a, B }
-    }
-
     /// Derive the secret to deterministically construct a [`PublicKey`]
     pub fn public_key(&self) -> PublicKey {
         let A = utils::mul_by_basepoint_jubjub(&self.a);

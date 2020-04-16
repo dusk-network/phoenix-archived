@@ -35,6 +35,8 @@ kelvin-hamt = "0.8"
 bytehash = "0.2"
 lazy_static = "1.4"
 num-traits = "0.2"
+unprolix = "0.1"
+hades252 = { git = "https://github.com/dusk-network/Hades252.git" }
 
 [dependencies.algebra]
 git = "https://github.com/scipr-lab/zexe/"
@@ -46,10 +48,6 @@ branch = "master"
 
 [dependencies.ff-fft]
 git = "https://github.com/scipr-lab/zexe/"
-
-[dependencies.hades252]
-git = "https://github.com/dusk-network/Hades252.git"
-branch = "plonk_zexe"
 
 [dependencies.plonk]
 git = "https://github.com/dusk-network/plonk.git"
@@ -64,6 +62,7 @@ tonic-build = { version = "0.1", default-features = false, features = ["transpor
 
 [dev-dependencies]
 criterion = "0.3"
+tempdir = "0.3"
 
 [[bench]]
 name = "phoenix"
@@ -86,3 +85,20 @@ debug = false
 lto = true
 overflow-checks = false
 debug-assertions = false
+
+[profile.dev]
+overflow-checks = false
+
+# This is a temporary fix until we stop to use zexe; it's needed to replace
+# in the dependency graph the library below with the revision specified.
+# Unfortunately `patch` works matching just the URL - doesn't take in account
+# revision or branches, see:  https://github.com/rust-lang/cargo/issues/5478
+#
+# A quick workaround is changing the URL with double slashes
+[patch.'https://github.com/scipr-lab/zexe/']
+algebra = { git = 'https://github.com/scipr-lab//zexe', rev="2c22b77" }
+ff-fft = { git = "https://github.com/scipr-lab//zexe", rev="2c22b77" }
+bench-utils = { git = "https://github.com/scipr-lab//zexe", rev="2c22b77" }
+
+[patch.'https://github.com/scipr-lab/poly-commit']
+poly-commit = { git = "https://github.com/scipr-lab//poly-commit", rev="77676213"}
