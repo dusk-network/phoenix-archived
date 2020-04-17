@@ -2,58 +2,126 @@
 
 ## Table of Contents
 
+- [consensus.proto](#consensus.proto)
+	- [DistributeRequest](#rusk.DistributeRequest)
+	- [WithdrawRequest](#rusk.WithdrawRequest)
+	- [StakeRequest](#rusk.StakeRequest)
+	- [WithdrawStakeRequest](#rusk.WithdrawStakeRequest)
+	- [SlashRequest](#rusk.SlashRequest)
+	- [BidRequest](#rusk.BidRequest)
+	- [WithdrawBidRequest](#rusk.WithdrawBidRequest)
+
 - [field.proto](#field.proto)
-    - [CompressedPoint](#phoenix.CompressedPoint)
-    - [Nonce](#phoenix.Nonce)
-    - [Scalar](#phoenix.Scalar)
+    - [CompressedPoint](#rusk.CompressedPoint)
+    - [Nonce](#rusk.Nonce)
+    - [Scalar](#rusk.Scalar)
 
 - [keys.proto](#keys.proto)
-    - [PublicKey](#phoenix.PublicKey)
-    - [SecretKey](#phoenix.SecretKey)
-    - [ViewKey](#phoenix.ViewKey)
+    - [PublicKey](#rusk.PublicKey)
+    - [SecretKey](#rusk.SecretKey)
+    - [ViewKey](#rusk.ViewKey)
 
 - [note.proto](#note.proto)
-    - [DecryptedNote](#phoenix.DecryptedNote)
-    - [Note](#phoenix.Note)
-    - [Nullifier](#phoenix.Nullifier)
-    - [NoteType](#phoenix.NoteType)
-
-- [phoenix.proto](#phoenix.proto)
-    - [DecryptNoteRequest](#phoenix.DecryptNoteRequest)
-    - [EchoMethod](#phoenix.EchoMethod)
-    - [FetchNoteRequest](#phoenix.FetchNoteRequest)
-    - [GenerateSecretKeyRequest](#phoenix.GenerateSecretKeyRequest)
-    - [KeysResponse](#phoenix.KeysResponse)
-    - [NewTransactionInputRequest](#phoenix.NewTransactionInputRequest)
-    - [NewTransactionOutputRequest](#phoenix.NewTransactionOutputRequest)
-    - [NewTransactionRequest](#phoenix.NewTransactionRequest)
-    - [NullifierRequest](#phoenix.NullifierRequest)
-    - [NullifierResponse](#phoenix.NullifierResponse)
-    - [NullifierStatusRequest](#phoenix.NullifierStatusRequest)
-    - [NullifierStatusResponse](#phoenix.NullifierStatusResponse)
-    - [OwnedNotesRequest](#phoenix.OwnedNotesRequest)
-    - [OwnedNotesResponse](#phoenix.OwnedNotesResponse)
-    - [SetFeePkRequest](#phoenix.SetFeePkRequest)
-    - [StoreTransactionsRequest](#phoenix.StoreTransactionsRequest)
-    - [StoreTransactionsResponse](#phoenix.StoreTransactionsResponse)
-    - [VerifyTransactionResponse](#phoenix.VerifyTransactionResponse)
-    - [VerifyTransactionRootRequest](#phoenix.VerifyTransactionRootRequest)
-    - [VerifyTransactionRootResponse](#phoenix.VerifyTransactionRootResponse)
-    - [Phoenix](#phoenix.Phoenix)
+    - [DecryptedNote](#rusk.DecryptedNote)
+    - [Note](#rusk.Note)
+    - [Nullifier](#rusk.Nullifier)
+    - [NoteType](#rusk.NoteType)
 
 - [rusk.proto](#rusk.proto)
-    - [EchoRequest](#phoenix.EchoRequest)
-    - [EchoResponse](#phoenix.EchoResponse)
-    - [ValidateStateTransitionRequest](#phoenix.ValidateStateTransitionRequest)
-    - [ValidateStateTransitionResponse](#phoenix.ValidateStateTransitionResponse)
-    - [Rusk](#phoenix.Rusk)
+    - [EchoRequest](#rusk.EchoRequest)
+    - [EchoResponse](#rusk.EchoResponse)
+	- [ContractCall](#rusk.ContractCall)
+    - [ValidateStateTransitionRequest](#rusk.ValidateStateTransitionRequest)
+    - [ValidateStateTransitionResponse](#rusk.ValidateStateTransitionResponse)
+    - [ExecuteStateTransitionRequest](#rusk.ExecuteStateTransitionRequest)
+    - [ExecuteStateTransitionResponse](#rusk.ExecuteStateTransitionResponse)
+    - [GenerateSecretKeyRequest](#rusk.GenerateSecretKeyRequest)
+    - [KeysResponse](#rusk.KeysResponse)
+    - [NewTransactionRequest](#rusk.NewTransactionRequest)
+    - [VerifyTransactionResponse](#rusk.VerifyTransactionResponse)
+    - [Rusk](#rusk.Rusk)
 
 - [transaction.proto](#transaction.proto)
-    - [Transaction](#phoenix.Transaction)
-    - [TransactionInput](#phoenix.TransactionInput)
-    - [TransactionOutput](#phoenix.TransactionOutput)
+    - [Transaction](#rusk.Transaction)
+    - [TransactionInput](#rusk.TransactionInput)
+    - [TransactionOutput](#rusk.TransactionOutput)
 
 - [Scalar Value Types](#scalar-value-types)
+
+## consensus.proto
+
+### DistributeRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| total_reward | [fixed64](#fixed64) |  | Total block reward (coinbase + fees) |
+| provisioners_addresses | [bytes](#bytes) |  | The addresses of all provisioners involved in finalizing the block |
+| bg_pk | [PublicKey](#rusk.PublicKey) |  | Wallet public key of the block generator who made the block |
+| tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
+
+### WithdrawRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bls_key | [bytes](#bytes) |  | BLS public key of the node requesting withdrawal |
+| sig | [bytes](#bytes) |  | A signature made using the BLS key, to prove ownership of said key |
+| msg | [bytes](#bytes) |  | The message signed with the BLS key |
+| tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
+
+### StakeRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bls_key | [bytes](#bytes) |  | The BLS public key of the provisioner |
+| value | [fixed64](#fixed64) |  | The amount of DUSK to stake (should correspond to the amount burned in `tx`) |
+| expiration_height | [fixed64](#fixed64) |  | The block height at which this stake should unlock |
+| tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
+
+### WithdrawStakeRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bls_key | [bytes](#bytes) |  | The BLS public key of the provisioner |
+| sig | [bytes](#bytes) |  | A BLS signature of the BLS public key and the deposit height of the stake to be withdrawn |
+| tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
+
+### SlashRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bls_key | [bytes](#bytes) |  | The BLS public key of the provisioner to be slashed |
+| step | [uint32](#uint32) |  | The step at which the offense happened |
+| round | [fixed64](#fixed64) |  | The round at which the offense happened |
+| first_msg | [bytes](#bytes) |  | The first message sent by the offender |
+| first_sig | [bytes](#bytes) |  | The signature of the first message |
+| second_msg | [bytes](#bytes) |  | The second message sent by the offender |
+| second_sig | [bytes](#bytes) |  | The signature of the second message |
+| tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
+
+### BidRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| m | [bytes](#bytes) |  | Bid M value |
+| commitment | [bytes](#bytes) |  | Commitment to the value being bidded |
+| encrypted_value | [bytes](#bytes) |  | The encrypted value that's being bid |
+| encrypted_blinder | [bytes](#bytes) |  | The encrypted blinder |
+| expiration_height | [fixed64](#fixed64) |  | The height at which this bid will unlock |
+| pk | [bytes](#bytes) |  | Ed25519 Public key of the bidder |
+| r | [bytes](#bytes) |  | A random scalar |
+| z | [bytes](#bytes) |  | Another random scalar |
+| tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
+
+### WithdrawBidRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| commitment | [bytes](#bytes) |  | Commitment to the value being bidded |
+| encrypted_value | [bytes](#bytes) |  | The encrypted value that's being bid |
+| encrypted_blinder | [bytes](#bytes) |  | The encrypted blinder |
+| bid | [bytes](#bytes) |  | Bid X value |
+| sig | [bytes](#bytes) |  | Ed25519 signature of the bidder's public key, and the deposit height of the bid being withdrawn |
+| tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
 
 ## field.proto
 
@@ -81,22 +149,22 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| a_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
-| b_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
+| a_g | [CompressedPoint](#rusk.CompressedPoint) |  |  |
+| b_g | [CompressedPoint](#rusk.CompressedPoint) |  |  |
 
 ### SecretKey
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| a | [Scalar](#phoenix.Scalar) |  |  |
-| b | [Scalar](#phoenix.Scalar) |  |  |
+| a | [Scalar](#rusk.Scalar) |  |  |
+| b | [Scalar](#rusk.Scalar) |  |  |
 
 ### ViewKey
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| a | [Scalar](#phoenix.Scalar) |  |  |
-| b_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
+| a | [Scalar](#rusk.Scalar) |  |  |
+| b_g | [CompressedPoint](#rusk.CompressedPoint) |  |  |
 
 ## note.proto
 
@@ -104,15 +172,15 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| note_type | [NoteType](#phoenix.NoteType) |  |  |
+| note_type | [NoteType](#rusk.NoteType) |  |  |
 | pos | [fixed64](#fixed64) |  |  |
 | value | [fixed64](#fixed64) |  |  |
-| nonce | [Nonce](#phoenix.Nonce) |  |  |
-| r_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
-| pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
-| value_commitment | [Scalar](#phoenix.Scalar) |  |  |
-| blinding_factor | [Scalar](#phoenix.Scalar) |  |  |
-| transparent_blinding_factor | [Scalar](#phoenix.Scalar) |  |  |
+| nonce | [Nonce](#rusk.Nonce) |  |  |
+| r_g | [CompressedPoint](#rusk.CompressedPoint) |  |  |
+| pk_r | [CompressedPoint](#rusk.CompressedPoint) |  |  |
+| value_commitment | [Scalar](#rusk.Scalar) |  |  |
+| blinding_factor | [Scalar](#rusk.Scalar) |  |  |
+| transparent_blinding_factor | [Scalar](#rusk.Scalar) |  |  |
 | encrypted_blinding_factor | [bytes](#bytes) |  |  |
 | transparent_value | [fixed64](#fixed64) |  |  |
 | encrypted_value | [bytes](#bytes) |  |  |
@@ -121,13 +189,13 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| note_type | [NoteType](#phoenix.NoteType) |  |  |
+| note_type | [NoteType](#rusk.NoteType) |  |  |
 | pos | [fixed64](#fixed64) |  |  |
-| nonce | [Nonce](#phoenix.Nonce) |  |  |
-| r_g | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
-| pk_r | [CompressedPoint](#phoenix.CompressedPoint) |  |  |
-| value_commitment | [Scalar](#phoenix.Scalar) |  |  |
-| transparent_blinding_factor | [Scalar](#phoenix.Scalar) |  |  |
+| nonce | [Nonce](#rusk.Nonce) |  |  |
+| r_g | [CompressedPoint](#rusk.CompressedPoint) |  |  |
+| pk_r | [CompressedPoint](#rusk.CompressedPoint) |  |  |
+| value_commitment | [Scalar](#rusk.Scalar) |  |  |
+| transparent_blinding_factor | [Scalar](#rusk.Scalar) |  |  |
 | encrypted_blinding_factor | [bytes](#bytes) |  |  |
 | transparent_value | [fixed64](#fixed64) |  |  |
 | encrypted_value | [bytes](#bytes) |  |  |
@@ -136,7 +204,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| h | [Scalar](#phoenix.Scalar) |  |  |
+| h | [Scalar](#rusk.Scalar) |  |  |
 
 ### NoteType
 
@@ -145,26 +213,7 @@
 | TRANSPARENT | 0 |  |
 | OBFUSCATED | 1 |  |
 
-## phoenix.proto
-
-### DecryptNoteRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| note | [Note](#phoenix.Note) |  |  |
-| vk | [ViewKey](#phoenix.ViewKey) |  |  |
-
-### EchoMethod
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| m | [string](#string) |  |  |
-
-### FetchNoteRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| pos | [fixed64](#fixed64) |  |  |
+## rusk.proto
 
 ### GenerateSecretKeyRequest
 
@@ -176,123 +225,22 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| vk | [ViewKey](#phoenix.ViewKey) |  |  |
-| pk | [PublicKey](#phoenix.PublicKey) |  |  |
-
-### NewTransactionInputRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| pos | [fixed64](#fixed64) |  |  |
-| sk | [SecretKey](#phoenix.SecretKey) |  |  |
-
-### NewTransactionOutputRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| note_type | [NoteType](#phoenix.NoteType) |  |  |
-| pk | [PublicKey](#phoenix.PublicKey) |  |  |
-| value | [fixed64](#fixed64) |  |  |
+| vk | [ViewKey](#rusk.ViewKey) |  |  |
+| pk | [PublicKey](#rusk.PublicKey) |  |  |
 
 ### NewTransactionRequest
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| inputs | [TransactionInput](#phoenix.TransactionInput) | repeated |  |
-| outputs | [TransactionOutput](#phoenix.TransactionOutput) | repeated |  |
+| inputs | [TransactionInput](#rusk.TransactionInput) | repeated |  |
+| outputs | [TransactionOutput](#rusk.TransactionOutput) | repeated |  |
 | fee | [fixed64](#fixed64) |  |  |
-
-### NullifierRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| note | [Note](#phoenix.Note) |  |  |
-| sk | [SecretKey](#phoenix.SecretKey) |  |  |
-
-### NullifierResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| nullifier | [Nullifier](#phoenix.Nullifier) |  |  |
-
-### NullifierStatusRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| nullifier | [Nullifier](#phoenix.Nullifier) |  |  |
-
-### NullifierStatusResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| unspent | [bool](#bool) |  |  |
-
-### OwnedNotesRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| vk | [ViewKey](#phoenix.ViewKey) |  |  |
-| notes | [Note](#phoenix.Note) | repeated |  |
-
-### OwnedNotesResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| notes | [DecryptedNote](#phoenix.DecryptedNote) | repeated |  |
-
-### SetFeePkRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| transaction | [Transaction](#phoenix.Transaction) |  |  |
-| pk | [PublicKey](#phoenix.PublicKey) |  |  |
-
-### StoreTransactionsRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| transactions | [Transaction](#phoenix.Transaction) | repeated |  |
-
-### StoreTransactionsResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| notes | [Note](#phoenix.Note) | repeated |  |
-| root | [Scalar](#phoenix.Scalar) |  |  |
 
 ### VerifyTransactionResponse
 
-### VerifyTransactionRootRequest
-
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction | [Transaction](#phoenix.Transaction) |  |  |
-| root | [Scalar](#phoenix.Scalar) |  |  |
-
-### VerifyTransactionRootResponse
-
-### Phoenix
-
-| Method Name | Request Type | Response Type | Description |
-| ----------- | ------------ | ------------- | ------------|
-| Echo | [EchoMethod](#phoenix.EchoMethod) | [EchoMethod](#phoenix.EchoMethod) |  |
-| GenerateSecretKey | [GenerateSecretKeyRequest](#phoenix.GenerateSecretKeyRequest) | [SecretKey](#phoenix.SecretKey) |  |
-| Keys | [SecretKey](#phoenix.SecretKey) | [KeysResponse](#phoenix.KeysResponse) |  |
-| Nullifier | [NullifierRequest](#phoenix.NullifierRequest) | [NullifierResponse](#phoenix.NullifierResponse) |  |
-| NullifierStatus | [NullifierStatusRequest](#phoenix.NullifierStatusRequest) | [NullifierStatusResponse](#phoenix.NullifierStatusResponse) |  |
-| FetchNote | [FetchNoteRequest](#phoenix.FetchNoteRequest) | [Note](#phoenix.Note) |  |
-| DecryptNote | [DecryptNoteRequest](#phoenix.DecryptNoteRequest) | [DecryptedNote](#phoenix.DecryptedNote) |  |
-| OwnedNotes | [OwnedNotesRequest](#phoenix.OwnedNotesRequest) | [OwnedNotesResponse](#phoenix.OwnedNotesResponse) |  |
-| FullScanOwnedNotes | [ViewKey](#phoenix.ViewKey) | [OwnedNotesResponse](#phoenix.OwnedNotesResponse) |  |
-| NewTransactionInput | [NewTransactionInputRequest](#phoenix.NewTransactionInputRequest) | [TransactionInput](#phoenix.TransactionInput) |  |
-| NewTransactionOutput | [NewTransactionOutputRequest](#phoenix.NewTransactionOutputRequest) | [TransactionOutput](#phoenix.TransactionOutput) |  |
-| NewTransaction | [NewTransactionRequest](#phoenix.NewTransactionRequest) | [Transaction](#phoenix.Transaction) |  |
-| SetFeePk | [SetFeePkRequest](#phoenix.SetFeePkRequest) | [Transaction](#phoenix.Transaction) |  |
-| VerifyTransaction | [Transaction](#phoenix.Transaction) | [VerifyTransactionResponse](#phoenix.VerifyTransactionResponse) |  |
-| VerifyTransactionRoot | [VerifyTransactionRootRequest](#phoenix.VerifyTransactionRootRequest) | [VerifyTransactionRootResponse](#phoenix.VerifyTransactionRootResponse) |  |
-| StoreTransactions | [StoreTransactionsRequest](#phoenix.StoreTransactionsRequest) | [StoreTransactionsResponse](#phoenix.StoreTransactionsResponse) |  |
-
-## rusk.proto
+| verified | bool | | |
 
 ### EchoRequest
 
@@ -302,20 +250,75 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| txs | [Transaction](#phoenix.Transaction) | repeated | List of transactions to be validated |
+| calls | [ContractCall](#rusk.ContractCall) | repeated | List of transactions to be validated |
 
 ### ValidateStateTransitionResponse
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| success | [bool](#bool) |  | Status of the state transition |
+| successful_calls | [ContractCall](#rusk.ContractCall) | repeated | List of transactions which passed validation |
+
+### ExecuteStateTransitionRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| calls | [ContractCall](#rusk.ContractCall) | repeated | List of transactions to be executed |
+
+### ExecuteStateTransitionResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| success | [bool](#bool) | | Status of the execution |
+
+### ContractCall
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tx | [Transaction](#rusk.Transaction) | | |
+| withdraw | [WithdrawRequest](#rusk.WithdrawRequest) | | |
+| stake | [StakeRequest](#rusk.StakeRequest) | | |
+| bid | [BidRequest](#rusk.BidRequest) | | |
+| slash | [SlashRequest](#rusk.SlashRequest) | | |
+| distribute | [DistributeRequest](#rusk.DistributeRequest) | | |
+| withdraw_stake | [WithdrawStakeRequest](#rusk.WithdrawStakeRequest) | | |
+| withdraw_bid | [WithdrawBidRequest](#rusk.WithdrawBidRequest) | | |
+
+### GenerateScoreRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| d | [bytes](#bytes) | | |
+| k | [bytes](#bytes) | | |
+| y | [bytes](#bytes) | | |
+| y_inv | [bytes](#bytes) | | |
+| q | [bytes](#bytes) | | |
+| z | [bytes](#bytes) | | |
+| seed | [bytes](#bytes) | | Previous block seed |
+| bids | [bytes](#bytes) | | List of bids |
+| bid_pos | [fixed64](#fixed64) | | Position of the bid to prove ownership of in `bids` |
+
+### GenerateScoreResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proof | [bytes](#bytes) | | Generated proof |
+| score | [bytes](#bytes) | | Generated score |
+| z | [bytes](#bytes) | | Identity hash |
+| bids | [bytes](#bytes) | | The list of bids used to make the proof |
 
 ### Rusk
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Echo | [EchoRequest](#phoenix.EchoRequest) | [EchoResponse](#phoenix.EchoResponse) | Simple echo request |
-| ValidateStateTransition | [ValidateStateTransitionRequest](#phoenix.ValidateStateTransitionRequest) | [ValidateStateTransitionResponse](#phoenix.ValidateStateTransitionResponse) | Validate a set of transactions, returning false if at least one of the listed transactions is inconsistent |
+| Echo | [EchoRequest](#rusk.EchoRequest) | [EchoResponse](#rusk.EchoResponse) | Simple echo request |
+| ValidateStateTransition | [ValidateStateTransitionRequest](#rusk.ValidateStateTransitionRequest) | [ValidateStateTransitionResponse](#rusk.ValidateStateTransitionResponse) | Validate a set of transactions, returning the correct transactions |
+| ExecuteStateTransition | [ExecuteStateTransitionRequest](#rusk.ExecuteStateTransitionRequest) | [ExecuteStateTransitionResponse](#rusk.ExecuteStateTransitionResponse) | Execute a set of transactions, mutating the global storage |
+| GenerateScore | [GenerateScoreRequest](#rusk.GenerateSecretKeyRequest) | [GenerateScoreResponse](#rusk.GenerateScoreResponse) | Create a blind bid proof and a score |
+| GenerateSecretKey | [GenerateSecretKeyRequest](#rusk.GenerateSecretKeyRequest) | [SecretKey](#rusk.SecretKey) |  |
+| Keys | [SecretKey](#rusk.SecretKey) | [KeysResponse](#rusk.KeysResponse) |  |
+| FullScanOwnedNotes | [ViewKey](#rusk.ViewKey) | [OwnedNotesResponse](#rusk.OwnedNotesResponse) |  |
+| NewTransaction | [NewTransactionRequest](#rusk.NewTransactionRequest) | [Transaction](#rusk.Transaction) |  |
+| VerifyTransaction | [Transaction](#rusk.Transaction) | [VerifyTransactionResponse](#rusk.VerifyTransactionResponse) |  |
 
 ## transaction.proto
 
@@ -323,24 +326,24 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| nullifiers | [Nullifier](#phoenix.Nullifier) | repeated |  |
-| outputs | [TransactionOutput](#phoenix.TransactionOutput) | repeated |  |
-| fee | [TransactionOutput](#phoenix.TransactionOutput) |  |  |
+| nullifiers | [Nullifier](#rusk.Nullifier) | repeated |  |
+| outputs | [TransactionOutput](#rusk.TransactionOutput) | repeated |  |
+| fee | [TransactionOutput](#rusk.TransactionOutput) |  |  |
 | proof | [bytes](#bytes) |  |  |
-| public_inputs | [Scalar](#phoenix.Scalar) | repeated |  |
+| public_inputs | [Scalar](#rusk.Scalar) | repeated |  |
 
 ### TransactionInput
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | pos | [fixed64](#fixed64) |  |  |
-| sk | [SecretKey](#phoenix.SecretKey) |  |  |
+| sk | [SecretKey](#rusk.SecretKey) |  |  |
 
 ### TransactionOutput
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| note | [Note](#phoenix.Note) |  |  |
-| pk | [PublicKey](#phoenix.PublicKey) |  |  |
+| note | [Note](#rusk.Note) |  |  |
+| pk | [PublicKey](#rusk.PublicKey) |  |  |
 | value | [fixed64](#fixed64) |  |  |
-| blinding_factor | [Scalar](#phoenix.Scalar) |  |  |
+| blinding_factor | [Scalar](#rusk.Scalar) |  |  |

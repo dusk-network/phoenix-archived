@@ -39,7 +39,7 @@ message WithdrawStakeRequest {
 message SlashRequest {
   bytes bls_key = 1;
   uint32 step = 2;
-  fixed64 height = 3;
+  fixed64 round = 3;
   bytes first_msg = 4;
   bytes first_sig = 5;
   bytes second_msg = 6;
