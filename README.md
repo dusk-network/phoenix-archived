@@ -8,7 +8,7 @@ Phoenix is an anonymity-preserving zero-knowledge proof-powered transaction mode
 
 # General
 
-Phoenix is an enhancement of the UTXO model utilized in the [Zcash protocol](https://github.com/zcash/zips/blob/master/protocol/protocol.pdf).
+Although somewhat based on the UTXO model utilized in the [Zcash protocol](https://github.com/zcash/zips/blob/master/protocol/protocol.pdf), Phoenix is uniquely capable to enable privacy-preserving smart contract by allowing confidential spending of public output (gas and coinbase transactions).
 
 Unlike Zcash, in which transactions can be potentially linked [\[1\]](https://arxiv.org/pdf/1712.01210)[\[2\]](https://orbilu.uni.lu/bitstream/10993/39996/1/Zcash_Miner_Linking%20%282%29.pdf), Phoenix guarantees transaction unlinkability through combining the so-called "obfuscated notes" (i.e. outputs containing encrypted values) with "transparent notes" (i.e. outputs containing plain values) into a single Merkle Tree.
 
