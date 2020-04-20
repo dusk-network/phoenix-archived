@@ -5,80 +5,58 @@ import "field.proto";
 import "keys.proto";
 import "note.proto";
 import "transaction.proto";
+import "consensus.proto";
 
 message EchoRequest {}
 message EchoResponse {}
 
+// List of transactions to be validated
 message ValidateStateTransitionRequest {
-  // List of transactions to be validated
-  repeated rusk.Transaction txs = 1;
+  repeated ContractCall calls = 1;
 }
+
+message ContractCall {
+  oneof contract_call {
+    rusk.Transaction tx = 1;
+    rusk.WithdrawRequest withdraw = 2;
+    rusk.StakeRequest stake = 3;
+    rusk.BidRequest bid = 4;
+    rusk.SlashRequest slash = 5;
+    rusk.DistributeRequest distribute = 6;
+    rusk.WithdrawStakeRequest withdraw_stake = 7;
+    rusk.WithdrawBidRequest withdraw_bid = 8;
+  }
+}
+
 message ValidateStateTransitionResponse {
-  // Status of the state transition
+  repeated ContractCall successful_calls = 1;
+}
+
+message ExecuteStateTransitionResponse {
+  repeated ContractCall calls = 1;
+}
+
+message ExecuteStateTransitionRequest {
   bool success = 1;
 }
 
 message GenerateSecretKeyRequest { bytes b = 1; }
 
-message NullifierRequest {
-  Note note = 1;
-  SecretKey sk = 2;
-}
-message NullifierResponse { Nullifier nullifier = 1; }
-
-message NullifierStatusRequest { Nullifier nullifier = 1; }
-message NullifierStatusResponse { bool unspent = 1; }
-
-message FetchNoteRequest { fixed64 pos = 1; }
-
-message DecryptNoteRequest {
-  Note note = 1;
-  ViewKey vk = 2;
-}
-
-message OwnedNotesRequest {
-  ViewKey vk = 1;
-  repeated Note notes = 2;
-}
-
+// Used for scanning unspent input set
 message OwnedNotesResponse { repeated DecryptedNote notes = 1; }
 
-message NewTransactionInputRequest {
-  fixed64 pos = 1;
-  SecretKey sk = 2;
-}
-
-message NewTransactionOutputRequest {
-  NoteType note_type = 1;
-  PublicKey pk = 2;
-  fixed64 value = 3;
-}
-
+// Call from CLI directly
 message NewTransactionRequest {
   SecretKey sk = 1;
   repeated DecryptedNote inputs = 2;
   PublicKey recipient = 3;
   fixed64 value = 4;
   fixed64 fee = 5;
+  bool obfuscated = 6;
 }
 
-message VerifyTransactionResponse {}
-
-message VerifyTransactionRootRequest {
-  Transaction transaction = 1;
-  Scalar root = 2;
-}
-message VerifyTransactionRootResponse {}
-
-message StoreTransactionsRequest { repeated Transaction transactions = 1; }
-message StoreTransactionsResponse {
-  repeated Note notes = 1;
-  Scalar root = 2;
-}
-
-message SetFeePkRequest {
-  Transaction transaction = 1;
-  PublicKey pk = 2;
+message VerifyTransactionResponse {
+  bool verified = 1;
 }
 
 message KeysResponse {
@@ -86,36 +64,47 @@ message KeysResponse {
   PublicKey pk = 2;
 }
 
+message GenerateScoreRequest {
+  bytes d = 1;
+  bytes k = 2;
+  bytes y = 3;
+  bytes y_inv = 4;
+  bytes q = 5;
+  bytes z = 6;
+  bytes seed = 7;
+  bytes bids = 8;
+  fixed64 bid_pos = 9;
+}
+
+message GenerateScoreResponse {
+  bytes proof = 1;
+  bytes score = 2;
+  bytes z = 3;
+  bytes bids = 4;
+}
+
 service Rusk {
   // Simple echo request
   rpc Echo(EchoRequest) returns (EchoResponse) {}
-  // Validate a set of transactions, returning false if at least one of the
+
+  // Validate a set of contract calls, returning false if at least one of the
   // listed transactions is inconsistent
   rpc ValidateStateTransition(ValidateStateTransitionRequest)
       returns (ValidateStateTransitionResponse) {}
 
+  // Execute a set of contract calls, resulting in a mutation of the contract
+  // storage.
+  rpc ExecuteStateTransition(ExecuteStateTransitionRequest)
+      returns (ExecuteStateTransitionResponse) {}
+
+  // Generate a proof of blind bid, and a score.
+  rpc GenerateScore(GenerateSecretKeyRequest)
+      returns (GenerateScoreResponse) {}
+
   // Phoenix stuff
   rpc GenerateSecretKey(GenerateSecretKeyRequest) returns (SecretKey) {}
   rpc Keys(SecretKey) returns (KeysResponse) {}
-
-  rpc Nullifier(NullifierRequest) returns (NullifierResponse) {}
-  rpc NullifierStatus(NullifierStatusRequest)
-      returns (NullifierStatusResponse) {}
-  rpc FetchNote(FetchNoteRequest) returns (Note) {}
-  rpc DecryptNote(DecryptNoteRequest) returns (DecryptedNote) {}
-  rpc OwnedNotes(OwnedNotesRequest) returns (OwnedNotesResponse) {}
   rpc FullScanOwnedNotes(ViewKey) returns (OwnedNotesResponse) {}
-
-  rpc NewTransactionInput(NewTransactionInputRequest)
-      returns (TransactionInput) {}
-  rpc NewTransactionOutput(NewTransactionOutputRequest)
-      returns (TransactionOutput) {}
   rpc NewTransaction(NewTransactionRequest) returns (Transaction) {}
-  rpc SetFeePk(SetFeePkRequest) returns (Transaction) {}
-
   rpc VerifyTransaction(Transaction) returns (VerifyTransactionResponse) {}
-  rpc VerifyTransactionRoot(VerifyTransactionRootRequest)
-      returns (VerifyTransactionRootResponse) {}
-  rpc StoreTransactions(StoreTransactionsRequest)
-      returns (StoreTransactionsResponse) {}
 }
