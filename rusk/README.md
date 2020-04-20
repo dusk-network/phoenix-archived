@@ -232,9 +232,12 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| sk | [SecretKey](#rusk.SecretKey) |  |  |
 | inputs | [TransactionInput](#rusk.TransactionInput) | repeated |  |
 | outputs | [TransactionOutput](#rusk.TransactionOutput) | repeated |  |
+| value | [fixed64](#fidex64) |  |  |
 | fee | [fixed64](#fixed64) |  |  |
+| obfuscated | [bool](#bool) |  |  |
 
 ### VerifyTransactionResponse
 

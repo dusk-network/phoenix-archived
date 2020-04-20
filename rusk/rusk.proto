@@ -52,6 +52,7 @@ message NewTransactionRequest {
   PublicKey recipient = 3;
   fixed64 value = 4;
   fixed64 fee = 5;
+  bool obfuscated = 6;
 }
 
 message VerifyTransactionResponse {
