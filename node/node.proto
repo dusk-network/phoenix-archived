@@ -10,8 +10,7 @@ message GenericResponse {
 	string response = 1;
 }
 
-service Node {
-	// Wallet rpc
+service Wallet {
 	rpc CreateWallet(CreateRequest) returns (LoadResponse) {};
 	rpc LoadWallet(LoadRequest) returns (LoadResponse) {};
 	rpc CreateFromSeed(CreateRequest) returns (LoadResponse) {};
@@ -26,12 +25,14 @@ service Node {
 	rpc GetAddress(EmptyRequest) returns (LoadResponse) {};
 	rpc GetSyncProgress(EmptyRequest) returns (SyncProgressResponse) {};
 	rpc GetBalance(EmptyRequest) returns (BalanceResponse) {};
-	rpc GetUnconfirmedBalance(EmptyRequest) returns (BalanceResponse) {};
 	rpc GetTxHistory(EmptyRequest) returns (TxHistoryResponse) {};
+}
 
-	// Chain rpc
-	rpc RebuildChain(EmptyRequest) returns (GenericResponse) {};
-
-    // Mempool rpc
+service Mempool {
+	rpc GetUnconfirmedBalance(EmptyRequest) returns (BalanceResponse) {};
     rpc SelectTx(SelectRequest) returns (SelectResponse) {};
+}
+
+service Chain {
+	rpc RebuildChain(EmptyRequest) returns (GenericResponse) {};
 }
