@@ -16,14 +16,8 @@ service Wallet {
 	rpc CreateFromSeed(CreateRequest) returns (LoadResponse) {};
 	rpc ClearWalletDatabase(EmptyRequest) returns (GenericResponse) {};
 
-	rpc Transfer(TransferRequest) returns (TransferResponse) {};
-	rpc SendBid(ConsensusTxRequest) returns (TransferResponse) {};
-	rpc SendStake(ConsensusTxRequest) returns (TransferResponse) {};
-	rpc AutomateConsensusTxs(EmptyRequest) returns (GenericResponse) {};
-
 	rpc GetWalletStatus(EmptyRequest) returns (WalletStatusResponse) {};
 	rpc GetAddress(EmptyRequest) returns (LoadResponse) {};
-	rpc GetSyncProgress(EmptyRequest) returns (SyncProgressResponse) {};
 	rpc GetBalance(EmptyRequest) returns (BalanceResponse) {};
 	rpc GetTxHistory(EmptyRequest) returns (TxHistoryResponse) {};
 }
@@ -35,4 +29,16 @@ service Mempool {
 
 service Chain {
 	rpc RebuildChain(EmptyRequest) returns (GenericResponse) {};
+	rpc GetSyncProgress(EmptyRequest) returns (SyncProgressResponse) {};
+}
+
+service Transactor {
+	rpc CallContract(CallContractRequest) returns (TransactionResponse) {};
+	rpc Transfer(TransferRequest) returns (TransactionResponse) {};
+	rpc Bid(BidRequest) returns (TransactionResponse) {};
+	rpc Stake(StakeRequest) returns (TransactionResponse) {};
+}
+
+service Maintainer {
+	rpc AutomateConsensusTxs(EmptyRequest) returns (GenericResponse) {};
 }

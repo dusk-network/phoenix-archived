@@ -104,34 +104,37 @@ func init() {
 }
 
 var fileDescriptor_0c843d59d2d938e7 = []byte{
-	// 431 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x94, 0xc1, 0x8e, 0xd3, 0x30,
-	0x10, 0x86, 0xa9, 0x04, 0xdd, 0xee, 0x28, 0x2c, 0xc2, 0xbb, 0x0b, 0xab, 0x9c, 0x50, 0x4f, 0x5c,
-	0xd8, 0xc3, 0x22, 0x40, 0xab, 0x0a, 0xa1, 0x36, 0x85, 0x70, 0x00, 0x09, 0x25, 0x41, 0x9c, 0xdd,
-	0x78, 0x0a, 0x11, 0x89, 0x1d, 0xec, 0x89, 0x68, 0xdf, 0x80, 0x57, 0xe2, 0xed, 0x50, 0x62, 0xa7,
-	0xa4, 0x55, 0x28, 0x6a, 0x6f, 0x99, 0xbf, 0xff, 0xf7, 0xcf, 0x68, 0x6c, 0x17, 0x40, 0x2a, 0x81,
-	0xd7, 0xa5, 0x56, 0xa4, 0xd8, 0xdd, 0xfa, 0xdb, 0xf7, 0x7e, 0xf2, 0x3c, 0x47, 0xb2, 0x9a, 0x7f,
-	0xbf, 0xc0, 0xa2, 0x54, 0x2a, 0xb7, 0xe5, 0xf8, 0x0c, 0xbc, 0xb7, 0x45, 0x49, 0xeb, 0x08, 0x7f,
-	0x54, 0x68, 0x68, 0xfc, 0x0c, 0x1e, 0x84, 0x28, 0x51, 0x67, 0x69, 0x84, 0xa6, 0x54, 0xd2, 0x20,
-	0xf3, 0x61, 0xa4, 0xdd, 0xf7, 0xd5, 0xe0, 0xc9, 0xe0, 0xe9, 0x69, 0xb4, 0xa9, 0x6f, 0x7e, 0x0f,
-	0x61, 0xf8, 0xa5, 0x89, 0x67, 0xb7, 0xe0, 0x05, 0x1a, 0x39, 0xa1, 0xab, 0xcf, 0xaf, 0x9b, 0x49,
-	0xac, 0xe6, 0xe2, 0x7d, 0x66, 0xc5, 0x0f, 0x8a, 0x8b, 0x36, 0x7f, 0x7c, 0x87, 0xbd, 0x00, 0xa8,
-	0x15, 0x07, 0x3e, 0xec, 0x7a, 0xf6, 0x61, 0x13, 0x38, 0xb3, 0xe9, 0xef, 0xb4, 0x2a, 0x62, 0x44,
-	0x71, 0x48, 0xcf, 0x19, 0x9c, 0x07, 0x39, 0x72, 0x6d, 0x9b, 0xce, 0x39, 0xf1, 0x05, 0x37, 0xc8,
-	0x9c, 0xb9, 0xbb, 0x13, 0xff, 0xd2, 0x6a, 0x3b, 0x7b, 0x69, 0x06, 0x18, 0x25, 0x9a, 0x4b, 0xb3,
-	0x44, 0xcd, 0x9c, 0xa9, 0xad, 0x5b, 0xf6, 0xd1, 0xae, 0xbc, 0x81, 0x5f, 0xc3, 0x49, 0x8c, 0x52,
-	0xcc, 0x32, 0xc1, 0xae, 0xdc, 0xd8, 0xf5, 0x2f, 0xd2, 0x54, 0x26, 0x59, 0xfd, 0x1f, 0x7f, 0x03,
-	0xa7, 0x35, 0x1e, 0x13, 0xff, 0x8e, 0x47, 0x05, 0x04, 0x70, 0x31, 0xad, 0x48, 0x15, 0x9c, 0xb0,
-	0xc3, 0x99, 0xc3, 0x36, 0x10, 0xd4, 0xd7, 0x85, 0xec, 0x0e, 0x63, 0xe2, 0x54, 0xf5, 0xf3, 0xbe,
-	0xd5, 0xba, 0xbe, 0x4e, 0xc8, 0x4b, 0x80, 0x10, 0x69, 0x2a, 0x84, 0x46, 0xd3, 0xcf, 0xf7, 0x1f,
-	0xa1, 0x6d, 0x1e, 0xaf, 0x65, 0xfa, 0x49, 0xab, 0xaf, 0xff, 0x84, 0x5d, 0xf3, 0xae, 0xaf, 0x13,
-	0x72, 0xdb, 0x34, 0x9f, 0xf1, 0x9c, 0xcb, 0x74, 0xef, 0xf1, 0x3b, 0xcb, 0xd6, 0x09, 0x7a, 0x21,
-	0x52, 0xb2, 0x7a, 0x9f, 0x19, 0x52, 0x7a, 0xdd, 0x0b, 0x3f, 0x76, 0xfb, 0x6f, 0x4d, 0x7f, 0xf1,
-	0x9b, 0x5f, 0x03, 0x38, 0xf9, 0x68, 0x1f, 0x23, 0x9b, 0xc3, 0x65, 0x88, 0xf4, 0x59, 0xa6, 0x4a,
-	0x2e, 0x33, 0x5d, 0xa0, 0x38, 0x6a, 0xa0, 0x57, 0x30, 0x8a, 0x31, 0xc7, 0x94, 0x92, 0x55, 0xfb,
-	0x14, 0x6c, 0xdd, 0x92, 0x17, 0xdb, 0xe2, 0x66, 0x94, 0x39, 0xdc, 0x0b, 0xbe, 0xf1, 0x4c, 0xb2,
-	0x09, 0x78, 0x11, 0x2e, 0xaa, 0x2c, 0x17, 0xb6, 0x3e, 0xe4, 0x32, 0x2c, 0x86, 0xcd, 0x5f, 0xca,
-	0xf3, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xf1, 0xe8, 0xf2, 0xe3, 0x83, 0x04, 0x00, 0x00,
+	// 475 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x94, 0x4f, 0x6f, 0xd3, 0x40,
+	0x10, 0xc5, 0x1b, 0x4a, 0x4b, 0x18, 0x99, 0x02, 0xdb, 0x46, 0x80, 0x4f, 0x28, 0x27, 0x2e, 0xf4,
+	0x10, 0xfe, 0x56, 0x15, 0x48, 0x8d, 0x4b, 0xc3, 0x81, 0x4a, 0x10, 0x07, 0x71, 0x9e, 0xd8, 0x13,
+	0x58, 0x61, 0xef, 0x86, 0xdd, 0xb1, 0x48, 0xee, 0x1c, 0xe0, 0xeb, 0xf2, 0x09, 0x50, 0xbc, 0xeb,
+	0xb0, 0xa0, 0xb4, 0x4a, 0x73, 0xf3, 0xbc, 0x7d, 0xbf, 0xb7, 0x93, 0x99, 0x55, 0x00, 0x94, 0xce,
+	0xe9, 0x70, 0x6a, 0x34, 0x6b, 0x71, 0x7d, 0xf1, 0x1d, 0x47, 0xdf, 0xb1, 0x28, 0x88, 0x9d, 0x16,
+	0xdf, 0x2a, 0xa9, 0x9c, 0x6a, 0x5d, 0xb8, 0xb2, 0xbb, 0x07, 0xd1, 0x9b, 0x72, 0xca, 0xf3, 0x21,
+	0x7d, 0xab, 0xc8, 0x72, 0xf7, 0x31, 0xdc, 0x1e, 0x90, 0x22, 0x23, 0xb3, 0x21, 0xd9, 0xa9, 0x56,
+	0x96, 0x44, 0x0c, 0x6d, 0xe3, 0xbf, 0xef, 0xb7, 0x1e, 0xb6, 0x1e, 0xdd, 0x1c, 0x2e, 0xeb, 0xde,
+	0xef, 0x6d, 0xd8, 0xfd, 0x54, 0xc7, 0x8b, 0x23, 0x88, 0x12, 0x43, 0xc8, 0xe4, 0xeb, 0xfd, 0xc3,
+	0xba, 0x13, 0xa7, 0xf9, 0xf8, 0x58, 0x38, 0xf1, 0x9d, 0xc6, 0xbc, 0xc9, 0xef, 0x6e, 0x89, 0x67,
+	0x00, 0x0b, 0xc5, 0x83, 0x77, 0x43, 0xcf, 0x65, 0xd8, 0x31, 0xec, 0xb9, 0xf4, 0x33, 0xa3, 0xcb,
+	0x94, 0x28, 0xbf, 0xca, 0x9d, 0x7d, 0xd8, 0x4f, 0x0a, 0x42, 0xe3, 0x2e, 0x3d, 0x45, 0xc6, 0x31,
+	0x5a, 0x12, 0xde, 0x1c, 0xce, 0x24, 0xee, 0x38, 0xed, 0xbf, 0xb9, 0x74, 0xb7, 0x44, 0xb2, 0x18,
+	0x16, 0xbb, 0x84, 0x94, 0x91, 0x2b, 0xbb, 0x92, 0x8f, 0x9d, 0x16, 0xfa, 0x82, 0x90, 0xe7, 0x00,
+	0x03, 0xe2, 0x93, 0x3c, 0x37, 0x64, 0x57, 0xf3, 0xab, 0x7f, 0xc0, 0x51, 0xcd, 0xf5, 0xb1, 0x40,
+	0x95, 0x5d, 0xda, 0xb7, 0xb7, 0x04, 0xe8, 0x2b, 0x88, 0x06, 0xc4, 0xa3, 0xd9, 0x5b, 0x69, 0x59,
+	0x9b, 0xf9, 0x4a, 0xf8, 0x9e, 0xd3, 0x96, 0xa6, 0xbf, 0x78, 0xef, 0x67, 0x0b, 0x6e, 0x9c, 0xbb,
+	0x57, 0x24, 0x4e, 0xa1, 0x33, 0x20, 0xfe, 0xa8, 0x32, 0xad, 0x26, 0xd2, 0x94, 0x94, 0x6f, 0xd4,
+	0xd0, 0x0b, 0x68, 0xa7, 0x54, 0x50, 0xc6, 0xa3, 0x59, 0xb3, 0x43, 0x57, 0x37, 0xe4, 0xc1, 0xbf,
+	0xe2, 0xb2, 0x95, 0x5f, 0x2d, 0xd8, 0x49, 0xbe, 0xa0, 0x54, 0xe2, 0x18, 0xa2, 0x21, 0x8d, 0x2b,
+	0x59, 0xe4, 0xae, 0xde, 0x60, 0x91, 0xe9, 0x5c, 0x65, 0xef, 0x8d, 0xfe, 0x7c, 0xe1, 0x22, 0xfc,
+	0x22, 0x43, 0x5f, 0xd0, 0xcb, 0x8f, 0x6b, 0x00, 0x23, 0x83, 0xca, 0x62, 0xc6, 0xda, 0x88, 0x33,
+	0x88, 0x12, 0x2c, 0x8a, 0x44, 0x2b, 0x36, 0x98, 0xb1, 0x78, 0xe0, 0xdf, 0x66, 0xa0, 0x35, 0xb9,
+	0xfe, 0xa8, 0x81, 0xa5, 0x56, 0x41, 0x6f, 0xaf, 0xa1, 0x5d, 0x1f, 0x4c, 0xc8, 0x88, 0x4e, 0x60,
+	0x9c, 0x90, 0x59, 0x8b, 0x7f, 0x0a, 0xdb, 0x7d, 0x99, 0x8b, 0x3b, 0x7e, 0xf6, 0x32, 0x5f, 0x8b,
+	0x7a, 0x09, 0x3b, 0x29, 0xe3, 0xd7, 0xe5, 0x1e, 0xeb, 0x62, 0x1d, 0xb2, 0xf7, 0x01, 0xe0, 0x1c,
+	0xa5, 0x62, 0x94, 0x8a, 0x8c, 0x48, 0xe0, 0xe0, 0xa4, 0x62, 0x5d, 0x22, 0x53, 0xb2, 0x30, 0x28,
+	0x5b, 0xd9, 0xd1, 0xcc, 0x5e, 0x69, 0x3d, 0xe3, 0xdd, 0xfa, 0xbf, 0xea, 0xc9, 0x9f, 0x00, 0x00,
+	0x00, 0xff, 0xff, 0x7d, 0x68, 0x4c, 0x2c, 0xdc, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -150,13 +153,8 @@ type WalletClient interface {
 	LoadWallet(ctx context.Context, in *LoadRequest, opts ...grpc.CallOption) (*LoadResponse, error)
 	CreateFromSeed(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*LoadResponse, error)
 	ClearWalletDatabase(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GenericResponse, error)
-	Transfer(ctx context.Context, in *TransferRequest, opts ...grpc.CallOption) (*TransferResponse, error)
-	SendBid(ctx context.Context, in *ConsensusTxRequest, opts ...grpc.CallOption) (*TransferResponse, error)
-	SendStake(ctx context.Context, in *ConsensusTxRequest, opts ...grpc.CallOption) (*TransferResponse, error)
-	AutomateConsensusTxs(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GenericResponse, error)
 	GetWalletStatus(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*WalletStatusResponse, error)
 	GetAddress(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*LoadResponse, error)
-	GetSyncProgress(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*SyncProgressResponse, error)
 	GetBalance(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*BalanceResponse, error)
 	GetTxHistory(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*TxHistoryResponse, error)
 }
@@ -205,42 +203,6 @@ func (c *walletClient) ClearWalletDatabase(ctx context.Context, in *EmptyRequest
 	return out, nil
 }
 
-func (c *walletClient) Transfer(ctx context.Context, in *TransferRequest, opts ...grpc.CallOption) (*TransferResponse, error) {
-	out := new(TransferResponse)
-	err := c.cc.Invoke(ctx, "/node.Wallet/Transfer", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *walletClient) SendBid(ctx context.Context, in *ConsensusTxRequest, opts ...grpc.CallOption) (*TransferResponse, error) {
-	out := new(TransferResponse)
-	err := c.cc.Invoke(ctx, "/node.Wallet/SendBid", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *walletClient) SendStake(ctx context.Context, in *ConsensusTxRequest, opts ...grpc.CallOption) (*TransferResponse, error) {
-	out := new(TransferResponse)
-	err := c.cc.Invoke(ctx, "/node.Wallet/SendStake", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *walletClient) AutomateConsensusTxs(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GenericResponse, error) {
-	out := new(GenericResponse)
-	err := c.cc.Invoke(ctx, "/node.Wallet/AutomateConsensusTxs", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *walletClient) GetWalletStatus(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*WalletStatusResponse, error) {
 	out := new(WalletStatusResponse)
 	err := c.cc.Invoke(ctx, "/node.Wallet/GetWalletStatus", in, out, opts...)
@@ -253,15 +215,6 @@ func (c *walletClient) GetWalletStatus(ctx context.Context, in *EmptyRequest, op
 func (c *walletClient) GetAddress(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*LoadResponse, error) {
 	out := new(LoadResponse)
 	err := c.cc.Invoke(ctx, "/node.Wallet/GetAddress", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *walletClient) GetSyncProgress(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*SyncProgressResponse, error) {
-	out := new(SyncProgressResponse)
-	err := c.cc.Invoke(ctx, "/node.Wallet/GetSyncProgress", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -292,13 +245,8 @@ type WalletServer interface {
 	LoadWallet(context.Context, *LoadRequest) (*LoadResponse, error)
 	CreateFromSeed(context.Context, *CreateRequest) (*LoadResponse, error)
 	ClearWalletDatabase(context.Context, *EmptyRequest) (*GenericResponse, error)
-	Transfer(context.Context, *TransferRequest) (*TransferResponse, error)
-	SendBid(context.Context, *ConsensusTxRequest) (*TransferResponse, error)
-	SendStake(context.Context, *ConsensusTxRequest) (*TransferResponse, error)
-	AutomateConsensusTxs(context.Context, *EmptyRequest) (*GenericResponse, error)
 	GetWalletStatus(context.Context, *EmptyRequest) (*WalletStatusResponse, error)
 	GetAddress(context.Context, *EmptyRequest) (*LoadResponse, error)
-	GetSyncProgress(context.Context, *EmptyRequest) (*SyncProgressResponse, error)
 	GetBalance(context.Context, *EmptyRequest) (*BalanceResponse, error)
 	GetTxHistory(context.Context, *EmptyRequest) (*TxHistoryResponse, error)
 }
@@ -319,26 +267,11 @@ func (*UnimplementedWalletServer) CreateFromSeed(ctx context.Context, req *Creat
 func (*UnimplementedWalletServer) ClearWalletDatabase(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClearWalletDatabase not implemented")
 }
-func (*UnimplementedWalletServer) Transfer(ctx context.Context, req *TransferRequest) (*TransferResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Transfer not implemented")
-}
-func (*UnimplementedWalletServer) SendBid(ctx context.Context, req *ConsensusTxRequest) (*TransferResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendBid not implemented")
-}
-func (*UnimplementedWalletServer) SendStake(ctx context.Context, req *ConsensusTxRequest) (*TransferResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendStake not implemented")
-}
-func (*UnimplementedWalletServer) AutomateConsensusTxs(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AutomateConsensusTxs not implemented")
-}
 func (*UnimplementedWalletServer) GetWalletStatus(ctx context.Context, req *EmptyRequest) (*WalletStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWalletStatus not implemented")
 }
 func (*UnimplementedWalletServer) GetAddress(ctx context.Context, req *EmptyRequest) (*LoadResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAddress not implemented")
-}
-func (*UnimplementedWalletServer) GetSyncProgress(ctx context.Context, req *EmptyRequest) (*SyncProgressResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetSyncProgress not implemented")
 }
 func (*UnimplementedWalletServer) GetBalance(ctx context.Context, req *EmptyRequest) (*BalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBalance not implemented")
@@ -423,78 +356,6 @@ func _Wallet_ClearWalletDatabase_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Wallet_Transfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TransferRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(WalletServer).Transfer(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/node.Wallet/Transfer",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WalletServer).Transfer(ctx, req.(*TransferRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Wallet_SendBid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ConsensusTxRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(WalletServer).SendBid(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/node.Wallet/SendBid",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WalletServer).SendBid(ctx, req.(*ConsensusTxRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Wallet_SendStake_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ConsensusTxRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(WalletServer).SendStake(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/node.Wallet/SendStake",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WalletServer).SendStake(ctx, req.(*ConsensusTxRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Wallet_AutomateConsensusTxs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EmptyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(WalletServer).AutomateConsensusTxs(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/node.Wallet/AutomateConsensusTxs",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WalletServer).AutomateConsensusTxs(ctx, req.(*EmptyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Wallet_GetWalletStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(EmptyRequest)
 	if err := dec(in); err != nil {
@@ -527,24 +388,6 @@ func _Wallet_GetAddress_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(WalletServer).GetAddress(ctx, req.(*EmptyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Wallet_GetSyncProgress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EmptyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(WalletServer).GetSyncProgress(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/node.Wallet/GetSyncProgress",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WalletServer).GetSyncProgress(ctx, req.(*EmptyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -606,32 +449,12 @@ var _Wallet_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Wallet_ClearWalletDatabase_Handler,
 		},
 		{
-			MethodName: "Transfer",
-			Handler:    _Wallet_Transfer_Handler,
-		},
-		{
-			MethodName: "SendBid",
-			Handler:    _Wallet_SendBid_Handler,
-		},
-		{
-			MethodName: "SendStake",
-			Handler:    _Wallet_SendStake_Handler,
-		},
-		{
-			MethodName: "AutomateConsensusTxs",
-			Handler:    _Wallet_AutomateConsensusTxs_Handler,
-		},
-		{
 			MethodName: "GetWalletStatus",
 			Handler:    _Wallet_GetWalletStatus_Handler,
 		},
 		{
 			MethodName: "GetAddress",
 			Handler:    _Wallet_GetAddress_Handler,
-		},
-		{
-			MethodName: "GetSyncProgress",
-			Handler:    _Wallet_GetSyncProgress_Handler,
 		},
 		{
 			MethodName: "GetBalance",
@@ -759,6 +582,7 @@ var _Mempool_serviceDesc = grpc.ServiceDesc{
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ChainClient interface {
 	RebuildChain(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GenericResponse, error)
+	GetSyncProgress(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*SyncProgressResponse, error)
 }
 
 type chainClient struct {
@@ -778,9 +602,19 @@ func (c *chainClient) RebuildChain(ctx context.Context, in *EmptyRequest, opts .
 	return out, nil
 }
 
+func (c *chainClient) GetSyncProgress(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*SyncProgressResponse, error) {
+	out := new(SyncProgressResponse)
+	err := c.cc.Invoke(ctx, "/node.Chain/GetSyncProgress", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ChainServer is the server API for Chain service.
 type ChainServer interface {
 	RebuildChain(context.Context, *EmptyRequest) (*GenericResponse, error)
+	GetSyncProgress(context.Context, *EmptyRequest) (*SyncProgressResponse, error)
 }
 
 // UnimplementedChainServer can be embedded to have forward compatible implementations.
@@ -789,6 +623,9 @@ type UnimplementedChainServer struct {
 
 func (*UnimplementedChainServer) RebuildChain(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RebuildChain not implemented")
+}
+func (*UnimplementedChainServer) GetSyncProgress(ctx context.Context, req *EmptyRequest) (*SyncProgressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSyncProgress not implemented")
 }
 
 func RegisterChainServer(s *grpc.Server, srv ChainServer) {
@@ -813,6 +650,24 @@ func _Chain_RebuildChain_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Chain_GetSyncProgress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmptyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChainServer).GetSyncProgress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/node.Chain/GetSyncProgress",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChainServer).GetSyncProgress(ctx, req.(*EmptyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Chain_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "node.Chain",
 	HandlerType: (*ChainServer)(nil),
@@ -820,6 +675,262 @@ var _Chain_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RebuildChain",
 			Handler:    _Chain_RebuildChain_Handler,
+		},
+		{
+			MethodName: "GetSyncProgress",
+			Handler:    _Chain_GetSyncProgress_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "node.proto",
+}
+
+// TransactorClient is the client API for Transactor service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type TransactorClient interface {
+	CallContract(ctx context.Context, in *CallContractRequest, opts ...grpc.CallOption) (*TransactionResponse, error)
+	Transfer(ctx context.Context, in *TransferRequest, opts ...grpc.CallOption) (*TransactionResponse, error)
+	Bid(ctx context.Context, in *BidRequest, opts ...grpc.CallOption) (*TransactionResponse, error)
+	Stake(ctx context.Context, in *StakeRequest, opts ...grpc.CallOption) (*TransactionResponse, error)
+}
+
+type transactorClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewTransactorClient(cc grpc.ClientConnInterface) TransactorClient {
+	return &transactorClient{cc}
+}
+
+func (c *transactorClient) CallContract(ctx context.Context, in *CallContractRequest, opts ...grpc.CallOption) (*TransactionResponse, error) {
+	out := new(TransactionResponse)
+	err := c.cc.Invoke(ctx, "/node.Transactor/CallContract", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *transactorClient) Transfer(ctx context.Context, in *TransferRequest, opts ...grpc.CallOption) (*TransactionResponse, error) {
+	out := new(TransactionResponse)
+	err := c.cc.Invoke(ctx, "/node.Transactor/Transfer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *transactorClient) Bid(ctx context.Context, in *BidRequest, opts ...grpc.CallOption) (*TransactionResponse, error) {
+	out := new(TransactionResponse)
+	err := c.cc.Invoke(ctx, "/node.Transactor/Bid", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *transactorClient) Stake(ctx context.Context, in *StakeRequest, opts ...grpc.CallOption) (*TransactionResponse, error) {
+	out := new(TransactionResponse)
+	err := c.cc.Invoke(ctx, "/node.Transactor/Stake", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// TransactorServer is the server API for Transactor service.
+type TransactorServer interface {
+	CallContract(context.Context, *CallContractRequest) (*TransactionResponse, error)
+	Transfer(context.Context, *TransferRequest) (*TransactionResponse, error)
+	Bid(context.Context, *BidRequest) (*TransactionResponse, error)
+	Stake(context.Context, *StakeRequest) (*TransactionResponse, error)
+}
+
+// UnimplementedTransactorServer can be embedded to have forward compatible implementations.
+type UnimplementedTransactorServer struct {
+}
+
+func (*UnimplementedTransactorServer) CallContract(ctx context.Context, req *CallContractRequest) (*TransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CallContract not implemented")
+}
+func (*UnimplementedTransactorServer) Transfer(ctx context.Context, req *TransferRequest) (*TransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Transfer not implemented")
+}
+func (*UnimplementedTransactorServer) Bid(ctx context.Context, req *BidRequest) (*TransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Bid not implemented")
+}
+func (*UnimplementedTransactorServer) Stake(ctx context.Context, req *StakeRequest) (*TransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Stake not implemented")
+}
+
+func RegisterTransactorServer(s *grpc.Server, srv TransactorServer) {
+	s.RegisterService(&_Transactor_serviceDesc, srv)
+}
+
+func _Transactor_CallContract_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CallContractRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TransactorServer).CallContract(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/node.Transactor/CallContract",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TransactorServer).CallContract(ctx, req.(*CallContractRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Transactor_Transfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TransferRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TransactorServer).Transfer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/node.Transactor/Transfer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TransactorServer).Transfer(ctx, req.(*TransferRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Transactor_Bid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TransactorServer).Bid(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/node.Transactor/Bid",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TransactorServer).Bid(ctx, req.(*BidRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Transactor_Stake_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StakeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TransactorServer).Stake(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/node.Transactor/Stake",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TransactorServer).Stake(ctx, req.(*StakeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _Transactor_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "node.Transactor",
+	HandlerType: (*TransactorServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CallContract",
+			Handler:    _Transactor_CallContract_Handler,
+		},
+		{
+			MethodName: "Transfer",
+			Handler:    _Transactor_Transfer_Handler,
+		},
+		{
+			MethodName: "Bid",
+			Handler:    _Transactor_Bid_Handler,
+		},
+		{
+			MethodName: "Stake",
+			Handler:    _Transactor_Stake_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "node.proto",
+}
+
+// MaintainerClient is the client API for Maintainer service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type MaintainerClient interface {
+	AutomateConsensusTxs(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GenericResponse, error)
+}
+
+type maintainerClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewMaintainerClient(cc grpc.ClientConnInterface) MaintainerClient {
+	return &maintainerClient{cc}
+}
+
+func (c *maintainerClient) AutomateConsensusTxs(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GenericResponse, error) {
+	out := new(GenericResponse)
+	err := c.cc.Invoke(ctx, "/node.Maintainer/AutomateConsensusTxs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// MaintainerServer is the server API for Maintainer service.
+type MaintainerServer interface {
+	AutomateConsensusTxs(context.Context, *EmptyRequest) (*GenericResponse, error)
+}
+
+// UnimplementedMaintainerServer can be embedded to have forward compatible implementations.
+type UnimplementedMaintainerServer struct {
+}
+
+func (*UnimplementedMaintainerServer) AutomateConsensusTxs(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AutomateConsensusTxs not implemented")
+}
+
+func RegisterMaintainerServer(s *grpc.Server, srv MaintainerServer) {
+	s.RegisterService(&_Maintainer_serviceDesc, srv)
+}
+
+func _Maintainer_AutomateConsensusTxs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmptyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaintainerServer).AutomateConsensusTxs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/node.Maintainer/AutomateConsensusTxs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaintainerServer).AutomateConsensusTxs(ctx, req.(*EmptyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _Maintainer_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "node.Maintainer",
+	HandlerType: (*MaintainerServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "AutomateConsensusTxs",
+			Handler:    _Maintainer_AutomateConsensusTxs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
