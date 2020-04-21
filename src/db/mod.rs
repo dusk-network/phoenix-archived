@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
 
 use bytehash::ByteHash;
 use kelvin::annotations::Count;
-use kelvin::{Blake2b, Content, Map as _, Root, Sink, Source};
+use kelvin::{Blake2b, Content, Root, Sink, Source};
 use kelvin_hamt::CountingHAMTMap as HAMTMap;
 use kelvin_radix::DefaultRadixMap as RadixMap;
 use rand::Rng;
