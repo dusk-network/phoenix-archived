@@ -25,12 +25,29 @@ message ConsensusTxRequest {
 	fixed64 lock_time = 2;
 }
 
+message CallContractRequest {
+	bytes data = 1;
+	bytes address = 2;
+	fixed64 fee = 3;
+}
+
 message TransferRequest {
 	fixed64 amount = 1;
 	bytes address = 2;
+	fixed64 fee = 3;
 }
 
-message TransferResponse {
+message BidRequest {
+	fixed64 amount = 1;
+	fixed64 fee = 2;
+}
+
+message StakeRequest {
+	fixed64 amount = 1;
+	fixed64 fee = 2;
+}
+
+message TransactionResponse {
 	bytes hash = 1;
 }
 
