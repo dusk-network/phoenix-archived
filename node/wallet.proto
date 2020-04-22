@@ -40,11 +40,13 @@ message TransferRequest {
 message BidRequest {
 	fixed64 amount = 1;
 	fixed64 fee = 2;
+	fixed64 locktime = 3;
 }
 
 message StakeRequest {
 	fixed64 amount = 1;
 	fixed64 fee = 2;
+	fixed64 locktime = 3;
 }
 
 message TransactionResponse {
