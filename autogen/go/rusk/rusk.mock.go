@@ -5238,8 +5238,8 @@ func (m *RuskMock) GenerateScore(ctx context.Context, req *GenerateScoreRequest)
 func (m *RuskMock) GenerateSecretKey(ctx context.Context, req *GenerateSecretKeyRequest) (*SecretKey, error) {
 	res :=
 		&SecretKey{
-			A: &Scalar{},
-			B: &Scalar{},
+			A: &Scalar{Data: []byte{0x18, 0x2d, 0x44, 0x54, 0xfb, 0x21, 0x09, 0x40}},
+			B: &Scalar{Data: []byte{0x40, 0x09, 0x21, 0xfb, 0x54, 0x44, 0x2d, 0x18}},
 		}
 	return res, nil
 }
@@ -5247,12 +5247,12 @@ func (m *RuskMock) Keys(ctx context.Context, req *SecretKey) (*KeysResponse, err
 	res :=
 		&KeysResponse{
 			Vk: &ViewKey{
-				A:  &Scalar{},
-				BG: &CompressedPoint{},
+				A:  &Scalar{Data: []byte{0x18, 0x2d, 0x44, 0x54}},
+				BG: &CompressedPoint{Y: []byte{0x40, 0x09, 0x21, 0xfb}},
 			},
 			Pk: &PublicKey{
-				AG: &CompressedPoint{},
-				BG: &CompressedPoint{},
+				AG: &CompressedPoint{Y: []byte{0x18, 0x2d, 0x44, 0x54}},
+				BG: &CompressedPoint{Y: []byte{0x40, 0x09, 0x21, 0xfb}},
 			},
 		}
 	return res, nil
