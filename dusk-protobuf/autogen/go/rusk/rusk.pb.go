@@ -176,31 +176,31 @@ type ContractCall_Tx struct {
 }
 
 type ContractCall_Withdraw struct {
-	Withdraw *WithdrawRequest `protobuf:"bytes,2,opt,name=withdraw,proto3,oneof"`
+	Withdraw *WithdrawFeesTransaction `protobuf:"bytes,2,opt,name=withdraw,proto3,oneof"`
 }
 
 type ContractCall_Stake struct {
-	Stake *StakeRequest `protobuf:"bytes,3,opt,name=stake,proto3,oneof"`
+	Stake *StakeTransaction `protobuf:"bytes,3,opt,name=stake,proto3,oneof"`
 }
 
 type ContractCall_Bid struct {
-	Bid *BidRequest `protobuf:"bytes,4,opt,name=bid,proto3,oneof"`
+	Bid *BidTransaction `protobuf:"bytes,4,opt,name=bid,proto3,oneof"`
 }
 
 type ContractCall_Slash struct {
-	Slash *SlashRequest `protobuf:"bytes,5,opt,name=slash,proto3,oneof"`
+	Slash *SlashTransaction `protobuf:"bytes,5,opt,name=slash,proto3,oneof"`
 }
 
 type ContractCall_Distribute struct {
-	Distribute *DistributeRequest `protobuf:"bytes,6,opt,name=distribute,proto3,oneof"`
+	Distribute *DistributeTransaction `protobuf:"bytes,6,opt,name=distribute,proto3,oneof"`
 }
 
 type ContractCall_WithdrawStake struct {
-	WithdrawStake *WithdrawStakeRequest `protobuf:"bytes,7,opt,name=withdraw_stake,json=withdrawStake,proto3,oneof"`
+	WithdrawStake *WithdrawStakeTransaction `protobuf:"bytes,7,opt,name=withdraw_stake,json=withdrawStake,proto3,oneof"`
 }
 
 type ContractCall_WithdrawBid struct {
-	WithdrawBid *WithdrawBidRequest `protobuf:"bytes,8,opt,name=withdraw_bid,json=withdrawBid,proto3,oneof"`
+	WithdrawBid *WithdrawBidTransaction `protobuf:"bytes,8,opt,name=withdraw_bid,json=withdrawBid,proto3,oneof"`
 }
 
 func (*ContractCall_Tx) isContractCall_ContractCall() {}
@@ -233,49 +233,49 @@ func (m *ContractCall) GetTx() *Transaction {
 	return nil
 }
 
-func (m *ContractCall) GetWithdraw() *WithdrawRequest {
+func (m *ContractCall) GetWithdraw() *WithdrawFeesTransaction {
 	if x, ok := m.GetContractCall().(*ContractCall_Withdraw); ok {
 		return x.Withdraw
 	}
 	return nil
 }
 
-func (m *ContractCall) GetStake() *StakeRequest {
+func (m *ContractCall) GetStake() *StakeTransaction {
 	if x, ok := m.GetContractCall().(*ContractCall_Stake); ok {
 		return x.Stake
 	}
 	return nil
 }
 
-func (m *ContractCall) GetBid() *BidRequest {
+func (m *ContractCall) GetBid() *BidTransaction {
 	if x, ok := m.GetContractCall().(*ContractCall_Bid); ok {
 		return x.Bid
 	}
 	return nil
 }
 
-func (m *ContractCall) GetSlash() *SlashRequest {
+func (m *ContractCall) GetSlash() *SlashTransaction {
 	if x, ok := m.GetContractCall().(*ContractCall_Slash); ok {
 		return x.Slash
 	}
 	return nil
 }
 
-func (m *ContractCall) GetDistribute() *DistributeRequest {
+func (m *ContractCall) GetDistribute() *DistributeTransaction {
 	if x, ok := m.GetContractCall().(*ContractCall_Distribute); ok {
 		return x.Distribute
 	}
 	return nil
 }
 
-func (m *ContractCall) GetWithdrawStake() *WithdrawStakeRequest {
+func (m *ContractCall) GetWithdrawStake() *WithdrawStakeTransaction {
 	if x, ok := m.GetContractCall().(*ContractCall_WithdrawStake); ok {
 		return x.WithdrawStake
 	}
 	return nil
 }
 
-func (m *ContractCall) GetWithdrawBid() *WithdrawBidRequest {
+func (m *ContractCall) GetWithdrawBid() *WithdrawBidTransaction {
 	if x, ok := m.GetContractCall().(*ContractCall_WithdrawBid); ok {
 		return x.WithdrawBid
 	}
@@ -296,6 +296,307 @@ func (*ContractCall) XXX_OneofWrappers() []interface{} {
 	}
 }
 
+// Used to request the Slash of a stake
+type SlashTransactionRequest struct {
+	// TODO: implement
+	Tx                   *NewTransactionRequest `protobuf:"bytes,1,opt,name=tx,proto3" json:"tx,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
+}
+
+func (m *SlashTransactionRequest) Reset()         { *m = SlashTransactionRequest{} }
+func (m *SlashTransactionRequest) String() string { return proto.CompactTextString(m) }
+func (*SlashTransactionRequest) ProtoMessage()    {}
+func (*SlashTransactionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_211ec4e18343b18f, []int{4}
+}
+
+func (m *SlashTransactionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SlashTransactionRequest.Unmarshal(m, b)
+}
+func (m *SlashTransactionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SlashTransactionRequest.Marshal(b, m, deterministic)
+}
+func (m *SlashTransactionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SlashTransactionRequest.Merge(m, src)
+}
+func (m *SlashTransactionRequest) XXX_Size() int {
+	return xxx_messageInfo_SlashTransactionRequest.Size(m)
+}
+func (m *SlashTransactionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SlashTransactionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SlashTransactionRequest proto.InternalMessageInfo
+
+func (m *SlashTransactionRequest) GetTx() *NewTransactionRequest {
+	if m != nil {
+		return m.Tx
+	}
+	return nil
+}
+
+// Used to request the withdrawal of fees from a Provisioner
+type DistributeTransactionRequest struct {
+	// TODO: implement
+	Tx                   *NewTransactionRequest `protobuf:"bytes,1,opt,name=tx,proto3" json:"tx,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
+}
+
+func (m *DistributeTransactionRequest) Reset()         { *m = DistributeTransactionRequest{} }
+func (m *DistributeTransactionRequest) String() string { return proto.CompactTextString(m) }
+func (*DistributeTransactionRequest) ProtoMessage()    {}
+func (*DistributeTransactionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_211ec4e18343b18f, []int{5}
+}
+
+func (m *DistributeTransactionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DistributeTransactionRequest.Unmarshal(m, b)
+}
+func (m *DistributeTransactionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DistributeTransactionRequest.Marshal(b, m, deterministic)
+}
+func (m *DistributeTransactionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DistributeTransactionRequest.Merge(m, src)
+}
+func (m *DistributeTransactionRequest) XXX_Size() int {
+	return xxx_messageInfo_DistributeTransactionRequest.Size(m)
+}
+func (m *DistributeTransactionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DistributeTransactionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DistributeTransactionRequest proto.InternalMessageInfo
+
+func (m *DistributeTransactionRequest) GetTx() *NewTransactionRequest {
+	if m != nil {
+		return m.Tx
+	}
+	return nil
+}
+
+// Used to request the withdrawal of fees from a Provisioner
+type WithdrawFeesTransactionRequest struct {
+	// TODO: implement
+	Tx                   *NewTransactionRequest `protobuf:"bytes,1,opt,name=tx,proto3" json:"tx,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
+}
+
+func (m *WithdrawFeesTransactionRequest) Reset()         { *m = WithdrawFeesTransactionRequest{} }
+func (m *WithdrawFeesTransactionRequest) String() string { return proto.CompactTextString(m) }
+func (*WithdrawFeesTransactionRequest) ProtoMessage()    {}
+func (*WithdrawFeesTransactionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_211ec4e18343b18f, []int{6}
+}
+
+func (m *WithdrawFeesTransactionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_WithdrawFeesTransactionRequest.Unmarshal(m, b)
+}
+func (m *WithdrawFeesTransactionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_WithdrawFeesTransactionRequest.Marshal(b, m, deterministic)
+}
+func (m *WithdrawFeesTransactionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WithdrawFeesTransactionRequest.Merge(m, src)
+}
+func (m *WithdrawFeesTransactionRequest) XXX_Size() int {
+	return xxx_messageInfo_WithdrawFeesTransactionRequest.Size(m)
+}
+func (m *WithdrawFeesTransactionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_WithdrawFeesTransactionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_WithdrawFeesTransactionRequest proto.InternalMessageInfo
+
+func (m *WithdrawFeesTransactionRequest) GetTx() *NewTransactionRequest {
+	if m != nil {
+		return m.Tx
+	}
+	return nil
+}
+
+// Used to request the withdrawal of a Stake
+type WithdrawStakeTransactionRequest struct {
+	// TODO: implement
+	Tx                   *NewTransactionRequest `protobuf:"bytes,1,opt,name=tx,proto3" json:"tx,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
+}
+
+func (m *WithdrawStakeTransactionRequest) Reset()         { *m = WithdrawStakeTransactionRequest{} }
+func (m *WithdrawStakeTransactionRequest) String() string { return proto.CompactTextString(m) }
+func (*WithdrawStakeTransactionRequest) ProtoMessage()    {}
+func (*WithdrawStakeTransactionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_211ec4e18343b18f, []int{7}
+}
+
+func (m *WithdrawStakeTransactionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_WithdrawStakeTransactionRequest.Unmarshal(m, b)
+}
+func (m *WithdrawStakeTransactionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_WithdrawStakeTransactionRequest.Marshal(b, m, deterministic)
+}
+func (m *WithdrawStakeTransactionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WithdrawStakeTransactionRequest.Merge(m, src)
+}
+func (m *WithdrawStakeTransactionRequest) XXX_Size() int {
+	return xxx_messageInfo_WithdrawStakeTransactionRequest.Size(m)
+}
+func (m *WithdrawStakeTransactionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_WithdrawStakeTransactionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_WithdrawStakeTransactionRequest proto.InternalMessageInfo
+
+func (m *WithdrawStakeTransactionRequest) GetTx() *NewTransactionRequest {
+	if m != nil {
+		return m.Tx
+	}
+	return nil
+}
+
+// Used to request the withdrawal of a Bid
+type WithdrawBidTransactionRequest struct {
+	// TODO: implement
+	Tx                   *NewTransactionRequest `protobuf:"bytes,1,opt,name=tx,proto3" json:"tx,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
+}
+
+func (m *WithdrawBidTransactionRequest) Reset()         { *m = WithdrawBidTransactionRequest{} }
+func (m *WithdrawBidTransactionRequest) String() string { return proto.CompactTextString(m) }
+func (*WithdrawBidTransactionRequest) ProtoMessage()    {}
+func (*WithdrawBidTransactionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_211ec4e18343b18f, []int{8}
+}
+
+func (m *WithdrawBidTransactionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_WithdrawBidTransactionRequest.Unmarshal(m, b)
+}
+func (m *WithdrawBidTransactionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_WithdrawBidTransactionRequest.Marshal(b, m, deterministic)
+}
+func (m *WithdrawBidTransactionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WithdrawBidTransactionRequest.Merge(m, src)
+}
+func (m *WithdrawBidTransactionRequest) XXX_Size() int {
+	return xxx_messageInfo_WithdrawBidTransactionRequest.Size(m)
+}
+func (m *WithdrawBidTransactionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_WithdrawBidTransactionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_WithdrawBidTransactionRequest proto.InternalMessageInfo
+
+func (m *WithdrawBidTransactionRequest) GetTx() *NewTransactionRequest {
+	if m != nil {
+		return m.Tx
+	}
+	return nil
+}
+
+// Used to request the creation of a Stake
+type StakeTransactionRequest struct {
+	BlsKey               []byte                 `protobuf:"bytes,1,opt,name=bls_key,json=blsKey,proto3" json:"bls_key,omitempty"`
+	Tx                   *NewTransactionRequest `protobuf:"bytes,2,opt,name=tx,proto3" json:"tx,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
+}
+
+func (m *StakeTransactionRequest) Reset()         { *m = StakeTransactionRequest{} }
+func (m *StakeTransactionRequest) String() string { return proto.CompactTextString(m) }
+func (*StakeTransactionRequest) ProtoMessage()    {}
+func (*StakeTransactionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_211ec4e18343b18f, []int{9}
+}
+
+func (m *StakeTransactionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StakeTransactionRequest.Unmarshal(m, b)
+}
+func (m *StakeTransactionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StakeTransactionRequest.Marshal(b, m, deterministic)
+}
+func (m *StakeTransactionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StakeTransactionRequest.Merge(m, src)
+}
+func (m *StakeTransactionRequest) XXX_Size() int {
+	return xxx_messageInfo_StakeTransactionRequest.Size(m)
+}
+func (m *StakeTransactionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_StakeTransactionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StakeTransactionRequest proto.InternalMessageInfo
+
+func (m *StakeTransactionRequest) GetBlsKey() []byte {
+	if m != nil {
+		return m.BlsKey
+	}
+	return nil
+}
+
+func (m *StakeTransactionRequest) GetTx() *NewTransactionRequest {
+	if m != nil {
+		return m.Tx
+	}
+	return nil
+}
+
+// Used to Request the creation of a Bid
+type BidTransactionRequest struct {
+	M                    []byte                 `protobuf:"bytes,1,opt,name=M,proto3" json:"M,omitempty"`
+	Tx                   *NewTransactionRequest `protobuf:"bytes,2,opt,name=tx,proto3" json:"tx,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
+}
+
+func (m *BidTransactionRequest) Reset()         { *m = BidTransactionRequest{} }
+func (m *BidTransactionRequest) String() string { return proto.CompactTextString(m) }
+func (*BidTransactionRequest) ProtoMessage()    {}
+func (*BidTransactionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_211ec4e18343b18f, []int{10}
+}
+
+func (m *BidTransactionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_BidTransactionRequest.Unmarshal(m, b)
+}
+func (m *BidTransactionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_BidTransactionRequest.Marshal(b, m, deterministic)
+}
+func (m *BidTransactionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BidTransactionRequest.Merge(m, src)
+}
+func (m *BidTransactionRequest) XXX_Size() int {
+	return xxx_messageInfo_BidTransactionRequest.Size(m)
+}
+func (m *BidTransactionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_BidTransactionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BidTransactionRequest proto.InternalMessageInfo
+
+func (m *BidTransactionRequest) GetM() []byte {
+	if m != nil {
+		return m.M
+	}
+	return nil
+}
+
+func (m *BidTransactionRequest) GetTx() *NewTransactionRequest {
+	if m != nil {
+		return m.Tx
+	}
+	return nil
+}
+
 type ValidateStateTransitionResponse struct {
 	SuccessfulCalls      []*ContractCall `protobuf:"bytes,1,rep,name=successful_calls,json=successfulCalls,proto3" json:"successful_calls,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
@@ -307,7 +608,7 @@ func (m *ValidateStateTransitionResponse) Reset()         { *m = ValidateStateTr
 func (m *ValidateStateTransitionResponse) String() string { return proto.CompactTextString(m) }
 func (*ValidateStateTransitionResponse) ProtoMessage()    {}
 func (*ValidateStateTransitionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{4}
+	return fileDescriptor_211ec4e18343b18f, []int{11}
 }
 
 func (m *ValidateStateTransitionResponse) XXX_Unmarshal(b []byte) error {
@@ -346,7 +647,7 @@ func (m *ExecuteStateTransitionResponse) Reset()         { *m = ExecuteStateTran
 func (m *ExecuteStateTransitionResponse) String() string { return proto.CompactTextString(m) }
 func (*ExecuteStateTransitionResponse) ProtoMessage()    {}
 func (*ExecuteStateTransitionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{5}
+	return fileDescriptor_211ec4e18343b18f, []int{12}
 }
 
 func (m *ExecuteStateTransitionResponse) XXX_Unmarshal(b []byte) error {
@@ -385,7 +686,7 @@ func (m *ExecuteStateTransitionRequest) Reset()         { *m = ExecuteStateTrans
 func (m *ExecuteStateTransitionRequest) String() string { return proto.CompactTextString(m) }
 func (*ExecuteStateTransitionRequest) ProtoMessage()    {}
 func (*ExecuteStateTransitionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{6}
+	return fileDescriptor_211ec4e18343b18f, []int{13}
 }
 
 func (m *ExecuteStateTransitionRequest) XXX_Unmarshal(b []byte) error {
@@ -424,7 +725,7 @@ func (m *GenerateSecretKeyRequest) Reset()         { *m = GenerateSecretKeyReque
 func (m *GenerateSecretKeyRequest) String() string { return proto.CompactTextString(m) }
 func (*GenerateSecretKeyRequest) ProtoMessage()    {}
 func (*GenerateSecretKeyRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{7}
+	return fileDescriptor_211ec4e18343b18f, []int{14}
 }
 
 func (m *GenerateSecretKeyRequest) XXX_Unmarshal(b []byte) error {
@@ -464,7 +765,7 @@ func (m *OwnedNotesResponse) Reset()         { *m = OwnedNotesResponse{} }
 func (m *OwnedNotesResponse) String() string { return proto.CompactTextString(m) }
 func (*OwnedNotesResponse) ProtoMessage()    {}
 func (*OwnedNotesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{8}
+	return fileDescriptor_211ec4e18343b18f, []int{15}
 }
 
 func (m *OwnedNotesResponse) XXX_Unmarshal(b []byte) error {
@@ -509,7 +810,7 @@ func (m *NewTransactionRequest) Reset()         { *m = NewTransactionRequest{} }
 func (m *NewTransactionRequest) String() string { return proto.CompactTextString(m) }
 func (*NewTransactionRequest) ProtoMessage()    {}
 func (*NewTransactionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{9}
+	return fileDescriptor_211ec4e18343b18f, []int{16}
 }
 
 func (m *NewTransactionRequest) XXX_Unmarshal(b []byte) error {
@@ -583,7 +884,7 @@ func (m *VerifyTransactionResponse) Reset()         { *m = VerifyTransactionResp
 func (m *VerifyTransactionResponse) String() string { return proto.CompactTextString(m) }
 func (*VerifyTransactionResponse) ProtoMessage()    {}
 func (*VerifyTransactionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{10}
+	return fileDescriptor_211ec4e18343b18f, []int{17}
 }
 
 func (m *VerifyTransactionResponse) XXX_Unmarshal(b []byte) error {
@@ -623,7 +924,7 @@ func (m *KeysResponse) Reset()         { *m = KeysResponse{} }
 func (m *KeysResponse) String() string { return proto.CompactTextString(m) }
 func (*KeysResponse) ProtoMessage()    {}
 func (*KeysResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{11}
+	return fileDescriptor_211ec4e18343b18f, []int{18}
 }
 
 func (m *KeysResponse) XXX_Unmarshal(b []byte) error {
@@ -677,7 +978,7 @@ func (m *GenerateScoreRequest) Reset()         { *m = GenerateScoreRequest{} }
 func (m *GenerateScoreRequest) String() string { return proto.CompactTextString(m) }
 func (*GenerateScoreRequest) ProtoMessage()    {}
 func (*GenerateScoreRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{12}
+	return fileDescriptor_211ec4e18343b18f, []int{19}
 }
 
 func (m *GenerateScoreRequest) XXX_Unmarshal(b []byte) error {
@@ -775,7 +1076,7 @@ func (m *GenerateScoreResponse) Reset()         { *m = GenerateScoreResponse{} }
 func (m *GenerateScoreResponse) String() string { return proto.CompactTextString(m) }
 func (*GenerateScoreResponse) ProtoMessage()    {}
 func (*GenerateScoreResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_211ec4e18343b18f, []int{13}
+	return fileDescriptor_211ec4e18343b18f, []int{20}
 }
 
 func (m *GenerateScoreResponse) XXX_Unmarshal(b []byte) error {
@@ -829,6 +1130,13 @@ func init() {
 	proto.RegisterType((*EchoResponse)(nil), "rusk.EchoResponse")
 	proto.RegisterType((*ValidateStateTransitionRequest)(nil), "rusk.ValidateStateTransitionRequest")
 	proto.RegisterType((*ContractCall)(nil), "rusk.ContractCall")
+	proto.RegisterType((*SlashTransactionRequest)(nil), "rusk.SlashTransactionRequest")
+	proto.RegisterType((*DistributeTransactionRequest)(nil), "rusk.DistributeTransactionRequest")
+	proto.RegisterType((*WithdrawFeesTransactionRequest)(nil), "rusk.WithdrawFeesTransactionRequest")
+	proto.RegisterType((*WithdrawStakeTransactionRequest)(nil), "rusk.WithdrawStakeTransactionRequest")
+	proto.RegisterType((*WithdrawBidTransactionRequest)(nil), "rusk.WithdrawBidTransactionRequest")
+	proto.RegisterType((*StakeTransactionRequest)(nil), "rusk.StakeTransactionRequest")
+	proto.RegisterType((*BidTransactionRequest)(nil), "rusk.BidTransactionRequest")
 	proto.RegisterType((*ValidateStateTransitionResponse)(nil), "rusk.ValidateStateTransitionResponse")
 	proto.RegisterType((*ExecuteStateTransitionResponse)(nil), "rusk.ExecuteStateTransitionResponse")
 	proto.RegisterType((*ExecuteStateTransitionRequest)(nil), "rusk.ExecuteStateTransitionRequest")
@@ -846,66 +1154,83 @@ func init() {
 }
 
 var fileDescriptor_211ec4e18343b18f = []byte{
-	// 934 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x56, 0x59, 0x6f, 0xdb, 0x46,
-	0x10, 0x16, 0x75, 0xd9, 0x19, 0x51, 0x3e, 0x26, 0x76, 0xcd, 0xb2, 0x88, 0x1d, 0x30, 0x2e, 0xe0,
-	0xb6, 0x48, 0x0a, 0x38, 0x0f, 0x45, 0x1e, 0x82, 0x00, 0x76, 0x93, 0x26, 0x0e, 0xe0, 0x06, 0xeb,
-	0xc0, 0x7d, 0x54, 0x79, 0xac, 0xe0, 0x05, 0x09, 0x52, 0xe6, 0x2e, 0x25, 0x2b, 0x7f, 0xa5, 0xff,
-	0xa2, 0x0f, 0xfd, 0x35, 0xfd, 0x31, 0xc5, 0x1e, 0x3c, 0x24, 0x59, 0x4e, 0xdf, 0x76, 0x86, 0xdf,
-	0xcc, 0x7e, 0x73, 0x2e, 0x01, 0xf2, 0x82, 0xc7, 0x2f, 0x26, 0x79, 0x26, 0x32, 0xec, 0xca, 0xb3,
-	0x3b, 0x18, 0x33, 0x9a, 0x44, 0x5a, 0xe5, 0x42, 0x4c, 0xe7, 0xbc, 0x3c, 0xa7, 0x99, 0xa0, 0xe6,
-	0xbc, 0x2b, 0x72, 0x3f, 0xe5, 0x7e, 0x28, 0x58, 0x96, 0x1a, 0xd5, 0x76, 0x98, 0xa5, 0x9c, 0xa6,
-	0xbc, 0x30, 0x78, 0x6f, 0x08, 0x83, 0xb7, 0xe1, 0x4d, 0x46, 0xe8, 0x6d, 0x41, 0xb9, 0xf0, 0xb6,
-	0xc0, 0xd6, 0x22, 0x9f, 0x48, 0xa0, 0x77, 0x01, 0x87, 0xd7, 0x7e, 0xc2, 0x22, 0x5f, 0xd0, 0x2b,
-	0xe1, 0x0b, 0xfa, 0x59, 0x7a, 0x64, 0xd2, 0xa1, 0xb1, 0xc0, 0x13, 0xe8, 0x85, 0x7e, 0x92, 0x70,
-	0xc7, 0x7a, 0xda, 0x39, 0x19, 0x9c, 0xe2, 0x0b, 0xc5, 0xf5, 0x3c, 0x4b, 0x45, 0xee, 0x87, 0xe2,
-	0xdc, 0x4f, 0x12, 0xa2, 0x01, 0xde, 0x3f, 0x1d, 0xb0, 0x9b, 0x7a, 0x7c, 0x06, 0x6d, 0x71, 0xe7,
-	0x58, 0x4f, 0xad, 0x93, 0xc1, 0xe9, 0xae, 0xb6, 0xfb, 0x5c, 0x33, 0x7e, 0xdf, 0x22, 0x6d, 0x71,
-	0x87, 0x2f, 0x61, 0x73, 0xc6, 0xc4, 0x4d, 0x94, 0xfb, 0x33, 0xa7, 0xad, 0xa0, 0xfb, 0x1a, 0xfa,
-	0x87, 0xd1, 0x1a, 0x22, 0xef, 0x5b, 0xa4, 0x02, 0xe2, 0x8f, 0xd0, 0xe3, 0xc2, 0x8f, 0xa9, 0xd3,
-	0x51, 0x16, 0x86, 0xd4, 0x95, 0x54, 0xd5, 0x70, 0x0d, 0xc1, 0x63, 0xe8, 0x04, 0x2c, 0x72, 0xba,
-	0x0a, 0xb9, 0xa3, 0x91, 0x67, 0x2c, 0xaa, 0x71, 0xf2, 0xb3, 0xf2, 0x98, 0xf8, 0xfc, 0xc6, 0xe9,
-	0x2d, 0x78, 0x94, 0xaa, 0xa6, 0x47, 0x29, 0xe3, 0x2b, 0x80, 0x88, 0x71, 0x91, 0xb3, 0xa0, 0x10,
-	0xd4, 0xe9, 0x2b, 0x83, 0x03, 0x6d, 0xf0, 0x6b, 0xa5, 0xaf, 0xad, 0x1a, 0x60, 0x3c, 0x87, 0xad,
-	0x32, 0x88, 0x91, 0x8e, 0x60, 0x43, 0x99, 0xbb, 0x8b, 0x31, 0x2f, 0x45, 0x32, 0x9c, 0x35, 0xf5,
-	0xf8, 0x1a, 0xec, 0xca, 0x89, 0x0c, 0x6d, 0x53, 0xb9, 0x70, 0x16, 0x5d, 0x2c, 0x84, 0x38, 0x98,
-	0xd5, 0xda, 0xb3, 0x6d, 0x18, 0x86, 0xa6, 0x4c, 0x23, 0x59, 0x39, 0xef, 0x4f, 0x38, 0x5a, 0xdb,
-	0x04, 0xba, 0x4f, 0xf0, 0x35, 0xec, 0xf0, 0x22, 0x0c, 0x29, 0xe7, 0xe3, 0x22, 0x19, 0x7d, 0xad,
-	0x21, 0xb6, 0x6b, 0xec, 0xb9, 0x6a, 0x8d, 0x0b, 0x38, 0x7c, 0x7b, 0x47, 0xc3, 0x62, 0xfd, 0x05,
-	0xff, 0xbf, 0xcd, 0x5e, 0xc1, 0x93, 0x75, 0xbe, 0x74, 0xc7, 0x3a, 0xb0, 0x61, 0xee, 0x57, 0xbd,
-	0xb7, 0x49, 0x4a, 0xd1, 0x3b, 0x01, 0xe7, 0x37, 0x9a, 0xd2, 0x5c, 0x06, 0x4a, 0xc3, 0x9c, 0x8a,
-	0x8f, 0x74, 0x5e, 0x5a, 0xd9, 0x60, 0x05, 0x0a, 0x6f, 0x13, 0x2b, 0xf0, 0xde, 0x00, 0xfe, 0x3e,
-	0x4b, 0x69, 0x74, 0x99, 0x09, 0xca, 0x2b, 0x92, 0x3f, 0x40, 0x4f, 0x8e, 0x5f, 0x49, 0xf2, 0xb1,
-	0xa9, 0x39, 0x0d, 0xf3, 0xf9, 0x44, 0x68, 0x30, 0xd1, 0x08, 0xef, 0x5f, 0x0b, 0xf6, 0x2f, 0xe9,
-	0xac, 0xd1, 0xef, 0xe5, 0x45, 0x47, 0xd0, 0xe6, 0xb1, 0x99, 0x8a, 0x6d, 0xd3, 0x66, 0x15, 0x99,
-	0x36, 0x8f, 0xf1, 0x27, 0xe8, 0xb3, 0x74, 0x52, 0x08, 0xee, 0xb4, 0xd7, 0x5f, 0x63, 0x20, 0xf8,
-	0x1c, 0x1e, 0xe5, 0x34, 0x64, 0x13, 0x46, 0x53, 0x61, 0xa6, 0xc1, 0x38, 0xfd, 0x54, 0x04, 0x09,
-	0x0b, 0xa5, 0xd3, 0x1a, 0x81, 0x7b, 0xd0, 0x9b, 0xfa, 0x49, 0x41, 0xd5, 0x38, 0xf4, 0x89, 0x16,
-	0x70, 0x07, 0x3a, 0x63, 0x4a, 0x55, 0xeb, 0xf7, 0x89, 0x3c, 0xe2, 0x21, 0x40, 0x16, 0x8c, 0x0b,
-	0x1e, 0xfa, 0x82, 0x46, 0xaa, 0xc5, 0x37, 0x49, 0x43, 0xe3, 0xfd, 0x02, 0xdf, 0x5e, 0xd3, 0x9c,
-	0x8d, 0xe7, 0x0b, 0x01, 0x9a, 0x34, 0xb9, 0xb0, 0x39, 0x95, 0x1f, 0x19, 0x8d, 0x4c, 0x05, 0x2a,
-	0xd9, 0xbb, 0x04, 0xfb, 0x23, 0x9d, 0xd7, 0x29, 0x7d, 0x02, 0xed, 0x69, 0x99, 0x8d, 0xa1, 0x26,
-	0x7e, 0xcd, 0xe8, 0x4c, 0xe5, 0x62, 0x1a, 0xcb, 0x64, 0x4d, 0x62, 0xb3, 0x17, 0x56, 0xe2, 0x6a,
-	0x4f, 0x62, 0xef, 0x6f, 0x0b, 0xf6, 0xaa, 0x9a, 0x86, 0x59, 0x4e, 0x1b, 0xf5, 0x8c, 0xca, 0x7a,
-	0x46, 0x52, 0xd2, 0x6e, 0x6c, 0x62, 0xc5, 0x52, 0x9a, 0xab, 0x64, 0xd9, 0xc4, 0x9a, 0xe3, 0x63,
-	0xe8, 0xcd, 0x47, 0x2c, 0x9d, 0xaa, 0x9c, 0xd8, 0xa4, 0x3b, 0xff, 0x90, 0x4e, 0x25, 0xe4, 0x56,
-	0x25, 0xc4, 0x26, 0xd6, 0xad, 0x94, 0xbe, 0xa8, 0x2c, 0xd8, 0xc4, 0xfa, 0x82, 0x08, 0x5d, 0x4e,
-	0x69, 0xa4, 0x46, 0xd7, 0x26, 0xea, 0x2c, 0x75, 0x01, 0x8b, 0xb8, 0x9a, 0x45, 0x9b, 0xa8, 0x33,
-	0x1e, 0xc0, 0x46, 0xc0, 0xa2, 0xd1, 0x24, 0xe3, 0xce, 0x23, 0x95, 0xda, 0x7e, 0xc0, 0xa2, 0x4f,
-	0x19, 0xf7, 0x28, 0xec, 0x2f, 0x71, 0x36, 0xd9, 0xd8, 0x83, 0xde, 0x24, 0xcf, 0xb2, 0xb1, 0x21,
-	0xae, 0x05, 0xa9, 0xe5, 0x12, 0x66, 0x02, 0xd0, 0x82, 0xe6, 0xd4, 0x69, 0x70, 0x52, 0xf7, 0x77,
-	0xeb, 0xfb, 0x4f, 0xff, 0xea, 0x41, 0x97, 0x14, 0x3c, 0xc6, 0x9f, 0xa1, 0x2b, 0xb7, 0x3e, 0x9a,
-	0x25, 0xdc, 0x78, 0x10, 0x5c, 0x6c, 0xaa, 0xcc, 0xa3, 0xd0, 0xc2, 0x1b, 0x38, 0x58, 0xb3, 0x11,
-	0xf0, 0xd8, 0x14, 0xe9, 0xc1, 0x57, 0xc3, 0xfd, 0xfe, 0x2b, 0xa8, 0xea, 0x26, 0x0a, 0xdf, 0xdc,
-	0x3f, 0xcd, 0xf8, 0xcc, 0x30, 0x7b, 0x68, 0xd6, 0xdd, 0xe3, 0x87, 0x41, 0xd5, 0x35, 0x17, 0x30,
-	0x5c, 0xc8, 0x38, 0x9a, 0x85, 0x7b, 0x5f, 0xeb, 0xb8, 0xdf, 0xdd, 0xfb, 0xad, 0xf2, 0xf5, 0x0e,
-	0x76, 0x57, 0xb6, 0x08, 0x1e, 0x2e, 0xd9, 0x2c, 0xad, 0x17, 0x77, 0x79, 0xd2, 0xbd, 0x16, 0x3e,
-	0x87, 0xae, 0x1c, 0x05, 0x5c, 0xfe, 0x54, 0xd6, 0xa4, 0x39, 0x27, 0x5e, 0x0b, 0xdf, 0x00, 0xbe,
-	0x2b, 0x92, 0xe4, 0x2a, 0xf4, 0xd3, 0x7a, 0x35, 0xe1, 0xe2, 0xcc, 0xb8, 0xe6, 0x11, 0x58, 0xdd,
-	0x5d, 0x5e, 0x0b, 0xcf, 0x60, 0x6b, 0x71, 0x23, 0xa1, 0x09, 0xf4, 0xde, 0x3d, 0xe5, 0xae, 0xbe,
-	0xd8, 0x5e, 0x0b, 0x3f, 0xc0, 0xee, 0xca, 0xdc, 0xe3, 0x2a, 0xd2, 0x3d, 0x32, 0xb4, 0xd6, 0xed,
-	0x08, 0xaf, 0x15, 0xf4, 0xd5, 0x0f, 0xca, 0xcb, 0xff, 0x02, 0x00, 0x00, 0xff, 0xff, 0xb7, 0xf6,
-	0x5e, 0xce, 0xfd, 0x08, 0x00, 0x00,
+	// 1211 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x57, 0xdb, 0x6e, 0xdb, 0x46,
+	0x13, 0xa6, 0x8e, 0x51, 0xc6, 0x54, 0x6c, 0x4f, 0x9c, 0x98, 0x3f, 0x13, 0xc9, 0xc1, 0x26, 0x01,
+	0xfc, 0x23, 0x48, 0x0a, 0xa4, 0x17, 0x45, 0x51, 0x04, 0x41, 0xe3, 0xc4, 0x39, 0xb8, 0x51, 0x03,
+	0x26, 0x75, 0x03, 0xf4, 0x42, 0xa5, 0xc8, 0x35, 0x4c, 0x88, 0x20, 0x15, 0x2e, 0x29, 0x59, 0x79,
+	0xac, 0x3e, 0x4c, 0xaf, 0xfa, 0x28, 0xbd, 0x28, 0xf6, 0x40, 0x89, 0x94, 0x48, 0x5a, 0xf1, 0x1d,
+	0x77, 0xf6, 0x9b, 0x6f, 0x66, 0x67, 0x77, 0x3e, 0x8d, 0x00, 0xa2, 0x84, 0x8d, 0x9f, 0x4c, 0xa2,
+	0x30, 0x0e, 0xb1, 0xc9, 0xbf, 0x4d, 0x18, 0xd3, 0x39, 0x93, 0x16, 0x13, 0x82, 0x30, 0xa6, 0xea,
+	0x7b, 0x37, 0x8e, 0xec, 0x80, 0xd9, 0x4e, 0xec, 0x85, 0x81, 0x32, 0x6d, 0x3b, 0x61, 0xc0, 0x68,
+	0xc0, 0x12, 0x85, 0x27, 0x5d, 0xd8, 0x7a, 0xe5, 0x9c, 0x87, 0x16, 0xfd, 0x92, 0x50, 0x16, 0x93,
+	0x1b, 0xa0, 0xcb, 0x25, 0x9b, 0x70, 0x20, 0x79, 0x07, 0xfd, 0x53, 0xdb, 0xf7, 0x5c, 0x3b, 0xa6,
+	0x1f, 0x63, 0x3b, 0xa6, 0x9f, 0x38, 0xa3, 0xc7, 0x09, 0x95, 0x07, 0x1e, 0x42, 0xcb, 0xb1, 0x7d,
+	0x9f, 0x19, 0xb5, 0x7b, 0x8d, 0xc3, 0xad, 0xa7, 0xf8, 0x44, 0xa4, 0x77, 0x14, 0x06, 0x71, 0x64,
+	0x3b, 0xf1, 0x91, 0xed, 0xfb, 0x96, 0x04, 0x90, 0xbf, 0x1b, 0xa0, 0x67, 0xed, 0x78, 0x1f, 0xea,
+	0xf1, 0x85, 0x51, 0xbb, 0x57, 0x3b, 0xdc, 0x7a, 0xba, 0x2b, 0xfd, 0x3e, 0x2d, 0x33, 0x7e, 0xa3,
+	0x59, 0xf5, 0xf8, 0x02, 0x7f, 0x82, 0xce, 0xcc, 0x8b, 0xcf, 0xdd, 0xc8, 0x9e, 0x19, 0x75, 0x01,
+	0xed, 0x49, 0xe8, 0xef, 0xca, 0x7a, 0x4c, 0x29, 0xcb, 0xbb, 0x2d, 0x1c, 0xf0, 0x09, 0xb4, 0x58,
+	0x6c, 0x8f, 0xa9, 0xd1, 0x10, 0x9e, 0xb7, 0xa5, 0xe7, 0x47, 0x6e, 0xca, 0xbb, 0x48, 0x18, 0x1e,
+	0x42, 0x63, 0xe4, 0xb9, 0x46, 0x53, 0xa0, 0xf7, 0x24, 0xfa, 0x85, 0xe7, 0xe6, 0xb1, 0x1c, 0x22,
+	0x98, 0x7d, 0x9b, 0x9d, 0x1b, 0xad, 0x1c, 0x33, 0x37, 0xad, 0x32, 0x73, 0x1b, 0x3e, 0x03, 0x70,
+	0x3d, 0x16, 0x47, 0xde, 0x28, 0x89, 0xa9, 0xd1, 0x16, 0x4e, 0x77, 0xa4, 0xd3, 0xcb, 0x85, 0x3d,
+	0xef, 0x99, 0x71, 0xc0, 0xd7, 0x70, 0x23, 0x3d, 0xd4, 0x50, 0x9e, 0xe8, 0x9a, 0xa0, 0xe8, 0xe7,
+	0x6b, 0x51, 0x70, 0xb2, 0xee, 0x2c, 0xbb, 0x87, 0x3f, 0x83, 0xbe, 0x20, 0xe2, 0x47, 0xed, 0x08,
+	0x9a, 0xbb, 0x79, 0x9a, 0xb5, 0x23, 0x6f, 0xcd, 0x96, 0x3b, 0x2f, 0xb6, 0xa1, 0xeb, 0xa8, 0x6b,
+	0x1c, 0xf2, 0x9b, 0x25, 0xc7, 0xb0, 0xbf, 0x7a, 0xf0, 0xf4, 0x75, 0x3c, 0xca, 0x5c, 0xb1, 0x3a,
+	0xee, 0x80, 0xce, 0xd6, 0x81, 0xfc, 0xaa, 0xc9, 0x09, 0xdc, 0x2d, 0xac, 0xc5, 0x95, 0xc8, 0xde,
+	0x43, 0xbf, 0xe4, 0x85, 0x5c, 0x89, 0x6e, 0x00, 0x07, 0x65, 0x45, 0xbe, 0x12, 0xdf, 0x2f, 0xd0,
+	0x2b, 0xae, 0xf6, 0x95, 0xd8, 0x86, 0xb0, 0x5f, 0x96, 0xd5, 0x3e, 0x5c, 0x1b, 0xf9, 0x6c, 0x38,
+	0xa6, 0x73, 0x41, 0xa6, 0x5b, 0xed, 0x91, 0xcf, 0x4e, 0xe8, 0x5c, 0x05, 0xa8, 0x6f, 0x16, 0xc0,
+	0x82, 0x5b, 0xc5, 0x69, 0xea, 0x50, 0x7b, 0xaf, 0x88, 0x6b, 0xef, 0xbf, 0x8d, 0xf3, 0x4f, 0x38,
+	0x28, 0xd5, 0x16, 0x29, 0x3f, 0xf8, 0x0c, 0x76, 0x58, 0xe2, 0x38, 0x94, 0xb1, 0xb3, 0xc4, 0x1f,
+	0x5e, 0xa6, 0x33, 0xdb, 0x4b, 0xec, 0x91, 0x50, 0x9c, 0x77, 0xd0, 0x7f, 0x75, 0x41, 0x9d, 0xa4,
+	0x3c, 0xc0, 0xe6, 0xea, 0xf5, 0x23, 0xf4, 0xca, 0xb8, 0x64, 0x25, 0x0c, 0xb8, 0xa6, 0xe2, 0x8b,
+	0x7a, 0x74, 0xac, 0x74, 0x49, 0x0e, 0xc1, 0x78, 0x4d, 0x03, 0x1a, 0xf1, 0x83, 0x52, 0x27, 0xa2,
+	0xf1, 0x09, 0x9d, 0x67, 0xea, 0x37, 0x4a, 0xeb, 0x37, 0x22, 0xcf, 0x01, 0x7f, 0x9d, 0x05, 0xd4,
+	0x1d, 0x84, 0x31, 0x65, 0x8b, 0x24, 0xff, 0x0f, 0x2d, 0xae, 0xea, 0x69, 0x92, 0x37, 0x95, 0x6c,
+	0x50, 0x27, 0x9a, 0x4f, 0x62, 0x09, 0xb6, 0x24, 0x82, 0xfc, 0x53, 0x83, 0x5b, 0x85, 0x15, 0xc7,
+	0x03, 0xa8, 0xb3, 0xb1, 0x7a, 0x4f, 0xdb, 0x4a, 0xad, 0x16, 0xc9, 0xd4, 0xd9, 0x18, 0x1f, 0x41,
+	0xdb, 0x0b, 0x26, 0x49, 0xcc, 0x8c, 0x7a, 0x79, 0x18, 0x05, 0xc1, 0xc7, 0x70, 0x3d, 0xa2, 0x8e,
+	0x37, 0xf1, 0x68, 0x10, 0x2b, 0x71, 0x55, 0xa4, 0x1f, 0x92, 0x91, 0xef, 0x39, 0x9c, 0x74, 0x89,
+	0xc0, 0x3d, 0x68, 0x4d, 0x6d, 0x3f, 0xa1, 0x42, 0x59, 0xdb, 0x96, 0x5c, 0xe0, 0x0e, 0x34, 0xce,
+	0x28, 0x15, 0x0a, 0xda, 0xb6, 0xf8, 0x27, 0xf6, 0x01, 0xc2, 0xd1, 0x59, 0xc2, 0x1c, 0x3b, 0xa6,
+	0xae, 0x50, 0xc9, 0x8e, 0x95, 0xb1, 0x90, 0x1f, 0xe0, 0x7f, 0xa7, 0x34, 0xf2, 0xce, 0xe6, 0xb9,
+	0x03, 0xaa, 0x32, 0x99, 0xd0, 0x99, 0xf2, 0x4d, 0x8f, 0xba, 0xea, 0x06, 0x16, 0x6b, 0x32, 0x00,
+	0xfd, 0x84, 0xce, 0x97, 0x25, 0xed, 0x41, 0x7d, 0x9a, 0x56, 0xa3, 0x2b, 0x13, 0x3f, 0xf5, 0xe8,
+	0x4c, 0xd4, 0x62, 0x3a, 0xe6, 0xc5, 0x9a, 0x8c, 0xd5, 0x3b, 0x5e, 0x3b, 0x57, 0x7d, 0x32, 0x26,
+	0x7f, 0xd5, 0x60, 0x6f, 0x71, 0xa7, 0x4e, 0x18, 0xd1, 0xcc, 0x7d, 0xba, 0xe9, 0x7d, 0xba, 0x7c,
+	0x25, 0x69, 0x74, 0xab, 0x36, 0xe6, 0xab, 0xb9, 0x28, 0x96, 0x6e, 0xd5, 0xe6, 0x78, 0x13, 0x5a,
+	0xf3, 0xa1, 0x17, 0x4c, 0x45, 0x4d, 0x74, 0xab, 0x39, 0x7f, 0x1b, 0x4c, 0x39, 0xe4, 0x8b, 0x28,
+	0x88, 0x6e, 0xd5, 0xbe, 0xf0, 0xd5, 0x57, 0x51, 0x05, 0xdd, 0xaa, 0x7d, 0x45, 0x84, 0x26, 0xa3,
+	0xd4, 0x15, 0xca, 0xaf, 0x5b, 0xe2, 0x9b, 0xdb, 0x46, 0x9e, 0xcb, 0x84, 0x8c, 0xeb, 0x96, 0xf8,
+	0x16, 0x1d, 0xef, 0xb9, 0xc3, 0x49, 0xc8, 0x8c, 0xeb, 0xa2, 0xb4, 0xed, 0x91, 0xe7, 0x7e, 0x08,
+	0x19, 0xa1, 0x70, 0x6b, 0x25, 0x67, 0x55, 0x8d, 0x3d, 0x68, 0x4d, 0xa2, 0x30, 0x3c, 0x53, 0x89,
+	0xcb, 0x05, 0xb7, 0x32, 0x0e, 0x53, 0x07, 0x90, 0x0b, 0x99, 0x53, 0x23, 0x93, 0x93, 0x88, 0xdf,
+	0x5c, 0xc6, 0x7f, 0xfa, 0x6f, 0x17, 0x9a, 0x56, 0xc2, 0xc6, 0xf8, 0x1d, 0x34, 0xf9, 0x30, 0x81,
+	0xea, 0xb7, 0x3d, 0x33, 0x67, 0x98, 0x98, 0x35, 0xa9, 0x59, 0x43, 0xc3, 0x73, 0xd8, 0x2f, 0x51,
+	0x04, 0x7c, 0xa0, 0x2e, 0xa9, 0x72, 0x18, 0x31, 0x1f, 0x5e, 0x82, 0x5a, 0x44, 0xa2, 0x70, 0xbb,
+	0xb8, 0x9b, 0xf1, 0xbe, 0xca, 0xac, 0xaa, 0xd7, 0xcd, 0x07, 0xd5, 0xa0, 0x45, 0x98, 0x77, 0xd0,
+	0xcd, 0x55, 0x1c, 0x4d, 0xe9, 0x58, 0xf4, 0x74, 0xcc, 0x3b, 0x85, 0x7b, 0x0b, 0xae, 0x63, 0xd8,
+	0x5d, 0x53, 0x11, 0xec, 0xaf, 0xf8, 0xac, 0xc8, 0x8b, 0xb9, 0xda, 0xe9, 0x44, 0xc3, 0xc7, 0xd0,
+	0xe4, 0xad, 0x80, 0xab, 0x5b, 0xe9, 0x9d, 0x64, 0xfb, 0x84, 0x68, 0xf8, 0x1c, 0xf0, 0x38, 0xf1,
+	0xfd, 0x8f, 0x8e, 0x1d, 0x2c, 0xa5, 0x09, 0xf3, 0x3d, 0x63, 0x1a, 0x72, 0xb9, 0xae, 0x5d, 0x44,
+	0xc3, 0x17, 0x70, 0x23, 0xaf, 0x48, 0x58, 0xf5, 0xcb, 0x60, 0xae, 0x0f, 0x82, 0x44, 0xc3, 0xb7,
+	0xb0, 0xbb, 0xd6, 0xf7, 0xb8, 0x8e, 0x34, 0x0f, 0x54, 0x5a, 0x65, 0x1a, 0x41, 0x34, 0x3c, 0x82,
+	0xce, 0x80, 0xaa, 0x61, 0xa8, 0x57, 0x3c, 0x0f, 0xa6, 0xa9, 0x94, 0x8c, 0x8b, 0x44, 0xc3, 0x37,
+	0xb0, 0x25, 0x63, 0x48, 0x9e, 0x12, 0xe0, 0x26, 0xe9, 0xfc, 0x01, 0x3b, 0x03, 0x3a, 0xcb, 0x8d,
+	0x16, 0xf8, 0xb0, 0x7a, 0xa8, 0x4b, 0xd3, 0xbb, 0x64, 0xf6, 0x23, 0x1a, 0x7e, 0x86, 0x9b, 0x32,
+	0x76, 0x9e, 0xff, 0x12, 0xc7, 0x4d, 0xd2, 0x7e, 0x06, 0xed, 0x01, 0xe5, 0x93, 0x4b, 0x7a, 0x99,
+	0x85, 0xd3, 0x81, 0x59, 0x38, 0x42, 0x13, 0x0d, 0x5f, 0xc2, 0x75, 0xc9, 0xce, 0x19, 0x0a, 0x41,
+	0x9b, 0x24, 0xf1, 0x9b, 0x78, 0x59, 0x99, 0x31, 0x2a, 0x6d, 0xde, 0xca, 0xc9, 0xca, 0xac, 0x1c,
+	0x76, 0x89, 0x86, 0x9f, 0xd2, 0xc7, 0x96, 0x65, 0xae, 0x74, 0xda, 0x24, 0x59, 0x0b, 0xba, 0x03,
+	0x3a, 0x5b, 0xce, 0xb7, 0x48, 0x2a, 0xa6, 0xff, 0x15, 0x49, 0x28, 0xc4, 0x08, 0xce, 0x1d, 0x19,
+	0x32, 0x43, 0x5b, 0xe5, 0xb2, 0x49, 0x9e, 0x9f, 0x61, 0x3b, 0x53, 0x54, 0x3e, 0x3a, 0xa7, 0xda,
+	0x5b, 0x3d, 0x4e, 0x9b, 0xd5, 0x7f, 0xcb, 0x88, 0x86, 0xa7, 0x80, 0xf9, 0xba, 0x0a, 0xf2, 0x6a,
+	0xb7, 0x6f, 0xe8, 0x68, 0xf1, 0x37, 0xab, 0x57, 0xfc, 0x3f, 0x6c, 0xb5, 0xa3, 0x57, 0xb6, 0x73,
+	0x1d, 0x2d, 0x78, 0x4a, 0x80, 0x1b, 0xa4, 0x33, 0x6a, 0x8b, 0x3f, 0xd6, 0xdf, 0xff, 0x17, 0x00,
+	0x00, 0xff, 0xff, 0x02, 0xaf, 0x20, 0x13, 0xa8, 0x0f, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -936,6 +1261,25 @@ type RuskClient interface {
 	FullScanOwnedNotes(ctx context.Context, in *ViewKey, opts ...grpc.CallOption) (*OwnedNotesResponse, error)
 	NewTransaction(ctx context.Context, in *NewTransactionRequest, opts ...grpc.CallOption) (*Transaction, error)
 	VerifyTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error)
+	// Stake
+	NewStake(ctx context.Context, in *StakeTransactionRequest, opts ...grpc.CallOption) (*StakeTransaction, error)
+	VerifyStake(ctx context.Context, in *StakeTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error)
+	NewWithdrawStake(ctx context.Context, in *WithdrawStakeTransactionRequest, opts ...grpc.CallOption) (*WithdrawStakeTransaction, error)
+	VerifyWithdrawStake(ctx context.Context, in *WithdrawStakeTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error)
+	// Bid
+	NewBid(ctx context.Context, in *BidTransactionRequest, opts ...grpc.CallOption) (*BidTransaction, error)
+	VerifyBid(ctx context.Context, in *BidTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error)
+	NewWithdrawBid(ctx context.Context, in *WithdrawBidTransactionRequest, opts ...grpc.CallOption) (*WithdrawBidTransaction, error)
+	VerifyWithdrawBid(ctx context.Context, in *WithdrawBidTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error)
+	// Distribute
+	NewDistribute(ctx context.Context, in *DistributeTransactionRequest, opts ...grpc.CallOption) (*DistributeTransaction, error)
+	VerifyDistribute(ctx context.Context, in *DistributeTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error)
+	// WithdrawFee
+	NewWithdrawFees(ctx context.Context, in *WithdrawFeesTransactionRequest, opts ...grpc.CallOption) (*WithdrawFeesTransaction, error)
+	VerifyWithdrawFees(ctx context.Context, in *WithdrawFeesTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error)
+	// Slash
+	NewSlash(ctx context.Context, in *SlashTransactionRequest, opts ...grpc.CallOption) (*SlashTransaction, error)
+	VerifySlash(ctx context.Context, in *SlashTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error)
 }
 
 type ruskClient struct {
@@ -1027,6 +1371,132 @@ func (c *ruskClient) VerifyTransaction(ctx context.Context, in *Transaction, opt
 	return out, nil
 }
 
+func (c *ruskClient) NewStake(ctx context.Context, in *StakeTransactionRequest, opts ...grpc.CallOption) (*StakeTransaction, error) {
+	out := new(StakeTransaction)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/NewStake", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) VerifyStake(ctx context.Context, in *StakeTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error) {
+	out := new(VerifyTransactionResponse)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/VerifyStake", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) NewWithdrawStake(ctx context.Context, in *WithdrawStakeTransactionRequest, opts ...grpc.CallOption) (*WithdrawStakeTransaction, error) {
+	out := new(WithdrawStakeTransaction)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/NewWithdrawStake", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) VerifyWithdrawStake(ctx context.Context, in *WithdrawStakeTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error) {
+	out := new(VerifyTransactionResponse)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/VerifyWithdrawStake", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) NewBid(ctx context.Context, in *BidTransactionRequest, opts ...grpc.CallOption) (*BidTransaction, error) {
+	out := new(BidTransaction)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/NewBid", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) VerifyBid(ctx context.Context, in *BidTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error) {
+	out := new(VerifyTransactionResponse)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/VerifyBid", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) NewWithdrawBid(ctx context.Context, in *WithdrawBidTransactionRequest, opts ...grpc.CallOption) (*WithdrawBidTransaction, error) {
+	out := new(WithdrawBidTransaction)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/NewWithdrawBid", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) VerifyWithdrawBid(ctx context.Context, in *WithdrawBidTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error) {
+	out := new(VerifyTransactionResponse)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/VerifyWithdrawBid", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) NewDistribute(ctx context.Context, in *DistributeTransactionRequest, opts ...grpc.CallOption) (*DistributeTransaction, error) {
+	out := new(DistributeTransaction)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/NewDistribute", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) VerifyDistribute(ctx context.Context, in *DistributeTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error) {
+	out := new(VerifyTransactionResponse)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/VerifyDistribute", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) NewWithdrawFees(ctx context.Context, in *WithdrawFeesTransactionRequest, opts ...grpc.CallOption) (*WithdrawFeesTransaction, error) {
+	out := new(WithdrawFeesTransaction)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/NewWithdrawFees", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) VerifyWithdrawFees(ctx context.Context, in *WithdrawFeesTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error) {
+	out := new(VerifyTransactionResponse)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/VerifyWithdrawFees", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) NewSlash(ctx context.Context, in *SlashTransactionRequest, opts ...grpc.CallOption) (*SlashTransaction, error) {
+	out := new(SlashTransaction)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/NewSlash", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruskClient) VerifySlash(ctx context.Context, in *SlashTransaction, opts ...grpc.CallOption) (*VerifyTransactionResponse, error) {
+	out := new(VerifyTransactionResponse)
+	err := c.cc.Invoke(ctx, "/rusk.Rusk/VerifySlash", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RuskServer is the server API for Rusk service.
 type RuskServer interface {
 	// Simple echo request
@@ -1045,6 +1515,25 @@ type RuskServer interface {
 	FullScanOwnedNotes(context.Context, *ViewKey) (*OwnedNotesResponse, error)
 	NewTransaction(context.Context, *NewTransactionRequest) (*Transaction, error)
 	VerifyTransaction(context.Context, *Transaction) (*VerifyTransactionResponse, error)
+	// Stake
+	NewStake(context.Context, *StakeTransactionRequest) (*StakeTransaction, error)
+	VerifyStake(context.Context, *StakeTransaction) (*VerifyTransactionResponse, error)
+	NewWithdrawStake(context.Context, *WithdrawStakeTransactionRequest) (*WithdrawStakeTransaction, error)
+	VerifyWithdrawStake(context.Context, *WithdrawStakeTransaction) (*VerifyTransactionResponse, error)
+	// Bid
+	NewBid(context.Context, *BidTransactionRequest) (*BidTransaction, error)
+	VerifyBid(context.Context, *BidTransaction) (*VerifyTransactionResponse, error)
+	NewWithdrawBid(context.Context, *WithdrawBidTransactionRequest) (*WithdrawBidTransaction, error)
+	VerifyWithdrawBid(context.Context, *WithdrawBidTransaction) (*VerifyTransactionResponse, error)
+	// Distribute
+	NewDistribute(context.Context, *DistributeTransactionRequest) (*DistributeTransaction, error)
+	VerifyDistribute(context.Context, *DistributeTransaction) (*VerifyTransactionResponse, error)
+	// WithdrawFee
+	NewWithdrawFees(context.Context, *WithdrawFeesTransactionRequest) (*WithdrawFeesTransaction, error)
+	VerifyWithdrawFees(context.Context, *WithdrawFeesTransaction) (*VerifyTransactionResponse, error)
+	// Slash
+	NewSlash(context.Context, *SlashTransactionRequest) (*SlashTransaction, error)
+	VerifySlash(context.Context, *SlashTransaction) (*VerifyTransactionResponse, error)
 }
 
 // UnimplementedRuskServer can be embedded to have forward compatible implementations.
@@ -1077,6 +1566,48 @@ func (*UnimplementedRuskServer) NewTransaction(ctx context.Context, req *NewTran
 }
 func (*UnimplementedRuskServer) VerifyTransaction(ctx context.Context, req *Transaction) (*VerifyTransactionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyTransaction not implemented")
+}
+func (*UnimplementedRuskServer) NewStake(ctx context.Context, req *StakeTransactionRequest) (*StakeTransaction, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewStake not implemented")
+}
+func (*UnimplementedRuskServer) VerifyStake(ctx context.Context, req *StakeTransaction) (*VerifyTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyStake not implemented")
+}
+func (*UnimplementedRuskServer) NewWithdrawStake(ctx context.Context, req *WithdrawStakeTransactionRequest) (*WithdrawStakeTransaction, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewWithdrawStake not implemented")
+}
+func (*UnimplementedRuskServer) VerifyWithdrawStake(ctx context.Context, req *WithdrawStakeTransaction) (*VerifyTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyWithdrawStake not implemented")
+}
+func (*UnimplementedRuskServer) NewBid(ctx context.Context, req *BidTransactionRequest) (*BidTransaction, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewBid not implemented")
+}
+func (*UnimplementedRuskServer) VerifyBid(ctx context.Context, req *BidTransaction) (*VerifyTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyBid not implemented")
+}
+func (*UnimplementedRuskServer) NewWithdrawBid(ctx context.Context, req *WithdrawBidTransactionRequest) (*WithdrawBidTransaction, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewWithdrawBid not implemented")
+}
+func (*UnimplementedRuskServer) VerifyWithdrawBid(ctx context.Context, req *WithdrawBidTransaction) (*VerifyTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyWithdrawBid not implemented")
+}
+func (*UnimplementedRuskServer) NewDistribute(ctx context.Context, req *DistributeTransactionRequest) (*DistributeTransaction, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewDistribute not implemented")
+}
+func (*UnimplementedRuskServer) VerifyDistribute(ctx context.Context, req *DistributeTransaction) (*VerifyTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyDistribute not implemented")
+}
+func (*UnimplementedRuskServer) NewWithdrawFees(ctx context.Context, req *WithdrawFeesTransactionRequest) (*WithdrawFeesTransaction, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewWithdrawFees not implemented")
+}
+func (*UnimplementedRuskServer) VerifyWithdrawFees(ctx context.Context, req *WithdrawFeesTransaction) (*VerifyTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyWithdrawFees not implemented")
+}
+func (*UnimplementedRuskServer) NewSlash(ctx context.Context, req *SlashTransactionRequest) (*SlashTransaction, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewSlash not implemented")
+}
+func (*UnimplementedRuskServer) VerifySlash(ctx context.Context, req *SlashTransaction) (*VerifyTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifySlash not implemented")
 }
 
 func RegisterRuskServer(s *grpc.Server, srv RuskServer) {
@@ -1245,6 +1776,258 @@ func _Rusk_VerifyTransaction_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Rusk_NewStake_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StakeTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).NewStake(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/NewStake",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).NewStake(ctx, req.(*StakeTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_VerifyStake_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StakeTransaction)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).VerifyStake(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/VerifyStake",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).VerifyStake(ctx, req.(*StakeTransaction))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_NewWithdrawStake_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WithdrawStakeTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).NewWithdrawStake(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/NewWithdrawStake",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).NewWithdrawStake(ctx, req.(*WithdrawStakeTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_VerifyWithdrawStake_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WithdrawStakeTransaction)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).VerifyWithdrawStake(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/VerifyWithdrawStake",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).VerifyWithdrawStake(ctx, req.(*WithdrawStakeTransaction))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_NewBid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).NewBid(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/NewBid",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).NewBid(ctx, req.(*BidTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_VerifyBid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidTransaction)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).VerifyBid(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/VerifyBid",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).VerifyBid(ctx, req.(*BidTransaction))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_NewWithdrawBid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WithdrawBidTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).NewWithdrawBid(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/NewWithdrawBid",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).NewWithdrawBid(ctx, req.(*WithdrawBidTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_VerifyWithdrawBid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WithdrawBidTransaction)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).VerifyWithdrawBid(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/VerifyWithdrawBid",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).VerifyWithdrawBid(ctx, req.(*WithdrawBidTransaction))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_NewDistribute_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DistributeTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).NewDistribute(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/NewDistribute",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).NewDistribute(ctx, req.(*DistributeTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_VerifyDistribute_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DistributeTransaction)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).VerifyDistribute(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/VerifyDistribute",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).VerifyDistribute(ctx, req.(*DistributeTransaction))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_NewWithdrawFees_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WithdrawFeesTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).NewWithdrawFees(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/NewWithdrawFees",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).NewWithdrawFees(ctx, req.(*WithdrawFeesTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_VerifyWithdrawFees_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WithdrawFeesTransaction)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).VerifyWithdrawFees(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/VerifyWithdrawFees",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).VerifyWithdrawFees(ctx, req.(*WithdrawFeesTransaction))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_NewSlash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SlashTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).NewSlash(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/NewSlash",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).NewSlash(ctx, req.(*SlashTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Rusk_VerifySlash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SlashTransaction)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuskServer).VerifySlash(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rusk.Rusk/VerifySlash",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuskServer).VerifySlash(ctx, req.(*SlashTransaction))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Rusk_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "rusk.Rusk",
 	HandlerType: (*RuskServer)(nil),
@@ -1284,6 +2067,62 @@ var _Rusk_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VerifyTransaction",
 			Handler:    _Rusk_VerifyTransaction_Handler,
+		},
+		{
+			MethodName: "NewStake",
+			Handler:    _Rusk_NewStake_Handler,
+		},
+		{
+			MethodName: "VerifyStake",
+			Handler:    _Rusk_VerifyStake_Handler,
+		},
+		{
+			MethodName: "NewWithdrawStake",
+			Handler:    _Rusk_NewWithdrawStake_Handler,
+		},
+		{
+			MethodName: "VerifyWithdrawStake",
+			Handler:    _Rusk_VerifyWithdrawStake_Handler,
+		},
+		{
+			MethodName: "NewBid",
+			Handler:    _Rusk_NewBid_Handler,
+		},
+		{
+			MethodName: "VerifyBid",
+			Handler:    _Rusk_VerifyBid_Handler,
+		},
+		{
+			MethodName: "NewWithdrawBid",
+			Handler:    _Rusk_NewWithdrawBid_Handler,
+		},
+		{
+			MethodName: "VerifyWithdrawBid",
+			Handler:    _Rusk_VerifyWithdrawBid_Handler,
+		},
+		{
+			MethodName: "NewDistribute",
+			Handler:    _Rusk_NewDistribute_Handler,
+		},
+		{
+			MethodName: "VerifyDistribute",
+			Handler:    _Rusk_VerifyDistribute_Handler,
+		},
+		{
+			MethodName: "NewWithdrawFees",
+			Handler:    _Rusk_NewWithdrawFees_Handler,
+		},
+		{
+			MethodName: "VerifyWithdrawFees",
+			Handler:    _Rusk_VerifyWithdrawFees_Handler,
+		},
+		{
+			MethodName: "NewSlash",
+			Handler:    _Rusk_NewSlash_Handler,
+		},
+		{
+			MethodName: "VerifySlash",
+			Handler:    _Rusk_VerifySlash_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

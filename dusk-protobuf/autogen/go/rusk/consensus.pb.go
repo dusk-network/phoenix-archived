@@ -21,7 +21,7 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 // Call during block generation
-type DistributeRequest struct {
+type DistributeTransaction struct {
 	TotalReward           uint64       `protobuf:"fixed64,1,opt,name=total_reward,json=totalReward,proto3" json:"total_reward,omitempty"`
 	ProvisionersAddresses []byte       `protobuf:"bytes,2,opt,name=provisioners_addresses,json=provisionersAddresses,proto3" json:"provisioners_addresses,omitempty"`
 	BgPk                  *PublicKey   `protobuf:"bytes,3,opt,name=bg_pk,json=bgPk,proto3" json:"bg_pk,omitempty"`
@@ -31,61 +31,61 @@ type DistributeRequest struct {
 	XXX_sizecache         int32        `json:"-"`
 }
 
-func (m *DistributeRequest) Reset()         { *m = DistributeRequest{} }
-func (m *DistributeRequest) String() string { return proto.CompactTextString(m) }
-func (*DistributeRequest) ProtoMessage()    {}
-func (*DistributeRequest) Descriptor() ([]byte, []int) {
+func (m *DistributeTransaction) Reset()         { *m = DistributeTransaction{} }
+func (m *DistributeTransaction) String() string { return proto.CompactTextString(m) }
+func (*DistributeTransaction) ProtoMessage()    {}
+func (*DistributeTransaction) Descriptor() ([]byte, []int) {
 	return fileDescriptor_56f0f2c53b3de771, []int{0}
 }
 
-func (m *DistributeRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DistributeRequest.Unmarshal(m, b)
+func (m *DistributeTransaction) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DistributeTransaction.Unmarshal(m, b)
 }
-func (m *DistributeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DistributeRequest.Marshal(b, m, deterministic)
+func (m *DistributeTransaction) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DistributeTransaction.Marshal(b, m, deterministic)
 }
-func (m *DistributeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DistributeRequest.Merge(m, src)
+func (m *DistributeTransaction) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DistributeTransaction.Merge(m, src)
 }
-func (m *DistributeRequest) XXX_Size() int {
-	return xxx_messageInfo_DistributeRequest.Size(m)
+func (m *DistributeTransaction) XXX_Size() int {
+	return xxx_messageInfo_DistributeTransaction.Size(m)
 }
-func (m *DistributeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DistributeRequest.DiscardUnknown(m)
+func (m *DistributeTransaction) XXX_DiscardUnknown() {
+	xxx_messageInfo_DistributeTransaction.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DistributeRequest proto.InternalMessageInfo
+var xxx_messageInfo_DistributeTransaction proto.InternalMessageInfo
 
-func (m *DistributeRequest) GetTotalReward() uint64 {
+func (m *DistributeTransaction) GetTotalReward() uint64 {
 	if m != nil {
 		return m.TotalReward
 	}
 	return 0
 }
 
-func (m *DistributeRequest) GetProvisionersAddresses() []byte {
+func (m *DistributeTransaction) GetProvisionersAddresses() []byte {
 	if m != nil {
 		return m.ProvisionersAddresses
 	}
 	return nil
 }
 
-func (m *DistributeRequest) GetBgPk() *PublicKey {
+func (m *DistributeTransaction) GetBgPk() *PublicKey {
 	if m != nil {
 		return m.BgPk
 	}
 	return nil
 }
 
-func (m *DistributeRequest) GetTx() *Transaction {
+func (m *DistributeTransaction) GetTx() *Transaction {
 	if m != nil {
 		return m.Tx
 	}
 	return nil
 }
 
-// Call from consensus
-type WithdrawRequest struct {
+// WithdrawFeesTransaction is the transaction for a Provisioner to withdraw the fees using the smart contract
+type WithdrawFeesTransaction struct {
 	BlsKey               []byte       `protobuf:"bytes,1,opt,name=bls_key,json=blsKey,proto3" json:"bls_key,omitempty"`
 	Sig                  []byte       `protobuf:"bytes,2,opt,name=sig,proto3" json:"sig,omitempty"`
 	Msg                  []byte       `protobuf:"bytes,3,opt,name=msg,proto3" json:"msg,omitempty"`
@@ -95,53 +95,53 @@ type WithdrawRequest struct {
 	XXX_sizecache        int32        `json:"-"`
 }
 
-func (m *WithdrawRequest) Reset()         { *m = WithdrawRequest{} }
-func (m *WithdrawRequest) String() string { return proto.CompactTextString(m) }
-func (*WithdrawRequest) ProtoMessage()    {}
-func (*WithdrawRequest) Descriptor() ([]byte, []int) {
+func (m *WithdrawFeesTransaction) Reset()         { *m = WithdrawFeesTransaction{} }
+func (m *WithdrawFeesTransaction) String() string { return proto.CompactTextString(m) }
+func (*WithdrawFeesTransaction) ProtoMessage()    {}
+func (*WithdrawFeesTransaction) Descriptor() ([]byte, []int) {
 	return fileDescriptor_56f0f2c53b3de771, []int{1}
 }
 
-func (m *WithdrawRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_WithdrawRequest.Unmarshal(m, b)
+func (m *WithdrawFeesTransaction) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_WithdrawFeesTransaction.Unmarshal(m, b)
 }
-func (m *WithdrawRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_WithdrawRequest.Marshal(b, m, deterministic)
+func (m *WithdrawFeesTransaction) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_WithdrawFeesTransaction.Marshal(b, m, deterministic)
 }
-func (m *WithdrawRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_WithdrawRequest.Merge(m, src)
+func (m *WithdrawFeesTransaction) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WithdrawFeesTransaction.Merge(m, src)
 }
-func (m *WithdrawRequest) XXX_Size() int {
-	return xxx_messageInfo_WithdrawRequest.Size(m)
+func (m *WithdrawFeesTransaction) XXX_Size() int {
+	return xxx_messageInfo_WithdrawFeesTransaction.Size(m)
 }
-func (m *WithdrawRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_WithdrawRequest.DiscardUnknown(m)
+func (m *WithdrawFeesTransaction) XXX_DiscardUnknown() {
+	xxx_messageInfo_WithdrawFeesTransaction.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_WithdrawRequest proto.InternalMessageInfo
+var xxx_messageInfo_WithdrawFeesTransaction proto.InternalMessageInfo
 
-func (m *WithdrawRequest) GetBlsKey() []byte {
+func (m *WithdrawFeesTransaction) GetBlsKey() []byte {
 	if m != nil {
 		return m.BlsKey
 	}
 	return nil
 }
 
-func (m *WithdrawRequest) GetSig() []byte {
+func (m *WithdrawFeesTransaction) GetSig() []byte {
 	if m != nil {
 		return m.Sig
 	}
 	return nil
 }
 
-func (m *WithdrawRequest) GetMsg() []byte {
+func (m *WithdrawFeesTransaction) GetMsg() []byte {
 	if m != nil {
 		return m.Msg
 	}
 	return nil
 }
 
-func (m *WithdrawRequest) GetTx() *Transaction {
+func (m *WithdrawFeesTransaction) GetTx() *Transaction {
 	if m != nil {
 		return m.Tx
 	}
@@ -149,127 +149,7 @@ func (m *WithdrawRequest) GetTx() *Transaction {
 }
 
 // Call from consensus
-type StakeRequest struct {
-	BlsKey               []byte       `protobuf:"bytes,1,opt,name=bls_key,json=blsKey,proto3" json:"bls_key,omitempty"`
-	Value                uint64       `protobuf:"fixed64,2,opt,name=value,proto3" json:"value,omitempty"`
-	ExpirationHeight     uint64       `protobuf:"fixed64,3,opt,name=expiration_height,json=expirationHeight,proto3" json:"expiration_height,omitempty"`
-	Tx                   *Transaction `protobuf:"bytes,4,opt,name=tx,proto3" json:"tx,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
-	XXX_unrecognized     []byte       `json:"-"`
-	XXX_sizecache        int32        `json:"-"`
-}
-
-func (m *StakeRequest) Reset()         { *m = StakeRequest{} }
-func (m *StakeRequest) String() string { return proto.CompactTextString(m) }
-func (*StakeRequest) ProtoMessage()    {}
-func (*StakeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_56f0f2c53b3de771, []int{2}
-}
-
-func (m *StakeRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_StakeRequest.Unmarshal(m, b)
-}
-func (m *StakeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_StakeRequest.Marshal(b, m, deterministic)
-}
-func (m *StakeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_StakeRequest.Merge(m, src)
-}
-func (m *StakeRequest) XXX_Size() int {
-	return xxx_messageInfo_StakeRequest.Size(m)
-}
-func (m *StakeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_StakeRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_StakeRequest proto.InternalMessageInfo
-
-func (m *StakeRequest) GetBlsKey() []byte {
-	if m != nil {
-		return m.BlsKey
-	}
-	return nil
-}
-
-func (m *StakeRequest) GetValue() uint64 {
-	if m != nil {
-		return m.Value
-	}
-	return 0
-}
-
-func (m *StakeRequest) GetExpirationHeight() uint64 {
-	if m != nil {
-		return m.ExpirationHeight
-	}
-	return 0
-}
-
-func (m *StakeRequest) GetTx() *Transaction {
-	if m != nil {
-		return m.Tx
-	}
-	return nil
-}
-
-// Call from consensus
-type WithdrawStakeRequest struct {
-	BlsKey               []byte       `protobuf:"bytes,1,opt,name=bls_key,json=blsKey,proto3" json:"bls_key,omitempty"`
-	Sig                  []byte       `protobuf:"bytes,2,opt,name=sig,proto3" json:"sig,omitempty"`
-	Tx                   *Transaction `protobuf:"bytes,3,opt,name=tx,proto3" json:"tx,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
-	XXX_unrecognized     []byte       `json:"-"`
-	XXX_sizecache        int32        `json:"-"`
-}
-
-func (m *WithdrawStakeRequest) Reset()         { *m = WithdrawStakeRequest{} }
-func (m *WithdrawStakeRequest) String() string { return proto.CompactTextString(m) }
-func (*WithdrawStakeRequest) ProtoMessage()    {}
-func (*WithdrawStakeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_56f0f2c53b3de771, []int{3}
-}
-
-func (m *WithdrawStakeRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_WithdrawStakeRequest.Unmarshal(m, b)
-}
-func (m *WithdrawStakeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_WithdrawStakeRequest.Marshal(b, m, deterministic)
-}
-func (m *WithdrawStakeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_WithdrawStakeRequest.Merge(m, src)
-}
-func (m *WithdrawStakeRequest) XXX_Size() int {
-	return xxx_messageInfo_WithdrawStakeRequest.Size(m)
-}
-func (m *WithdrawStakeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_WithdrawStakeRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_WithdrawStakeRequest proto.InternalMessageInfo
-
-func (m *WithdrawStakeRequest) GetBlsKey() []byte {
-	if m != nil {
-		return m.BlsKey
-	}
-	return nil
-}
-
-func (m *WithdrawStakeRequest) GetSig() []byte {
-	if m != nil {
-		return m.Sig
-	}
-	return nil
-}
-
-func (m *WithdrawStakeRequest) GetTx() *Transaction {
-	if m != nil {
-		return m.Tx
-	}
-	return nil
-}
-
-// Call from consensus
-type SlashRequest struct {
+type SlashTransaction struct {
 	BlsKey               []byte       `protobuf:"bytes,1,opt,name=bls_key,json=blsKey,proto3" json:"bls_key,omitempty"`
 	Step                 uint32       `protobuf:"varint,2,opt,name=step,proto3" json:"step,omitempty"`
 	Round                uint64       `protobuf:"fixed64,3,opt,name=round,proto3" json:"round,omitempty"`
@@ -283,89 +163,153 @@ type SlashRequest struct {
 	XXX_sizecache        int32        `json:"-"`
 }
 
-func (m *SlashRequest) Reset()         { *m = SlashRequest{} }
-func (m *SlashRequest) String() string { return proto.CompactTextString(m) }
-func (*SlashRequest) ProtoMessage()    {}
-func (*SlashRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_56f0f2c53b3de771, []int{4}
+func (m *SlashTransaction) Reset()         { *m = SlashTransaction{} }
+func (m *SlashTransaction) String() string { return proto.CompactTextString(m) }
+func (*SlashTransaction) ProtoMessage()    {}
+func (*SlashTransaction) Descriptor() ([]byte, []int) {
+	return fileDescriptor_56f0f2c53b3de771, []int{2}
 }
 
-func (m *SlashRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SlashRequest.Unmarshal(m, b)
+func (m *SlashTransaction) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SlashTransaction.Unmarshal(m, b)
 }
-func (m *SlashRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SlashRequest.Marshal(b, m, deterministic)
+func (m *SlashTransaction) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SlashTransaction.Marshal(b, m, deterministic)
 }
-func (m *SlashRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SlashRequest.Merge(m, src)
+func (m *SlashTransaction) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SlashTransaction.Merge(m, src)
 }
-func (m *SlashRequest) XXX_Size() int {
-	return xxx_messageInfo_SlashRequest.Size(m)
+func (m *SlashTransaction) XXX_Size() int {
+	return xxx_messageInfo_SlashTransaction.Size(m)
 }
-func (m *SlashRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SlashRequest.DiscardUnknown(m)
+func (m *SlashTransaction) XXX_DiscardUnknown() {
+	xxx_messageInfo_SlashTransaction.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SlashRequest proto.InternalMessageInfo
+var xxx_messageInfo_SlashTransaction proto.InternalMessageInfo
 
-func (m *SlashRequest) GetBlsKey() []byte {
+func (m *SlashTransaction) GetBlsKey() []byte {
 	if m != nil {
 		return m.BlsKey
 	}
 	return nil
 }
 
-func (m *SlashRequest) GetStep() uint32 {
+func (m *SlashTransaction) GetStep() uint32 {
 	if m != nil {
 		return m.Step
 	}
 	return 0
 }
 
-func (m *SlashRequest) GetRound() uint64 {
+func (m *SlashTransaction) GetRound() uint64 {
 	if m != nil {
 		return m.Round
 	}
 	return 0
 }
 
-func (m *SlashRequest) GetFirstMsg() []byte {
+func (m *SlashTransaction) GetFirstMsg() []byte {
 	if m != nil {
 		return m.FirstMsg
 	}
 	return nil
 }
 
-func (m *SlashRequest) GetFirstSig() []byte {
+func (m *SlashTransaction) GetFirstSig() []byte {
 	if m != nil {
 		return m.FirstSig
 	}
 	return nil
 }
 
-func (m *SlashRequest) GetSecondMsg() []byte {
+func (m *SlashTransaction) GetSecondMsg() []byte {
 	if m != nil {
 		return m.SecondMsg
 	}
 	return nil
 }
 
-func (m *SlashRequest) GetSecondSig() []byte {
+func (m *SlashTransaction) GetSecondSig() []byte {
 	if m != nil {
 		return m.SecondSig
 	}
 	return nil
 }
 
-func (m *SlashRequest) GetTx() *Transaction {
+func (m *SlashTransaction) GetTx() *Transaction {
 	if m != nil {
 		return m.Tx
 	}
 	return nil
 }
 
-// Call from block generator
-type BidRequest struct {
+// StakeTransaction is the transaction for the Stake used by the Provisioners to engage in committees
+type StakeTransaction struct {
+	BlsKey               []byte       `protobuf:"bytes,1,opt,name=bls_key,json=blsKey,proto3" json:"bls_key,omitempty"`
+	Value                uint64       `protobuf:"fixed64,2,opt,name=value,proto3" json:"value,omitempty"`
+	ExpirationHeight     uint64       `protobuf:"fixed64,3,opt,name=expiration_height,json=expirationHeight,proto3" json:"expiration_height,omitempty"`
+	Tx                   *Transaction `protobuf:"bytes,4,opt,name=tx,proto3" json:"tx,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
+}
+
+func (m *StakeTransaction) Reset()         { *m = StakeTransaction{} }
+func (m *StakeTransaction) String() string { return proto.CompactTextString(m) }
+func (*StakeTransaction) ProtoMessage()    {}
+func (*StakeTransaction) Descriptor() ([]byte, []int) {
+	return fileDescriptor_56f0f2c53b3de771, []int{3}
+}
+
+func (m *StakeTransaction) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StakeTransaction.Unmarshal(m, b)
+}
+func (m *StakeTransaction) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StakeTransaction.Marshal(b, m, deterministic)
+}
+func (m *StakeTransaction) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StakeTransaction.Merge(m, src)
+}
+func (m *StakeTransaction) XXX_Size() int {
+	return xxx_messageInfo_StakeTransaction.Size(m)
+}
+func (m *StakeTransaction) XXX_DiscardUnknown() {
+	xxx_messageInfo_StakeTransaction.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StakeTransaction proto.InternalMessageInfo
+
+func (m *StakeTransaction) GetBlsKey() []byte {
+	if m != nil {
+		return m.BlsKey
+	}
+	return nil
+}
+
+func (m *StakeTransaction) GetValue() uint64 {
+	if m != nil {
+		return m.Value
+	}
+	return 0
+}
+
+func (m *StakeTransaction) GetExpirationHeight() uint64 {
+	if m != nil {
+		return m.ExpirationHeight
+	}
+	return 0
+}
+
+func (m *StakeTransaction) GetTx() *Transaction {
+	if m != nil {
+		return m.Tx
+	}
+	return nil
+}
+
+// BidTransaction is the transaction for the Bid used by the Block Generator to create a Score
+type BidTransaction struct {
 	M                    []byte       `protobuf:"bytes,1,opt,name=m,proto3" json:"m,omitempty"`
 	Commitment           []byte       `protobuf:"bytes,2,opt,name=commitment,proto3" json:"commitment,omitempty"`
 	EncryptedValue       []byte       `protobuf:"bytes,3,opt,name=encrypted_value,json=encryptedValue,proto3" json:"encrypted_value,omitempty"`
@@ -380,96 +324,96 @@ type BidRequest struct {
 	XXX_sizecache        int32        `json:"-"`
 }
 
-func (m *BidRequest) Reset()         { *m = BidRequest{} }
-func (m *BidRequest) String() string { return proto.CompactTextString(m) }
-func (*BidRequest) ProtoMessage()    {}
-func (*BidRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_56f0f2c53b3de771, []int{5}
+func (m *BidTransaction) Reset()         { *m = BidTransaction{} }
+func (m *BidTransaction) String() string { return proto.CompactTextString(m) }
+func (*BidTransaction) ProtoMessage()    {}
+func (*BidTransaction) Descriptor() ([]byte, []int) {
+	return fileDescriptor_56f0f2c53b3de771, []int{4}
 }
 
-func (m *BidRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_BidRequest.Unmarshal(m, b)
+func (m *BidTransaction) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_BidTransaction.Unmarshal(m, b)
 }
-func (m *BidRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_BidRequest.Marshal(b, m, deterministic)
+func (m *BidTransaction) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_BidTransaction.Marshal(b, m, deterministic)
 }
-func (m *BidRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BidRequest.Merge(m, src)
+func (m *BidTransaction) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BidTransaction.Merge(m, src)
 }
-func (m *BidRequest) XXX_Size() int {
-	return xxx_messageInfo_BidRequest.Size(m)
+func (m *BidTransaction) XXX_Size() int {
+	return xxx_messageInfo_BidTransaction.Size(m)
 }
-func (m *BidRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_BidRequest.DiscardUnknown(m)
+func (m *BidTransaction) XXX_DiscardUnknown() {
+	xxx_messageInfo_BidTransaction.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_BidRequest proto.InternalMessageInfo
+var xxx_messageInfo_BidTransaction proto.InternalMessageInfo
 
-func (m *BidRequest) GetM() []byte {
+func (m *BidTransaction) GetM() []byte {
 	if m != nil {
 		return m.M
 	}
 	return nil
 }
 
-func (m *BidRequest) GetCommitment() []byte {
+func (m *BidTransaction) GetCommitment() []byte {
 	if m != nil {
 		return m.Commitment
 	}
 	return nil
 }
 
-func (m *BidRequest) GetEncryptedValue() []byte {
+func (m *BidTransaction) GetEncryptedValue() []byte {
 	if m != nil {
 		return m.EncryptedValue
 	}
 	return nil
 }
 
-func (m *BidRequest) GetEncryptedBlinder() []byte {
+func (m *BidTransaction) GetEncryptedBlinder() []byte {
 	if m != nil {
 		return m.EncryptedBlinder
 	}
 	return nil
 }
 
-func (m *BidRequest) GetExpirationHeight() uint64 {
+func (m *BidTransaction) GetExpirationHeight() uint64 {
 	if m != nil {
 		return m.ExpirationHeight
 	}
 	return 0
 }
 
-func (m *BidRequest) GetPk() []byte {
+func (m *BidTransaction) GetPk() []byte {
 	if m != nil {
 		return m.Pk
 	}
 	return nil
 }
 
-func (m *BidRequest) GetR() []byte {
+func (m *BidTransaction) GetR() []byte {
 	if m != nil {
 		return m.R
 	}
 	return nil
 }
 
-func (m *BidRequest) GetZ() []byte {
+func (m *BidTransaction) GetZ() []byte {
 	if m != nil {
 		return m.Z
 	}
 	return nil
 }
 
-func (m *BidRequest) GetTx() *Transaction {
+func (m *BidTransaction) GetTx() *Transaction {
 	if m != nil {
 		return m.Tx
 	}
 	return nil
 }
 
-// Call from block generator
-type WithdrawBidRequest struct {
+// WithdrawBidTransaction is the transaction to withdraw a bid
+type WithdrawBidTransaction struct {
 	Commitment           []byte       `protobuf:"bytes,1,opt,name=commitment,proto3" json:"commitment,omitempty"`
 	EncryptedValue       []byte       `protobuf:"bytes,2,opt,name=encrypted_value,json=encryptedValue,proto3" json:"encrypted_value,omitempty"`
 	EncryptedBlinder     []byte       `protobuf:"bytes,3,opt,name=encrypted_blinder,json=encryptedBlinder,proto3" json:"encrypted_blinder,omitempty"`
@@ -481,67 +425,123 @@ type WithdrawBidRequest struct {
 	XXX_sizecache        int32        `json:"-"`
 }
 
-func (m *WithdrawBidRequest) Reset()         { *m = WithdrawBidRequest{} }
-func (m *WithdrawBidRequest) String() string { return proto.CompactTextString(m) }
-func (*WithdrawBidRequest) ProtoMessage()    {}
-func (*WithdrawBidRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_56f0f2c53b3de771, []int{6}
+func (m *WithdrawBidTransaction) Reset()         { *m = WithdrawBidTransaction{} }
+func (m *WithdrawBidTransaction) String() string { return proto.CompactTextString(m) }
+func (*WithdrawBidTransaction) ProtoMessage()    {}
+func (*WithdrawBidTransaction) Descriptor() ([]byte, []int) {
+	return fileDescriptor_56f0f2c53b3de771, []int{5}
 }
 
-func (m *WithdrawBidRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_WithdrawBidRequest.Unmarshal(m, b)
+func (m *WithdrawBidTransaction) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_WithdrawBidTransaction.Unmarshal(m, b)
 }
-func (m *WithdrawBidRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_WithdrawBidRequest.Marshal(b, m, deterministic)
+func (m *WithdrawBidTransaction) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_WithdrawBidTransaction.Marshal(b, m, deterministic)
 }
-func (m *WithdrawBidRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_WithdrawBidRequest.Merge(m, src)
+func (m *WithdrawBidTransaction) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WithdrawBidTransaction.Merge(m, src)
 }
-func (m *WithdrawBidRequest) XXX_Size() int {
-	return xxx_messageInfo_WithdrawBidRequest.Size(m)
+func (m *WithdrawBidTransaction) XXX_Size() int {
+	return xxx_messageInfo_WithdrawBidTransaction.Size(m)
 }
-func (m *WithdrawBidRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_WithdrawBidRequest.DiscardUnknown(m)
+func (m *WithdrawBidTransaction) XXX_DiscardUnknown() {
+	xxx_messageInfo_WithdrawBidTransaction.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_WithdrawBidRequest proto.InternalMessageInfo
+var xxx_messageInfo_WithdrawBidTransaction proto.InternalMessageInfo
 
-func (m *WithdrawBidRequest) GetCommitment() []byte {
+func (m *WithdrawBidTransaction) GetCommitment() []byte {
 	if m != nil {
 		return m.Commitment
 	}
 	return nil
 }
 
-func (m *WithdrawBidRequest) GetEncryptedValue() []byte {
+func (m *WithdrawBidTransaction) GetEncryptedValue() []byte {
 	if m != nil {
 		return m.EncryptedValue
 	}
 	return nil
 }
 
-func (m *WithdrawBidRequest) GetEncryptedBlinder() []byte {
+func (m *WithdrawBidTransaction) GetEncryptedBlinder() []byte {
 	if m != nil {
 		return m.EncryptedBlinder
 	}
 	return nil
 }
 
-func (m *WithdrawBidRequest) GetBid() []byte {
+func (m *WithdrawBidTransaction) GetBid() []byte {
 	if m != nil {
 		return m.Bid
 	}
 	return nil
 }
 
-func (m *WithdrawBidRequest) GetSig() []byte {
+func (m *WithdrawBidTransaction) GetSig() []byte {
 	if m != nil {
 		return m.Sig
 	}
 	return nil
 }
 
-func (m *WithdrawBidRequest) GetTx() *Transaction {
+func (m *WithdrawBidTransaction) GetTx() *Transaction {
+	if m != nil {
+		return m.Tx
+	}
+	return nil
+}
+
+// WithdrawStakeTransaction is the transaction to withdraw a stake
+type WithdrawStakeTransaction struct {
+	BlsKey               []byte       `protobuf:"bytes,1,opt,name=bls_key,json=blsKey,proto3" json:"bls_key,omitempty"`
+	Sig                  []byte       `protobuf:"bytes,2,opt,name=sig,proto3" json:"sig,omitempty"`
+	Tx                   *Transaction `protobuf:"bytes,3,opt,name=tx,proto3" json:"tx,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
+}
+
+func (m *WithdrawStakeTransaction) Reset()         { *m = WithdrawStakeTransaction{} }
+func (m *WithdrawStakeTransaction) String() string { return proto.CompactTextString(m) }
+func (*WithdrawStakeTransaction) ProtoMessage()    {}
+func (*WithdrawStakeTransaction) Descriptor() ([]byte, []int) {
+	return fileDescriptor_56f0f2c53b3de771, []int{6}
+}
+
+func (m *WithdrawStakeTransaction) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_WithdrawStakeTransaction.Unmarshal(m, b)
+}
+func (m *WithdrawStakeTransaction) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_WithdrawStakeTransaction.Marshal(b, m, deterministic)
+}
+func (m *WithdrawStakeTransaction) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WithdrawStakeTransaction.Merge(m, src)
+}
+func (m *WithdrawStakeTransaction) XXX_Size() int {
+	return xxx_messageInfo_WithdrawStakeTransaction.Size(m)
+}
+func (m *WithdrawStakeTransaction) XXX_DiscardUnknown() {
+	xxx_messageInfo_WithdrawStakeTransaction.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_WithdrawStakeTransaction proto.InternalMessageInfo
+
+func (m *WithdrawStakeTransaction) GetBlsKey() []byte {
+	if m != nil {
+		return m.BlsKey
+	}
+	return nil
+}
+
+func (m *WithdrawStakeTransaction) GetSig() []byte {
+	if m != nil {
+		return m.Sig
+	}
+	return nil
+}
+
+func (m *WithdrawStakeTransaction) GetTx() *Transaction {
 	if m != nil {
 		return m.Tx
 	}
@@ -549,13 +549,13 @@ func (m *WithdrawBidRequest) GetTx() *Transaction {
 }
 
 func init() {
-	proto.RegisterType((*DistributeRequest)(nil), "rusk.DistributeRequest")
-	proto.RegisterType((*WithdrawRequest)(nil), "rusk.WithdrawRequest")
-	proto.RegisterType((*StakeRequest)(nil), "rusk.StakeRequest")
-	proto.RegisterType((*WithdrawStakeRequest)(nil), "rusk.WithdrawStakeRequest")
-	proto.RegisterType((*SlashRequest)(nil), "rusk.SlashRequest")
-	proto.RegisterType((*BidRequest)(nil), "rusk.BidRequest")
-	proto.RegisterType((*WithdrawBidRequest)(nil), "rusk.WithdrawBidRequest")
+	proto.RegisterType((*DistributeTransaction)(nil), "rusk.DistributeTransaction")
+	proto.RegisterType((*WithdrawFeesTransaction)(nil), "rusk.WithdrawFeesTransaction")
+	proto.RegisterType((*SlashTransaction)(nil), "rusk.SlashTransaction")
+	proto.RegisterType((*StakeTransaction)(nil), "rusk.StakeTransaction")
+	proto.RegisterType((*BidTransaction)(nil), "rusk.BidTransaction")
+	proto.RegisterType((*WithdrawBidTransaction)(nil), "rusk.WithdrawBidTransaction")
+	proto.RegisterType((*WithdrawStakeTransaction)(nil), "rusk.WithdrawStakeTransaction")
 }
 
 func init() {
@@ -563,40 +563,41 @@ func init() {
 }
 
 var fileDescriptor_56f0f2c53b3de771 = []byte{
-	// 557 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xdf, 0x6e, 0xd3, 0x3e,
-	0x18, 0x95, 0xd3, 0x36, 0x5b, 0xbf, 0xe5, 0xb7, 0xb6, 0xd6, 0x7e, 0x50, 0x0d, 0x81, 0xba, 0x09,
-	0x89, 0x4a, 0x48, 0xbd, 0x00, 0xf1, 0x00, 0x4c, 0x5c, 0x20, 0x4d, 0x48, 0x93, 0x8b, 0xe0, 0x32,
-	0x4a, 0xe2, 0x8f, 0xd4, 0xca, 0xdf, 0xd9, 0xce, 0xd6, 0xee, 0x19, 0xe0, 0x75, 0x78, 0x0f, 0xde,
-	0x83, 0x87, 0x40, 0x76, 0x92, 0xb6, 0xfc, 0x59, 0xd7, 0x3b, 0xfb, 0x1c, 0xdb, 0xdf, 0x39, 0x27,
-	0x47, 0x81, 0x41, 0x54, 0xe4, 0x0a, 0x73, 0x55, 0xa9, 0x59, 0x29, 0x0b, 0x5d, 0xd0, 0xae, 0xac,
-	0x54, 0x72, 0x3a, 0xd2, 0x32, 0xc8, 0x55, 0x10, 0x69, 0x51, 0xe4, 0x35, 0x71, 0x0a, 0x09, 0xae,
-	0x9a, 0x43, 0xe7, 0xdf, 0x09, 0x8c, 0xde, 0x09, 0xa5, 0xa5, 0x08, 0x2b, 0x8d, 0x0c, 0xaf, 0x2b,
-	0x54, 0x9a, 0x9e, 0x81, 0xa7, 0x0b, 0x1d, 0xa4, 0xbe, 0xc4, 0xdb, 0x40, 0xf2, 0x31, 0x99, 0x90,
-	0xa9, 0xcb, 0x8e, 0x2c, 0xc6, 0x2c, 0x44, 0xdf, 0xc0, 0xa3, 0x52, 0x16, 0x37, 0x42, 0x89, 0x22,
-	0x47, 0xa9, 0xfc, 0x80, 0x73, 0x89, 0x4a, 0xa1, 0x1a, 0x3b, 0x13, 0x32, 0xf5, 0xd8, 0xff, 0xdb,
-	0xec, 0xdb, 0x96, 0xa4, 0xcf, 0xa1, 0x17, 0xc6, 0x7e, 0x99, 0x8c, 0x3b, 0x13, 0x32, 0x3d, 0x7a,
-	0x35, 0x98, 0x19, 0x91, 0xb3, 0xab, 0x2a, 0x4c, 0x45, 0x74, 0x89, 0x2b, 0xd6, 0x0d, 0xe3, 0xab,
-	0x84, 0x9e, 0x81, 0xa3, 0x97, 0xe3, 0xae, 0x3d, 0x32, 0xaa, 0x8f, 0x7c, 0xdc, 0xd8, 0x60, 0x8e,
-	0x5e, 0x9e, 0x5f, 0xc3, 0xe0, 0xb3, 0xd0, 0x0b, 0x2e, 0x83, 0xdb, 0x56, 0xf5, 0x63, 0x38, 0x08,
-	0x53, 0xe5, 0x27, 0xb8, 0xb2, 0x82, 0x3d, 0xe6, 0x86, 0xa9, 0xba, 0xc4, 0x15, 0x1d, 0x42, 0x47,
-	0x89, 0xb8, 0x11, 0x66, 0x96, 0x06, 0xc9, 0x54, 0x6c, 0x45, 0x78, 0xcc, 0x2c, 0xf7, 0x19, 0xf9,
-	0x8d, 0x80, 0x37, 0xd7, 0x41, 0x82, 0x0f, 0x0e, 0x3c, 0x81, 0xde, 0x4d, 0x90, 0x56, 0x68, 0x47,
-	0xba, 0xac, 0xde, 0xd0, 0x97, 0x30, 0xc2, 0x65, 0x29, 0x64, 0x60, 0x5e, 0xf4, 0x17, 0x28, 0xe2,
-	0x85, 0xb6, 0x12, 0x5c, 0x36, 0xdc, 0x10, 0xef, 0x2d, 0xbe, 0x8f, 0x1e, 0x0e, 0x27, 0x6d, 0x04,
-	0xfb, 0xc9, 0xfa, 0x3b, 0x87, 0x7a, 0x4a, 0x67, 0xd7, 0x94, 0x9f, 0xc6, 0x75, 0x1a, 0xa8, 0xc5,
-	0x83, 0xcf, 0x53, 0xe8, 0x2a, 0x8d, 0xa5, 0x7d, 0xff, 0x3f, 0x66, 0xd7, 0x26, 0x09, 0x59, 0x54,
-	0x39, 0x6f, 0x7c, 0xd6, 0x1b, 0xfa, 0x04, 0xfa, 0x5f, 0x84, 0x54, 0xda, 0x37, 0x1f, 0xa1, 0x6b,
-	0x1f, 0x39, 0xb4, 0xc0, 0x07, 0x15, 0x6f, 0x48, 0xa3, 0xb5, 0xb7, 0x45, 0xce, 0x45, 0x4c, 0x9f,
-	0x02, 0x28, 0x8c, 0x8a, 0x9c, 0xdb, 0xab, 0xae, 0x65, 0xfb, 0x35, 0x62, 0xee, 0x6e, 0x68, 0x73,
-	0xf9, 0x60, 0x9b, 0x9e, 0xaf, 0xed, 0x1e, 0xee, 0xb2, 0xfb, 0xd5, 0x01, 0xb8, 0x10, 0xbc, 0x35,
-	0xeb, 0x01, 0xc9, 0x1a, 0x9b, 0x24, 0xa3, 0xcf, 0x00, 0xa2, 0x22, 0xcb, 0x84, 0xce, 0x30, 0xd7,
-	0x4d, 0x8e, 0x5b, 0x08, 0x7d, 0x01, 0x03, 0xcc, 0x23, 0xb9, 0x2a, 0x35, 0x72, 0xbf, 0x6e, 0x40,
-	0x5d, 0xb1, 0xe3, 0x35, 0xfc, 0x69, 0x5d, 0x85, 0xf5, 0xc1, 0x30, 0x15, 0x39, 0x47, 0xd9, 0x04,
-	0x31, 0x5c, 0x13, 0x17, 0x35, 0xfe, 0xef, 0xde, 0xf4, 0xee, 0xe9, 0xcd, 0x31, 0x38, 0x65, 0xd2,
-	0x04, 0xe3, 0x94, 0x89, 0x31, 0x20, 0x9b, 0x20, 0x88, 0x34, 0xbb, 0x3b, 0xeb, 0xdf, 0x63, 0xe4,
-	0xae, 0x89, 0xa3, 0xbf, 0x2b, 0x8e, 0x1f, 0x04, 0x68, 0x5b, 0xb2, 0xad, 0x58, 0x7e, 0x0f, 0x82,
-	0xec, 0x13, 0x84, 0xb3, 0x7f, 0x10, 0x9d, 0x7b, 0x82, 0x18, 0x42, 0x27, 0x14, 0xbc, 0xc9, 0xc9,
-	0x2c, 0xdb, 0x46, 0xf7, 0xfe, 0x6c, 0xb4, 0xbb, 0xc3, 0x53, 0xe8, 0xda, 0x5f, 0xdf, 0xeb, 0x5f,
-	0x01, 0x00, 0x00, 0xff, 0xff, 0xe1, 0x1b, 0xb9, 0xa1, 0x32, 0x05, 0x00, 0x00,
+	// 561 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0x6b, 0x6a, 0xdb, 0x4c,
+	0x14, 0x65, 0x64, 0x4b, 0x49, 0x6e, 0xf4, 0xc5, 0xf6, 0x90, 0x87, 0xc9, 0x47, 0x8b, 0x13, 0x0a,
+	0x35, 0x14, 0xfc, 0xa3, 0xa5, 0x0b, 0x68, 0x28, 0xa5, 0x10, 0x0a, 0x41, 0x29, 0xed, 0x4f, 0xa1,
+	0xc7, 0xad, 0x3c, 0xe8, 0xc9, 0xcc, 0x28, 0xb1, 0xb2, 0x8a, 0x76, 0x3b, 0xdd, 0x47, 0xf7, 0xd1,
+	0x25, 0x94, 0x99, 0x91, 0x6d, 0xf5, 0x11, 0xa3, 0x7f, 0x33, 0xe7, 0xdc, 0xeb, 0x7b, 0xce, 0xb9,
+	0x1a, 0xc3, 0x28, 0x2a, 0x0b, 0x81, 0x85, 0xa8, 0xc5, 0xa2, 0xe2, 0xa5, 0x2c, 0xe9, 0x90, 0xd7,
+	0x22, 0x3d, 0x9f, 0x48, 0x1e, 0x14, 0x22, 0x88, 0x24, 0x2b, 0x0b, 0x43, 0x9c, 0x43, 0x8a, 0x4d,
+	0x5b, 0x74, 0xf9, 0x9d, 0xc0, 0xc9, 0x5b, 0x26, 0x24, 0x67, 0x61, 0x2d, 0xf1, 0xe3, 0xb6, 0x96,
+	0x5e, 0x80, 0x2b, 0x4b, 0x19, 0x64, 0x3e, 0xc7, 0xfb, 0x80, 0xc7, 0x53, 0x32, 0x23, 0x73, 0xc7,
+	0x3b, 0xd4, 0x98, 0xa7, 0x21, 0xfa, 0x1a, 0x4e, 0x2b, 0x5e, 0xde, 0x31, 0xc1, 0xca, 0x02, 0xb9,
+	0xf0, 0x83, 0x38, 0xe6, 0x28, 0x04, 0x8a, 0xa9, 0x35, 0x23, 0x73, 0xd7, 0x3b, 0xe9, 0xb2, 0x6f,
+	0xd6, 0x24, 0x7d, 0x06, 0x76, 0x98, 0xf8, 0x55, 0x3a, 0x1d, 0xcc, 0xc8, 0xfc, 0xf0, 0xe5, 0x68,
+	0xa1, 0x84, 0x2e, 0x6e, 0xea, 0x30, 0x63, 0xd1, 0x35, 0x36, 0xde, 0x30, 0x4c, 0x6e, 0x52, 0x7a,
+	0x01, 0x96, 0x5c, 0x4d, 0x87, 0xba, 0x64, 0x62, 0x4a, 0x3a, 0xf2, 0x3c, 0x4b, 0xae, 0x2e, 0x1b,
+	0x38, 0xfb, 0xcc, 0xe4, 0x32, 0xe6, 0xc1, 0xfd, 0x3b, 0x44, 0xd1, 0x55, 0x7f, 0x06, 0x7b, 0x61,
+	0x26, 0xfc, 0x14, 0x1b, 0x2d, 0xdc, 0xf5, 0x9c, 0x30, 0x13, 0xd7, 0xd8, 0xd0, 0x31, 0x0c, 0x04,
+	0x4b, 0x5a, 0x81, 0xea, 0xa8, 0x90, 0x5c, 0x24, 0x5a, 0x8c, 0xeb, 0xa9, 0x63, 0x9f, 0xd1, 0x3f,
+	0x09, 0x8c, 0x6f, 0xb3, 0x40, 0x2c, 0x7b, 0x0d, 0xa5, 0x30, 0x14, 0x12, 0x2b, 0x3d, 0xf5, 0x3f,
+	0x4f, 0x9f, 0xe9, 0x31, 0xd8, 0xbc, 0xac, 0x8b, 0x58, 0x0f, 0x76, 0x3c, 0x73, 0xa1, 0xff, 0xc3,
+	0xc1, 0x17, 0xc6, 0x85, 0xf4, 0x95, 0xa4, 0xa1, 0xfe, 0x91, 0x7d, 0x0d, 0x7c, 0x10, 0xc9, 0x96,
+	0x54, 0x0e, 0xec, 0x0e, 0x79, 0xcb, 0x12, 0xfa, 0x04, 0x40, 0x60, 0x54, 0x16, 0xb1, 0x6e, 0x75,
+	0x34, 0x7b, 0x60, 0x10, 0xd5, 0xbb, 0xa5, 0x55, 0xf3, 0x5e, 0x97, 0x56, 0xdd, 0xc6, 0xf2, 0xfe,
+	0x2e, 0xcb, 0xdf, 0x94, 0x65, 0x19, 0xa4, 0xd8, 0xcb, 0xf2, 0x31, 0xd8, 0x77, 0x41, 0x56, 0xa3,
+	0xf6, 0xec, 0x78, 0xe6, 0x42, 0x5f, 0xc0, 0x04, 0x57, 0x15, 0xe3, 0x81, 0x6a, 0xf6, 0x97, 0xc8,
+	0x92, 0xa5, 0x6c, 0x03, 0x18, 0x6f, 0x89, 0xf7, 0x1a, 0xef, 0xb3, 0x86, 0xaf, 0x16, 0x1c, 0x5d,
+	0xb1, 0xb8, 0xab, 0xc8, 0x05, 0x92, 0xb7, 0x5a, 0x48, 0x4e, 0x9f, 0x02, 0x44, 0x65, 0x9e, 0x33,
+	0x99, 0x63, 0x21, 0xdb, 0xad, 0x77, 0x10, 0xfa, 0x1c, 0x46, 0x58, 0x44, 0xbc, 0xa9, 0x24, 0xc6,
+	0xbe, 0x11, 0x6c, 0x3e, 0x84, 0xa3, 0x0d, 0xfc, 0x69, 0xa3, 0x7c, 0x53, 0x18, 0x66, 0xac, 0x88,
+	0x91, 0xb7, 0x0b, 0x1a, 0x6f, 0x88, 0x2b, 0x83, 0xff, 0xdb, 0xa6, 0xfd, 0x88, 0xcd, 0x23, 0xb0,
+	0xaa, 0xb4, 0x5d, 0x98, 0x55, 0xa5, 0xca, 0x00, 0x6f, 0x17, 0x44, 0xb8, 0xba, 0x3d, 0xe8, 0xbd,
+	0xb8, 0x1e, 0x79, 0x68, 0x23, 0x39, 0xd8, 0x15, 0xc9, 0x0f, 0x02, 0xa7, 0xeb, 0x57, 0xf1, 0x47,
+	0x34, 0xbf, 0x87, 0x41, 0xfa, 0x84, 0x61, 0xf5, 0x0f, 0x63, 0xf0, 0x48, 0x18, 0x63, 0x18, 0x84,
+	0x2c, 0x6e, 0xb3, 0x52, 0xc7, 0xf5, 0x1b, 0xb4, 0xb7, 0x6f, 0xd0, 0xf8, 0x72, 0x76, 0xf9, 0x5a,
+	0xc2, 0x74, 0x6d, 0xab, 0xff, 0x57, 0xf8, 0xf7, 0x6b, 0x37, 0x93, 0x06, 0x3b, 0x26, 0x85, 0x8e,
+	0xfe, 0x6b, 0x7c, 0xf5, 0x2b, 0x00, 0x00, 0xff, 0xff, 0xdb, 0x0c, 0x60, 0xba, 0x52, 0x05, 0x00,
+	0x00,
 }
