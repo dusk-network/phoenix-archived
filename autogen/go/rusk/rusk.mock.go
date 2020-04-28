@@ -27,631 +27,10 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 		&ValidateStateTransitionResponse{
 			SuccessfulCalls: []*ContractCall{
 				&ContractCall{
-					ContractCall: &ContractCall_Withdraw{
-						Withdraw: &WithdrawRequest{
-							Tx: &Transaction{
-								Inputs: []*TransactionInput{
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-								},
-								Outputs: []*TransactionOutput{
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_EncryptedValue{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-								},
-								Fee: &TransactionOutput{
-									Note: &Note{
-										NoteType:        1,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										Value:           &Note_EncryptedValue{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-							},
-						},
-					},
-				},
-				&ContractCall{
-					ContractCall: &ContractCall_Slash{
-						Slash: &SlashRequest{
-							Step: 780,
-							Tx: &Transaction{
-								Inputs: []*TransactionInput{
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-								},
-								Outputs: []*TransactionOutput{
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-								},
-								Fee: &TransactionOutput{
+					ContractCall: &ContractCall_Tx{
+						Tx: &Transaction{
+							Inputs: []*TransactionInput{
+								&TransactionInput{
 									Note: &Note{
 										NoteType:        0,
 										Nonce:           &Nonce{},
@@ -661,329 +40,138 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 										BlindingFactor:  &Note_EncryptedBlindingFactor{},
 										Value:           &Note_TransparentValue{},
 									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
 									},
-									BlindingFactor: &Scalar{},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
 								},
-							},
-						},
-					},
-				},
-				&ContractCall{
-					ContractCall: &ContractCall_WithdrawStake{
-						WithdrawStake: &WithdrawStakeRequest{
-							Tx: &Transaction{
-								Inputs: []*TransactionInput{
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_EncryptedValue{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-								},
-								Outputs: []*TransactionOutput{
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-								},
-								Fee: &TransactionOutput{
+								&TransactionInput{
 									Note: &Note{
 										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_TransparentValue{},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_EncryptedValue{},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_TransparentValue{},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_TransparentValue{},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										Value:           &Note_TransparentValue{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										Value:           &Note_TransparentValue{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        1,
 										Nonce:           &Nonce{},
 										RG:              &CompressedPoint{},
 										PkR:             &CompressedPoint{},
@@ -991,321 +179,18 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 										BlindingFactor:  &Note_EncryptedBlindingFactor{},
 										Value:           &Note_EncryptedValue{},
 									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
 									},
-									BlindingFactor: &Scalar{},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
 								},
 							},
-						},
-					},
-				},
-				&ContractCall{
-					ContractCall: &ContractCall_Stake{
-						Stake: &StakeRequest{
-							Tx: &Transaction{
-								Inputs: []*TransactionInput{
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-								},
-								Outputs: []*TransactionOutput{
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-								},
-								Fee: &TransactionOutput{
+							Outputs: []*TransactionOutput{
+								&TransactionOutput{
 									Note: &Note{
 										NoteType:        0,
 										Nonce:           &Nonce{},
@@ -1321,313 +206,91 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 									},
 									BlindingFactor: &Scalar{},
 								},
-							},
-						},
-					},
-				},
-				&ContractCall{
-					ContractCall: &ContractCall_WithdrawStake{
-						WithdrawStake: &WithdrawStakeRequest{
-							Tx: &Transaction{
-								Inputs: []*TransactionInput{
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_EncryptedValue{},
 									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
 									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
+									BlindingFactor: &Scalar{},
 								},
-								Outputs: []*TransactionOutput{
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										Value:           &Note_EncryptedValue{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
 									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
 									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
+									BlindingFactor: &Scalar{},
 								},
-								Fee: &TransactionOutput{
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_TransparentValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_TransparentValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_EncryptedValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+								&TransactionOutput{
 									Note: &Note{
 										NoteType:        0,
 										Nonce:           &Nonce{},
@@ -1645,13 +308,49 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 									},
 									BlindingFactor: &Scalar{},
 								},
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_TransparentValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+							},
+							Fee: &TransactionOutput{
+								Note: &Note{
+									NoteType:        1,
+									Nonce:           &Nonce{},
+									RG:              &CompressedPoint{},
+									PkR:             &CompressedPoint{},
+									ValueCommitment: &Scalar{},
+									BlindingFactor:  &Note_EncryptedBlindingFactor{},
+									Value:           &Note_TransparentValue{},
+								},
+								Pk: &PublicKey{
+									AG: &CompressedPoint{},
+									BG: &CompressedPoint{},
+								},
+								BlindingFactor: &Scalar{},
 							},
 						},
 					},
 				},
 				&ContractCall{
-					ContractCall: &ContractCall_WithdrawStake{
-						WithdrawStake: &WithdrawStakeRequest{
+					ContractCall: &ContractCall_Distribute{
+						Distribute: &DistributeTransaction{
+							BgPk: &PublicKey{
+								AG: &CompressedPoint{},
+								BG: &CompressedPoint{},
+							},
 							Tx: &Transaction{
 								Inputs: []*TransactionInput{
 									&TransactionInput{
@@ -1661,8 +360,10 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -1680,10 +381,27 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
+											Value:           &Note_EncryptedValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_TransparentValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -1725,7 +443,7 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
-											Value: &Note_EncryptedValue{},
+											Value: &Note_TransparentValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -1743,8 +461,10 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
 											Value:           &Note_TransparentValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -1783,6 +503,307 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											ValueCommitment: &Scalar{},
 											BlindingFactor:  &Note_EncryptedBlindingFactor{},
 											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+								},
+								Outputs: []*TransactionOutput{
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_TransparentValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_TransparentValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+								},
+								Fee: &TransactionOutput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_EncryptedValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+							},
+						},
+					},
+				},
+				&ContractCall{
+					ContractCall: &ContractCall_Withdraw{
+						Withdraw: &WithdrawFeesTransaction{
+							Tx: &Transaction{
+								Inputs: []*TransactionInput{
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -1824,59 +845,7 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
+											Value: &Note_EncryptedValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -1900,6 +869,300 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 										},
 										BlindingFactor: &Scalar{},
 									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_TransparentValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_TransparentValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+								},
+								Fee: &TransactionOutput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_TransparentValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+							},
+						},
+					},
+				},
+				&ContractCall{
+					ContractCall: &ContractCall_Distribute{
+						Distribute: &DistributeTransaction{
+							BgPk: &PublicKey{
+								AG: &CompressedPoint{},
+								BG: &CompressedPoint{},
+							},
+							Tx: &Transaction{
+								Inputs: []*TransactionInput{
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+								},
+								Outputs: []*TransactionOutput{
 									&TransactionOutput{
 										Note: &Note{
 											NoteType:        1,
@@ -1925,8 +1188,24 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											Value:           &Note_EncryptedValue{},
 											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -1952,10 +1231,76 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 										},
 										BlindingFactor: &Scalar{},
 									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_TransparentValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
 								},
 								Fee: &TransactionOutput{
 									Note: &Note{
-										NoteType:        1,
+										NoteType:        0,
 										Nonce:           &Nonce{},
 										RG:              &CompressedPoint{},
 										PkR:             &CompressedPoint{},
@@ -1975,7 +1320,7 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 				},
 				&ContractCall{
 					ContractCall: &ContractCall_Distribute{
-						Distribute: &DistributeRequest{
+						Distribute: &DistributeTransaction{
 							BgPk: &PublicKey{
 								AG: &CompressedPoint{},
 								BG: &CompressedPoint{},
@@ -1989,63 +1334,6 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
@@ -2067,10 +1355,8 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -2083,7 +1369,7 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 									},
 									&TransactionInput{
 										Note: &Note{
-											NoteType:        0,
+											NoteType:        1,
 											Nonce:           &Nonce{},
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
@@ -2128,7 +1414,716 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
 											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+								},
+								Outputs: []*TransactionOutput{
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_EncryptedValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_EncryptedValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+								},
+								Fee: &TransactionOutput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										Value:           &Note_TransparentValue{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+							},
+						},
+					},
+				},
+				&ContractCall{
+					ContractCall: &ContractCall_Tx{
+						Tx: &Transaction{
+							Inputs: []*TransactionInput{
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										Value:           &Note_EncryptedValue{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_EncryptedValue{},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_TransparentValue{},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_EncryptedValue{},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										Value:           &Note_EncryptedValue{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_EncryptedValue{},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_TransparentValue{},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+								&TransactionInput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_TransparentValue{},
+									},
+									Sk: &SecretKey{
+										A: &Scalar{},
+										B: &Scalar{},
+									},
+									Nullifier: &Nullifier{
+										H: &Scalar{},
+									},
+									MerkleRoot: &Scalar{},
+								},
+							},
+							Outputs: []*TransactionOutput{
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_TransparentValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_EncryptedValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_EncryptedValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_EncryptedValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_TransparentValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_TransparentValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_EncryptedValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+								&TransactionOutput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_EncryptedValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+							},
+							Fee: &TransactionOutput{
+								Note: &Note{
+									NoteType:        1,
+									Nonce:           &Nonce{},
+									RG:              &CompressedPoint{},
+									PkR:             &CompressedPoint{},
+									ValueCommitment: &Scalar{},
+									BlindingFactor:  &Note_EncryptedBlindingFactor{},
+									Value:           &Note_TransparentValue{},
+								},
+								Pk: &PublicKey{
+									AG: &CompressedPoint{},
+									BG: &CompressedPoint{},
+								},
+								BlindingFactor: &Scalar{},
+							},
+						},
+					},
+				},
+				&ContractCall{
+					ContractCall: &ContractCall_Stake{
+						Stake: &StakeTransaction{
+							Tx: &Transaction{
+								Inputs: []*TransactionInput{
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_TransparentValue{},
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
@@ -2162,13 +2157,31 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 									},
 									&TransactionOutput{
 										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
 											NoteType:        1,
 											Nonce:           &Nonce{},
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											Value:           &Note_EncryptedValue{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -2183,8 +2196,42 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
 											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -2226,6 +2273,194 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 										},
 										BlindingFactor: &Scalar{},
 									},
+								},
+								Fee: &TransactionOutput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_TransparentValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+							},
+						},
+					},
+				},
+				&ContractCall{
+					ContractCall: &ContractCall_WithdrawStake{
+						WithdrawStake: &WithdrawStakeTransaction{
+							Tx: &Transaction{
+								Inputs: []*TransactionInput{
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_EncryptedValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_EncryptedValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+								},
+								Outputs: []*TransactionOutput{
 									&TransactionOutput{
 										Note: &Note{
 											NoteType:        1,
@@ -2237,6 +2472,74 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 												TransparentBlindingFactor: &Scalar{},
 											},
 											Value: &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_EncryptedValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -2252,7 +2555,25 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
 											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -2267,10 +2588,8 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -2290,328 +2609,6 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 											TransparentBlindingFactor: &Scalar{},
 										},
 										Value: &Note_EncryptedValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-							},
-						},
-					},
-				},
-				&ContractCall{
-					ContractCall: &ContractCall_Stake{
-						Stake: &StakeRequest{
-							Tx: &Transaction{
-								Inputs: []*TransactionInput{
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_EncryptedValue{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_EncryptedValue{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-								},
-								Outputs: []*TransactionOutput{
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-								},
-								Fee: &TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_TransparentValue{},
 									},
 									Pk: &PublicKey{
 										AG: &CompressedPoint{},
@@ -2632,8 +2629,656 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 		&ExecuteStateTransitionResponse{
 			Calls: []*ContractCall{
 				&ContractCall{
-					ContractCall: &ContractCall_Withdraw{
-						Withdraw: &WithdrawRequest{
+					ContractCall: &ContractCall_Distribute{
+						Distribute: &DistributeTransaction{
+							BgPk: &PublicKey{
+								AG: &CompressedPoint{},
+								BG: &CompressedPoint{},
+							},
+							Tx: &Transaction{
+								Inputs: []*TransactionInput{
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+								},
+								Outputs: []*TransactionOutput{
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_TransparentValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+								},
+								Fee: &TransactionOutput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_EncryptedValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+							},
+						},
+					},
+				},
+				&ContractCall{
+					ContractCall: &ContractCall_Stake{
+						Stake: &StakeTransaction{
+							Tx: &Transaction{
+								Inputs: []*TransactionInput{
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_EncryptedValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_TransparentValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+								},
+								Outputs: []*TransactionOutput{
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_TransparentValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+								},
+								Fee: &TransactionOutput{
+									Note: &Note{
+										NoteType:        0,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_EncryptedValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+							},
+						},
+					},
+				},
+				&ContractCall{
+					ContractCall: &ContractCall_Stake{
+						Stake: &StakeTransaction{
 							Tx: &Transaction{
 								Inputs: []*TransactionInput{
 									&TransactionInput{
@@ -2662,10 +3307,29 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
 											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
+											Value: &Note_TransparentValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -2683,8 +3347,10 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -2702,8 +3368,10 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -2740,10 +3408,8 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -2764,28 +3430,7 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
-											Value: &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
+											Value: &Note_EncryptedValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -2806,7 +3451,7 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
 											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
+											Value:           &Note_EncryptedValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -2823,6 +3468,38 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											ValueCommitment: &Scalar{},
 											BlindingFactor:  &Note_EncryptedBlindingFactor{},
 											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -2855,24 +3532,10 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -2901,24 +3564,6 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 									&TransactionOutput{
 										Note: &Note{
 											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
 											Nonce:           &Nonce{},
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
@@ -2940,10 +3585,330 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 										RG:              &CompressedPoint{},
 										PkR:             &CompressedPoint{},
 										ValueCommitment: &Scalar{},
-										Value:           &Note_EncryptedValue{},
 										BlindingFactor: &Note_TransparentBlindingFactor{
 											TransparentBlindingFactor: &Scalar{},
 										},
+										Value: &Note_EncryptedValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+							},
+						},
+					},
+				},
+				&ContractCall{
+					ContractCall: &ContractCall_Stake{
+						Stake: &StakeTransaction{
+							Tx: &Transaction{
+								Inputs: []*TransactionInput{
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+								},
+								Outputs: []*TransactionOutput{
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+								},
+								Fee: &TransactionOutput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_TransparentValue{},
 									},
 									Pk: &PublicKey{
 										AG: &CompressedPoint{},
@@ -2957,10 +3922,90 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 				},
 				&ContractCall{
 					ContractCall: &ContractCall_Slash{
-						Slash: &SlashRequest{
-							Step: 549,
+						Slash: &SlashTransaction{
+							Step: 218,
 							Tx: &Transaction{
 								Inputs: []*TransactionInput{
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
 									&TransactionInput{
 										Note: &Note{
 											NoteType:        1,
@@ -2968,8 +4013,10 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -3006,8 +4053,215 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+								},
+								Outputs: []*TransactionOutput{
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_EncryptedValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
 											BlindingFactor:  &Note_EncryptedBlindingFactor{},
 											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_EncryptedValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+								},
+								Fee: &TransactionOutput{
+									Note: &Note{
+										NoteType:        1,
+										Nonce:           &Nonce{},
+										RG:              &CompressedPoint{},
+										PkR:             &CompressedPoint{},
+										ValueCommitment: &Scalar{},
+										BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										Value:           &Note_TransparentValue{},
+									},
+									Pk: &PublicKey{
+										AG: &CompressedPoint{},
+										BG: &CompressedPoint{},
+									},
+									BlindingFactor: &Scalar{},
+								},
+							},
+						},
+					},
+				},
+				&ContractCall{
+					ContractCall: &ContractCall_Slash{
+						Slash: &SlashTransaction{
+							Step: 766,
+							Tx: &Transaction{
+								Inputs: []*TransactionInput{
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -3028,7 +4282,7 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
-											Value: &Note_TransparentValue{},
+											Value: &Note_EncryptedValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -3047,26 +4301,7 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
 											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
+											Value:           &Note_EncryptedValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -3088,6 +4323,67 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 												TransparentBlindingFactor: &Scalar{},
 											},
 											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -3126,28 +4422,8 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -3175,15 +4451,29 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 									},
 									&TransactionOutput{
 										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_TransparentValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
 											NoteType:        0,
 											Nonce:           &Nonce{},
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -3201,7 +4491,7 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
-											Value: &Note_EncryptedValue{},
+											Value: &Note_TransparentValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -3227,7 +4517,7 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 									},
 									&TransactionOutput{
 										Note: &Note{
-											NoteType:        0,
+											NoteType:        1,
 											Nonce:           &Nonce{},
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
@@ -3251,7 +4541,7 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
-											Value: &Note_TransparentValue{},
+											Value: &Note_EncryptedValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -3262,13 +4552,15 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 								},
 								Fee: &TransactionOutput{
 									Note: &Note{
-										NoteType:        1,
+										NoteType:        0,
 										Nonce:           &Nonce{},
 										RG:              &CompressedPoint{},
 										PkR:             &CompressedPoint{},
 										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_TransparentValue{},
+										BlindingFactor: &Note_TransparentBlindingFactor{
+											TransparentBlindingFactor: &Scalar{},
+										},
+										Value: &Note_TransparentValue{},
 									},
 									Pk: &PublicKey{
 										AG: &CompressedPoint{},
@@ -3281,326 +4573,8 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 					},
 				},
 				&ContractCall{
-					ContractCall: &ContractCall_Tx{
-						Tx: &Transaction{
-							Inputs: []*TransactionInput{
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										Value:           &Note_EncryptedValue{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_TransparentValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_EncryptedValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_TransparentValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        1,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_TransparentValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        1,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_EncryptedValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        1,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_EncryptedValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        1,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_EncryptedValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-							},
-							Outputs: []*TransactionOutput{
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_TransparentValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_TransparentValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_TransparentValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_TransparentValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_TransparentValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_EncryptedValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_TransparentValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        1,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_EncryptedValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-							},
-							Fee: &TransactionOutput{
-								Note: &Note{
-									NoteType:        0,
-									Nonce:           &Nonce{},
-									RG:              &CompressedPoint{},
-									PkR:             &CompressedPoint{},
-									ValueCommitment: &Scalar{},
-									BlindingFactor:  &Note_EncryptedBlindingFactor{},
-									Value:           &Note_TransparentValue{},
-								},
-								Pk: &PublicKey{
-									AG: &CompressedPoint{},
-									BG: &CompressedPoint{},
-								},
-								BlindingFactor: &Scalar{},
-							},
-						},
-					},
-				},
-				&ContractCall{
-					ContractCall: &ContractCall_Bid{
-						Bid: &BidRequest{
+					ContractCall: &ContractCall_WithdrawBid{
+						WithdrawBid: &WithdrawBidTransaction{
 							Tx: &Transaction{
 								Inputs: []*TransactionInput{
 									&TransactionInput{
@@ -3610,48 +4584,10 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
+											Value: &Note_TransparentValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -3672,7 +4608,47 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
-											Value: &Note_EncryptedValue{},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -3712,6 +4688,27 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
+											Value: &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
 											Value: &Note_TransparentValue{},
 										},
 										Sk: &SecretKey{
@@ -3725,34 +4722,13 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 									},
 									&TransactionInput{
 										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
+											NoteType:        1,
 											Nonce:           &Nonce{},
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
 											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
+											Value:           &Note_EncryptedValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -3767,6 +4743,92 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 								Outputs: []*TransactionOutput{
 									&TransactionOutput{
 										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
 											NoteType:        0,
 											Nonce:           &Nonce{},
 											RG:              &CompressedPoint{},
@@ -3806,96 +4868,10 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_EncryptedValue{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
 											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -3911,7 +4887,7 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 										RG:              &CompressedPoint{},
 										PkR:             &CompressedPoint{},
 										ValueCommitment: &Scalar{},
-										Value:           &Note_TransparentValue{},
+										Value:           &Note_EncryptedValue{},
 										BlindingFactor: &Note_TransparentBlindingFactor{
 											TransparentBlindingFactor: &Scalar{},
 										},
@@ -3928,71 +4904,12 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 				},
 				&ContractCall{
 					ContractCall: &ContractCall_Withdraw{
-						Withdraw: &WithdrawRequest{
+						Withdraw: &WithdrawFeesTransaction{
 							Tx: &Transaction{
 								Inputs: []*TransactionInput{
 									&TransactionInput{
 										Note: &Note{
 											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
 											Nonce:           &Nonce{},
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
@@ -4016,8 +4933,10 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											Value:           &Note_EncryptedValue{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_EncryptedValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -4038,7 +4957,47 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											BlindingFactor: &Note_TransparentBlindingFactor{
 												TransparentBlindingFactor: &Scalar{},
 											},
-											Value: &Note_EncryptedValue{},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        1,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -4072,13 +5031,34 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 									},
 									&TransactionInput{
 										Note: &Note{
-											NoteType:        0,
+											NoteType:        1,
 											Nonce:           &Nonce{},
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
 											BlindingFactor:  &Note_EncryptedBlindingFactor{},
 											Value:           &Note_EncryptedValue{},
+										},
+										Sk: &SecretKey{
+											A: &Scalar{},
+											B: &Scalar{},
+										},
+										Nullifier: &Nullifier{
+											H: &Scalar{},
+										},
+										MerkleRoot: &Scalar{},
+									},
+									&TransactionInput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
 										},
 										Sk: &SecretKey{
 											A: &Scalar{},
@@ -4098,10 +5078,72 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
 											Value:           &Note_EncryptedValue{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_EncryptedValue{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											Value:           &Note_TransparentValue{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+										},
+										Pk: &PublicKey{
+											AG: &CompressedPoint{},
+											BG: &CompressedPoint{},
+										},
+										BlindingFactor: &Scalar{},
+									},
+									&TransactionOutput{
+										Note: &Note{
+											NoteType:        0,
+											Nonce:           &Nonce{},
+											RG:              &CompressedPoint{},
+											PkR:             &CompressedPoint{},
+											ValueCommitment: &Scalar{},
+											BlindingFactor:  &Note_EncryptedBlindingFactor{},
+											Value:           &Note_TransparentValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -4134,40 +5176,10 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 											RG:              &CompressedPoint{},
 											PkR:             &CompressedPoint{},
 											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
+											BlindingFactor: &Note_TransparentBlindingFactor{
+												TransparentBlindingFactor: &Scalar{},
+											},
+											Value: &Note_TransparentValue{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -4186,38 +5198,6 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 												TransparentBlindingFactor: &Scalar{},
 											},
 											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_EncryptedValue{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
 										},
 										Pk: &PublicKey{
 											AG: &CompressedPoint{},
@@ -4242,982 +5222,6 @@ func (m *RuskMock) ExecuteStateTransition(ctx context.Context, req *ExecuteState
 									},
 									BlindingFactor: &Scalar{},
 								},
-							},
-						},
-					},
-				},
-				&ContractCall{
-					ContractCall: &ContractCall_Withdraw{
-						Withdraw: &WithdrawRequest{
-							Tx: &Transaction{
-								Inputs: []*TransactionInput{
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-								},
-								Outputs: []*TransactionOutput{
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-								},
-								Fee: &TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_EncryptedValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-							},
-						},
-					},
-				},
-				&ContractCall{
-					ContractCall: &ContractCall_Bid{
-						Bid: &BidRequest{
-							Tx: &Transaction{
-								Inputs: []*TransactionInput{
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_EncryptedValue{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-									&TransactionInput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Sk: &SecretKey{
-											A: &Scalar{},
-											B: &Scalar{},
-										},
-										Nullifier: &Nullifier{
-											H: &Scalar{},
-										},
-										MerkleRoot: &Scalar{},
-									},
-								},
-								Outputs: []*TransactionOutput{
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											Value:           &Note_TransparentValue{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor:  &Note_EncryptedBlindingFactor{},
-											Value:           &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        1,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_EncryptedValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-									&TransactionOutput{
-										Note: &Note{
-											NoteType:        0,
-											Nonce:           &Nonce{},
-											RG:              &CompressedPoint{},
-											PkR:             &CompressedPoint{},
-											ValueCommitment: &Scalar{},
-											BlindingFactor: &Note_TransparentBlindingFactor{
-												TransparentBlindingFactor: &Scalar{},
-											},
-											Value: &Note_TransparentValue{},
-										},
-										Pk: &PublicKey{
-											AG: &CompressedPoint{},
-											BG: &CompressedPoint{},
-										},
-										BlindingFactor: &Scalar{},
-									},
-								},
-								Fee: &TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_EncryptedValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-							},
-						},
-					},
-				},
-				&ContractCall{
-					ContractCall: &ContractCall_Tx{
-						Tx: &Transaction{
-							Inputs: []*TransactionInput{
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        1,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_TransparentValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_EncryptedValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										Value:           &Note_TransparentValue{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_EncryptedValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        1,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_EncryptedValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_EncryptedValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_TransparentValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-								&TransactionInput{
-									Note: &Note{
-										NoteType:        1,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_EncryptedValue{},
-									},
-									Sk: &SecretKey{
-										A: &Scalar{},
-										B: &Scalar{},
-									},
-									Nullifier: &Nullifier{
-										H: &Scalar{},
-									},
-									MerkleRoot: &Scalar{},
-								},
-							},
-							Outputs: []*TransactionOutput{
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_TransparentValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_EncryptedValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        1,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor: &Note_TransparentBlindingFactor{
-											TransparentBlindingFactor: &Scalar{},
-										},
-										Value: &Note_TransparentValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_TransparentValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        1,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_TransparentValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_EncryptedValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_EncryptedValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-								&TransactionOutput{
-									Note: &Note{
-										NoteType:        0,
-										Nonce:           &Nonce{},
-										RG:              &CompressedPoint{},
-										PkR:             &CompressedPoint{},
-										ValueCommitment: &Scalar{},
-										BlindingFactor:  &Note_EncryptedBlindingFactor{},
-										Value:           &Note_EncryptedValue{},
-									},
-									Pk: &PublicKey{
-										AG: &CompressedPoint{},
-										BG: &CompressedPoint{},
-									},
-									BlindingFactor: &Scalar{},
-								},
-							},
-							Fee: &TransactionOutput{
-								Note: &Note{
-									NoteType:        0,
-									Nonce:           &Nonce{},
-									RG:              &CompressedPoint{},
-									PkR:             &CompressedPoint{},
-									ValueCommitment: &Scalar{},
-									BlindingFactor:  &Note_EncryptedBlindingFactor{},
-									Value:           &Note_EncryptedValue{},
-								},
-								Pk: &PublicKey{
-									AG: &CompressedPoint{},
-									BG: &CompressedPoint{},
-								},
-								BlindingFactor: &Scalar{},
 							},
 						},
 					},
@@ -5258,38 +5262,6 @@ func (m *RuskMock) FullScanOwnedNotes(ctx context.Context, req *ViewKey) (*Owned
 		&OwnedNotesResponse{
 			Notes: []*DecryptedNote{
 				&DecryptedNote{
-					NoteType:          0,
-					Nonce:             &Nonce{},
-					RG:                &CompressedPoint{},
-					PkR:               &CompressedPoint{},
-					ValueCommitment:   &Scalar{},
-					BlindingFactor:    &Scalar{},
-					RawBlindingFactor: &DecryptedNote_EncryptedBlindingFactor{},
-					RawValue:          &DecryptedNote_TransparentValue{},
-				},
-				&DecryptedNote{
-					NoteType:        0,
-					Nonce:           &Nonce{},
-					RG:              &CompressedPoint{},
-					PkR:             &CompressedPoint{},
-					ValueCommitment: &Scalar{},
-					BlindingFactor:  &Scalar{},
-					RawBlindingFactor: &DecryptedNote_TransparentBlindingFactor{
-						TransparentBlindingFactor: &Scalar{},
-					},
-					RawValue: &DecryptedNote_EncryptedValue{},
-				},
-				&DecryptedNote{
-					NoteType:          0,
-					Nonce:             &Nonce{},
-					RG:                &CompressedPoint{},
-					PkR:               &CompressedPoint{},
-					ValueCommitment:   &Scalar{},
-					BlindingFactor:    &Scalar{},
-					RawBlindingFactor: &DecryptedNote_EncryptedBlindingFactor{},
-					RawValue:          &DecryptedNote_TransparentValue{},
-				},
-				&DecryptedNote{
 					NoteType:          1,
 					Nonce:             &Nonce{},
 					RG:                &CompressedPoint{},
@@ -5300,6 +5272,18 @@ func (m *RuskMock) FullScanOwnedNotes(ctx context.Context, req *ViewKey) (*Owned
 					RawValue:          &DecryptedNote_EncryptedValue{},
 				},
 				&DecryptedNote{
+					NoteType:        1,
+					Nonce:           &Nonce{},
+					RG:              &CompressedPoint{},
+					PkR:             &CompressedPoint{},
+					ValueCommitment: &Scalar{},
+					BlindingFactor:  &Scalar{},
+					RawBlindingFactor: &DecryptedNote_TransparentBlindingFactor{
+						TransparentBlindingFactor: &Scalar{},
+					},
+					RawValue: &DecryptedNote_TransparentValue{},
+				},
+				&DecryptedNote{
 					NoteType:          0,
 					Nonce:             &Nonce{},
 					RG:                &CompressedPoint{},
@@ -5307,10 +5291,10 @@ func (m *RuskMock) FullScanOwnedNotes(ctx context.Context, req *ViewKey) (*Owned
 					ValueCommitment:   &Scalar{},
 					BlindingFactor:    &Scalar{},
 					RawBlindingFactor: &DecryptedNote_EncryptedBlindingFactor{},
-					RawValue:          &DecryptedNote_EncryptedValue{},
+					RawValue:          &DecryptedNote_TransparentValue{},
 				},
 				&DecryptedNote{
-					NoteType:        0,
+					NoteType:        1,
 					Nonce:           &Nonce{},
 					RG:              &CompressedPoint{},
 					PkR:             &CompressedPoint{},
@@ -5339,7 +5323,27 @@ func (m *RuskMock) FullScanOwnedNotes(ctx context.Context, req *ViewKey) (*Owned
 					ValueCommitment:   &Scalar{},
 					BlindingFactor:    &Scalar{},
 					RawBlindingFactor: &DecryptedNote_EncryptedBlindingFactor{},
+					RawValue:          &DecryptedNote_TransparentValue{},
+				},
+				&DecryptedNote{
+					NoteType:          0,
+					Nonce:             &Nonce{},
+					RG:                &CompressedPoint{},
+					PkR:               &CompressedPoint{},
+					ValueCommitment:   &Scalar{},
+					BlindingFactor:    &Scalar{},
+					RawBlindingFactor: &DecryptedNote_EncryptedBlindingFactor{},
 					RawValue:          &DecryptedNote_EncryptedValue{},
+				},
+				&DecryptedNote{
+					NoteType:          0,
+					Nonce:             &Nonce{},
+					RG:                &CompressedPoint{},
+					PkR:               &CompressedPoint{},
+					ValueCommitment:   &Scalar{},
+					BlindingFactor:    &Scalar{},
+					RawBlindingFactor: &DecryptedNote_EncryptedBlindingFactor{},
+					RawValue:          &DecryptedNote_TransparentValue{},
 				},
 			},
 		}
@@ -5351,137 +5355,72 @@ func (m *RuskMock) NewTransaction(ctx context.Context, req *NewTransactionReques
 			Inputs: []*TransactionInput{
 				&TransactionInput{
 					Note: &Note{
-						NoteType:        0,
-						Nonce:           &Nonce{},
-						RG:              &CompressedPoint{},
-						PkR:             &CompressedPoint{},
-						ValueCommitment: &Scalar{},
-						Value:           &Note_TransparentValue{},
-						BlindingFactor: &Note_TransparentBlindingFactor{
-							TransparentBlindingFactor: &Scalar{},
-						},
-					},
-					Sk: &SecretKey{
-						A: &Scalar{},
-						B: &Scalar{},
-					},
-					Nullifier: &Nullifier{
-						H: &Scalar{},
-					},
-					MerkleRoot: &Scalar{},
-				},
-				&TransactionInput{
-					Note: &Note{
-						NoteType:        0,
-						Nonce:           &Nonce{},
-						RG:              &CompressedPoint{},
-						PkR:             &CompressedPoint{},
-						ValueCommitment: &Scalar{},
-						BlindingFactor: &Note_TransparentBlindingFactor{
-							TransparentBlindingFactor: &Scalar{},
-						},
-						Value: &Note_TransparentValue{},
-					},
-					Sk: &SecretKey{
-						A: &Scalar{},
-						B: &Scalar{},
-					},
-					Nullifier: &Nullifier{
-						H: &Scalar{},
-					},
-					MerkleRoot: &Scalar{},
-				},
-				&TransactionInput{
-					Note: &Note{
 						NoteType:        1,
 						Nonce:           &Nonce{},
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
 						ValueCommitment: &Scalar{},
 						BlindingFactor:  &Note_EncryptedBlindingFactor{},
-						Value:           &Note_TransparentValue{},
-					},
-					Sk: &SecretKey{
-						A: &Scalar{},
-						B: &Scalar{},
-					},
-					Nullifier: &Nullifier{
-						H: &Scalar{},
-					},
-					MerkleRoot: &Scalar{},
-				},
-				&TransactionInput{
-					Note: &Note{
-						NoteType:        0,
-						Nonce:           &Nonce{},
-						RG:              &CompressedPoint{},
-						PkR:             &CompressedPoint{},
-						ValueCommitment: &Scalar{},
-						BlindingFactor: &Note_TransparentBlindingFactor{
-							TransparentBlindingFactor: &Scalar{},
-						},
-						Value: &Note_TransparentValue{},
-					},
-					Sk: &SecretKey{
-						A: &Scalar{},
-						B: &Scalar{},
-					},
-					Nullifier: &Nullifier{
-						H: &Scalar{},
-					},
-					MerkleRoot: &Scalar{},
-				},
-				&TransactionInput{
-					Note: &Note{
-						NoteType:        1,
-						Nonce:           &Nonce{},
-						RG:              &CompressedPoint{},
-						PkR:             &CompressedPoint{},
-						ValueCommitment: &Scalar{},
-						Value:           &Note_TransparentValue{},
-						BlindingFactor: &Note_TransparentBlindingFactor{
-							TransparentBlindingFactor: &Scalar{},
-						},
-					},
-					Sk: &SecretKey{
-						A: &Scalar{},
-						B: &Scalar{},
-					},
-					Nullifier: &Nullifier{
-						H: &Scalar{},
-					},
-					MerkleRoot: &Scalar{},
-				},
-				&TransactionInput{
-					Note: &Note{
-						NoteType:        0,
-						Nonce:           &Nonce{},
-						RG:              &CompressedPoint{},
-						PkR:             &CompressedPoint{},
-						ValueCommitment: &Scalar{},
-						BlindingFactor: &Note_TransparentBlindingFactor{
-							TransparentBlindingFactor: &Scalar{},
-						},
-						Value: &Note_TransparentValue{},
-					},
-					Sk: &SecretKey{
-						A: &Scalar{},
-						B: &Scalar{},
-					},
-					Nullifier: &Nullifier{
-						H: &Scalar{},
-					},
-					MerkleRoot: &Scalar{},
-				},
-				&TransactionInput{
-					Note: &Note{
-						NoteType:        0,
-						Nonce:           &Nonce{},
-						RG:              &CompressedPoint{},
-						PkR:             &CompressedPoint{},
-						ValueCommitment: &Scalar{},
 						Value:           &Note_EncryptedValue{},
+					},
+					Sk: &SecretKey{
+						A: &Scalar{},
+						B: &Scalar{},
+					},
+					Nullifier: &Nullifier{
+						H: &Scalar{},
+					},
+					MerkleRoot: &Scalar{},
+				},
+				&TransactionInput{
+					Note: &Note{
+						NoteType:        0,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
 						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_EncryptedValue{},
+					},
+					Sk: &SecretKey{
+						A: &Scalar{},
+						B: &Scalar{},
+					},
+					Nullifier: &Nullifier{
+						H: &Scalar{},
+					},
+					MerkleRoot: &Scalar{},
+				},
+				&TransactionInput{
+					Note: &Note{
+						NoteType:        0,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor: &Note_TransparentBlindingFactor{
+							TransparentBlindingFactor: &Scalar{},
+						},
+						Value: &Note_TransparentValue{},
+					},
+					Sk: &SecretKey{
+						A: &Scalar{},
+						B: &Scalar{},
+					},
+					Nullifier: &Nullifier{
+						H: &Scalar{},
+					},
+					MerkleRoot: &Scalar{},
+				},
+				&TransactionInput{
+					Note: &Note{
+						NoteType:        0,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_TransparentValue{},
 					},
 					Sk: &SecretKey{
 						A: &Scalar{},
@@ -5503,6 +5442,65 @@ func (m *RuskMock) NewTransaction(ctx context.Context, req *NewTransactionReques
 							TransparentBlindingFactor: &Scalar{},
 						},
 						Value: &Note_EncryptedValue{},
+					},
+					Sk: &SecretKey{
+						A: &Scalar{},
+						B: &Scalar{},
+					},
+					Nullifier: &Nullifier{
+						H: &Scalar{},
+					},
+					MerkleRoot: &Scalar{},
+				},
+				&TransactionInput{
+					Note: &Note{
+						NoteType:        0,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_TransparentValue{},
+					},
+					Sk: &SecretKey{
+						A: &Scalar{},
+						B: &Scalar{},
+					},
+					Nullifier: &Nullifier{
+						H: &Scalar{},
+					},
+					MerkleRoot: &Scalar{},
+				},
+				&TransactionInput{
+					Note: &Note{
+						NoteType:        0,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_TransparentValue{},
+					},
+					Sk: &SecretKey{
+						A: &Scalar{},
+						B: &Scalar{},
+					},
+					Nullifier: &Nullifier{
+						H: &Scalar{},
+					},
+					MerkleRoot: &Scalar{},
+				},
+				&TransactionInput{
+					Note: &Note{
+						NoteType:        0,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor: &Note_TransparentBlindingFactor{
+							TransparentBlindingFactor: &Scalar{},
+						},
+						Value: &Note_TransparentValue{},
 					},
 					Sk: &SecretKey{
 						A: &Scalar{},
@@ -5517,7 +5515,7 @@ func (m *RuskMock) NewTransaction(ctx context.Context, req *NewTransactionReques
 			Outputs: []*TransactionOutput{
 				&TransactionOutput{
 					Note: &Note{
-						NoteType:        1,
+						NoteType:        0,
 						Nonce:           &Nonce{},
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
@@ -5554,10 +5552,40 @@ func (m *RuskMock) NewTransaction(ctx context.Context, req *NewTransactionReques
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
 						ValueCommitment: &Scalar{},
-						BlindingFactor: &Note_TransparentBlindingFactor{
-							TransparentBlindingFactor: &Scalar{},
-						},
-						Value: &Note_EncryptedValue{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_TransparentValue{},
+					},
+					Pk: &PublicKey{
+						AG: &CompressedPoint{},
+						BG: &CompressedPoint{},
+					},
+					BlindingFactor: &Scalar{},
+				},
+				&TransactionOutput{
+					Note: &Note{
+						NoteType:        1,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_EncryptedValue{},
+					},
+					Pk: &PublicKey{
+						AG: &CompressedPoint{},
+						BG: &CompressedPoint{},
+					},
+					BlindingFactor: &Scalar{},
+				},
+				&TransactionOutput{
+					Note: &Note{
+						NoteType:        1,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_EncryptedValue{},
 					},
 					Pk: &PublicKey{
 						AG: &CompressedPoint{},
@@ -5593,39 +5621,7 @@ func (m *RuskMock) NewTransaction(ctx context.Context, req *NewTransactionReques
 						BlindingFactor: &Note_TransparentBlindingFactor{
 							TransparentBlindingFactor: &Scalar{},
 						},
-						Value: &Note_EncryptedValue{},
-					},
-					Pk: &PublicKey{
-						AG: &CompressedPoint{},
-						BG: &CompressedPoint{},
-					},
-					BlindingFactor: &Scalar{},
-				},
-				&TransactionOutput{
-					Note: &Note{
-						NoteType:        1,
-						Nonce:           &Nonce{},
-						RG:              &CompressedPoint{},
-						PkR:             &CompressedPoint{},
-						ValueCommitment: &Scalar{},
-						BlindingFactor:  &Note_EncryptedBlindingFactor{},
-						Value:           &Note_EncryptedValue{},
-					},
-					Pk: &PublicKey{
-						AG: &CompressedPoint{},
-						BG: &CompressedPoint{},
-					},
-					BlindingFactor: &Scalar{},
-				},
-				&TransactionOutput{
-					Note: &Note{
-						NoteType:        1,
-						Nonce:           &Nonce{},
-						RG:              &CompressedPoint{},
-						PkR:             &CompressedPoint{},
-						ValueCommitment: &Scalar{},
-						BlindingFactor:  &Note_EncryptedBlindingFactor{},
-						Value:           &Note_EncryptedValue{},
+						Value: &Note_TransparentValue{},
 					},
 					Pk: &PublicKey{
 						AG: &CompressedPoint{},
@@ -5657,10 +5653,8 @@ func (m *RuskMock) NewTransaction(ctx context.Context, req *NewTransactionReques
 					RG:              &CompressedPoint{},
 					PkR:             &CompressedPoint{},
 					ValueCommitment: &Scalar{},
-					BlindingFactor: &Note_TransparentBlindingFactor{
-						TransparentBlindingFactor: &Scalar{},
-					},
-					Value: &Note_TransparentValue{},
+					BlindingFactor:  &Note_EncryptedBlindingFactor{},
+					Value:           &Note_EncryptedValue{},
 				},
 				Pk: &PublicKey{
 					AG: &CompressedPoint{},
@@ -5674,7 +5668,2327 @@ func (m *RuskMock) NewTransaction(ctx context.Context, req *NewTransactionReques
 func (m *RuskMock) VerifyTransaction(ctx context.Context, req *Transaction) (*VerifyTransactionResponse, error) {
 	res :=
 		&VerifyTransactionResponse{
+			Verified: true,
+		}
+	return res, nil
+}
+func (m *RuskMock) NewStake(ctx context.Context, req *StakeTransactionRequest) (*StakeTransaction, error) {
+	res :=
+		&StakeTransaction{
+			Tx: &Transaction{
+				Inputs: []*TransactionInput{
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_EncryptedValue{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+				},
+				Outputs: []*TransactionOutput{
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_EncryptedValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+				},
+				Fee: &TransactionOutput{
+					Note: &Note{
+						NoteType:        1,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_EncryptedValue{},
+					},
+					Pk: &PublicKey{
+						AG: &CompressedPoint{},
+						BG: &CompressedPoint{},
+					},
+					BlindingFactor: &Scalar{},
+				},
+			},
+		}
+	return res, nil
+}
+func (m *RuskMock) VerifyStake(ctx context.Context, req *StakeTransaction) (*VerifyTransactionResponse, error) {
+	res :=
+		&VerifyTransactionResponse{
+			Verified: true,
+		}
+	return res, nil
+}
+func (m *RuskMock) NewWithdrawStake(ctx context.Context, req *WithdrawStakeTransactionRequest) (*WithdrawStakeTransaction, error) {
+	res :=
+		&WithdrawStakeTransaction{
+			Tx: &Transaction{
+				Inputs: []*TransactionInput{
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+				},
+				Outputs: []*TransactionOutput{
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+				},
+				Fee: &TransactionOutput{
+					Note: &Note{
+						NoteType:        1,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						Value:           &Note_EncryptedValue{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+					},
+					Pk: &PublicKey{
+						AG: &CompressedPoint{},
+						BG: &CompressedPoint{},
+					},
+					BlindingFactor: &Scalar{},
+				},
+			},
+		}
+	return res, nil
+}
+func (m *RuskMock) VerifyWithdrawStake(ctx context.Context, req *WithdrawStakeTransaction) (*VerifyTransactionResponse, error) {
+	res :=
+		&VerifyTransactionResponse{
 			Verified: false,
+		}
+	return res, nil
+}
+func (m *RuskMock) NewBid(ctx context.Context, req *BidTransactionRequest) (*BidTransaction, error) {
+	res :=
+		&BidTransaction{
+			Tx: &Transaction{
+				Inputs: []*TransactionInput{
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_EncryptedValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+				},
+				Outputs: []*TransactionOutput{
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+				},
+				Fee: &TransactionOutput{
+					Note: &Note{
+						NoteType:        0,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_EncryptedValue{},
+					},
+					Pk: &PublicKey{
+						AG: &CompressedPoint{},
+						BG: &CompressedPoint{},
+					},
+					BlindingFactor: &Scalar{},
+				},
+			},
+		}
+	return res, nil
+}
+func (m *RuskMock) VerifyBid(ctx context.Context, req *BidTransaction) (*VerifyTransactionResponse, error) {
+	res :=
+		&VerifyTransactionResponse{
+			Verified: false,
+		}
+	return res, nil
+}
+func (m *RuskMock) NewWithdrawBid(ctx context.Context, req *WithdrawBidTransactionRequest) (*WithdrawBidTransaction, error) {
+	res :=
+		&WithdrawBidTransaction{
+			Tx: &Transaction{
+				Inputs: []*TransactionInput{
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+				},
+				Outputs: []*TransactionOutput{
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+				},
+				Fee: &TransactionOutput{
+					Note: &Note{
+						NoteType:        0,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_TransparentValue{},
+					},
+					Pk: &PublicKey{
+						AG: &CompressedPoint{},
+						BG: &CompressedPoint{},
+					},
+					BlindingFactor: &Scalar{},
+				},
+			},
+		}
+	return res, nil
+}
+func (m *RuskMock) VerifyWithdrawBid(ctx context.Context, req *WithdrawBidTransaction) (*VerifyTransactionResponse, error) {
+	res :=
+		&VerifyTransactionResponse{
+			Verified: true,
+		}
+	return res, nil
+}
+func (m *RuskMock) NewDistribute(ctx context.Context, req *DistributeTransactionRequest) (*DistributeTransaction, error) {
+	res :=
+		&DistributeTransaction{
+			BgPk: &PublicKey{
+				AG: &CompressedPoint{},
+				BG: &CompressedPoint{},
+			},
+			Tx: &Transaction{
+				Inputs: []*TransactionInput{
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_EncryptedValue{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+				},
+				Outputs: []*TransactionOutput{
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_EncryptedValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+				},
+				Fee: &TransactionOutput{
+					Note: &Note{
+						NoteType:        0,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_TransparentValue{},
+					},
+					Pk: &PublicKey{
+						AG: &CompressedPoint{},
+						BG: &CompressedPoint{},
+					},
+					BlindingFactor: &Scalar{},
+				},
+			},
+		}
+	return res, nil
+}
+func (m *RuskMock) VerifyDistribute(ctx context.Context, req *DistributeTransaction) (*VerifyTransactionResponse, error) {
+	res :=
+		&VerifyTransactionResponse{
+			Verified: false,
+		}
+	return res, nil
+}
+func (m *RuskMock) NewWithdrawFees(ctx context.Context, req *WithdrawFeesTransactionRequest) (*WithdrawFeesTransaction, error) {
+	res :=
+		&WithdrawFeesTransaction{
+			Tx: &Transaction{
+				Inputs: []*TransactionInput{
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+				},
+				Outputs: []*TransactionOutput{
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_EncryptedValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+				},
+				Fee: &TransactionOutput{
+					Note: &Note{
+						NoteType:        0,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_TransparentValue{},
+					},
+					Pk: &PublicKey{
+						AG: &CompressedPoint{},
+						BG: &CompressedPoint{},
+					},
+					BlindingFactor: &Scalar{},
+				},
+			},
+		}
+	return res, nil
+}
+func (m *RuskMock) VerifyWithdrawFees(ctx context.Context, req *WithdrawFeesTransaction) (*VerifyTransactionResponse, error) {
+	res :=
+		&VerifyTransactionResponse{
+			Verified: true,
+		}
+	return res, nil
+}
+func (m *RuskMock) NewSlash(ctx context.Context, req *SlashTransactionRequest) (*SlashTransaction, error) {
+	res :=
+		&SlashTransaction{
+			Step: 290,
+			Tx: &Transaction{
+				Inputs: []*TransactionInput{
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+					&TransactionInput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Sk: &SecretKey{
+							A: &Scalar{},
+							B: &Scalar{},
+						},
+						Nullifier: &Nullifier{
+							H: &Scalar{},
+						},
+						MerkleRoot: &Scalar{},
+					},
+				},
+				Outputs: []*TransactionOutput{
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_EncryptedValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+				},
+				Fee: &TransactionOutput{
+					Note: &Note{
+						NoteType:        1,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_TransparentValue{},
+					},
+					Pk: &PublicKey{
+						AG: &CompressedPoint{},
+						BG: &CompressedPoint{},
+					},
+					BlindingFactor: &Scalar{},
+				},
+			},
+		}
+	return res, nil
+}
+func (m *RuskMock) VerifySlash(ctx context.Context, req *SlashTransaction) (*VerifyTransactionResponse, error) {
+	res :=
+		&VerifyTransactionResponse{
+			Verified: true,
 		}
 	return res, nil
 }
