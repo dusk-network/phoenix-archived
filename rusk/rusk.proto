@@ -1,6 +1,7 @@
 syntax = "proto3";
 package rusk;
 
+import "field.proto";
 import "keys.proto";
 import "note.proto";
 import "transaction.proto";
@@ -192,5 +193,5 @@ message HashResponse {
 // also outside of rusk
 service Crypto {
   // Hash performs a Poseidon hashing and returns a scalar
-  rpc Hash(HashRequest) returns HashResponse {}
+  rpc Hash(HashRequest) returns (HashResponse) {}
 }
