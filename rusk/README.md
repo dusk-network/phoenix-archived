@@ -28,6 +28,7 @@
     - [NoteType](#rusk.NoteType)
 
 - [rusk.proto](#rusk.proto)
+    - [Rusk](#rusk.Rusk)
     - [EchoRequest](#rusk.EchoRequest)
     - [EchoResponse](#rusk.EchoResponse)
 	- [ContractCall](#rusk.ContractCall)
@@ -39,7 +40,24 @@
     - [KeysResponse](#rusk.KeysResponse)
     - [NewTransactionRequest](#rusk.NewTransactionRequest)
     - [VerifyTransactionResponse](#rusk.VerifyTransactionResponse)
-    - [Rusk](#rusk.Rusk)
+    - [SlashTransactionRequest](#rusk.SlashTransactionRequest)
+    - [SlashTransactionResponse](#rusk.SlashTransactionResponse)
+    - [WithdrawFeesTransactionRequest](#rusk.WithdrawFeesRequest)
+    - [WithdrawFeesTransactionResponse](#rusk.WithdrawFeesResponse)
+    - [DistributeTransactionRequest](#rusk.DistributeTransactionRequest)
+    - [DistributeTransactionResponse](#rusk.DistributeTransactionResponse)
+    - [BidTransactionRequest](#rusk.BidTransactionRequest)
+    - [BidTransactionResponse](#rusk.BidTransactionResponse)
+    - [StakeTransactionRequest](#rusk.StakeTransactionRequest)
+    - [StakeTransactionResponse](#rusk.StakeTransactionResponse)
+    - [WithdrawBidTransactionRequest](#rusk.WithdrawBidTransactionRequest)
+    - [WithdrawBidTransactionResponse](#rusk.WithdrawBidTransactionResponse)
+    - [WithdrawStakeTransactionRequest](#rusk.WithdrawStakeTransactionRequest)
+    - [WithdrawStakeTransactionResponse](#rusk.WithdrawStakeTransactionResponse)
+
+    - [Crypto](#rusk.Crypto)
+    - [HashRequest](#rusk.HashRequest)
+    - [HashResponse](#rusk.HashResponse)
 
 - [transaction.proto](#transaction.proto)
     - [Transaction](#rusk.Transaction)
@@ -50,7 +68,7 @@
 
 ## consensus.proto
 
-### DistributeRequest
+### DistributeTransaction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -59,7 +77,7 @@
 | bg_pk | [PublicKey](#rusk.PublicKey) |  | Wallet public key of the block generator who made the block |
 | tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
 
-### WithdrawRequest
+### WithdrawTransaction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -68,7 +86,7 @@
 | msg | [bytes](#bytes) |  | The message signed with the BLS key |
 | tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
 
-### StakeRequest
+### StakeTransaction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -77,7 +95,7 @@
 | expiration_height | [fixed64](#fixed64) |  | The block height at which this stake should unlock |
 | tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
 
-### WithdrawStakeRequest
+### WithdrawStakeTransaction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -85,7 +103,7 @@
 | sig | [bytes](#bytes) |  | A BLS signature of the BLS public key and the deposit height of the stake to be withdrawn |
 | tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
 
-### SlashRequest
+### SlashTransaction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -98,7 +116,7 @@
 | second_sig | [bytes](#bytes) |  | The signature of the second message |
 | tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
 
-### BidRequest
+### BidTransaction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -112,7 +130,7 @@
 | z | [bytes](#bytes) |  | Another random scalar |
 | tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
 
-### WithdrawBidRequest
+### WithdrawBidTransaction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -215,100 +233,6 @@
 
 ## rusk.proto
 
-### GenerateSecretKeyRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| b | [bytes](#bytes) |  |  |
-
-### KeysResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| vk | [ViewKey](#rusk.ViewKey) |  |  |
-| pk | [PublicKey](#rusk.PublicKey) |  |  |
-
-### NewTransactionRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| sk | [SecretKey](#rusk.SecretKey) |  |  |
-| inputs | [TransactionInput](#rusk.TransactionInput) | repeated |  |
-| outputs | [TransactionOutput](#rusk.TransactionOutput) | repeated |  |
-| value | [fixed64](#fidex64) |  |  |
-| fee | [fixed64](#fixed64) |  |  |
-| obfuscated | [bool](#bool) |  |  |
-
-### VerifyTransactionResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| verified | bool | | |
-
-### EchoRequest
-
-### EchoResponse
-
-### ValidateStateTransitionRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| calls | [ContractCall](#rusk.ContractCall) | repeated | List of transactions to be validated |
-
-### ValidateStateTransitionResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| successful_calls | [ContractCall](#rusk.ContractCall) | repeated | List of transactions which passed validation |
-
-### ExecuteStateTransitionRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| calls | [ContractCall](#rusk.ContractCall) | repeated | List of transactions to be executed |
-
-### ExecuteStateTransitionResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| success | [bool](#bool) | | Status of the execution |
-
-### ContractCall
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| tx | [Transaction](#rusk.Transaction) | | |
-| withdraw | [WithdrawRequest](#rusk.WithdrawRequest) | | |
-| stake | [StakeRequest](#rusk.StakeRequest) | | |
-| bid | [BidRequest](#rusk.BidRequest) | | |
-| slash | [SlashRequest](#rusk.SlashRequest) | | |
-| distribute | [DistributeRequest](#rusk.DistributeRequest) | | |
-| withdraw_stake | [WithdrawStakeRequest](#rusk.WithdrawStakeRequest) | | |
-| withdraw_bid | [WithdrawBidRequest](#rusk.WithdrawBidRequest) | | |
-
-### GenerateScoreRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| d | [bytes](#bytes) | | |
-| k | [bytes](#bytes) | | |
-| y | [bytes](#bytes) | | |
-| y_inv | [bytes](#bytes) | | |
-| q | [bytes](#bytes) | | |
-| z | [bytes](#bytes) | | |
-| seed | [bytes](#bytes) | | Previous block seed |
-| bids | [bytes](#bytes) | | List of bids |
-| bid_pos | [fixed64](#fixed64) | | Position of the bid to prove ownership of in `bids` |
-
-### GenerateScoreResponse
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| proof | [bytes](#bytes) | | Generated proof |
-| score | [bytes](#bytes) | | Generated score |
-| z | [bytes](#bytes) | | Identity hash |
-| bids | [bytes](#bytes) | | The list of bids used to make the proof |
-
 ### Rusk
 
 | Method Name | Request Type | Response Type | Description |
@@ -322,6 +246,177 @@
 | FullScanOwnedNotes | [ViewKey](#rusk.ViewKey) | [OwnedNotesResponse](#rusk.OwnedNotesResponse) |  |
 | NewTransaction | [NewTransactionRequest](#rusk.NewTransactionRequest) | [Transaction](#rusk.Transaction) |  |
 | VerifyTransaction | [Transaction](#rusk.Transaction) | [VerifyTransactionResponse](#rusk.VerifyTransactionResponse) |  |
+| NewStake | [StakeTransactionRequest](#rusk.StakeTransactionRequest) | [StakeTransaction](#rusk.StakeTransaction) | |
+| VerifyStake | [StakeTransaction](#rusk.StakeTransaction) | [VerifyTransactionResponse](#rusk.VerifyTransactionResponse) | |
+| NewWithdrawStake | [WithdrawStakeTransactionRequest](#rusk.WithdrawStakeTransactionRequest) | [WithdrawStakeTransaction](#rusk.WithdrawStakeTransaction) | |
+| VerifyWithdrawStake | [WithdrawStakeTransaction](#rusk.WithdrawStakeTransaction) | [VerifyTransactionResponse](#rusk.VerifyTransactionResponse) | |
+| NewBid | [BidTransactionRequest](#rusk.BidTransactionRequest) | [BidTransaction](#rusk.BidTransaction) | |
+| VerifyBid | [BidTransaction](#rusk.BidTransaction) | [VerifyTransactionResponse](#rusk.VerifyTransactionResponse) | |
+| NewWithdrawBid | [WithdrawBidTransactionRequest](#rusk.WithdrawBidTransactionRequest) | [WithdrawBidTransaction](#rusk.WithdrawBidTransaction) | |
+| VerifyWithdrawBid | [WithdrawBidTransaction](#rusk.WithdrawBidTransaction) | [VerifyTransactionResponse](#rusk.VerifyTransactionResponse) | |
+| NewDistribute | [DistributeTransactionRequest](#rusk.DistributeTransactionRequest) | [DistributeTransaction](#rusk.DistributeTransaction) | |
+| VerifyDistribute | [DistributeTransaction](#rusk.DistributeTransaction) | [VerifyTransactionResponse](#rusk.VerifyTransactionResponse) | |
+| NewWithdrawFees | [WithdrawFeesTransactionRequest](#rusk.WithdrawFeesTransactionRequest) | [WithdrawFeesTransaction](#rusk.WithdrawFeesTransaction) | |
+| VerifyWithdrawFees | [WithdrawFeesTransaction](#rusk.WithdrawFeesTransaction) | [VerifyTransactionResponse](#rusk.VerifyTransactionResponse) | |
+| NewSlash | [SlashTransactionRequest](#rusk.SlashTransactionRequest) | [SlashTransaction](#rusk.SlashTransaction) | |
+| VerifySlash | [SlashTransaction](#rusk.SlashTransaction) | [VerifyTransactionResponse](#rusk.VerifyTransactionResponse) | |
+
+#### GenerateSecretKeyRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| b | [bytes](#bytes) |  |  |
+
+#### KeysResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vk | [ViewKey](#rusk.ViewKey) |  |  |
+| pk | [PublicKey](#rusk.PublicKey) |  |  |
+
+#### NewTransactionRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sk | [SecretKey](#rusk.SecretKey) |  |  |
+| inputs | [TransactionInput](#rusk.TransactionInput) | repeated |  |
+| outputs | [TransactionOutput](#rusk.TransactionOutput) | repeated |  |
+| value | [fixed64](#fidex64) |  |  |
+| fee | [fixed64](#fixed64) |  |  |
+| obfuscated | [bool](#bool) |  |  |
+
+#### SlashTransactionRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tx | [NewTransactionRequest](#rusk.NewTransactionRequest) |  |  |
+
+#### DistributeTransactionRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tx | [NewTransactionRequest](#rusk.NewTransactionRequest) |  |  |
+
+#### WithdrawFeesTransactionRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tx | [NewTransactionRequest](#rusk.NewTransactionRequest) |  |  |
+
+#### StakeTransactionRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bls_key | bytes | | The BLS public key used to identify the provisioner |
+| tx | [NewTransactionRequest](#rusk.NewTransactionRequest) |  |  |
+
+#### WithdrawStakeTransactionRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tx | [NewTransactionRequest](#rusk.NewTransactionRequest) |  |  |
+
+#### BidTransactionRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| M | bytes | | The `M` parameter obfuscating the bidden amount |
+| tx | [NewTransactionRequest](#rusk.NewTransactionRequest) |  |  |
+
+#### WithdrawBidTransactionRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tx | [NewTransactionRequest](#rusk.NewTransactionRequest) |  |  |
+
+#### VerifyTransactionResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| verified | bool | | |
+
+#### EchoRequest
+
+#### EchoResponse
+
+#### ValidateStateTransitionRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| calls | [ContractCall](#rusk.ContractCall) | repeated | List of transactions to be validated |
+
+#### ValidateStateTransitionResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| successful_calls | [ContractCall](#rusk.ContractCall) | repeated | List of transactions which passed validation |
+
+#### ExecuteStateTransitionRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| calls | [ContractCall](#rusk.ContractCall) | repeated | List of transactions to be executed |
+
+#### ExecuteStateTransitionResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| success | [bool](#bool) | | Status of the execution |
+
+#### ContractCall
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tx | [Transaction](#rusk.Transaction) | | |
+| withdraw_fee | [WithdrawFeesTransaction](#rusk.WithdrawFeesTransaction) | | |
+| stake | [StakeTransaction](#rusk.StakeTransaction) | | |
+| bid | [BidTransaction](#rusk.BidTransaction) | | |
+| slash | [SlashTransaction](#rusk.SlashTransaction) | | |
+| distribute | [DistributeTransaction](#rusk.DistributeTransaction) | | |
+| withdraw_stake | [WithdrawStakeTransaction](#rusk.WithdrawStakeTransaction) | | |
+| withdraw_bid | [WithdrawBidTransaction](#rusk.WithdrawBidTransaction) | | |
+
+#### GenerateScoreRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| d | [bytes](#bytes) | | |
+| k | [bytes](#bytes) | | |
+| y | [bytes](#bytes) | | |
+| y_inv | [bytes](#bytes) | | |
+| q | [bytes](#bytes) | | |
+| z | [bytes](#bytes) | | |
+| seed | [bytes](#bytes) | | Previous block seed |
+| bids | [bytes](#bytes) | | List of bids |
+| bid_pos | [fixed64](#fixed64) | | Position of the bid to prove ownership of in `bids` |
+
+#### GenerateScoreResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proof | [bytes](#bytes) | | Generated proof |
+| score | [bytes](#bytes) | | Generated score |
+| z | [bytes](#bytes) | | Identity hash |
+| bids | [bytes](#bytes) | | The list of bids used to make the proof |
+
+
+### Crypto
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| Hash | [HashRequest](#rusk.HashRequest) | [HashResponse](#rusk.HashResponse) | Performs Poseidon hashing of up to 4 inputs |
+
+#### HashRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| inputs | [bytes](#bytes) | repeated | The array of inputs to be passed to the hashing function |
+
+#### HashResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| hash | [field.Scalar](#field.Scalar) | | The resulting Scalar from hashing an array of byte arrays inputs |
 
 ## transaction.proto
 
