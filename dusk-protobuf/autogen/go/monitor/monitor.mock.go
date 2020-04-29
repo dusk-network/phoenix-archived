@@ -4,10 +4,10 @@
 package monitor
 
 import (
-	context "context"
 	fmt "fmt"
-	proto "github.com/gogo/protobuf/proto"
 	math "math"
+	proto "github.com/gogo/protobuf/proto"
+	context "context"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

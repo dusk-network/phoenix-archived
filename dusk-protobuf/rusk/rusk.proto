@@ -1,6 +1,8 @@
 syntax = "proto3";
 package rusk;
+option go_package = "github.com/dusk-protobuf/autogen/go/rusk";
 
+import "field.proto";
 import "keys.proto";
 import "note.proto";
 import "transaction.proto";
@@ -12,6 +14,7 @@ message EchoResponse {}
 // List of transactions to be validated
 message ValidateStateTransitionRequest {
   repeated ContractCall calls = 1;
+  fixed64 current_height = 2;
 }
 
 message ContractCall {
@@ -29,31 +32,31 @@ message ContractCall {
 
 // Used to request the Slash of a stake
 message SlashTransactionRequest {
-  // TODO: implement
+  // TODO: specify eventual other fields
   rusk.NewTransactionRequest tx = 1;
 }
 
 // Used to request the withdrawal of fees from a Provisioner
 message DistributeTransactionRequest {
-  // TODO: implement
+  // TODO: specify eventual other fields
   rusk.NewTransactionRequest tx = 1;
 }
 
 // Used to request the withdrawal of fees from a Provisioner
 message WithdrawFeesTransactionRequest {
-  // TODO: implement
+  // TODO: specify eventual other fields
   rusk.NewTransactionRequest tx = 1;
 }
 
 // Used to request the withdrawal of a Stake
 message WithdrawStakeTransactionRequest {
-  // TODO: implement
+  // TODO: specify eventual other fields
   rusk.NewTransactionRequest tx = 1;
 }
 
 // Used to request the withdrawal of a Bid
 message WithdrawBidTransactionRequest {
-  // TODO: implement
+  // TODO: specify eventual other fields
   rusk.NewTransactionRequest tx = 1;
 }
 
@@ -66,19 +69,23 @@ message StakeTransactionRequest {
 // Used to Request the creation of a Bid
 message BidTransactionRequest {
   bytes M = 1;
-  rusk.NewTransactionRequest tx = 2;
+  bytes pk = 2;
+  bytes seed = 3;
+  fixed64 expiration_height = 4;
+  rusk.NewTransactionRequest tx = 5;
 }
 
 message ValidateStateTransitionResponse {
   repeated ContractCall successful_calls = 1;
 }
 
-message ExecuteStateTransitionResponse {
+message ExecuteStateTransitionRequest {
   repeated ContractCall calls = 1;
 }
 
-message ExecuteStateTransitionRequest {
+message ExecuteStateTransitionResponse {
   bool success = 1;
+  fixed64 current_height = 2;
 }
 
 message GenerateSecretKeyRequest { bytes b = 1; }
@@ -173,4 +180,24 @@ service Rusk {
   // Slash 
   rpc NewSlash(SlashTransactionRequest) returns (SlashTransaction) {}
   rpc VerifySlash(SlashTransaction) returns (VerifyTransactionResponse) {}
+}
+
+// HashRequest carries the input for the hashing. Mimc supports 2 inputs, Poseidon supports
+// a wider array of inputs. Dusk's configuration of Poseidon makes it support up to 4 inputs
+message HashRequest {
+  repeated bytes inputs = 1;
+}
+
+// HashResponse carries the scalar calculated by the hashing function
+message HashResponse {
+  Scalar hash = 1;
+}
+
+// Crypto is a collection of services not immediately related to rusk but that happen to be 
+// served by the rusk process
+// TODO: find a better way to reuse structures defined in field.proto which need to be used
+// also outside of rusk
+service Crypto {
+  // Hash performs a Poseidon hashing and returns a scalar
+  rpc Hash(HashRequest) returns (HashResponse) {}
 }
