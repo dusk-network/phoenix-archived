@@ -27,3 +27,9 @@ This will also regenerate the mocks
 #### Mocking capabilities 
 
 To allow for easy smoke testing of the interconnected components (rusk VM, wallet, node, etc), all golang packages include simple mocking capabilities that would help in defining different behaviours of the RPC services for testing purposes.
+
+In general it is not needed to re-generate the mocks, but in case it would be needed, it is enough to type the following:
+
+```
+$ make mock
+```
