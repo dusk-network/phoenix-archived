@@ -14,6 +14,7 @@ message EchoResponse {}
 // List of transactions to be validated
 message ValidateStateTransitionRequest {
   repeated ContractCall calls = 1;
+  fixed64 current_height = 2;
 }
 
 message ContractCall {
@@ -68,19 +69,23 @@ message StakeTransactionRequest {
 // Used to Request the creation of a Bid
 message BidTransactionRequest {
   bytes M = 1;
-  rusk.NewTransactionRequest tx = 2;
+  bytes pk = 2;
+  bytes seed = 3;
+  fixed64 expiration_height = 4;
+  rusk.NewTransactionRequest tx = 5;
 }
 
 message ValidateStateTransitionResponse {
   repeated ContractCall successful_calls = 1;
 }
 
-message ExecuteStateTransitionResponse {
+message ExecuteStateTransitionRequest {
   repeated ContractCall calls = 1;
 }
 
-message ExecuteStateTransitionRequest {
+message ExecuteStateTransitionResponse {
   bool success = 1;
+  fixed64 current_height = 2;
 }
 
 message GenerateSecretKeyRequest { bytes b = 1; }

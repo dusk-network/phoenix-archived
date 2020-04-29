@@ -344,6 +344,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | calls | [ContractCall](#rusk.ContractCall) | repeated | List of transactions to be validated |
+| current_height | [fixed64](#fixed64) | | Height of the block being validated |
 
 #### ValidateStateTransitionResponse
 
@@ -356,6 +357,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | calls | [ContractCall](#rusk.ContractCall) | repeated | List of transactions to be executed |
+| current_height | [fixed64](#fixed64) | | Height of the block being executed |
 
 #### ExecuteStateTransitionResponse
 

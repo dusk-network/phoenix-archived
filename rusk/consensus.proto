@@ -50,7 +50,7 @@ message BidTransaction {
   fixed64 expiration_height = 5;
   bytes pk = 6;
   bytes r = 7;
-  bytes z = 8;
+  bytes seed = 8;
   rusk.Transaction tx = 9;
 }
 
