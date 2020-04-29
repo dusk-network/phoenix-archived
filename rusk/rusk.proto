@@ -12,6 +12,7 @@ message EchoResponse {}
 // List of transactions to be validated
 message ValidateStateTransitionRequest {
   repeated ContractCall calls = 1;
+  fixed64 current_height = 2;
 }
 
 message ContractCall {
@@ -76,12 +77,13 @@ message ValidateStateTransitionResponse {
   repeated ContractCall successful_calls = 1;
 }
 
-message ExecuteStateTransitionResponse {
+message ExecuteStateTransitionRequest {
   repeated ContractCall calls = 1;
 }
 
-message ExecuteStateTransitionRequest {
+message ExecuteStateTransitionResponse {
   bool success = 1;
+  fixed64 current_height = 2;
 }
 
 message GenerateSecretKeyRequest { bytes b = 1; }
