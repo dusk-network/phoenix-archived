@@ -66,7 +66,10 @@ message StakeTransactionRequest {
 // Used to Request the creation of a Bid
 message BidTransactionRequest {
   bytes M = 1;
-  rusk.NewTransactionRequest tx = 2;
+  bytes pk = 2;
+  bytes seed = 3;
+  fixed64 expiration_height = 4;
+  rusk.NewTransactionRequest tx = 5;
 }
 
 message ValidateStateTransitionResponse {
