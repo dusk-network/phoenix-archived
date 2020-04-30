@@ -369,14 +369,14 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| tx | [Transaction](#rusk.Transaction) | | |
-| withdraw_fee | [WithdrawFeesTransaction](#rusk.WithdrawFeesTransaction) | | |
-| stake | [StakeTransaction](#rusk.StakeTransaction) | | |
-| bid | [BidTransaction](#rusk.BidTransaction) | | |
-| slash | [SlashTransaction](#rusk.SlashTransaction) | | |
-| distribute | [DistributeTransaction](#rusk.DistributeTransaction) | | |
-| withdraw_stake | [WithdrawStakeTransaction](#rusk.WithdrawStakeTransaction) | | |
-| withdraw_bid | [WithdrawBidTransaction](#rusk.WithdrawBidTransaction) | | |
+| tx | [Transaction](#rusk.Transaction) | oneof | |
+| withdraw_fee | [WithdrawFeesTransaction](#rusk.WithdrawFeesTransaction) | oneof | |
+| stake | [StakeTransaction](#rusk.StakeTransaction) | oneof | |
+| bid | [BidTransaction](#rusk.BidTransaction) | oneof | |
+| slash | [SlashTransaction](#rusk.SlashTransaction) | oneof | |
+| distribute | [DistributeTransaction](#rusk.DistributeTransaction) | oneof | |
+| withdraw_stake | [WithdrawStakeTransaction](#rusk.WithdrawStakeTransaction) | oneof | |
+| withdraw_bid | [WithdrawBidTransaction](#rusk.WithdrawBidTransaction) | oneof | |
 
 #### GenerateScoreRequest
 
@@ -404,21 +404,38 @@
 
 ### Crypto
 
+Crypto is the service that exposes methods to perform cryptographic operations, such as hashing.
+
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | Hash | [HashRequest](#rusk.HashRequest) | [HashResponse](#rusk.HashResponse) | Performs Poseidon hashing of up to 4 inputs |
 
-#### HashRequest
+#### BinaryHashRequest
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| inputs | [bytes](#bytes) | repeated | The array of inputs to be passed to the hashing function |
+| inputs | [bytes](#bytes) | repeated | An array of byte array inputs to be passed to the hashing service. If the inputs exceeds the hashing capabilities, an error is returned |
+
+#### TransactionHashRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| txs | [Transaction](#rusk.Transaction) | repeated | An array of [Transactions](#rusk.Transaction) inputs to be passed to the hashing service |
+
+#### HashRequest
+
+The `HashRequst` can carry either arbitrary byte arrays as inputs or a [Transaction](#rusk.Transaction)
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bin_inputs | [BinaryHashRequest](#rusk.BinaryHashRequest) | oneof | Request of hashing an array of inputs being arbitrary binary arrays |
+| tx_inputs | [Transaction](#rusk.Transaction) | oneof | Request of hashing a transaction |
 
 #### HashResponse
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [field.Scalar](#field.Scalar) | | The resulting Scalar from hashing an array of byte arrays inputs |
+| hash | [field.Scalar](#field.Scalar) | | The resulting Scalar from hashing the payload specified in the [HashRequest](#rusk.HashRequest)|
 
 ## transaction.proto
 
@@ -426,11 +443,10 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| nullifiers | [Nullifier](#rusk.Nullifier) | repeated |  |
+| inputs | [TransactionInput](#rusk.TransactionInput) | repeated |  Transaction inputs |
 | outputs | [TransactionOutput](#rusk.TransactionOutput) | repeated |  |
 | fee | [TransactionOutput](#rusk.TransactionOutput) |  |  |
 | proof | [bytes](#bytes) |  |  |
-| public_inputs | [Scalar](#rusk.Scalar) | repeated |  |
 
 ### TransactionInput
 

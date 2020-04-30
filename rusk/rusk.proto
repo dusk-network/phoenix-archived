@@ -182,10 +182,21 @@ service Rusk {
   rpc VerifySlash(SlashTransaction) returns (VerifyTransactionResponse) {}
 }
 
-// HashRequest carries the input for the hashing. Mimc supports 2 inputs, Poseidon supports
-// a wider array of inputs. Dusk's configuration of Poseidon makes it support up to 4 inputs
-message HashRequest {
+
+message BinaryHashRequest {
   repeated bytes inputs = 1;
+}
+
+message TransactionHashRequest {
+  repeated rusk.Transaction txs = 1;
+}
+
+// HashRequest carries the input for the hashing which can be an array of arrays of bytes or a transaction.
+message HashRequest {
+  oneof request {
+    BinaryHashRequest bin_inputs = 1;
+    TransactionHashRequest tx_inputs = 2;
+  }
 }
 
 // HashResponse carries the scalar calculated by the hashing function
