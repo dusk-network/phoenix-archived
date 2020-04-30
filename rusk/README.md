@@ -246,6 +246,7 @@
 | FullScanOwnedNotes | [ViewKey](#rusk.ViewKey) | [OwnedNotesResponse](#rusk.OwnedNotesResponse) |  |
 | NewTransaction | [NewTransactionRequest](#rusk.NewTransactionRequest) | [Transaction](#rusk.Transaction) |  |
 | VerifyTransaction | [Transaction](#rusk.Transaction) | [VerifyTransactionResponse](#rusk.VerifyTransactionResponse) |  |
+| GetBalance | [GetBalanceRequest](#rusk.GetBalanceRequest) | [GetBalanceResponse](#rusk.GetBalanceResponse) |  |
 | NewStake | [StakeTransactionRequest](#rusk.StakeTransactionRequest) | [StakeTransaction](#rusk.StakeTransaction) | |
 | VerifyStake | [StakeTransaction](#rusk.StakeTransaction) | [VerifyTransactionResponse](#rusk.VerifyTransactionResponse) | |
 | NewWithdrawStake | [WithdrawStakeTransactionRequest](#rusk.WithdrawStakeTransactionRequest) | [WithdrawStakeTransaction](#rusk.WithdrawStakeTransaction) | |
@@ -436,6 +437,18 @@ The `HashRequst` can carry either arbitrary byte arrays as inputs or a [Transact
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | hash | [field.Scalar](#field.Scalar) | | The resulting Scalar from hashing the payload specified in the [HashRequest](#rusk.HashRequest)|
+
+#### GetBalanceRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vk | [keys.ViewKey](#keys.ViewKey) | | The view key for which to check the balance |
+
+#### GetBalanceResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| balance | [fixed64](#fixed64) | | The balance of the given view key |
 
 ## transaction.proto
 
