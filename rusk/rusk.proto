@@ -156,6 +156,7 @@ service Rusk {
   rpc FullScanOwnedNotes(ViewKey) returns (OwnedNotesResponse) {}
   rpc NewTransaction(NewTransactionRequest) returns (Transaction) {}
   rpc VerifyTransaction(Transaction) returns (VerifyTransactionResponse) {}
+  rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse) {}
 
   // Stake
   rpc NewStake(StakeTransactionRequest) returns (StakeTransaction) {}
@@ -182,6 +183,13 @@ service Rusk {
   rpc VerifySlash(SlashTransaction) returns (VerifyTransactionResponse) {}
 }
 
+message GetBalanceRequest {
+  ViewKey vk = 1;
+}  
+
+message GetBalanceResponse {
+  fixed64 balance = 1;
+}
 
 message BinaryHashRequest {
   repeated bytes inputs = 1;
