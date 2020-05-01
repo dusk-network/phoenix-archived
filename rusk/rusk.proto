@@ -13,11 +13,11 @@ message EchoResponse {}
 
 // List of transactions to be validated
 message ValidateStateTransitionRequest {
-  repeated ContractCall calls = 1;
+  repeated ContractCallTx calls = 1;
   fixed64 current_height = 2;
 }
 
-message ContractCall {
+message ContractCallTx {
   oneof contract_call {
     rusk.Transaction tx = 1;
     rusk.WithdrawFeesTransaction withdraw = 2;
@@ -76,11 +76,11 @@ message BidTransactionRequest {
 }
 
 message ValidateStateTransitionResponse {
-  repeated ContractCall successful_calls = 1;
+  repeated ContractCallTx successful_calls = 1;
 }
 
 message ExecuteStateTransitionRequest {
-  repeated ContractCall calls = 1;
+  repeated ContractCallTx calls = 1;
 }
 
 message ExecuteStateTransitionResponse {
