@@ -97,11 +97,10 @@ message OwnedNotesResponse { repeated DecryptedNote notes = 1; }
 // Call from CLI directly
 message NewTransactionRequest {
   SecretKey sk = 1;
-  repeated DecryptedNote inputs = 2;
-  PublicKey recipient = 3;
-  fixed64 value = 4;
-  fixed64 fee = 5;
-  bool obfuscated = 6;
+  PublicKey recipient = 2;
+  fixed64 value = 3;
+  fixed64 fee = 4;
+  bool obfuscated = 5;
 }
 
 message VerifyTransactionResponse {
