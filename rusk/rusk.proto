@@ -154,32 +154,26 @@ service Rusk {
   rpc Keys(SecretKey) returns (KeysResponse) {}
   rpc FullScanOwnedNotes(ViewKey) returns (OwnedNotesResponse) {}
   rpc NewTransaction(NewTransactionRequest) returns (Transaction) {}
-  rpc VerifyTransaction(Transaction) returns (VerifyTransactionResponse) {}
   rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse) {}
+  rpc VerifyTransaction(ContractCallTx) returns (VerifyTransactionResponse) {}
 
   // Stake
   rpc NewStake(StakeTransactionRequest) returns (StakeTransaction) {}
   rpc VerifyStake(StakeTransaction) returns (VerifyTransactionResponse) {}
   rpc NewWithdrawStake(WithdrawStakeTransactionRequest) returns (WithdrawStakeTransaction) {}
-  rpc VerifyWithdrawStake(WithdrawStakeTransaction) returns (VerifyTransactionResponse) {}
 
   // Bid
   rpc NewBid(BidTransactionRequest) returns (BidTransaction) {}
-  rpc VerifyBid(BidTransaction) returns (VerifyTransactionResponse) {}
   rpc NewWithdrawBid(WithdrawBidTransactionRequest) returns (WithdrawBidTransaction) {}
-  rpc VerifyWithdrawBid(WithdrawBidTransaction) returns (VerifyTransactionResponse) {}
   
   // Distribute
   rpc NewDistribute(DistributeTransactionRequest) returns (DistributeTransaction) {}
-  rpc VerifyDistribute(DistributeTransaction) returns (VerifyTransactionResponse) {}
 
   // WithdrawFee 
   rpc NewWithdrawFees(WithdrawFeesTransactionRequest) returns (WithdrawFeesTransaction) {}
-  rpc VerifyWithdrawFees(WithdrawFeesTransaction) returns (VerifyTransactionResponse) {}
 
   // Slash 
   rpc NewSlash(SlashTransactionRequest) returns (SlashTransaction) {}
-  rpc VerifySlash(SlashTransaction) returns (VerifyTransactionResponse) {}
 }
 
 message GetBalanceRequest {
