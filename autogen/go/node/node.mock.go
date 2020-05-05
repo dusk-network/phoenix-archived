@@ -41,7 +41,7 @@ func (m *WalletMock) CreateFromSeed(ctx context.Context, req *CreateRequest) (*L
 func (m *WalletMock) ClearWalletDatabase(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
 	res :=
 		&GenericResponse{
-			Response: "rerum",
+			Response: "sint",
 		}
 	return res, nil
 }
@@ -70,43 +70,43 @@ func (m *WalletMock) GetTxHistory(ctx context.Context, req *EmptyRequest) (*TxHi
 			Records: []*TxRecord{
 				&TxRecord{
 					Direction: 1,
-					Timestamp: 777,
-					Type:      5,
-				},
-				&TxRecord{
-					Direction: 1,
-					Timestamp: 979,
+					Timestamp: 841,
 					Type:      3,
 				},
 				&TxRecord{
 					Direction: 1,
-					Timestamp: 65,
-					Type:      3,
-				},
-				&TxRecord{
-					Direction: 1,
-					Timestamp: 503,
-					Type:      0,
+					Timestamp: 123,
+					Type:      1,
 				},
 				&TxRecord{
 					Direction: 0,
-					Timestamp: 998,
+					Timestamp: 111,
+					Type:      3,
+				},
+				&TxRecord{
+					Direction: 1,
+					Timestamp: 615,
 					Type:      4,
 				},
 				&TxRecord{
 					Direction: 0,
-					Timestamp: 289,
+					Timestamp: 985,
+					Type:      4,
+				},
+				&TxRecord{
+					Direction: 1,
+					Timestamp: 468,
 					Type:      2,
 				},
 				&TxRecord{
 					Direction: 0,
-					Timestamp: 688,
-					Type:      2,
+					Timestamp: 834,
+					Type:      4,
 				},
 				&TxRecord{
-					Direction: 1,
-					Timestamp: 84,
-					Type:      5,
+					Direction: 0,
+					Timestamp: 935,
+					Type:      4,
 				},
 			},
 		}
@@ -125,36 +125,36 @@ func (m *MempoolMock) SelectTx(ctx context.Context, req *SelectRequest) (*Select
 		&SelectResponse{
 			Result: []*Tx{
 				&Tx{
-					Type: 1,
-					Id:   "4e5eb934-e115-4b2c-b89c-e492d7bd7e7d",
-				},
-				&Tx{
-					Type: 3,
-					Id:   "e2d5ec82-a4d2-4a05-97e0-7182c7a9d9a5",
-				},
-				&Tx{
-					Type: 1,
-					Id:   "6152cf84-2b55-4240-abba-46d7f6ef0bac",
-				},
-				&Tx{
-					Type: 1,
-					Id:   "bedd8cc6-3f8f-4c06-ae32-03cdfac6bae5",
-				},
-				&Tx{
-					Type: 3,
-					Id:   "d494da44-ac53-4571-9d52-c8461f63a432",
-				},
-				&Tx{
 					Type: 0,
-					Id:   "6d637f62-d663-4993-9431-e3dac1f65ec1",
+					Id:   "0e4c6653-d80a-44b3-829d-5183c2caa3cd",
+				},
+				&Tx{
+					Type: 3,
+					Id:   "698cbd59-c49f-4763-8d6b-dd2d8475c5a4",
 				},
 				&Tx{
 					Type: 4,
-					Id:   "829e72f5-1741-4680-86f8-e99c50c0573c",
+					Id:   "befa1500-e787-4dd5-9337-177bc0bd52e8",
 				},
 				&Tx{
 					Type: 5,
-					Id:   "215ceec9-38cc-4c06-92f5-38a44ec2064c",
+					Id:   "d7e7dbb9-3c8f-4002-805d-441c04776e8b",
+				},
+				&Tx{
+					Type: 2,
+					Id:   "887d7105-d579-47cf-af40-61a020376918",
+				},
+				&Tx{
+					Type: 5,
+					Id:   "5bdbfdb5-44a1-4e04-9c03-e86a7f386c16",
+				},
+				&Tx{
+					Type: 1,
+					Id:   "6edda45f-29d1-421c-b3ac-55ec493b82a9",
+				},
+				&Tx{
+					Type: 5,
+					Id:   "1704dabe-f799-4504-8133-163e89b2ddc9",
 				},
 			},
 		}
@@ -166,14 +166,14 @@ type ChainMock struct{}
 func (m *ChainMock) RebuildChain(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
 	res :=
 		&GenericResponse{
-			Response: "impedit",
+			Response: "atque",
 		}
 	return res, nil
 }
 func (m *ChainMock) GetSyncProgress(ctx context.Context, req *EmptyRequest) (*SyncProgressResponse, error) {
 	res :=
 		&SyncProgressResponse{
-			Progress: 96.213,
+			Progress: 693.4386,
 		}
 	return res, nil
 }
@@ -206,7 +206,7 @@ type MaintainerMock struct{}
 func (m *MaintainerMock) AutomateConsensusTxs(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
 	res :=
 		&GenericResponse{
-			Response: "esse",
+			Response: "deserunt",
 		}
 	return res, nil
 }
