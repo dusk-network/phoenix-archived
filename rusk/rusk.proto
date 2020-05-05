@@ -146,7 +146,9 @@ message GenerateScoreResponse {
   bytes bids = 4;
 }
 
-message GetConsensusInfoRequest {}
+message GetConsensusInfoRequest {
+  fixed64 block_height = 1;
+}
 
 message GetConsensusInfoResponse {
   BidList bid_list = 1;

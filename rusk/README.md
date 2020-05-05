@@ -368,6 +368,10 @@
 
 #### GetConsensusInfoRequest
 
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| block_height | [fixed64](#fixed64) |  | The block height for which to get the info |
+
 #### GetConsensusInfoResponse
 
 | Field | Type | Label | Description |
