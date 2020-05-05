@@ -11,6 +11,21 @@ import "consensus.proto";
 message EchoRequest {}
 message EchoResponse {}
 
+message BidList {
+  repeated bytes bid_list = 1;
+}
+
+message Stake {
+  fixed64 amount = 1;
+  fixed64 start_height = 2;
+  fixed64 end_height = 3;
+}
+
+message Provisioner {
+  bytes bls_key = 1;
+  repeated Stake stakes = 2;
+}
+
 // List of transactions to be validated
 message ValidateStateTransitionRequest {
   repeated ContractCallTx calls = 1;
@@ -131,6 +146,13 @@ message GenerateScoreResponse {
   bytes bids = 4;
 }
 
+message GetConsensusInfoRequest {}
+
+message GetConsensusInfoResponse {
+  BidList bid_list = 1;
+  repeated Provisioner committee = 2;
+}
+
 service Rusk {
   // Simple echo request
   rpc Echo(EchoRequest) returns (EchoResponse) {}
@@ -148,6 +170,10 @@ service Rusk {
   // Generate a proof of blind bid, and a score.
   rpc GenerateScore(GenerateScoreRequest)
       returns (GenerateScoreResponse) {}
+
+  // Retrieve consensus information (bidlist and provisioner committee)
+  rpc GetConsensusInfo(GetBalanceRequest)
+      returns (GetConsensusInfoResponse) {}
 
   // Phoenix stuff
   rpc GenerateSecretKey(GenerateSecretKeyRequest) returns (SecretKey) {}

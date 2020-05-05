@@ -31,6 +31,9 @@
     - [Rusk](#rusk.Rusk)
     - [EchoRequest](#rusk.EchoRequest)
     - [EchoResponse](#rusk.EchoResponse)
+	- [BidList](#rusk.BidList)
+	- [Stake](#rusk.Stake)
+	- [Provisioner](#rusk.Provisioner)
 	- [ContractCall](#rusk.ContractCall)
     - [ValidateStateTransitionRequest](#rusk.ValidateStateTransitionRequest)
     - [ValidateStateTransitionResponse](#rusk.ValidateStateTransitionResponse)
@@ -54,6 +57,8 @@
     - [WithdrawBidTransactionResponse](#rusk.WithdrawBidTransactionResponse)
     - [WithdrawStakeTransactionRequest](#rusk.WithdrawStakeTransactionRequest)
     - [WithdrawStakeTransactionResponse](#rusk.WithdrawStakeTransactionResponse)
+	- [GetConsensusInfoRequest](#rusk.GetConsensusInfoRequest)
+	- [GetConsensusInfoResponse](#rusk.GetConsensusInfoResponse)
 
     - [Crypto](#rusk.Crypto)
     - [HashRequest](#rusk.HashRequest)
@@ -241,6 +246,7 @@
 | ValidateStateTransition | [ValidateStateTransitionRequest](#rusk.ValidateStateTransitionRequest) | [ValidateStateTransitionResponse](#rusk.ValidateStateTransitionResponse) | Validate a set of transactions, returning the correct transactions |
 | ExecuteStateTransition | [ExecuteStateTransitionRequest](#rusk.ExecuteStateTransitionRequest) | [ExecuteStateTransitionResponse](#rusk.ExecuteStateTransitionResponse) | Execute a set of transactions, mutating the global storage |
 | GenerateScore | [GenerateScoreRequest](#rusk.GenerateSecretKeyRequest) | [GenerateScoreResponse](#rusk.GenerateScoreResponse) | Create a blind bid proof and a score |
+| GetConsensusInfo | [GetConsensusInfoRequest](#rusk.GetConsensusInfoRequest) | [GetConsensusInfoResponse](#rusk.GetConsensusInfoResponse) | Returns the current bid list and provisioner committee from the contract storage |
 | GenerateSecretKey | [GenerateSecretKeyRequest](#rusk.GenerateSecretKeyRequest) | [SecretKey](#rusk.SecretKey) |  |
 | Keys | [SecretKey](#rusk.SecretKey) | [KeysResponse](#rusk.KeysResponse) |  |
 | FullScanOwnedNotes | [ViewKey](#rusk.ViewKey) | [OwnedNotesResponse](#rusk.OwnedNotesResponse) |  |
@@ -338,6 +344,36 @@
 #### EchoRequest
 
 #### EchoResponse
+
+#### BidList
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bid_list | [bytes](#bytes) | repeated | A list of all the bid values stored in the bid contract |
+
+#### Stake
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| amount | [fixed64](#fixed64) |  | The amount staked by the provisioner |
+| start_height | [fixed64](#fixed64) |  | The block height at which this stake became active |
+| end_height | [fixed64](#fixed64) |  | The block height at which this stake becomes inactive |
+
+#### Provisioner
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bls_key | [bytes](#bytes) |  | The bls public key belonging to the provisioner |
+| stakes | [Stake](#rusk.Stake) | repeated | All the active stakes made by the provisioner |
+
+#### GetConsensusInfoRequest
+
+#### GetConsensusInfoResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bid_list | [BidList](#rusk.BidList) |  | The list of active bids |
+| committee | [Provisioner](#rusk.Provisioner) | repeated | The list of active provisioners |
 
 #### ValidateStateTransitionRequest
 
