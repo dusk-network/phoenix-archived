@@ -40,6 +40,7 @@
     - [ExecuteStateTransitionRequest](#rusk.ExecuteStateTransitionRequest)
     - [ExecuteStateTransitionResponse](#rusk.ExecuteStateTransitionResponse)
     - [GenerateSecretKeyRequest](#rusk.GenerateSecretKeyRequest)
+	- [GenerateSecretKeyResponse](#rusk.GenerateSecretKeyResponse)
     - [KeysResponse](#rusk.KeysResponse)
     - [NewTransactionRequest](#rusk.NewTransactionRequest)
     - [VerifyTransactionResponse](#rusk.VerifyTransactionResponse)
@@ -245,9 +246,9 @@
 | Echo | [EchoRequest](#rusk.EchoRequest) | [EchoResponse](#rusk.EchoResponse) | Simple echo request |
 | ValidateStateTransition | [ValidateStateTransitionRequest](#rusk.ValidateStateTransitionRequest) | [ValidateStateTransitionResponse](#rusk.ValidateStateTransitionResponse) | Validate a set of transactions, returning the correct transactions |
 | ExecuteStateTransition | [ExecuteStateTransitionRequest](#rusk.ExecuteStateTransitionRequest) | [ExecuteStateTransitionResponse](#rusk.ExecuteStateTransitionResponse) | Execute a set of transactions, mutating the global storage |
-| GenerateScore | [GenerateScoreRequest](#rusk.GenerateSecretKeyRequest) | [GenerateScoreResponse](#rusk.GenerateScoreResponse) | Create a blind bid proof and a score |
+| GenerateScore | [GenerateScoreRequest](#rusk.GenerateScoreRequest) | [GenerateScoreResponse](#rusk.GenerateScoreResponse) | Create a blind bid proof and a score |
 | GetConsensusInfo | [GetConsensusInfoRequest](#rusk.GetConsensusInfoRequest) | [GetConsensusInfoResponse](#rusk.GetConsensusInfoResponse) | Returns the current bid list and provisioner committee from the contract storage |
-| GenerateSecretKey | [GenerateSecretKeyRequest](#rusk.GenerateSecretKeyRequest) | [SecretKey](#rusk.SecretKey) |  |
+| GenerateSecretKey | [GenerateSecretKeyRequest](#rusk.GenerateSecretKeyRequest) | [GenerateSecretKeyResponse](#rusk.GenerateSecretKeyResponse) |  |
 | Keys | [SecretKey](#rusk.SecretKey) | [KeysResponse](#rusk.KeysResponse) |  |
 | FullScanOwnedNotes | [ViewKey](#rusk.ViewKey) | [OwnedNotesResponse](#rusk.OwnedNotesResponse) |  |
 | NewTransaction | [NewTransactionRequest](#rusk.NewTransactionRequest) | [Transaction](#rusk.Transaction) |  |
@@ -273,6 +274,14 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | b | [bytes](#bytes) |  |  |
+
+#### GenerateScoreResponse
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sk | [SecretKey](#rusk.SecretKey) |  |  |
+| vk | [ViewKey](#rusk.ViewKey) |  |  |
+| pk | [PublicKey](#rusk.PublicKey) |  |  |
 
 #### KeysResponse
 
