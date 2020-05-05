@@ -180,7 +180,7 @@ service Rusk {
       returns (GenerateScoreResponse) {}
 
   // Retrieve consensus information (bidlist and provisioner committee)
-  rpc GetConsensusInfo(GetBalanceRequest)
+  rpc GetConsensusInfo(GetConsensusInfoRequest)
       returns (GetConsensusInfoResponse) {}
 
   // Phoenix stuff
