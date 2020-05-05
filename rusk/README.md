@@ -464,8 +464,8 @@ The `HashRequst` can carry either arbitrary byte arrays as inputs or a [Transact
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| pos | [fixed64](#fixed64) |  |  |
-| sk | [SecretKey](#rusk.SecretKey) |  |  |
+| nullifier | [Nullifier](#rusk.Nullifier) |  |  |
+| merkle_root | [Scalar](#rusk.Scalar) |  |  |
 
 ### TransactionOutput
 

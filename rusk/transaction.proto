@@ -7,11 +7,8 @@ import "keys.proto";
 import "note.proto";
 
 message TransactionInput {
-  Note note = 1;
-  fixed64 pos = 2;
-  SecretKey sk = 3;
-  Nullifier nullifier = 4;
-  Scalar merkle_root = 5;
+  Nullifier nullifier = 1;
+  Scalar merkle_root = 2;
 }
 
 message TransactionOutput {
