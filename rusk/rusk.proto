@@ -114,6 +114,8 @@ message ExecuteStateTransitionRequest {
 message ExecuteStateTransitionResponse {
   bool success = 1;
   fixed64 current_height = 2;
+  BidList bid_list = 3;
+  repeated Provisioner committee = 4;
 }
 
 message GenerateSecretKeyRequest { bytes b = 1; }
@@ -165,15 +167,6 @@ message GenerateScoreResponse {
   bytes bids = 4;
 }
 
-message GetConsensusInfoRequest {
-  fixed64 block_height = 1;
-}
-
-message GetConsensusInfoResponse {
-  BidList bid_list = 1;
-  repeated Provisioner committee = 2;
-}
-
 service Rusk {
   // Simple echo request
   rpc Echo(EchoRequest) returns (EchoResponse) {}
@@ -191,10 +184,6 @@ service Rusk {
   // Generate a proof of blind bid, and a score.
   rpc GenerateScore(GenerateScoreRequest)
       returns (GenerateScoreResponse) {}
-
-  // Retrieve consensus information (bidlist and provisioner committee)
-  rpc GetConsensusInfo(GetConsensusInfoRequest)
-      returns (GetConsensusInfoResponse) {}
 
   // Phoenix stuff
   rpc GenerateSecretKey(GenerateSecretKeyRequest) returns (GenerateSecretKeyResponse) {}
