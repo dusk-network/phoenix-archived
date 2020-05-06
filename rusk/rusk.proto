@@ -105,6 +105,12 @@ message ExecuteStateTransitionResponse {
 
 message GenerateSecretKeyRequest { bytes b = 1; }
 
+message GenerateSecretKeyResponse {
+  SecretKey sk = 1;
+  ViewKey vk = 2;
+  PublicKey pk = 3;
+}
+
 // Used for scanning unspent input set
 message OwnedNotesResponse { repeated DecryptedNote notes = 1; }
 
@@ -173,11 +179,11 @@ service Rusk {
       returns (GenerateScoreResponse) {}
 
   // Retrieve consensus information (bidlist and provisioner committee)
-  rpc GetConsensusInfo(GetBalanceRequest)
+  rpc GetConsensusInfo(GetConsensusInfoRequest)
       returns (GetConsensusInfoResponse) {}
 
   // Phoenix stuff
-  rpc GenerateSecretKey(GenerateSecretKeyRequest) returns (SecretKey) {}
+  rpc GenerateSecretKey(GenerateSecretKeyRequest) returns (GenerateSecretKeyResponse) {}
   rpc Keys(SecretKey) returns (KeysResponse) {}
   rpc FullScanOwnedNotes(ViewKey) returns (OwnedNotesResponse) {}
   rpc NewTransaction(NewTransactionRequest) returns (Transaction) {}
