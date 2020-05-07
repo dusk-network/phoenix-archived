@@ -399,7 +399,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| successful_calls | [ContractCall](#rusk.ContractCall) | repeated | List of transactions which passed validation |
+| successful_calls | [int32](#int32) | repeated | Indices of transactions which passed validation |
 
 #### ExecuteStateTransitionRequest
 

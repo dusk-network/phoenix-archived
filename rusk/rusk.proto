@@ -91,7 +91,7 @@ message BidTransactionRequest {
 }
 
 message ValidateStateTransitionResponse {
-  repeated ContractCallTx successful_calls = 1;
+  repeated int32 successful_calls = 1;
 }
 
 message ExecuteStateTransitionRequest {
@@ -115,7 +115,6 @@ message GenerateSecretKeyResponse {
 
 // Used for scanning unspent input set
 message OwnedNotesResponse { repeated DecryptedNote notes = 1; }
-
 
 // Call from CLI directly
 message NewTransactionRequest {
