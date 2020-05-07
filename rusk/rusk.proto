@@ -84,7 +84,7 @@ message StakeTransactionRequest {
 // Used to Request the creation of a Bid
 message BidTransactionRequest {
   bytes M = 1;
-  bytes ed-pk = 2;
+  bytes ed_pk = 2;
   bytes seed = 3;
   fixed64 expiration_height = 4;
   rusk.NewTransactionRequest tx = 5;
@@ -139,7 +139,7 @@ message GenerateScoreRequest {
   bytes d = 1;
   bytes k = 2;
   bytes seed = 3;
-  bytes ed-pk = 4;
+  bytes ed_pk = 4;
 }
 
 message GenerateScoreResponse {
