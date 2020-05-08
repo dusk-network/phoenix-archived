@@ -47,38 +47,51 @@ message ContractCallTx {
 
 // Used to request the Slash of a stake
 message SlashTransactionRequest {
-  // TODO: specify eventual other fields
-  rusk.NewTransactionRequest tx = 1;
+  bytes bls_key = 1;
+  uint32 step = 2;
+  fixed64 round = 3;
+  bytes first_msg = 4;
+  bytes first_sig = 5;
+  bytes second_msg = 6;
+  bytes second_sig = 7;
+  rusk.NewTransactionRequest tx = 8;
 }
 
-// Used to request the withdrawal of fees from a Provisioner
+// Used to request the reward allocation for consensus nodes
 message DistributeTransactionRequest {
-  // TODO: specify eventual other fields
-  rusk.NewTransactionRequest tx = 1;
+  fixed64 total_reward = 1;
+  bytes provisioners_addresses = 2;
+  PublicKey bg_pk = 3;
+  rusk.NewTransactionRequest tx = 4;
 }
 
 // Used to request the withdrawal of fees from a Provisioner
 message WithdrawFeesTransactionRequest {
-  // TODO: specify eventual other fields
-  rusk.NewTransactionRequest tx = 1;
+  bytes bls_key = 1;
+  bytes sig = 2;
+  bytes msg = 3;
+  rusk.NewTransactionRequest tx = 4;
 }
 
 // Used to request the withdrawal of a Stake
 message WithdrawStakeTransactionRequest {
-  // TODO: specify eventual other fields
-  rusk.NewTransactionRequest tx = 1;
+  bytes bls_key = 1;
+  bytes sig = 2;
+  rusk.NewTransactionRequest tx = 3;
 }
 
 // Used to request the withdrawal of a Bid
 message WithdrawBidTransactionRequest {
-  // TODO: specify eventual other fields
-  rusk.NewTransactionRequest tx = 1;
+  bytes sig = 1;
+  bytes ed_pk = 2;
+  rusk.NewTransactionRequest tx = 3;
 }
 
 // Used to request the creation of a Stake
 message StakeTransactionRequest {
   bytes bls_key = 1;
-  rusk.NewTransactionRequest tx = 2;
+  fixed64 expiration_height = 2;
+  rusk.NewTransactionRequest tx = 3;
 }
 
 // Used to Request the creation of a Bid
