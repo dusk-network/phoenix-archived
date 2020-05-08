@@ -41,14 +41,14 @@ func (m *WalletMock) CreateFromSeed(ctx context.Context, req *CreateRequest) (*L
 func (m *WalletMock) ClearWalletDatabase(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
 	res :=
 		&GenericResponse{
-			Response: "ea",
+			Response: "mollitia",
 		}
 	return res, nil
 }
 func (m *WalletMock) GetWalletStatus(ctx context.Context, req *EmptyRequest) (*WalletStatusResponse, error) {
 	res :=
 		&WalletStatusResponse{
-			Loaded: false,
+			Loaded: true,
 		}
 	return res, nil
 }
@@ -70,43 +70,43 @@ func (m *WalletMock) GetTxHistory(ctx context.Context, req *EmptyRequest) (*TxHi
 			Records: []*TxRecord{
 				&TxRecord{
 					Direction: 0,
-					Timestamp: 254,
+					Timestamp: 225,
+					Type:      5,
+				},
+				&TxRecord{
+					Direction: 0,
+					Timestamp: 137,
+					Type:      5,
+				},
+				&TxRecord{
+					Direction: 0,
+					Timestamp: 204,
+					Type:      5,
+				},
+				&TxRecord{
+					Direction: 1,
+					Timestamp: 499,
+					Type:      2,
+				},
+				&TxRecord{
+					Direction: 0,
+					Timestamp: 418,
+					Type:      4,
+				},
+				&TxRecord{
+					Direction: 1,
+					Timestamp: 875,
+					Type:      3,
+				},
+				&TxRecord{
+					Direction: 0,
+					Timestamp: 638,
 					Type:      0,
 				},
 				&TxRecord{
-					Direction: 0,
-					Timestamp: 580,
-					Type:      3,
-				},
-				&TxRecord{
-					Direction: 0,
-					Timestamp: 974,
-					Type:      4,
-				},
-				&TxRecord{
 					Direction: 1,
-					Timestamp: 583,
-					Type:      1,
-				},
-				&TxRecord{
-					Direction: 1,
-					Timestamp: 853,
-					Type:      4,
-				},
-				&TxRecord{
-					Direction: 0,
-					Timestamp: 360,
-					Type:      3,
-				},
-				&TxRecord{
-					Direction: 1,
-					Timestamp: 49,
-					Type:      4,
-				},
-				&TxRecord{
-					Direction: 0,
-					Timestamp: 641,
-					Type:      4,
+					Timestamp: 533,
+					Type:      0,
 				},
 			},
 		}
@@ -125,36 +125,36 @@ func (m *MempoolMock) SelectTx(ctx context.Context, req *SelectRequest) (*Select
 		&SelectResponse{
 			Result: []*Tx{
 				&Tx{
-					Type: 5,
-					Id:   "ddfc532f-0c86-4be6-99b3-400907291273",
-				},
-				&Tx{
 					Type: 4,
-					Id:   "e608e2ed-5b1c-4340-bbdf-ae88b4c2723a",
-				},
-				&Tx{
-					Type: 1,
-					Id:   "5f272215-b737-4020-bd47-74bca23b9721",
-				},
-				&Tx{
-					Type: 2,
-					Id:   "baa0db73-7ec8-4e1e-901b-665a091d68fe",
-				},
-				&Tx{
-					Type: 5,
-					Id:   "1d87c347-064a-4e08-ba3f-7aea3833fd39",
-				},
-				&Tx{
-					Type: 4,
-					Id:   "2320776b-8b84-4046-b5a8-a4e276b2556b",
-				},
-				&Tx{
-					Type: 4,
-					Id:   "fc0398bc-1447-47eb-80d4-85211233f0ba",
+					Id:   "660c3e5d-a61c-4984-8b5f-ca773407186b",
 				},
 				&Tx{
 					Type: 0,
-					Id:   "3fdb9721-efe8-46ed-964b-d300509552af",
+					Id:   "7bed87e3-a0f7-4305-b05a-b8f532605e92",
+				},
+				&Tx{
+					Type: 2,
+					Id:   "19c664fa-311e-4852-a53b-bbcac96d462c",
+				},
+				&Tx{
+					Type: 3,
+					Id:   "f9d8449f-e662-4a6e-842a-7a6a3426c33b",
+				},
+				&Tx{
+					Type: 1,
+					Id:   "4f30c353-b1b1-4cf0-9037-6c4e870acf5e",
+				},
+				&Tx{
+					Type: 3,
+					Id:   "8004ab6c-9d98-4556-975e-e8b5c318fa2b",
+				},
+				&Tx{
+					Type: 1,
+					Id:   "bba38311-731e-497d-b3cb-776d6b8d40d6",
+				},
+				&Tx{
+					Type: 0,
+					Id:   "1b2c550b-bae3-4248-a83e-303c61437df3",
 				},
 			},
 		}
@@ -166,14 +166,14 @@ type ChainMock struct{}
 func (m *ChainMock) RebuildChain(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
 	res :=
 		&GenericResponse{
-			Response: "quod",
+			Response: "quos",
 		}
 	return res, nil
 }
 func (m *ChainMock) GetSyncProgress(ctx context.Context, req *EmptyRequest) (*SyncProgressResponse, error) {
 	res :=
 		&SyncProgressResponse{
-			Progress: 932.8473,
+			Progress: 307.6239,
 		}
 	return res, nil
 }
@@ -206,7 +206,7 @@ type MaintainerMock struct{}
 func (m *MaintainerMock) AutomateConsensusTxs(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
 	res :=
 		&GenericResponse{
-			Response: "ipsam",
+			Response: "incidunt",
 		}
 	return res, nil
 }
