@@ -148,6 +148,15 @@ message GenerateScoreResponse {
   bytes bids = 4;
 }
 
+message VerifyScoreRequest {
+  bytes proof = 1;
+  bytes score = 2;
+}
+
+message VerifyScoreResponse {
+  bool success = 1;
+}
+
 service Rusk {
   // Simple echo request
   rpc Echo(EchoRequest) returns (EchoResponse) {}
@@ -165,6 +174,10 @@ service Rusk {
   // Generate a proof of blind bid, and a score.
   rpc GenerateScore(GenerateScoreRequest)
       returns (GenerateScoreResponse) {}
+
+  // Verify a proof of blind bid, and the associated score
+  rpc VerifyScore(VerifyScoreRequest)
+      returns (VerifyScoreResponse) {}
 
   // Phoenix stuff
   rpc GenerateSecretKey(GenerateSecretKeyRequest) returns (GenerateSecretKeyResponse) {}
