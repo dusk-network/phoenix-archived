@@ -84,7 +84,8 @@ message WithdrawStakeTransactionRequest {
 message WithdrawBidTransactionRequest {
   bytes bid = 1;
   bytes sig = 2;
-  rusk.NewTransactionRequest tx = 3;
+  bytes ed_pk = 3;
+  rusk.NewTransactionRequest tx = 4;
 }
 
 // Used to request the creation of a Stake

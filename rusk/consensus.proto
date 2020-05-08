@@ -61,7 +61,8 @@ message WithdrawBidTransaction {
   bytes encrypted_blinder = 3;
   bytes bid = 4;
   bytes sig = 5;
-  rusk.Transaction tx = 6;
+  bytes ed_pk = 6;
+  rusk.Transaction tx = 7;
 }
 
 // WithdrawStakeTransaction is the transaction to withdraw a stake
