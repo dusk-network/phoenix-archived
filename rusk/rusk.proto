@@ -114,8 +114,7 @@ message ExecuteStateTransitionRequest {
 message ExecuteStateTransitionResponse {
   bool success = 1;
   fixed64 current_height = 2;
-  BidList bid_list = 3;
-  repeated Provisioner committee = 4;
+  repeated Provisioner committee = 3;
 }
 
 message GenerateSecretKeyRequest { bytes b = 1; }
@@ -152,13 +151,28 @@ message GenerateScoreRequest {
   bytes k = 2;
   bytes seed = 3;
   bytes ed_pk = 4;
+  fixed64 round = 5;
+  uint32 step = 6;
 }
 
 message GenerateScoreResponse {
   bytes proof = 1;
   bytes score = 2;
-  bytes z = 3;
-  bytes bids = 4;
+  bytes seed = 3;
+  bytes identity = 4;
+}
+
+message VerifyScoreRequest {
+  bytes proof = 1;
+  bytes score = 2;
+  bytes seed = 3;
+  bytes identity = 4;
+  fixed64 round = 5;
+  uint32 step = 6;
+}
+
+message VerifyScoreResponse {
+  bool success = 1;
 }
 
 service Rusk {
@@ -178,6 +192,10 @@ service Rusk {
   // Generate a proof of blind bid, and a score.
   rpc GenerateScore(GenerateScoreRequest)
       returns (GenerateScoreResponse) {}
+
+  // Verify a proof of blind bid, and the associated score
+  rpc VerifyScore(VerifyScoreRequest)
+      returns (VerifyScoreResponse) {}
 
   // Phoenix stuff
   rpc GenerateSecretKey(GenerateSecretKeyRequest) returns (GenerateSecretKeyResponse) {}
