@@ -60,7 +60,7 @@ message SlashTransactionRequest {
 // Used to request the reward allocation for consensus nodes
 message DistributeTransactionRequest {
   fixed64 total_reward = 1;
-  bytes provisioners_addresses = 2;
+  repeated bytes provisioners_addresses = 2;
   PublicKey bg_pk = 3;
   rusk.NewTransactionRequest tx = 4;
 }

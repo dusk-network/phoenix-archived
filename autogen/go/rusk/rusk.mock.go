@@ -26,14 +26,14 @@ func (m *RuskMock) ValidateStateTransition(ctx context.Context, req *ValidateSta
 	res :=
 		&ValidateStateTransitionResponse{
 			SuccessfulCalls: []int32{
-				426,
-				408,
-				813,
-				529,
-				535,
-				489,
-				626,
-				700,
+				752,
+				826,
+				250,
+				594,
+				541,
+				773,
+				40,
+				997,
 			},
 		}
 	return res, nil
@@ -192,14 +192,16 @@ func (m *RuskMock) FullScanOwnedNotes(ctx context.Context, req *ViewKey) (*Owned
 		&OwnedNotesResponse{
 			Notes: []*DecryptedNote{
 				&DecryptedNote{
-					NoteType:          0,
-					Nonce:             &Nonce{},
-					RG:                &CompressedPoint{},
-					PkR:               &CompressedPoint{},
-					ValueCommitment:   &Scalar{},
-					BlindingFactor:    &Scalar{},
-					RawBlindingFactor: &DecryptedNote_EncryptedBlindingFactor{},
-					RawValue:          &DecryptedNote_EncryptedValue{},
+					NoteType:        1,
+					Nonce:           &Nonce{},
+					RG:              &CompressedPoint{},
+					PkR:             &CompressedPoint{},
+					ValueCommitment: &Scalar{},
+					BlindingFactor:  &Scalar{},
+					RawBlindingFactor: &DecryptedNote_TransparentBlindingFactor{
+						TransparentBlindingFactor: &Scalar{},
+					},
+					RawValue: &DecryptedNote_EncryptedValue{},
 				},
 				&DecryptedNote{
 					NoteType:          0,
@@ -209,17 +211,19 @@ func (m *RuskMock) FullScanOwnedNotes(ctx context.Context, req *ViewKey) (*Owned
 					ValueCommitment:   &Scalar{},
 					BlindingFactor:    &Scalar{},
 					RawBlindingFactor: &DecryptedNote_EncryptedBlindingFactor{},
-					RawValue:          &DecryptedNote_EncryptedValue{},
+					RawValue:          &DecryptedNote_TransparentValue{},
 				},
 				&DecryptedNote{
-					NoteType:          1,
-					Nonce:             &Nonce{},
-					RG:                &CompressedPoint{},
-					PkR:               &CompressedPoint{},
-					ValueCommitment:   &Scalar{},
-					BlindingFactor:    &Scalar{},
-					RawValue:          &DecryptedNote_EncryptedValue{},
-					RawBlindingFactor: &DecryptedNote_EncryptedBlindingFactor{},
+					NoteType:        1,
+					Nonce:           &Nonce{},
+					RG:              &CompressedPoint{},
+					PkR:             &CompressedPoint{},
+					ValueCommitment: &Scalar{},
+					BlindingFactor:  &Scalar{},
+					RawBlindingFactor: &DecryptedNote_TransparentBlindingFactor{
+						TransparentBlindingFactor: &Scalar{},
+					},
+					RawValue: &DecryptedNote_TransparentValue{},
 				},
 				&DecryptedNote{
 					NoteType:        1,
@@ -253,20 +257,22 @@ func (m *RuskMock) FullScanOwnedNotes(ctx context.Context, req *ViewKey) (*Owned
 					ValueCommitment:   &Scalar{},
 					BlindingFactor:    &Scalar{},
 					RawBlindingFactor: &DecryptedNote_EncryptedBlindingFactor{},
-					RawValue:          &DecryptedNote_TransparentValue{},
-				},
-				&DecryptedNote{
-					NoteType:          1,
-					Nonce:             &Nonce{},
-					RG:                &CompressedPoint{},
-					PkR:               &CompressedPoint{},
-					ValueCommitment:   &Scalar{},
-					BlindingFactor:    &Scalar{},
-					RawBlindingFactor: &DecryptedNote_EncryptedBlindingFactor{},
 					RawValue:          &DecryptedNote_EncryptedValue{},
 				},
 				&DecryptedNote{
-					NoteType:          1,
+					NoteType:        0,
+					Nonce:           &Nonce{},
+					RG:              &CompressedPoint{},
+					PkR:             &CompressedPoint{},
+					ValueCommitment: &Scalar{},
+					BlindingFactor:  &Scalar{},
+					RawBlindingFactor: &DecryptedNote_TransparentBlindingFactor{
+						TransparentBlindingFactor: &Scalar{},
+					},
+					RawValue: &DecryptedNote_TransparentValue{},
+				},
+				&DecryptedNote{
+					NoteType:          0,
 					Nonce:             &Nonce{},
 					RG:                &CompressedPoint{},
 					PkR:               &CompressedPoint{},
@@ -335,7 +341,7 @@ func (m *RuskMock) NewTransaction(ctx context.Context, req *NewTransactionReques
 			Outputs: []*TransactionOutput{
 				&TransactionOutput{
 					Note: &Note{
-						NoteType:        0,
+						NoteType:        1,
 						Nonce:           &Nonce{},
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
@@ -352,6 +358,38 @@ func (m *RuskMock) NewTransaction(ctx context.Context, req *NewTransactionReques
 				&TransactionOutput{
 					Note: &Note{
 						NoteType:        1,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_EncryptedValue{},
+					},
+					Pk: &PublicKey{
+						AG: &CompressedPoint{},
+						BG: &CompressedPoint{},
+					},
+					BlindingFactor: &Scalar{},
+				},
+				&TransactionOutput{
+					Note: &Note{
+						NoteType:        1,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_EncryptedValue{},
+					},
+					Pk: &PublicKey{
+						AG: &CompressedPoint{},
+						BG: &CompressedPoint{},
+					},
+					BlindingFactor: &Scalar{},
+				},
+				&TransactionOutput{
+					Note: &Note{
+						NoteType:        0,
 						Nonce:           &Nonce{},
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
@@ -369,7 +407,23 @@ func (m *RuskMock) NewTransaction(ctx context.Context, req *NewTransactionReques
 				},
 				&TransactionOutput{
 					Note: &Note{
-						NoteType:        0,
+						NoteType:        1,
+						Nonce:           &Nonce{},
+						RG:              &CompressedPoint{},
+						PkR:             &CompressedPoint{},
+						ValueCommitment: &Scalar{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_TransparentValue{},
+					},
+					Pk: &PublicKey{
+						AG: &CompressedPoint{},
+						BG: &CompressedPoint{},
+					},
+					BlindingFactor: &Scalar{},
+				},
+				&TransactionOutput{
+					Note: &Note{
+						NoteType:        1,
 						Nonce:           &Nonce{},
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
@@ -408,62 +462,10 @@ func (m *RuskMock) NewTransaction(ctx context.Context, req *NewTransactionReques
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
 						ValueCommitment: &Scalar{},
-						BlindingFactor: &Note_TransparentBlindingFactor{
-							TransparentBlindingFactor: &Scalar{},
-						},
-						Value: &Note_EncryptedValue{},
-					},
-					Pk: &PublicKey{
-						AG: &CompressedPoint{},
-						BG: &CompressedPoint{},
-					},
-					BlindingFactor: &Scalar{},
-				},
-				&TransactionOutput{
-					Note: &Note{
-						NoteType:        1,
-						Nonce:           &Nonce{},
-						RG:              &CompressedPoint{},
-						PkR:             &CompressedPoint{},
-						ValueCommitment: &Scalar{},
-						BlindingFactor:  &Note_EncryptedBlindingFactor{},
 						Value:           &Note_EncryptedValue{},
-					},
-					Pk: &PublicKey{
-						AG: &CompressedPoint{},
-						BG: &CompressedPoint{},
-					},
-					BlindingFactor: &Scalar{},
-				},
-				&TransactionOutput{
-					Note: &Note{
-						NoteType:        0,
-						Nonce:           &Nonce{},
-						RG:              &CompressedPoint{},
-						PkR:             &CompressedPoint{},
-						ValueCommitment: &Scalar{},
-						Value:           &Note_TransparentValue{},
 						BlindingFactor: &Note_TransparentBlindingFactor{
 							TransparentBlindingFactor: &Scalar{},
 						},
-					},
-					Pk: &PublicKey{
-						AG: &CompressedPoint{},
-						BG: &CompressedPoint{},
-					},
-					BlindingFactor: &Scalar{},
-				},
-				&TransactionOutput{
-					Note: &Note{
-						NoteType:        1,
-						Nonce:           &Nonce{},
-						RG:              &CompressedPoint{},
-						PkR:             &CompressedPoint{},
-						ValueCommitment: &Scalar{},
-						BlindingFactor: &Note_TransparentBlindingFactor{
-							TransparentBlindingFactor: &Scalar{},
-						},
-						Value: &Note_EncryptedValue{},
 					},
 					Pk: &PublicKey{
 						AG: &CompressedPoint{},
@@ -479,10 +481,8 @@ func (m *RuskMock) NewTransaction(ctx context.Context, req *NewTransactionReques
 					RG:              &CompressedPoint{},
 					PkR:             &CompressedPoint{},
 					ValueCommitment: &Scalar{},
-					BlindingFactor: &Note_TransparentBlindingFactor{
-						TransparentBlindingFactor: &Scalar{},
-					},
-					Value: &Note_TransparentValue{},
+					BlindingFactor:  &Note_EncryptedBlindingFactor{},
+					Value:           &Note_TransparentValue{},
 				},
 				Pk: &PublicKey{
 					AG: &CompressedPoint{},
@@ -585,10 +585,58 @@ func (m *RuskMock) NewStake(ctx context.Context, req *StakeTransactionRequest) (
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
 							BlindingFactor: &Note_TransparentBlindingFactor{
 								TransparentBlindingFactor: &Scalar{},
 							},
-							Value: &Note_TransparentValue{},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -632,69 +680,13 @@ func (m *RuskMock) NewStake(ctx context.Context, req *StakeTransactionRequest) (
 					},
 					&TransactionOutput{
 						Note: &Note{
-							NoteType:        0,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_EncryptedValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        0,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_EncryptedValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        0,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_EncryptedValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
 							NoteType:        1,
 							Nonce:           &Nonce{},
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_EncryptedValue{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -710,8 +702,10 @@ func (m *RuskMock) NewStake(ctx context.Context, req *StakeTransactionRequest) (
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
 						ValueCommitment: &Scalar{},
-						BlindingFactor:  &Note_EncryptedBlindingFactor{},
-						Value:           &Note_TransparentValue{},
+						BlindingFactor: &Note_TransparentBlindingFactor{
+							TransparentBlindingFactor: &Scalar{},
+						},
+						Value: &Note_TransparentValue{},
 					},
 					Pk: &PublicKey{
 						AG: &CompressedPoint{},
@@ -793,7 +787,7 @@ func (m *RuskMock) NewWithdrawStake(ctx context.Context, req *WithdrawStakeTrans
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
 							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_TransparentValue{},
+							Value:           &Note_EncryptedValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -808,60 +802,8 @@ func (m *RuskMock) NewWithdrawStake(ctx context.Context, req *WithdrawStakeTrans
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
+							Value:           &Note_EncryptedValue{},
 							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_TransparentValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        1,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_TransparentValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        1,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_TransparentValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        1,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_EncryptedValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -894,6 +836,22 @@ func (m *RuskMock) NewWithdrawStake(ctx context.Context, req *WithdrawStakeTrans
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
+							Value:           &Note_EncryptedValue{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
 							BlindingFactor:  &Note_EncryptedBlindingFactor{},
 							Value:           &Note_TransparentValue{},
 						},
@@ -914,6 +872,40 @@ func (m *RuskMock) NewWithdrawStake(ctx context.Context, req *WithdrawStakeTrans
 								TransparentBlindingFactor: &Scalar{},
 							},
 							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -924,13 +916,15 @@ func (m *RuskMock) NewWithdrawStake(ctx context.Context, req *WithdrawStakeTrans
 				},
 				Fee: &TransactionOutput{
 					Note: &Note{
-						NoteType:        1,
+						NoteType:        0,
 						Nonce:           &Nonce{},
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
 						ValueCommitment: &Scalar{},
-						BlindingFactor:  &Note_EncryptedBlindingFactor{},
-						Value:           &Note_EncryptedValue{},
+						BlindingFactor: &Note_TransparentBlindingFactor{
+							TransparentBlindingFactor: &Scalar{},
+						},
+						Value: &Note_EncryptedValue{},
 					},
 					Pk: &PublicKey{
 						AG: &CompressedPoint{},
@@ -1005,7 +999,43 @@ func (m *RuskMock) NewBid(ctx context.Context, req *BidTransactionRequest) (*Bid
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
 							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
 							Value:           &Note_TransparentValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -1016,6 +1046,24 @@ func (m *RuskMock) NewBid(ctx context.Context, req *BidTransactionRequest) (*Bid
 					&TransactionOutput{
 						Note: &Note{
 							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
 							Nonce:           &Nonce{},
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
@@ -1049,7 +1097,7 @@ func (m *RuskMock) NewBid(ctx context.Context, req *BidTransactionRequest) (*Bid
 					},
 					&TransactionOutput{
 						Note: &Note{
-							NoteType:        1,
+							NoteType:        0,
 							Nonce:           &Nonce{},
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
@@ -1057,7 +1105,7 @@ func (m *RuskMock) NewBid(ctx context.Context, req *BidTransactionRequest) (*Bid
 							BlindingFactor: &Note_TransparentBlindingFactor{
 								TransparentBlindingFactor: &Scalar{},
 							},
-							Value: &Note_TransparentValue{},
+							Value: &Note_EncryptedValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -1072,60 +1120,8 @@ func (m *RuskMock) NewBid(ctx context.Context, req *BidTransactionRequest) (*Bid
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_TransparentValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        1,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_EncryptedValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        1,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor:  &Note_EncryptedBlindingFactor{},
 							Value:           &Note_TransparentValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        1,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							Value:           &Note_EncryptedValue{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -1141,10 +1137,8 @@ func (m *RuskMock) NewBid(ctx context.Context, req *BidTransactionRequest) (*Bid
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
 						ValueCommitment: &Scalar{},
-						BlindingFactor: &Note_TransparentBlindingFactor{
-							TransparentBlindingFactor: &Scalar{},
-						},
-						Value: &Note_TransparentValue{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_TransparentValue{},
 					},
 					Pk: &PublicKey{
 						AG: &CompressedPoint{},
@@ -1219,7 +1213,7 @@ func (m *RuskMock) NewWithdrawBid(ctx context.Context, req *WithdrawBidTransacti
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
 							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_EncryptedValue{},
+							Value:           &Note_TransparentValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -1234,10 +1228,28 @@ func (m *RuskMock) NewWithdrawBid(ctx context.Context, req *WithdrawBidTransacti
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
-							Value:           &Note_TransparentValue{},
 							BlindingFactor: &Note_TransparentBlindingFactor{
 								TransparentBlindingFactor: &Scalar{},
 							},
+							Value: &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -1252,10 +1264,24 @@ func (m *RuskMock) NewWithdrawBid(ctx context.Context, req *WithdrawBidTransacti
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_EncryptedValue{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -1299,43 +1325,7 @@ func (m *RuskMock) NewWithdrawBid(ctx context.Context, req *WithdrawBidTransacti
 					},
 					&TransactionOutput{
 						Note: &Note{
-							NoteType:        0,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							Value:           &Note_EncryptedValue{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        0,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_EncryptedValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        0,
+							NoteType:        1,
 							Nonce:           &Nonce{},
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
@@ -1352,13 +1342,15 @@ func (m *RuskMock) NewWithdrawBid(ctx context.Context, req *WithdrawBidTransacti
 				},
 				Fee: &TransactionOutput{
 					Note: &Note{
-						NoteType:        1,
+						NoteType:        0,
 						Nonce:           &Nonce{},
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
 						ValueCommitment: &Scalar{},
-						BlindingFactor:  &Note_EncryptedBlindingFactor{},
-						Value:           &Note_EncryptedValue{},
+						BlindingFactor: &Note_TransparentBlindingFactor{
+							TransparentBlindingFactor: &Scalar{},
+						},
+						Value: &Note_EncryptedValue{},
 					},
 					Pk: &PublicKey{
 						AG: &CompressedPoint{},
@@ -1431,13 +1423,15 @@ func (m *RuskMock) NewDistribute(ctx context.Context, req *DistributeTransaction
 				Outputs: []*TransactionOutput{
 					&TransactionOutput{
 						Note: &Note{
-							NoteType:        1,
+							NoteType:        0,
 							Nonce:           &Nonce{},
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
-							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_TransparentValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -1452,8 +1446,10 @@ func (m *RuskMock) NewDistribute(ctx context.Context, req *DistributeTransaction
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
-							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_TransparentValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -1479,6 +1475,24 @@ func (m *RuskMock) NewDistribute(ctx context.Context, req *DistributeTransaction
 					},
 					&TransactionOutput{
 						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
 							NoteType:        1,
 							Nonce:           &Nonce{},
 							RG:              &CompressedPoint{},
@@ -1495,7 +1509,7 @@ func (m *RuskMock) NewDistribute(ctx context.Context, req *DistributeTransaction
 					},
 					&TransactionOutput{
 						Note: &Note{
-							NoteType:        1,
+							NoteType:        0,
 							Nonce:           &Nonce{},
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
@@ -1519,39 +1533,23 @@ func (m *RuskMock) NewDistribute(ctx context.Context, req *DistributeTransaction
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
 							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_EncryptedValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        1,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_EncryptedValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        1,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor:  &Note_EncryptedBlindingFactor{},
 							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -1562,15 +1560,13 @@ func (m *RuskMock) NewDistribute(ctx context.Context, req *DistributeTransaction
 				},
 				Fee: &TransactionOutput{
 					Note: &Note{
-						NoteType:        1,
+						NoteType:        0,
 						Nonce:           &Nonce{},
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
 						ValueCommitment: &Scalar{},
-						BlindingFactor: &Note_TransparentBlindingFactor{
-							TransparentBlindingFactor: &Scalar{},
-						},
-						Value: &Note_EncryptedValue{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_TransparentValue{},
 					},
 					Pk: &PublicKey{
 						AG: &CompressedPoint{},
@@ -1639,6 +1635,86 @@ func (m *RuskMock) NewWithdrawFees(ctx context.Context, req *WithdrawFeesTransac
 				Outputs: []*TransactionOutput{
 					&TransactionOutput{
 						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
 							NoteType:        0,
 							Nonce:           &Nonce{},
 							RG:              &CompressedPoint{},
@@ -1661,23 +1737,7 @@ func (m *RuskMock) NewWithdrawFees(ctx context.Context, req *WithdrawFeesTransac
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
 							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_TransparentValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        0,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_TransparentValue{},
+							Value:           &Note_EncryptedValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -1696,76 +1756,6 @@ func (m *RuskMock) NewWithdrawFees(ctx context.Context, req *WithdrawFeesTransac
 								TransparentBlindingFactor: &Scalar{},
 							},
 							Value: &Note_EncryptedValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        0,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_TransparentValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        0,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_TransparentValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        1,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_EncryptedValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        1,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_TransparentValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -1776,15 +1766,13 @@ func (m *RuskMock) NewWithdrawFees(ctx context.Context, req *WithdrawFeesTransac
 				},
 				Fee: &TransactionOutput{
 					Note: &Note{
-						NoteType:        0,
+						NoteType:        1,
 						Nonce:           &Nonce{},
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
 						ValueCommitment: &Scalar{},
-						BlindingFactor: &Note_TransparentBlindingFactor{
-							TransparentBlindingFactor: &Scalar{},
-						},
-						Value: &Note_EncryptedValue{},
+						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						Value:           &Note_EncryptedValue{},
 					},
 					Pk: &PublicKey{
 						AG: &CompressedPoint{},
@@ -1799,7 +1787,7 @@ func (m *RuskMock) NewWithdrawFees(ctx context.Context, req *WithdrawFeesTransac
 func (m *RuskMock) NewSlash(ctx context.Context, req *SlashTransactionRequest) (*SlashTransaction, error) {
 	res :=
 		&SlashTransaction{
-			Step: 17,
+			Step: 586,
 			Tx: &Transaction{
 				Inputs: []*TransactionInput{
 					&TransactionInput{
@@ -1854,57 +1842,7 @@ func (m *RuskMock) NewSlash(ctx context.Context, req *SlashTransactionRequest) (
 				Outputs: []*TransactionOutput{
 					&TransactionOutput{
 						Note: &Note{
-							NoteType:        0,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_EncryptedValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
 							NoteType:        1,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_EncryptedValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        1,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_TransparentValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        0,
 							Nonce:           &Nonce{},
 							RG:              &CompressedPoint{},
 							PkR:             &CompressedPoint{},
@@ -1928,25 +1866,7 @@ func (m *RuskMock) NewSlash(ctx context.Context, req *SlashTransactionRequest) (
 							BlindingFactor: &Note_TransparentBlindingFactor{
 								TransparentBlindingFactor: &Scalar{},
 							},
-							Value: &Note_TransparentValue{},
-						},
-						Pk: &PublicKey{
-							AG: &CompressedPoint{},
-							BG: &CompressedPoint{},
-						},
-						BlindingFactor: &Scalar{},
-					},
-					&TransactionOutput{
-						Note: &Note{
-							NoteType:        1,
-							Nonce:           &Nonce{},
-							RG:              &CompressedPoint{},
-							PkR:             &CompressedPoint{},
-							ValueCommitment: &Scalar{},
-							BlindingFactor: &Note_TransparentBlindingFactor{
-								TransparentBlindingFactor: &Scalar{},
-							},
-							Value: &Note_TransparentValue{},
+							Value: &Note_EncryptedValue{},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -1980,7 +1900,75 @@ func (m *RuskMock) NewSlash(ctx context.Context, req *SlashTransactionRequest) (
 							PkR:             &CompressedPoint{},
 							ValueCommitment: &Scalar{},
 							BlindingFactor:  &Note_EncryptedBlindingFactor{},
-							Value:           &Note_EncryptedValue{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
+							Value: &Note_EncryptedValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        0,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							BlindingFactor:  &Note_EncryptedBlindingFactor{},
+							Value:           &Note_TransparentValue{},
+						},
+						Pk: &PublicKey{
+							AG: &CompressedPoint{},
+							BG: &CompressedPoint{},
+						},
+						BlindingFactor: &Scalar{},
+					},
+					&TransactionOutput{
+						Note: &Note{
+							NoteType:        1,
+							Nonce:           &Nonce{},
+							RG:              &CompressedPoint{},
+							PkR:             &CompressedPoint{},
+							ValueCommitment: &Scalar{},
+							Value:           &Note_TransparentValue{},
+							BlindingFactor: &Note_TransparentBlindingFactor{
+								TransparentBlindingFactor: &Scalar{},
+							},
 						},
 						Pk: &PublicKey{
 							AG: &CompressedPoint{},
@@ -1996,8 +1984,10 @@ func (m *RuskMock) NewSlash(ctx context.Context, req *SlashTransactionRequest) (
 						RG:              &CompressedPoint{},
 						PkR:             &CompressedPoint{},
 						ValueCommitment: &Scalar{},
-						Value:           &Note_EncryptedValue{},
-						BlindingFactor:  &Note_EncryptedBlindingFactor{},
+						BlindingFactor: &Note_TransparentBlindingFactor{
+							TransparentBlindingFactor: &Scalar{},
+						},
+						Value: &Note_EncryptedValue{},
 					},
 					Pk: &PublicKey{
 						AG: &CompressedPoint{},
