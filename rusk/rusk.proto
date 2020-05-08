@@ -138,6 +138,8 @@ message GenerateScoreRequest {
   bytes k = 2;
   bytes seed = 3;
   bytes ed_pk = 4;
+  fixed64 round = 5;
+  uint32 step = 6;
 }
 
 message GenerateScoreResponse {
