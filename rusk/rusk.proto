@@ -57,7 +57,7 @@ message SlashTransactionRequest {
   rusk.NewTransactionRequest tx = 8;
 }
 
-// Used to request the withdrawal of fees from a Provisioner
+// Used to request the reward allocation for consensus nodes
 message DistributeTransactionRequest {
   fixed64 total_reward = 1;
   bytes provisioners_addresses = 2;
