@@ -101,8 +101,7 @@ message ExecuteStateTransitionRequest {
 message ExecuteStateTransitionResponse {
   bool success = 1;
   fixed64 current_height = 2;
-  BidList bid_list = 3;
-  repeated Provisioner committee = 4;
+  repeated Provisioner committee = 3;
 }
 
 message GenerateSecretKeyRequest { bytes b = 1; }
