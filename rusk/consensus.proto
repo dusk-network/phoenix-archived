@@ -7,10 +7,9 @@ import "keys.proto";
 
 // Call during block generation
 message DistributeTransaction {
-  fixed64 total_reward = 1;
-  repeated bytes provisioners_addresses = 2;
-  PublicKey bg_pk = 3;
-  rusk.Transaction tx = 4;
+  repeated bytes provisioners_addresses = 1;
+  PublicKey bg_pk = 2;
+  rusk.Transaction tx = 3;
 }
 
 // WithdrawFeesTransaction is the transaction for a Provisioner to withdraw the fees using the smart contract
@@ -36,8 +35,7 @@ message SlashTransaction {
 // StakeTransaction is the transaction for the Stake used by the Provisioners to engage in committees
 message StakeTransaction {
   bytes bls_key = 1;
-  fixed64 value = 2; // Should be the leftover value that was burned in `tx`
-  fixed64 expiration_height = 3;
+  fixed64 expiration_height = 2;
   rusk.Transaction tx = 4;
 }
 
@@ -45,23 +43,19 @@ message StakeTransaction {
 message BidTransaction {
   bytes m = 1;
   bytes commitment = 2; 
-  bytes encrypted_value = 3;
-  bytes encrypted_blinder = 4;
-  fixed64 expiration_height = 5;
-  bytes pk = 6;
-  bytes r = 7;
-  bytes seed = 8;
-  rusk.Transaction tx = 9;
+  fixed64 expiration_height = 3;
+  bytes pk = 4;
+  bytes r = 5;
+  bytes seed = 6;
+  rusk.Transaction tx = 7;
 }
 
 // WithdrawBidTransaction is the transaction to withdraw a bid
 message WithdrawBidTransaction {
   bytes commitment = 1;
-  bytes encrypted_value = 2;
-  bytes encrypted_blinder = 3;
-  bytes sig = 4;
-  bytes ed_pk = 5;
-  rusk.Transaction tx = 6;
+  bytes sig = 2;
+  bytes ed_pk = 3;
+  rusk.Transaction tx = 4;
 }
 
 // WithdrawStakeTransaction is the transaction to withdraw a stake
