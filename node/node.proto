@@ -40,6 +40,10 @@ service Transactor {
 	rpc Stake(StakeRequest) returns (TransactionResponse) {};
 }
 
-service Maintainer {
-	rpc AutomateConsensusTxs(EmptyRequest) returns (GenericResponse) {};
+service Provisioner {
+	rpc AutomateStakes(EmptyRequest) returns (GenericResponse) {};
+}
+
+service BlockGenerator {
+	rpc AutomateBids(EmptyRequest) returns (GenericResponse) {};
 }
