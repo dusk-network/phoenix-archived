@@ -76,9 +76,10 @@
 
 ### DistributeTransaction
 
+The reward is the first output's note Transparent Value within the embedded `tx` field
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| total_reward | [fixed64](#fixed64) |  | Total block reward (coinbase + fees) |
 | provisioners_addresses | [bytes](#bytes) |  | The addresses of all provisioners involved in finalizing the block |
 | bg_pk | [PublicKey](#rusk.PublicKey) |  | Wallet public key of the block generator who made the block |
 | tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
@@ -94,10 +95,11 @@
 
 ### StakeTransaction
 
+The amount of DUSK to stake (should correspond to the amount burned in `tx`) is set in the first Output's Note as TransparentValue within the embedded `tx` field
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | bls_key | [bytes](#bytes) |  | The BLS public key of the provisioner |
-| value | [fixed64](#fixed64) |  | The amount of DUSK to stake (should correspond to the amount burned in `tx`) |
 | expiration_height | [fixed64](#fixed64) |  | The block height at which this stake should unlock |
 | tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
 
@@ -124,12 +126,12 @@
 
 ### BidTransaction
 
+The encrypted value that's being bid as well as the encrypted blinders are set in the first Output's Note as EncryptedValue and EncryptedBlindFactor
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | m | [bytes](#bytes) |  | Bid M value |
 | commitment | [bytes](#bytes) |  | Commitment to the value being bidded |
-| encrypted_value | [bytes](#bytes) |  | The encrypted value that's being bid |
-| encrypted_blinder | [bytes](#bytes) |  | The encrypted blinder |
 | expiration_height | [fixed64](#fixed64) |  | The height at which this bid will unlock |
 | pk | [bytes](#bytes) |  | Ed25519 Public key of the bidder |
 | r | [bytes](#bytes) |  | A random scalar |
@@ -138,11 +140,11 @@
 
 ### WithdrawBidTransaction
 
+The encrypted value that's being withdrawn as well as the encrypted blinder are set in the first Output's Note as EncryptedValue and EncryptedBlindFactor
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | commitment | [bytes](#bytes) |  | Commitment to the value being bidded |
-| encrypted_value | [bytes](#bytes) |  | The encrypted value that's being bid |
-| encrypted_blinder | [bytes](#bytes) |  | The encrypted blinder |
 | bid | [bytes](#bytes) |  | Bid X value |
 | sig | [bytes](#bytes) |  | Ed25519 signature of the bidder's public key, and the deposit height of the bid being withdrawn |
 | tx | [Transaction](#rusk.Transaction) |  | Transaction underlying the contract call |
