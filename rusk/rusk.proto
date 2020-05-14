@@ -57,14 +57,6 @@ message SlashTransactionRequest {
   rusk.NewTransactionRequest tx = 8;
 }
 
-// Used to request the reward allocation for consensus nodes
-message DistributeTransactionRequest {
-  fixed64 total_reward = 1;
-  repeated bytes provisioners_addresses = 2;
-  PublicKey bg_pk = 3;
-  rusk.NewTransactionRequest tx = 4;
-}
-
 // Used to request the withdrawal of fees from a Provisioner
 message WithdrawFeesTransactionRequest {
   bytes bls_key = 1;
@@ -214,9 +206,6 @@ service Rusk {
   rpc NewBid(BidTransactionRequest) returns (BidTransaction) {}
   rpc NewWithdrawBid(WithdrawBidTransactionRequest) returns (WithdrawBidTransaction) {}
   
-  // Distribute
-  rpc NewDistribute(DistributeTransactionRequest) returns (DistributeTransaction) {}
-
   // WithdrawFee 
   rpc NewWithdrawFees(WithdrawFeesTransactionRequest) returns (WithdrawFeesTransaction) {}
 
