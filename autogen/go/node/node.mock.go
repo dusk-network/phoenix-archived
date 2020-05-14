@@ -41,7 +41,7 @@ func (m *WalletMock) CreateFromSeed(ctx context.Context, req *CreateRequest) (*L
 func (m *WalletMock) ClearWalletDatabase(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
 	res :=
 		&GenericResponse{
-			Response: "sapiente",
+			Response: "quaerat",
 		}
 	return res, nil
 }
@@ -69,44 +69,44 @@ func (m *WalletMock) GetTxHistory(ctx context.Context, req *EmptyRequest) (*TxHi
 		&TxHistoryResponse{
 			Records: []*TxRecord{
 				&TxRecord{
-					Direction: 1,
-					Timestamp: 495,
-					Type:      2,
-				},
-				&TxRecord{
 					Direction: 0,
-					Timestamp: 685,
+					Timestamp: 386,
 					Type:      5,
 				},
 				&TxRecord{
 					Direction: 1,
-					Timestamp: 455,
-					Type:      4,
-				},
-				&TxRecord{
-					Direction: 1,
-					Timestamp: 281,
-					Type:      2,
-				},
-				&TxRecord{
-					Direction: 1,
-					Timestamp: 284,
-					Type:      4,
-				},
-				&TxRecord{
-					Direction: 0,
-					Timestamp: 792,
-					Type:      4,
-				},
-				&TxRecord{
-					Direction: 1,
-					Timestamp: 868,
+					Timestamp: 295,
 					Type:      3,
 				},
 				&TxRecord{
 					Direction: 0,
-					Timestamp: 338,
+					Timestamp: 679,
+					Type:      5,
+				},
+				&TxRecord{
+					Direction: 1,
+					Timestamp: 763,
+					Type:      1,
+				},
+				&TxRecord{
+					Direction: 1,
+					Timestamp: 359,
+					Type:      0,
+				},
+				&TxRecord{
+					Direction: 0,
+					Timestamp: 116,
 					Type:      4,
+				},
+				&TxRecord{
+					Direction: 1,
+					Timestamp: 830,
+					Type:      4,
+				},
+				&TxRecord{
+					Direction: 1,
+					Timestamp: 907,
+					Type:      3,
 				},
 			},
 		}
@@ -125,36 +125,36 @@ func (m *MempoolMock) SelectTx(ctx context.Context, req *SelectRequest) (*Select
 		&SelectResponse{
 			Result: []*Tx{
 				&Tx{
-					Type: 0,
-					Id:   "ccbc83fb-ec52-4fca-b3d2-22f0270c3462",
-				},
-				&Tx{
 					Type: 3,
-					Id:   "dd850141-bee0-44ba-be57-fa252b270e07",
-				},
-				&Tx{
-					Type: 2,
-					Id:   "c79818d6-3958-43b9-8538-384a8899edb5",
-				},
-				&Tx{
-					Type: 3,
-					Id:   "dcea1fd1-2300-4878-a487-f4673ba979a7",
-				},
-				&Tx{
-					Type: 3,
-					Id:   "75d6218b-3ac4-418c-8acd-8c8307bf2b26",
-				},
-				&Tx{
-					Type: 5,
-					Id:   "05fab048-7cc5-467e-93b5-43e64824316e",
-				},
-				&Tx{
-					Type: 5,
-					Id:   "a7de5afd-72aa-4bd6-bdb5-ceb973ea9567",
+					Id:   "92c7796e-c279-43b2-ab2f-0cc57ec535df",
 				},
 				&Tx{
 					Type: 4,
-					Id:   "6c7c8675-2757-47ce-aa66-71fd84a388eb",
+					Id:   "3931f9cf-93c7-4dfc-ad2a-557eea227158",
+				},
+				&Tx{
+					Type: 1,
+					Id:   "cf9241e7-9c9a-482e-ac99-062b601fe3e2",
+				},
+				&Tx{
+					Type: 4,
+					Id:   "b2fb4f74-b6fc-422c-957b-858c76421a9f",
+				},
+				&Tx{
+					Type: 3,
+					Id:   "b4ec58e0-6b41-4c04-85fe-1207ea143f7f",
+				},
+				&Tx{
+					Type: 5,
+					Id:   "d8831c69-dc66-481d-94d3-c36353eaf1d9",
+				},
+				&Tx{
+					Type: 4,
+					Id:   "92b28c68-7bd9-4be8-a172-1e010a653494",
+				},
+				&Tx{
+					Type: 3,
+					Id:   "6f28eb9f-cef4-44cd-a284-16c1869ddd0b",
 				},
 			},
 		}
@@ -166,14 +166,14 @@ type ChainMock struct{}
 func (m *ChainMock) RebuildChain(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
 	res :=
 		&GenericResponse{
-			Response: "veniam",
+			Response: "in",
 		}
 	return res, nil
 }
 func (m *ChainMock) GetSyncProgress(ctx context.Context, req *EmptyRequest) (*SyncProgressResponse, error) {
 	res :=
 		&SyncProgressResponse{
-			Progress: 774.4683,
+			Progress: 505.1112,
 		}
 	return res, nil
 }
@@ -206,7 +206,7 @@ type ProvisionerMock struct{}
 func (m *ProvisionerMock) AutomateStakes(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
 	res :=
 		&GenericResponse{
-			Response: "voluptas",
+			Response: "rerum",
 		}
 	return res, nil
 }
@@ -216,7 +216,7 @@ type BlockGeneratorMock struct{}
 func (m *BlockGeneratorMock) AutomateBids(ctx context.Context, req *EmptyRequest) (*GenericResponse, error) {
 	res :=
 		&GenericResponse{
-			Response: "quisquam",
+			Response: "et",
 		}
 	return res, nil
 }

@@ -3,13 +3,13 @@
 ## Table of Contents
 
 - [consensus.proto](#consensus.proto)
-	- [DistributeRequest](#rusk.DistributeRequest)
-	- [WithdrawRequest](#rusk.WithdrawRequest)
-	- [StakeRequest](#rusk.StakeRequest)
-	- [WithdrawStakeRequest](#rusk.WithdrawStakeRequest)
-	- [SlashRequest](#rusk.SlashRequest)
-	- [BidRequest](#rusk.BidRequest)
-	- [WithdrawBidRequest](#rusk.WithdrawBidRequest)
+	- [DistributeTransaction](#rusk.DistributeTransaction)
+	- [WithdrawTransaction](#rusk.WithdrawTransaction)
+	- [StakeTransaction](#rusk.StakeTransaction)
+	- [WithdrawStakeTransaction](#rusk.WithdrawStakeTransaction)
+	- [SlashTransaction](#rusk.SlashTransaction)
+	- [BidTransaction](#rusk.BidTransaction)
+	- [WithdrawBidTransaction](#rusk.WithdrawBidTransaction)
 
 - [field.proto](#field.proto)
     - [CompressedPoint](#rusk.CompressedPoint)
@@ -45,21 +45,11 @@
     - [NewTransactionRequest](#rusk.NewTransactionRequest)
     - [VerifyTransactionResponse](#rusk.VerifyTransactionResponse)
     - [SlashTransactionRequest](#rusk.SlashTransactionRequest)
-    - [SlashTransactionResponse](#rusk.SlashTransactionResponse)
     - [WithdrawFeesTransactionRequest](#rusk.WithdrawFeesRequest)
-    - [WithdrawFeesTransactionResponse](#rusk.WithdrawFeesResponse)
-    - [DistributeTransactionRequest](#rusk.DistributeTransactionRequest)
-    - [DistributeTransactionResponse](#rusk.DistributeTransactionResponse)
     - [BidTransactionRequest](#rusk.BidTransactionRequest)
-    - [BidTransactionResponse](#rusk.BidTransactionResponse)
     - [StakeTransactionRequest](#rusk.StakeTransactionRequest)
-    - [StakeTransactionResponse](#rusk.StakeTransactionResponse)
     - [WithdrawBidTransactionRequest](#rusk.WithdrawBidTransactionRequest)
-    - [WithdrawBidTransactionResponse](#rusk.WithdrawBidTransactionResponse)
     - [WithdrawStakeTransactionRequest](#rusk.WithdrawStakeTransactionRequest)
-    - [WithdrawStakeTransactionResponse](#rusk.WithdrawStakeTransactionResponse)
-	- [GetConsensusInfoRequest](#rusk.GetConsensusInfoRequest)
-	- [GetConsensusInfoResponse](#rusk.GetConsensusInfoResponse)
 
     - [Crypto](#rusk.Crypto)
     - [HashRequest](#rusk.HashRequest)
@@ -303,12 +293,6 @@ The encrypted value that's being withdrawn as well as the encrypted blinder are 
 | obfuscated | [bool](#bool) |  |  |
 
 #### SlashTransactionRequest
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| tx | [NewTransactionRequest](#rusk.NewTransactionRequest) |  |  |
-
-#### DistributeTransactionRequest
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |

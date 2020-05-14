@@ -9,7 +9,7 @@ import "keys.proto";
 message DistributeTransaction {
   repeated bytes provisioners_addresses = 1;
   PublicKey bg_pk = 2;
-  fixed64 total_reward = 3;
+  rusk.Transaction tx = 3;
 }
 
 // WithdrawFeesTransaction is the transaction for a Provisioner to withdraw the fees using the smart contract

@@ -23,4 +23,5 @@ message Transaction {
   repeated TransactionOutput outputs = 2;
   TransactionOutput fee = 3;
   bytes proof = 4;
+  bytes data = 5;
 }
