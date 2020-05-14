@@ -127,6 +127,7 @@ message NewTransactionRequest {
   fixed64 value = 3;
   fixed64 fee = 4;
   bool obfuscated = 5;
+  bytes data = 6;
 }
 
 message VerifyTransactionResponse {
