@@ -197,6 +197,7 @@ service Rusk {
   rpc NewTransaction(NewTransactionRequest) returns (Transaction) {}
   rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse) {}
   rpc VerifyTransaction(ContractCallTx) returns (VerifyTransactionResponse) {}
+  rpc CalculateMempoolBalance(CalculateMempoolBalanceRequest) returns (GetBalanceResponse) {}
 
   // Stake
   rpc NewStake(StakeTransactionRequest) returns (StakeTransaction) {}
@@ -220,6 +221,11 @@ message GetBalanceRequest {
 
 message GetBalanceResponse {
   fixed64 balance = 1;
+}
+
+message CalculateMempoolBalanceRequest {
+  ViewKey vk = 1;
+  repeated ContractCallTx txs = 2;
 }
 
 message BinaryHashRequest {
