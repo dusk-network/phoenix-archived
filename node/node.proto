@@ -24,7 +24,7 @@ service Wallet {
 }
 
 service Mempool {
-	rpc GetUnconfirmedBalance(EmptyRequest) returns (BalanceResponse) {};
+	rpc GetUnconfirmedBalance(GetUnconfirmedBalanceRequest) returns (BalanceResponse) {};
 	rpc SelectTx(SelectRequest) returns (SelectResponse) {};
 }
 

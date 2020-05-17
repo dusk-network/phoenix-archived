@@ -42,3 +42,7 @@ message SelectResponse {
     //string msg = 1;
     repeated Tx result = 1;
 }
+
+message GetUnconfirmedBalanceRequest {
+	bytes vk = 1;
+}
