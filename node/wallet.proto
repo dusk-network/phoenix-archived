@@ -17,9 +17,17 @@ message LoadRequest {
 	string password = 1;
 }
 
+message LoginRequest {
+    bytes ed_pk = 1;
+    bytes ed_sig = 2;
+}
+
+message Session {
+    bytes access_token = 1;
+}
+
 message LoadResponse {
     PubKey key = 1;
-    bytes sessionkey = 2;
 }
 
 message ConsensusTxRequest {

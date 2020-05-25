@@ -12,6 +12,7 @@ message GenericResponse {
 }
 
 service Wallet {
+    rpc Login(LoginRequest) returns (Session) {};
 	rpc CreateWallet(CreateRequest) returns (LoadResponse) {};
 	rpc LoadWallet(LoadRequest) returns (LoadResponse) {};
 	rpc CreateFromSeed(CreateRequest) returns (LoadResponse) {};
