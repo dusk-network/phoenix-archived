@@ -19,6 +19,7 @@ message LoadRequest {
 
 message LoadResponse {
     PubKey key = 1;
+    bytes sessionkey = 2;
 }
 
 message ConsensusTxRequest {
