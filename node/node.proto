@@ -12,7 +12,7 @@ message GenericResponse {
 }
 
 service Auth {
-    rpc Login(LoginRequest) returns (Session) {};
+    rpc CreateSession(SessionRequest) returns (Session) {};
 }
 
 service Wallet {
