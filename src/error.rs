@@ -2,8 +2,6 @@ use std::error;
 use std::fmt;
 use std::io;
 
-use algebra::serialize::SerializationError as JubJubSerializationError;
-
 macro_rules! from_error {
     ($t:ty, $id:ident) => {
         impl From<$t> for Error {
@@ -23,8 +21,6 @@ pub enum Error {
     Fmt(fmt::Error),
     /// Field operation error
     Field(String),
-    /// Error during JubJub point serialization
-    JubJubSerialization(JubJubSerializationError),
     /// Cryptographic bottom
     Generic,
     /// Resource not ready
@@ -57,7 +53,6 @@ impl fmt::Display for Error {
         match self {
             Error::Io(e) => write!(f, "{}", e),
             Error::Fmt(e) => write!(f, "{}", e),
-            Error::JubJubSerialization(e) => write!(f, "{}", e),
             //Error::R1CS(e) => write!(f, "{}", e),
             Error::Field(s) => write!(f, "{}", s),
             _ => write!(f, "{:?}", self),
@@ -100,4 +95,3 @@ impl From<Error> for tonic::Status {
 
 from_error!(io::Error, Io);
 from_error!(fmt::Error, Fmt);
-from_error!(JubJubSerializationError, JubJubSerialization);

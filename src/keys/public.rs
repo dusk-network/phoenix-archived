@@ -1,4 +1,4 @@
-use crate::{rpc, utils, Error, JubJubProjective, SecretKey};
+use crate::{rpc, utils, Error, JubJubExtended, SecretKey};
 
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
@@ -8,8 +8,8 @@ use unprolix::{Constructor, Getters, Setters};
 /// Public pair of a·G and b·G
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]
 pub struct PublicKey {
-    A: JubJubProjective,
-    B: JubJubProjective,
+    A: JubJubExtended,
+    B: JubJubExtended,
 }
 
 impl Default for PublicKey {

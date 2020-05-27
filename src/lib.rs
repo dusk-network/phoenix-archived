@@ -1,9 +1,9 @@
 #![allow(non_snake_case)]
 #![feature(maybe_uninit_extra)]
 
-pub use algebra::curves::jubjub::{JubJubAffine, JubJubProjective};
-pub use algebra::fields::bls12_381::fr::Fr as BlsScalar;
-pub use algebra::fields::jubjub::fr::Fr as JubJubScalar;
+pub use dusk_bls12_381::Scalar as BlsScalar;
+pub use jubjub::Fr as JubJubScalar;
+pub use jubjub::{AffinePoint as JubJubAffine, ExtendedPoint as JubJubExtended};
 
 pub use crypto::MerkleProofProvider;
 pub use db::{NotesDb, NotesIter};

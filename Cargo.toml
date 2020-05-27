@@ -36,22 +36,10 @@ bytehash = "0.3"
 lazy_static = "1.4"
 num-traits = "0.2"
 unprolix = "0.1"
-hades252 = { git = "https://github.com/dusk-network/Hades252.git" }
-
-[dependencies.algebra]
-git = "https://github.com/scipr-lab/zexe/"
-features = ["parallel"]
-
-[dependencies.poly-commit]
-git = "https://github.com/scipr-lab/poly-commit"
-branch = "master"
-
-[dependencies.ff-fft]
-git = "https://github.com/scipr-lab/zexe/"
-
-[dependencies.plonk]
-git = "https://github.com/dusk-network/plonk.git"
-branch = "fast_prover_zexe"
+hades252 = { git = "https://github.com/dusk-network/Hades252.git", tag ="v0.5.0"}
+dusk-bls12_381 = "0.1.0"
+dusk-plonk = "0.1.0"
+jubjub = {git = "https://github.com/dusk-network/jubjub.git"}
 
 [dependencies.plonk_gadgets]
 git = "https://github.com/dusk-network/plonk_gadgets.git"
