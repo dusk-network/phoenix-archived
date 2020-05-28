@@ -13,6 +13,7 @@ message GenericResponse {
 
 service Auth {
     rpc CreateSession(SessionRequest) returns (Session) {};
+	rpc DropSession(EmptyRequest) returns (GenericResponse) {};
 }
 
 service Wallet {
@@ -20,7 +21,6 @@ service Wallet {
 	rpc LoadWallet(LoadRequest) returns (LoadResponse) {};
 	rpc CreateFromSeed(CreateRequest) returns (LoadResponse) {};
 	rpc ClearWalletDatabase(EmptyRequest) returns (GenericResponse) {};
-	rpc DropSession(EmptyRequest) returns (GenericResponse) {};
 
 	rpc GetWalletStatus(EmptyRequest) returns (WalletStatusResponse) {};
 	rpc GetAddress(EmptyRequest) returns (LoadResponse) {};
