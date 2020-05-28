@@ -100,13 +100,13 @@ message ValidateStateTransitionResponse {
 }
 
 message ExecuteStateTransitionRequest {
-  repeated ContractCallTx calls = 1;
+  fixed64 height = 1;
+  repeated ContractCallTx calls = 2;
 }
 
 message ExecuteStateTransitionResponse {
   bool success = 1;
-  fixed64 current_height = 2;
-  repeated Provisioner committee = 3;
+  repeated Provisioner committee = 2;
 }
 
 message GenerateSecretKeyRequest { bytes b = 1; }
