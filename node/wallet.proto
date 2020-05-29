@@ -17,6 +17,15 @@ message LoadRequest {
 	string password = 1;
 }
 
+message SessionRequest {
+    bytes ed_pk = 1;
+    bytes ed_sig = 2;
+}
+
+message Session {
+    string access_token = 1;
+}
+
 message LoadResponse {
     PubKey key = 1;
 }

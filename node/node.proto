@@ -11,6 +11,11 @@ message GenericResponse {
 	string response = 1;
 }
 
+service Auth {
+    rpc CreateSession(SessionRequest) returns (Session) {};
+	rpc DropSession(EmptyRequest) returns (GenericResponse) {};
+}
+
 service Wallet {
 	rpc CreateWallet(CreateRequest) returns (LoadResponse) {};
 	rpc LoadWallet(LoadRequest) returns (LoadResponse) {};
