@@ -1,6 +1,6 @@
 use crate::{
-    crypto, rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, Note,
-    NoteGenerator, NoteType, PublicKey, ViewKey, NONCEBYTES,
+    crypto, rpc, utils, BlsScalar, Error, JubJubExtended, JubJubScalar, Nonce, Note, NoteGenerator,
+    NoteType, PublicKey, ViewKey, NONCEBYTES,
 };
 
 use std::convert::{TryFrom, TryInto};
@@ -20,8 +20,8 @@ pub const ENCRYPTED_BLINDING_FACTOR_SIZE: usize = 48;
 pub struct ObfuscatedNote {
     value_commitment: BlsScalar,
     nonce: Nonce,
-    R: JubJubProjective,
-    pk_r: JubJubProjective,
+    R: JubJubExtended,
+    pk_r: JubJubExtended,
     idx: u64,
     pub encrypted_value: [u8; ENCRYPTED_VALUE_SIZE],
     pub encrypted_blinding_factor: [u8; ENCRYPTED_BLINDING_FACTOR_SIZE],
@@ -255,11 +255,11 @@ impl Note for ObfuscatedNote {
         &self.nonce
     }
 
-    fn R(&self) -> &JubJubProjective {
+    fn R(&self) -> &JubJubExtended {
         &self.R
     }
 
-    fn pk_r(&self) -> &JubJubProjective {
+    fn pk_r(&self) -> &JubJubExtended {
         &self.pk_r
     }
 

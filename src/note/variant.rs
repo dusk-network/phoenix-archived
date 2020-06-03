@@ -1,5 +1,5 @@
 use crate::{
-    crypto, rpc, BlsScalar, Error, JubJubProjective, Nonce, Note, NoteGenerator, NoteType,
+    crypto, rpc, BlsScalar, Error, JubJubExtended, Nonce, Note, NoteGenerator, NoteType,
     ObfuscatedNote, SecretKey, TransactionInput, TransparentNote, ViewKey,
 };
 
@@ -179,14 +179,14 @@ impl Note for NoteVariant {
         }
     }
 
-    fn R(&self) -> &JubJubProjective {
+    fn R(&self) -> &JubJubExtended {
         match self {
             NoteVariant::Transparent(note) => note.R(),
             NoteVariant::Obfuscated(note) => note.R(),
         }
     }
 
-    fn pk_r(&self) -> &JubJubProjective {
+    fn pk_r(&self) -> &JubJubExtended {
         match self {
             NoteVariant::Transparent(note) => note.pk_r(),
             NoteVariant::Obfuscated(note) => note.pk_r(),

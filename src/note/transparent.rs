@@ -1,6 +1,6 @@
 use crate::{
-    crypto, rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, Note,
-    NoteGenerator, NoteType, PublicKey, ViewKey, NONCEBYTES,
+    crypto, rpc, utils, BlsScalar, Error, JubJubExtended, JubJubScalar, Nonce, Note, NoteGenerator,
+    NoteType, PublicKey, ViewKey, NONCEBYTES,
 };
 
 use std::convert::{TryFrom, TryInto};
@@ -14,8 +14,8 @@ use unprolix::Constructor;
 pub struct TransparentNote {
     value_commitment: BlsScalar,
     nonce: Nonce,
-    R: JubJubProjective,
-    pk_r: JubJubProjective,
+    R: JubJubExtended,
+    pk_r: JubJubExtended,
     idx: u64,
     pub value: u64,
     pub blinding_factor: BlsScalar,
@@ -235,11 +235,11 @@ impl Note for TransparentNote {
         &self.nonce
     }
 
-    fn R(&self) -> &JubJubProjective {
+    fn R(&self) -> &JubJubExtended {
         &self.R
     }
 
-    fn pk_r(&self) -> &JubJubProjective {
+    fn pk_r(&self) -> &JubJubExtended {
         &self.pk_r
     }
 

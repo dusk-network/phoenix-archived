@@ -1,4 +1,4 @@
-use crate::{rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, Nullifier};
+use crate::{rpc, utils, BlsScalar, Error, JubJubExtended, JubJubScalar, Nonce, Nullifier};
 
 use std::convert::TryFrom;
 
@@ -50,8 +50,8 @@ impl TryFrom<rpc::Scalar> for BlsScalar {
     }
 }
 
-impl From<JubJubProjective> for rpc::CompressedPoint {
-    fn from(p: JubJubProjective) -> Self {
+impl From<JubJubExtended> for rpc::CompressedPoint {
+    fn from(p: JubJubExtended) -> Self {
         let mut x = [0x00u8; utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE];
 
         utils::serialize_compressed_jubjub(&p, &mut x).expect("In-memory write");
@@ -60,10 +60,10 @@ impl From<JubJubProjective> for rpc::CompressedPoint {
     }
 }
 
-impl TryFrom<rpc::CompressedPoint> for JubJubProjective {
+impl TryFrom<rpc::CompressedPoint> for JubJubExtended {
     type Error = Error;
 
-    fn try_from(p: rpc::CompressedPoint) -> Result<JubJubProjective, Error> {
+    fn try_from(p: rpc::CompressedPoint) -> Result<JubJubExtended, Error> {
         utils::deserialize_compressed_jubjub(p.y.as_slice())
     }
 }

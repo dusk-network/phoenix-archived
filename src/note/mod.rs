@@ -1,5 +1,5 @@
 use crate::{
-    crypto, db, rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, NoteType,
+    crypto, db, rpc, utils, BlsScalar, Error, JubJubExtended, JubJubScalar, Nonce, NoteType,
     PublicKey, SecretKey, TransactionInput, TransactionOutput, ViewKey,
 };
 
@@ -8,8 +8,6 @@ use std::fmt::Debug;
 use std::io;
 use std::ops::Mul;
 use std::path::Path;
-
-use algebra::curves::{AffineCurve, ProjectiveCurve};
 
 /// Nullifier definition
 pub mod nullifier;
@@ -103,7 +101,7 @@ pub trait NoteGenerator:
     }
 
     /// Generate a random `r` and call [`Self::new_pk_r`]
-    fn generate_pk_r(pk: &PublicKey) -> (JubJubScalar, JubJubProjective, JubJubProjective) {
+    fn generate_pk_r(pk: &PublicKey) -> (JubJubScalar, JubJubExtended, JubJubExtended) {
         let r = utils::gen_random_scalar();
 
         let (R, pk_r) = Self::new_pk_r(&r, pk);
@@ -112,7 +110,7 @@ pub trait NoteGenerator:
     }
 
     /// Generate a new `PKr = H(a · R) · G + B` from a given `r`
-    fn new_pk_r(r: &JubJubScalar, pk: &PublicKey) -> (JubJubProjective, JubJubProjective) {
+    fn new_pk_r(r: &JubJubScalar, pk: &PublicKey) -> (JubJubExtended, JubJubExtended) {
         let R = utils::mul_by_basepoint_jubjub(r);
 
         let rA = pk.A().mul(r);
@@ -244,9 +242,9 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
     /// Return the raw encrypted value blinding factor
     fn encrypted_blinding_factor(&self) -> &[u8; 48];
     /// Return the `r · G` used for the DHKE randomness
-    fn R(&self) -> &JubJubProjective;
+    fn R(&self) -> &JubJubExtended;
     /// Return the public DHKE combined with the secret key of the owner of the note
-    fn pk_r(&self) -> &JubJubProjective;
+    fn pk_r(&self) -> &JubJubExtended;
 
     /// Generate a `sk_r = H(a · R) + b`
     fn sk_r(&self, sk: &SecretKey) -> JubJubScalar {

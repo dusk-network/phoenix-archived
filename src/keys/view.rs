@@ -1,4 +1,4 @@
-use crate::{rpc, utils, Error, JubJubProjective, JubJubScalar, PublicKey, SecretKey};
+use crate::{rpc, utils, Error, JubJubExtended, JubJubScalar, PublicKey, SecretKey};
 
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
@@ -12,7 +12,7 @@ use unprolix::{Constructor, Getters, Setters};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]
 pub struct ViewKey {
     a: JubJubScalar,
-    B: JubJubProjective,
+    B: JubJubExtended,
 }
 
 impl Default for ViewKey {

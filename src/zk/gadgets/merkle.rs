@@ -24,11 +24,8 @@ where
 
                 pi.next().map(|p| *p = BlsScalar::zero());
                 composer.add(
-                    acc,
-                    *b,
-                    BlsScalar::one(),
-                    -BlsScalar::one(),
-                    BlsScalar::one(),
+                    (BlsScalar::one(), acc),
+                    (-BlsScalar::one(), *b),
                     BlsScalar::zero(),
                     BlsScalar::zero(),
                 )
@@ -57,20 +54,18 @@ where
                 .for_each(|(b, p)| {
                     pi.next().map(|p| *p = BlsScalar::zero());
                     let x_prime = composer.mul(
+                        -BlsScalar::one(),
                         *b,
                         c,
-                        -BlsScalar::one(),
-                        BlsScalar::one(),
                         BlsScalar::zero(),
                         BlsScalar::zero(),
                     );
 
                     pi.next().map(|p| *p = BlsScalar::zero());
                     let x = composer.mul(
+                        -BlsScalar::one(),
                         *b,
                         *p,
-                        -BlsScalar::one(),
-                        BlsScalar::one(),
                         BlsScalar::zero(),
                         BlsScalar::zero(),
                     );
@@ -105,10 +100,7 @@ where
             );
 
             perm.copy_from_slice(l.perm());
-            let (p_composer, p_pi, x) = GadgetStrategy::poseidon_gadget(composer, pi, &mut perm);
-
-            composer = p_composer;
-            pi = p_pi;
+            let x = GadgetStrategy::poseidon_gadget(&mut composer, &mut perm);
 
             prev_hash = x;
         }

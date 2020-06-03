@@ -3,20 +3,19 @@ use crate::{
     MAX_OUTPUT_NOTES_PER_TRANSACTION,
 };
 
+use std::convert::TryInto;
 use std::mem::{self, MaybeUninit};
 
-use algebra::bytes::{FromBytes, ToBytes};
-use algebra::curves::bls12_381::Bls12_381;
-use algebra::curves::bls12_381::G1Affine;
+use dusk_plonk::commitment_scheme::kzg10::{Commitment, ProverKey, VerifierKey};
+pub use dusk_plonk::constraint_system::composer::StandardComposer as Composer;
+use dusk_plonk::linearisation_poly::ProofEvaluations;
+use dusk_plonk::srs;
 use ff_fft::EvaluationDomain;
 use merlin::Transcript;
 use num_traits::Zero;
-use plonk::cs::composer::StandardComposer;
-use plonk::cs::{proof::Proof as PlonkProof, Composer as _, PreProcessedCircuit};
-use plonk::srs;
-use poly_commit::kzg10::{Commitment, Powers, VerifierKey};
 
-pub use plonk::cs::constraint_system::Variable;
+pub use dusk_plonk::constraint_system::Variable;
+pub use dusk_plonk::proof_system::{PreProcessedCircuit, Proof};
 
 /// [`ZkMerkleProof`] definition
 pub mod merkle;
@@ -54,18 +53,14 @@ pub const PI_LEN: usize = {
 
 lazy_static::lazy_static! {
     static ref DOMAIN: EvaluationDomain<BlsScalar> = unsafe { mem::zeroed() };
-    static ref CK: Powers<'static, Bls12_381> = unsafe { mem::zeroed() };
-    static ref VK: VerifierKey<Bls12_381> = unsafe { mem::zeroed() };
+    static ref CK: ProverKey = unsafe { mem::zeroed() };
+    static ref VK: VerifierKey = unsafe { mem::zeroed() };
     static ref TRANSCRIPT: Transcript = unsafe { mem::zeroed() };
-    static ref PREPROCESSED_CIRCUIT: MaybeUninit<Circuit> =
+    static ref PREPROCESSED_CIRCUIT: MaybeUninit<PreProcessedCircuit> =
         MaybeUninit::uninit();
     static ref PUBLIC_INPUTS: MaybeUninit<Vec<BlsScalar>> =
         MaybeUninit::uninit();
 }
-
-pub type Circuit = PreProcessedCircuit<Bls12_381>;
-pub type Composer = StandardComposer<Bls12_381>;
-pub type Proof = PlonkProof<Bls12_381>;
 
 pub const SERIALIZED_PROOF_SIZE: usize = 1097;
 
@@ -91,16 +86,22 @@ pub fn proof_to_bytes(proof: &Proof) -> Result<[u8; SERIALIZED_PROOF_SIZE], Erro
         .c_comm
         .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
     proof
+        .d_comm
+        .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
+    proof
         .z_comm
         .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
     proof
-        .t_lo_comm
+        .t_1_comm
         .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
     proof
-        .t_mid_comm
+        .t_2_comm
         .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
     proof
-        .t_hi_comm
+        .t_3_comm
+        .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
+    proof
+        .t_4_comm
         .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
     proof
         .w_z_comm
@@ -149,16 +150,22 @@ pub fn bytes_to_proof(bytes: &[u8]) -> Result<Proof, Error> {
     let c_comm = Commitment(G1Affine::read(
         bytes_commitments.next().ok_or(Error::InvalidParameters)?,
     )?);
+    let d_comm = Commitment(G1Affine::read(
+        bytes_commitments.next().ok_or(Error::InvalidParameters)?,
+    )?);
     let z_comm = Commitment(G1Affine::read(
         bytes_commitments.next().ok_or(Error::InvalidParameters)?,
     )?);
-    let t_lo_comm = Commitment(G1Affine::read(
+    let t_1_comm = Commitment(G1Affine::read(
         bytes_commitments.next().ok_or(Error::InvalidParameters)?,
     )?);
-    let t_mid_comm = Commitment(G1Affine::read(
+    let t_2_comm = Commitment(G1Affine::read(
         bytes_commitments.next().ok_or(Error::InvalidParameters)?,
     )?);
-    let t_hi_comm = Commitment(G1Affine::read(
+    let t_3_comm = Commitment(G1Affine::read(
+        bytes_commitments.next().ok_or(Error::InvalidParameters)?,
+    )?);
+    let t_4_comm = Commitment(G1Affine::read(
         bytes_commitments.next().ok_or(Error::InvalidParameters)?,
     )?);
     let w_z_comm = Commitment(G1Affine::read(
@@ -170,31 +177,77 @@ pub fn bytes_to_proof(bytes: &[u8]) -> Result<Proof, Error> {
 
     let mut bytes_scalars = (&bytes[9 * 97..]).chunks(32);
 
-    let a_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    let b_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    let c_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    let left_sigma_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    let right_sigma_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    let lin_poly_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    let z_hat_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
+    let a_eval = BlsScalar::from_bytes(
+        bytes_scalars
+            .next()
+            .ok_or(Error::InvalidParameters)?
+            .try_into()
+            .or(Err(Error::InvalidParameters))?,
+    );
+    let b_eval = BlsScalar::from_bytes(
+        bytes_scalars
+            .next()
+            .ok_or(Error::InvalidParameters)?
+            .try_into()
+            .or(Err(Error::InvalidParameters))?,
+    )?;
+    let c_eval = BlsScalar::from_bytes(
+        bytes_scalars
+            .next()
+            .ok_or(Error::InvalidParameters)?
+            .try_into()
+            .or(Err(Error::InvalidParameters))?,
+    )?;
+    let left_sigma_eval = BlsScalar::from_bytes(
+        bytes_scalars
+            .next()
+            .ok_or(Error::InvalidParameters)?
+            .try_into()
+            .or(Err(Error::InvalidParameters))?,
+    )?;
+    let right_sigma_eval = BlsScalar::from_bytes(
+        bytes_scalars
+            .next()
+            .ok_or(Error::InvalidParameters)?
+            .try_into()
+            .or(Err(Error::InvalidParameters))?,
+    )?;
+    let lin_poly_eval = BlsScalar::from_bytes(
+        bytes_scalars
+            .next()
+            .ok_or(Error::InvalidParameters)?
+            .try_into()
+            .or(Err(Error::InvalidParameters))?,
+    )?;
+    let z_hat_eval = BlsScalar::from_bytes(
+        bytes_scalars
+            .next()
+            .ok_or(Error::InvalidParameters)?
+            .try_into()
+            .or(Err(Error::InvalidParameters))?,
+    )?;
 
     Ok(Proof {
         a_comm,
         b_comm,
         c_comm,
+        d_comm,
         z_comm,
-        t_lo_comm,
-        t_mid_comm,
-        t_hi_comm,
+        t_1_comm,
+        t_2_comm,
+        t_3_comm,
+        t_4_comm,
         w_z_comm,
         w_zw_comm,
-        a_eval,
-        b_eval,
-        c_eval,
-        left_sigma_eval,
-        right_sigma_eval,
-        lin_poly_eval,
-        z_hat_eval,
+        evaluations: ProofEvaluations {
+            a_eval,
+            b_eval,
+            c_eval,
+            left_sigma_eval,
+            right_sigma_eval,
+            lin_poly_eval,
+            z_hat_eval,
+        },
     })
 }
 
@@ -227,7 +280,7 @@ pub fn init() {
 }
 
 /// Full transaction circuit
-pub fn circuit() -> &'static Circuit {
+pub fn circuit() -> &'static PreProcessedCircuit {
     unsafe { &*PREPROCESSED_CIRCUIT.as_ptr() }
 }
 

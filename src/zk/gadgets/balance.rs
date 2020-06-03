@@ -20,19 +20,14 @@ macro_rules! value_commitment_preimage {
         $perm[1] = *$item.value();
         $perm[2] = *$item.blinding_factor();
 
-        let (p_composer, p_pi, p_c) = GadgetStrategy::poseidon_gadget($composer, $pi, &mut $perm);
+        let p_c = GadgetStrategy::poseidon_gadget(&mut $composer, &mut $perm);
 
-        $composer = p_composer;
-        $pi = p_pi;
         $cc = p_c;
 
         $pi.next().map(|p| *p = BlsScalar::zero());
         $acc = $composer.add(
-            $acc,
-            *$item.value(),
-            BlsScalar::one(),
-            BlsScalar::one(),
-            -BlsScalar::one(),
+            (BlsScalar::one(), $acc),
+            (BlsScalar::one(), *$item.value()),
             BlsScalar::zero(),
             BlsScalar::zero(),
         );
@@ -58,7 +53,17 @@ where
     let mut outputs = zero;
 
     for item in tx.inputs().iter() {
-        value_commitment_preimage!(item, composer, perm, zero_perm, bitflags, pi, zero, inputs, c);
+        value_commitment_preimage!(
+            item,
+            &mut composer,
+            perm,
+            zero_perm,
+            bitflags,
+            pi,
+            zero,
+            inputs,
+            c
+        );
 
         pi.next().map(|p| *p = BlsScalar::zero());
         composer.add_gate(
@@ -74,7 +79,17 @@ where
     }
 
     let fee = *tx.fee();
-    value_commitment_preimage!(fee, composer, perm, zero_perm, bitflags, pi, zero, outputs, c);
+    value_commitment_preimage!(
+        fee,
+        &mut composer,
+        perm,
+        zero_perm,
+        bitflags,
+        pi,
+        zero,
+        outputs,
+        c
+    );
 
     pi.next().map(|p| *p = *fee.value_commitment_scalar());
     composer.add_gate(

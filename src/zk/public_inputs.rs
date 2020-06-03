@@ -5,7 +5,6 @@ use crate::{
 
 use std::io::{self, Read, Write};
 
-use algebra::curves::ProjectiveCurve;
 use num_traits::Zero;
 use unprolix::{Constructor, Getters, Setters};
 
