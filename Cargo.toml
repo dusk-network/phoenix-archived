@@ -21,6 +21,7 @@ circuit-sanity = []
 circuit-skr = []
 
 [dependencies]
+serde = "^1.0"
 merlin = "2.0"
 rand = "^0.7"
 tonic = "^0.1"
@@ -40,10 +41,6 @@ hades252 = { git = "https://github.com/dusk-network/Hades252.git", tag ="v0.5.0"
 dusk-bls12_381 = "0.1.0"
 dusk-plonk = "0.1.0"
 jubjub = {git = "https://github.com/dusk-network/jubjub.git"}
-
-[dependencies.plonk_gadgets]
-git = "https://github.com/dusk-network/plonk_gadgets.git"
-branch = "vlopes11/ecc_gadgets"
 
 [build-dependencies]
 tonic-build = { version = "0.1", default-features = false, features = ["transport"] }
@@ -76,17 +73,3 @@ debug-assertions = false
 
 [profile.dev]
 overflow-checks = false
-
-# This is a temporary fix until we stop to use zexe; it's needed to replace
-# in the dependency graph the library below with the revision specified.
-# Unfortunately `patch` works matching just the URL - doesn't take in account
-# revision or branches, see:  https://github.com/rust-lang/cargo/issues/5478
-#
-# A quick workaround is changing the URL with double slashes
-[patch.'https://github.com/scipr-lab/zexe/']
-algebra = { git = 'https://github.com/scipr-lab//zexe', rev="2c22b77" }
-ff-fft = { git = "https://github.com/scipr-lab//zexe", rev="2c22b77" }
-bench-utils = { git = "https://github.com/scipr-lab//zexe", rev="2c22b77" }
-
-[patch.'https://github.com/scipr-lab/poly-commit']
-poly-commit = { git = "https://github.com/scipr-lab//poly-commit", rev="77676213"}
