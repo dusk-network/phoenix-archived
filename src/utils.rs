@@ -162,7 +162,7 @@ pub fn kelvin_source_to_nonce<H: ByteHash>(source: &mut Source<H>) -> io::Result
 
 /// Convert a [`JubJubExtended`] into affine and then serialize the `x` coordinate
 pub fn serialize_compressed_jubjub(p: &JubJubExtended, bytes: &mut [u8]) -> Result<usize, Error> {
-    p.into_affine().serialize(&[], bytes)?;
+    JubJubAffine::from(p).serialize(&[], bytes)?;
 
     Ok(COMPRESSED_JUBJUB_SERIALIZED_SIZE)
 }
@@ -223,8 +223,7 @@ pub fn safe_48_chunk(bytes: &[u8]) -> [u8; 48] {
 
 /// Decompose a [`JubJubScalar`] to a set of bits represented by [`BlsScalar`]
 pub fn jubjub_scalar_to_bls_bits(scalar: &JubJubScalar) -> [BlsScalar; 256] {
-    let mut bytes = [0x00u8; 32];
-    scalar.write(&mut bytes[..]).expect("In-memory write");
+    let mut bytes = scalar.to_bytes();
 
     // Compute bit-array
     let mut res = [BlsScalar::zero(); 256];
@@ -245,8 +244,7 @@ pub fn jubjub_scalar_to_bls_bits(scalar: &JubJubScalar) -> [BlsScalar; 256] {
 
 /// Decompose a [`JubJubScalar`] to a set of bits
 pub fn jubjub_scalar_to_bits(scalar: &JubJubScalar) -> [u8; 256] {
-    let mut bytes = [0x00u8; 32];
-    scalar.write(&mut bytes[..]).expect("In-memory write");
+    let mut bytes = scalar.to_bytes();
 
     // Compute bit-array
     let mut res = [0x00u8; 256];
@@ -267,8 +265,7 @@ pub fn jubjub_scalar_to_bits(scalar: &JubJubScalar) -> [u8; 256] {
 
 /// Decompose a [`BlsScalar`] to a set of bits
 pub fn bls_scalar_to_bits(scalar: &BlsScalar) -> [u8; 256] {
-    let mut bytes = [0x00u8; 32];
-    scalar.write(&mut bytes[..]).expect("In-memory write");
+    let mut bytes = scalar.to_bytes();
 
     // Compute bit-array
     let mut res = [0x00u8; 256];

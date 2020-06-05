@@ -79,7 +79,7 @@ fn leaves_to_perm(leaves: [Option<BlsScalar>; ARITY], perm: &mut [BlsScalar; had
         },
     );
 
-    perm[0] = BlsScalar::from(bitflags);
+    perm[0] = BlsScalar::from(bitflags as u64);
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]

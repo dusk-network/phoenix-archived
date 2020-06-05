@@ -2,6 +2,7 @@ use crate::{
     utils, BlsScalar, JubJubAffine, JubJubExtended, JubJubScalar, Nonce, PublicKey, ViewKey,
 };
 
+use std::ops::Mul;
 use std::{cmp, ptr};
 
 use num_traits::{One, Zero};
@@ -36,8 +37,8 @@ lazy_static::lazy_static! {
 
 /// Perform a DHKE to create a shared secret
 pub fn dhke(sk: &JubJubScalar, pk: &JubJubExtended) -> Key {
-    let shared_secret = pk.mul(sk).into_affine();
-    let shared_secret = (shared_secret.y.0).0;
+    let shared_secret = JubJubAffine::from(pk * sk);
+    let shared_secret = (shared_secret.get_y().0);
 
     let mut key = [0x00u8; 32];
     unsafe {
@@ -117,14 +118,14 @@ pub fn hash_scalar(s: &BlsScalar) -> BlsScalar {
 
 /// Convert to a deterministic representation of the projective point, and perform `H(x, y, z, t)`
 pub fn hash_jubjub_projective(p: &JubJubExtended) -> BlsScalar {
-    let p = p.into_affine().into_projective();
+    let p = JubJubExtended::from(JubJubAffine::from(p));
 
-    hash_merkle(&[p.x, p.y, p.z, p.t])
+    hash_merkle(&[p.get_x(), p.get_y(), p.get_z(), p.get_t1(), p.get_t2()])
 }
 
 /// Return a hash represented by `H(x, y)`
 pub fn hash_jubjub_affine(p: &JubJubAffine) -> BlsScalar {
-    hash_merkle(&[p.x, p.y])
+    hash_merkle(&[p.get_x(), p.get_y()])
 }
 
 /// Perform  a poseidon merkle slice hash strategy on a bits representation of a jubjub scalar

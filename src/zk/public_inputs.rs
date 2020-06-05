@@ -1,5 +1,5 @@
 use crate::{
-    utils, zk, BlsScalar, Error, Note, Nullifier, Transaction, TransactionItem,
+    utils, zk, BlsScalar, Error, JubJubAffine, Note, Nullifier, Transaction, TransactionItem,
     MAX_INPUT_NOTES_PER_TRANSACTION, MAX_OUTPUT_NOTES_PER_TRANSACTION,
 };
 
@@ -176,7 +176,7 @@ impl From<&Transaction> for ZkPublicInputs {
             )
             .for_each(|(o, (c, x))| {
                 *c = *o.note().value_commitment();
-                *x = o.note().pk_r().into_affine().x;
+                *x = JubJubAffine::from(o.note().pk_r()).get_x();
             });
 
         ZkPublicInputs::new(

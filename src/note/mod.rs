@@ -1,6 +1,6 @@
 use crate::{
-    crypto, db, rpc, utils, BlsScalar, Error, JubJubExtended, JubJubScalar, Nonce, NoteType,
-    PublicKey, SecretKey, TransactionInput, TransactionOutput, ViewKey,
+    crypto, db, rpc, utils, BlsScalar, Error, JubJubAffine, JubJubExtended, JubJubScalar, Nonce,
+    NoteType, PublicKey, SecretKey, TransactionInput, TransactionOutput, ViewKey,
 };
 
 use std::convert::TryFrom;
@@ -118,7 +118,7 @@ pub trait NoteGenerator:
         let rA = utils::mul_by_basepoint_jubjub(&rA);
 
         let pk_r = rA + pk.B();
-        let pk_r = pk_r.into_affine().into_projective();
+        let pk_r = JubJubExtended::from(JubJubAffine::from(pk_r));
 
         (R, pk_r)
     }
@@ -206,13 +206,13 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
 
     /// Return a hash represented by `H(value_commitment, idx, H([R]), H([PKr]))`
     fn hash(&self) -> BlsScalar {
-        let pk_r = self.pk_r().into_affine();
+        let pk_r = JubJubAffine::from(self.pk_r());
 
         crypto::hash_merkle(&[
             *self.value_commitment(),
             BlsScalar::from(self.idx()),
-            pk_r.x,
-            pk_r.y,
+            pk_r.get_x(),
+            pk_r.get_y(),
         ])
     }
 

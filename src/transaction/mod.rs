@@ -8,9 +8,12 @@ use std::io::{self, Read, Write};
 use std::path::Path;
 use std::{fmt, ptr};
 
+use dusk_plonk::proof_system::Proof;
 use num_traits::Zero;
 use rand::distributions::{Distribution, Standard};
 use rand::Rng;
+
+use bincode::{deserialize, serialize};
 
 pub const MAX_NOTES_PER_TRANSACTION: usize = 1 + 2;
 pub const MAX_INPUT_NOTES_PER_TRANSACTION: usize = 1;
@@ -64,15 +67,14 @@ impl Read for Transaction {
         let mut n = 0;
 
         // Serialize proof
-        let proof = self
-            .proof
-            .as_ref()
-            .map(zk::proof_to_bytes)
-            .unwrap_or(Ok([0x00u8; zk::SERIALIZED_PROOF_SIZE]))
-            .map_err::<io::Error, _>(|e| e.into())?;
-        let b = (&proof[..]).read(buf)?;
-        n += b;
-        buf = &mut buf[b..];
+        if self.proof.is_some() {
+            let encoded: Vec<u8> =
+                serialize(&self.proof.unwrap()).unwrap_or(vec![0x00u8; zk::SERIALIZED_PROOF_SIZE]);
+
+            let b = (&encoded[..]).read(buf)?;
+            n += b;
+            buf = &mut buf[b..];
+        }
 
         // Serialize tx inputs (merkle root and nullifier)
         let inputs = self.idx_inputs.to_le_bytes();
@@ -124,7 +126,7 @@ impl Write for Transaction {
         // Deserialize proof
         let mut proof = [0x00u8; zk::SERIALIZED_PROOF_SIZE];
         let b = (&mut proof[..]).write(buf)?;
-        let proof = zk::bytes_to_proof(&proof[..]).map_err::<io::Error, _>(|e| e.into())?;
+        let proof: Proof = deserialize(&proof[..]).map_err::<io::Error, _>(|e| e.into())?;
         self.proof.replace(proof);
         n += b;
         buf = &buf[b..];
