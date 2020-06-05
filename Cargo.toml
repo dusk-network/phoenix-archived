@@ -21,6 +21,7 @@ circuit-sanity = []
 circuit-skr = []
 
 [dependencies]
+bincode = "^1.2.1"
 serde = "^1.0"
 merlin = "2.0"
 rand = "^0.7"
