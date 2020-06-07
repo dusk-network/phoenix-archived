@@ -1,21 +1,20 @@
 use crate::{
-    crypto, utils, BlsScalar, Error, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
+    crypto, utils, BlsScalar, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
     MAX_OUTPUT_NOTES_PER_TRANSACTION,
 };
 
-use std::convert::TryInto;
 use std::mem::{self, MaybeUninit};
 
-use dusk_plonk::commitment_scheme::kzg10::{Commitment, ProverKey, VerifierKey};
+use dusk_plonk::commitment_scheme::kzg10::{ProverKey, VerifierKey};
 pub use dusk_plonk::constraint_system::composer::StandardComposer as Composer;
-use dusk_plonk::linearisation_poly::ProofEvaluations;
-use dusk_plonk::srs;
-use ff_fft::EvaluationDomain;
+use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
+use dusk_plonk::fft::EvaluationDomain;
 use merlin::Transcript;
 use num_traits::Zero;
 
 pub use dusk_plonk::constraint_system::Variable;
 pub use dusk_plonk::proof_system::{PreProcessedCircuit, Proof};
+
 
 /// [`ZkMerkleProof`] definition
 pub mod merkle;
@@ -72,8 +71,8 @@ mod tests;
 
 /// Initialize the zk static data
 pub fn init() {
-    let public_parameters = srs::setup(CAPACITY, &mut utils::generate_rng(b"phoenix-plonk-srs"));
-    let (ck, vk) = srs::trim(&public_parameters, CAPACITY).unwrap();
+    let public_parameters = PublicParameters::setup(CAPACITY, &mut utils::generate_rng(b"phoenix-plonk-PublicParameters"));
+    let (ck, vk) = PublicParameters::trim(&public_parameters, CAPACITY).unwrap();
     let domain: EvaluationDomain<BlsScalar> = EvaluationDomain::new(CAPACITY).unwrap();
 
     unsafe {

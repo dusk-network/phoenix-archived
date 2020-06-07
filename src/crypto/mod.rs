@@ -2,7 +2,7 @@ use crate::{
     utils, BlsScalar, JubJubAffine, JubJubExtended, JubJubScalar, Nonce, PublicKey, ViewKey,
 };
 
-use std::ops::Mul;
+
 use std::{cmp, ptr};
 
 use num_traits::{One, Zero};

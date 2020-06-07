@@ -15,6 +15,8 @@ use rand::Rng;
 
 use bincode::{deserialize, serialize};
 
+
+
 pub const MAX_NOTES_PER_TRANSACTION: usize = 1 + 2;
 pub const MAX_INPUT_NOTES_PER_TRANSACTION: usize = 1;
 pub const MAX_OUTPUT_NOTES_PER_TRANSACTION: usize = 2;
@@ -547,7 +549,7 @@ impl Transaction {
 
         let proof = tx.proof;
         if !proof.is_empty() {
-            let proof = zk::bytes_to_proof(proof.as_slice())?;
+            let proof = deserialize(proof.as_slice())?;
             transaction.set_proof(proof);
         }
 
@@ -577,7 +579,7 @@ impl TryFrom<rpc::Transaction> for Transaction {
 
         let proof = tx.proof;
         if !proof.is_empty() {
-            let proof = zk::bytes_to_proof(proof.as_slice())?;
+            let proof = deserialize(proof.as_slice())?;
             transaction.set_proof(proof);
         }
 
@@ -617,7 +619,7 @@ impl TryFrom<Transaction> for rpc::Transaction {
 
         let proof = tx
             .proof()
-            .map(|p| zk::proof_to_bytes(p).map(|b| b.to_vec()))
+            .map(|p| serialize(p).map(|b| b.to_vec()))
             .transpose()?
             .unwrap_or_default();
 
@@ -632,7 +634,7 @@ impl TryFrom<Transaction> for rpc::Transaction {
 
 impl fmt::LowerHex for Transaction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", hex::encode(utils::scalar_as_slice(&self.hash().0)))
+        write!(f, "{}", hex::encode(self.hash().to_bytes()
     }
 }
 
@@ -641,7 +643,7 @@ impl fmt::UpperHex for Transaction {
         write!(
             f,
             "{}",
-            hex::encode_upper(utils::scalar_as_slice(&self.hash().0))
+            hex::encode_upper(self.hash().to_bytes()
         )
     }
 }

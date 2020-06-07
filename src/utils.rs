@@ -3,7 +3,7 @@ use crate::{BlsScalar, Error, JubJubAffine, JubJubExtended, JubJubScalar, Nonce,
 use std::io::{self, Read};
 use std::mem::{self, MaybeUninit};
 use std::ops::Mul;
-use std::{cmp, ptr, slice, thread};
+use std::{cmp, ptr, thread};
 
 use kelvin::{ByteHash, Source};
 use num_traits::{One, Zero};
@@ -43,7 +43,7 @@ pub fn init() {
         lazy_static_write(&*INITIALIZING, true);
     }
 
-    let (x, y) = JubJubParameters::AFFINE_GENERATOR_COEFFS;
+    let (x, y) = JubJubAffine::GENERATOR;
     let affine = JubJubAffine::from_raw_unchecked(x, y);
     let projective = JubJubExtended::from(affine);
 
@@ -86,12 +86,6 @@ pub fn gen_random_bls_scalar_from_rng<R: RngCore>(rng: &mut R) -> BlsScalar {
     rng.gen()
 }
 
-/// Extract a 32-sized slice of bytes from a given scalar
-///
-/// Both [`JubJubScalar`] and [`BlsScalar`] are represented internally by a [`BigInteger256`]
-pub fn scalar_as_slice<'a>(s: &'a BigInteger256) -> &'a [u8] {
-    unsafe { slice::from_raw_parts(s.0.as_ptr() as *const u8, 32) }
-}
 
 pub fn jubjub_projective_basepoint() -> &'static JubJubExtended {
     &JUBJUB_BASEPOINT_PROJECTIVE

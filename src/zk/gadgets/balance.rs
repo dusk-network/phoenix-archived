@@ -55,7 +55,7 @@ where
     for item in tx.inputs().iter() {
         value_commitment_preimage!(
             item,
-            &mut composer,
+            composer,
             perm,
             zero_perm,
             bitflags,
@@ -81,7 +81,7 @@ where
     let fee = *tx.fee();
     value_commitment_preimage!(
         fee,
-        &mut composer,
+        composer,
         perm,
         zero_perm,
         bitflags,
