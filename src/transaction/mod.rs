@@ -126,7 +126,9 @@ impl Write for Transaction {
         // Deserialize proof
         let mut proof = [0x00u8; zk::SERIALIZED_PROOF_SIZE];
         let b = (&mut proof[..]).write(buf)?;
-        let proof: Proof = deserialize(&proof[..]).map_err::<io::Error, _>(|e| e.into())?;
+        let proof: Proof = deserialize(&proof[..])
+            .map_err(|_| Error::InvalidParameters)
+            .map_err::<io::Error, _>(|e| e.into())?;
         self.proof.replace(proof);
         n += b;
         buf = &buf[b..];
