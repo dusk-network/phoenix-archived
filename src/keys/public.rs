@@ -2,15 +2,30 @@ use crate::{rpc, utils, Error, JubJubExtended, SecretKey};
 
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
+use subtle::{Choice, ConstantTimeEq};
 
 use unprolix::{Constructor, Getters, Setters};
 
 /// Public pair of a·G and b·G
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]
+#[derive(Debug, Clone, Copy, Constructor, Getters, Setters)]
 pub struct PublicKey {
     A: JubJubExtended,
     B: JubJubExtended,
 }
+
+impl ConstantTimeEq for PublicKey {
+    fn ct_eq(&self, other: &Self) -> Choice {
+        self.A.ct_eq(&other.A) & self.B.ct_eq(&other.B)
+    }
+}
+
+impl PartialEq for PublicKey {
+    fn eq(&self, other: &Self) -> bool {
+        self.ct_eq(&other).unwrap_u8() == 1
+    }
+}
+
+impl Eq for PublicKey {}
 
 impl Default for PublicKey {
     fn default() -> Self {

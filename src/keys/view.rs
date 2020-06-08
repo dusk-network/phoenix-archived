@@ -2,6 +2,7 @@ use crate::{rpc, utils, Error, JubJubExtended, JubJubScalar, PublicKey, SecretKe
 
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
+use subtle::{Choice, ConstantTimeEq};
 
 use unprolix::{Constructor, Getters, Setters};
 
@@ -9,11 +10,25 @@ use unprolix::{Constructor, Getters, Setters};
 ///
 /// The notes are encrypted against secret a, so this is used to decrypt the blinding factor and
 /// value
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]
+#[derive(Debug, Clone, Copy, Constructor, Getters, Setters)]
 pub struct ViewKey {
     a: JubJubScalar,
     B: JubJubExtended,
 }
+
+impl ConstantTimeEq for ViewKey {
+    fn ct_eq(&self, other: &Self) -> Choice {
+        self.B.ct_eq(&other.B)
+    }
+}
+
+impl PartialEq for ViewKey {
+    fn eq(&self, other: &Self) -> bool {
+        self.a == other.a && self.ct_eq(&other).unwrap_u8() == 1
+    }
+}
+
+impl Eq for ViewKey {}
 
 impl Default for ViewKey {
     fn default() -> Self {

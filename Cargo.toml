@@ -43,6 +43,10 @@ dusk-bls12_381 = "0.1.0"
 dusk-plonk = "0.1.0"
 jubjub = {git = "https://github.com/dusk-network/jubjub.git"}
 
+[dependencies.subtle]
+version = "^2.2.1"
+default-features = false
+
 [build-dependencies]
 tonic-build = { version = "0.1", default-features = false, features = ["transport"] }
 
