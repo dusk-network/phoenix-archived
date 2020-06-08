@@ -1,4 +1,4 @@
-use crate::{utils, JubJubProjective, JubJubScalar, PublicKey, SecretKey, ViewKey};
+use crate::{utils, JubJubExtended, JubJubScalar, PublicKey, SecretKey, ViewKey};
 
 use std::convert::TryFrom;
 use std::ops::Mul;
@@ -33,7 +33,7 @@ fn keys_encoding() {
 fn scalar_and_point_encoding() {
     utils::init();
 
-    fn serde(p: &JubJubProjective) -> JubJubProjective {
+    fn serde(p: &JubJubExtended) -> JubJubExtended {
         let mut bytes = [0x00u8; utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE];
 
         utils::serialize_compressed_jubjub(p, &mut bytes).unwrap();
