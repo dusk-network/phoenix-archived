@@ -8,14 +8,11 @@ use std::{cmp, ptr, thread};
 
 use kelvin::{ByteHash, Source};
 
-
 use rand::rngs::StdRng;
 use rand::SeedableRng;
-use rand::{Rng, RngCore};
+use rand::{CryptoRng, Rng, RngCore};
 use sha2::{Digest, Sha256};
 use sodiumoxide::crypto::secretbox;
-
-
 
 lazy_static::lazy_static! {
     static ref INITIALIZING: bool = false;
@@ -75,7 +72,8 @@ pub fn gen_random_scalar() -> JubJubScalar {
 
 /// Generate a random [`JubJubScalar`] from a provided random number generator
 pub fn gen_random_scalar_from_rng<R: RngCore>(rng: &mut R) -> JubJubScalar {
-    rng.gen()
+    let random_nums = rand::thread_rng().gen::<[u64; 4]>();
+    JubJubScalar::from_raw(random_nums)
 }
 
 /// Generate a random [`BlsScalar`] from [`rand::thread_rng`]
@@ -84,8 +82,8 @@ pub fn gen_random_bls_scalar() -> BlsScalar {
 }
 
 /// Generate a random [`BlsScalar`] from a provided random number generator
-pub fn gen_random_bls_scalar_from_rng<R: RngCore>(rng: &mut R) -> BlsScalar {
-    rng.gen()
+pub fn gen_random_bls_scalar_from_rng<R: Rng + CryptoRng>(mut rng: &mut R) -> BlsScalar {
+    BlsScalar::random(&mut rng)
 }
 
 pub fn jubjub_projective_basepoint() -> &'static JubJubExtended {
