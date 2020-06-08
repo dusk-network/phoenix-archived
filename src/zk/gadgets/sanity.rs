@@ -1,4 +1,6 @@
-use crate::{utils, zk, BlsScalar, JubJubAffine};
+use crate::{zk, BlsScalar};
+
+use jubjub::GENERATOR;
 
 /// Perform the pre-image of the value commitment and check if the inputs equals the outputs + fee
 pub fn sanity<'a, P>(
@@ -9,7 +11,7 @@ pub fn sanity<'a, P>(
 where
     P: Iterator<Item = &'a mut BlsScalar>,
 {
-    let basepoint = JubJubAffine::from(utils::jubjub_projective_basepoint());
+    let basepoint = GENERATOR;
     let basepoint_affine_xy = basepoint.get_x() * basepoint.get_y();
 
     pi.next().map(|p| *p = basepoint.get_x());

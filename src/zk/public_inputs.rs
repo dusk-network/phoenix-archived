@@ -108,7 +108,7 @@ impl Read for ZkPublicInputs {
         chunk
             .next()
             .ok_or(Error::InvalidParameters)
-            .and_then(|c| utils::serialize_bls_scalar(&self.fee_value_commitment, c))
+            .and_then(|c| Ok(c.copy_from_slice(&self.fee_value_commitment.to_bytes()[..])))
             .map_err::<io::Error, _>(|e| e.into())?;
         n += utils::BLS_SCALAR_SERIALIZED_SIZE;
 
@@ -116,14 +116,14 @@ impl Read for ZkPublicInputs {
             chunk
                 .next()
                 .ok_or(Error::InvalidParameters)
-                .and_then(|c| utils::serialize_bls_scalar(&self.merkle_roots[i], c))
+                .and_then(|c| Ok(c.copy_from_slice(&self.merkle_roots[i].to_bytes()[..])))
                 .map_err::<io::Error, _>(|e| e.into())?;
             n += utils::BLS_SCALAR_SERIALIZED_SIZE;
 
             chunk
                 .next()
                 .ok_or(Error::InvalidParameters)
-                .and_then(|c| utils::serialize_bls_scalar(self.nullifiers[i].s(), c))
+                .and_then(|c| Ok(c.copy_from_slice(&self.nullifiers[i].s().to_bytes()[..])))
                 .map_err::<io::Error, _>(|e| e.into())?;
             n += utils::BLS_SCALAR_SERIALIZED_SIZE;
         }
@@ -132,14 +132,16 @@ impl Read for ZkPublicInputs {
             chunk
                 .next()
                 .ok_or(Error::InvalidParameters)
-                .and_then(|c| utils::serialize_bls_scalar(&self.outputs_value_commitments[i], c))
+                .and_then(|c| {
+                    Ok(c.copy_from_slice(&self.outputs_value_commitments[i].to_bytes()[..]))
+                })
                 .map_err::<io::Error, _>(|e| e.into())?;
             n += utils::BLS_SCALAR_SERIALIZED_SIZE;
 
             chunk
                 .next()
                 .ok_or(Error::InvalidParameters)
-                .and_then(|c| utils::serialize_bls_scalar(&self.outputs_pk_r_affine_x[i], c))
+                .and_then(|c| Ok(c.copy_from_slice(&self.outputs_pk_r_affine_x[i].to_bytes()[..])))
                 .map_err::<io::Error, _>(|e| e.into())?;
             n += utils::BLS_SCALAR_SERIALIZED_SIZE;
         }

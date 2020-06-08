@@ -9,6 +9,8 @@ use std::io;
 use std::ops::Mul;
 use std::path::Path;
 
+use jubjub::GENERATOR;
+
 /// Nullifier definition
 pub mod nullifier;
 /// Obfuscated note definitions
@@ -111,11 +113,11 @@ pub trait NoteGenerator:
 
     /// Generate a new `PKr = H(a · R) · G + B` from a given `r`
     fn new_pk_r(r: &JubJubScalar, pk: &PublicKey) -> (JubJubExtended, JubJubExtended) {
-        let R = utils::mul_by_basepoint_jubjub(r);
+        let R = JubJubExtended::from(GENERATOR).mul(r);
 
         let rA = pk.A().mul(r);
         let rA = crypto::hash_jubjub_projective_to_jubjub_scalar(&rA);
-        let rA = utils::mul_by_basepoint_jubjub(&rA);
+        let rA = JubJubExtended::from(GENERATOR).mul(rA);
 
         let pk_r = rA + pk.B();
         let pk_r = JubJubExtended::from(JubJubAffine::from(pk_r));
@@ -137,8 +139,7 @@ pub trait NoteGenerator:
         blinding_factor: &BlsScalar,
     ) -> [u8; 48] {
         let mut blinding_factor_bytes = [0x00u8; utils::BLS_SCALAR_SERIALIZED_SIZE];
-        utils::serialize_bls_scalar(blinding_factor, &mut blinding_factor_bytes)
-            .expect("In-memory write");
+        blinding_factor_bytes.copy_from_slice(&blinding_factor.to_bytes()[..]);
 
         let bytes = crypto::encrypt(r, pk, &nonce.increment_le(), blinding_factor_bytes);
         utils::safe_48_chunk(bytes.as_slice())
@@ -261,7 +262,7 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
     fn is_owned_by(&self, vk: &ViewKey) -> bool {
         let aR = self.R().mul(vk.a());
         let aR = crypto::hash_jubjub_projective_to_jubjub_scalar(&aR);
-        let aR = utils::mul_by_basepoint_jubjub(&aR);
+        let aR = JubJubExtended::from(GENERATOR).mul(&aR);
 
         let pk_r = aR + vk.B();
 

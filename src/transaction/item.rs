@@ -1,6 +1,6 @@
 use crate::{
-    crypto, db, rpc, utils, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator,
-    NoteVariant, Nullifier, PublicKey, SecretKey, TransparentNote,
+    crypto, db, rpc, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator, NoteVariant,
+    Nullifier, PublicKey, SecretKey, TransparentNote,
 };
 
 use std::cmp::Ordering;
@@ -8,8 +8,6 @@ use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::io::{self, Read, Write};
 use std::path::Path;
-
-
 
 /// A transaction item constains sensitive data for a proof creation, and must be obfuscated before
 /// network propagation.
@@ -300,7 +298,7 @@ impl From<TransactionInput> for rpc::TransactionInput {
 impl From<TransactionInput> for rpc::Nullifier {
     fn from(item: TransactionInput) -> Self {
         let mut scalar_buf = [0u8; 32];
-        utils::serialize_bls_scalar(item.nullifier.s(), &mut scalar_buf).expect("In-memory write");
+        scalar_buf.copy_from_slice(&item.nullifier.s().to_bytes()[..]);
 
         rpc::Nullifier {
             h: Some(rpc::Scalar {

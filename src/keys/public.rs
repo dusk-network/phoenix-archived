@@ -1,4 +1,4 @@
-use crate::{rpc, utils, Error, JubJubExtended, SecretKey};
+use crate::{rpc, utils, Error, JubJubAffine, JubJubExtended, SecretKey};
 
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
@@ -78,11 +78,9 @@ impl Into<[u8; PK_SIZE]> for &PublicKey {
     fn into(self) -> [u8; PK_SIZE] {
         let mut bytes = [0x00u8; PK_SIZE];
 
-        utils::serialize_compressed_jubjub(&self.A, &mut bytes[0..PK_SIZE / 2])
-            .expect("In-memory write");
+        bytes[0..PK_SIZE / 2].copy_from_slice(&JubJubAffine::from(self.A).to_bytes()[..]);
 
-        utils::serialize_compressed_jubjub(&self.B, &mut bytes[PK_SIZE / 2..PK_SIZE])
-            .expect("In-memory write");
+        bytes[PK_SIZE / 2..PK_SIZE].copy_from_slice(&JubJubAffine::from(self.B).to_bytes()[..]);
 
         bytes
     }

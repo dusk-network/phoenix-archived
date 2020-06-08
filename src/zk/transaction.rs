@@ -5,7 +5,7 @@ use crate::{
 
 use std::mem;
 
-
+use jubjub::GENERATOR;
 
 use unprolix::{Constructor, Getters, Setters};
 
@@ -35,7 +35,7 @@ impl ZkTransaction {
         let three = composer.add_input(BlsScalar::from(3u64));
         let fifteen = composer.add_input(BlsScalar::from(15u64));
 
-        let basepoint = JubJubAffine::from(utils::jubjub_projective_basepoint());
+        let basepoint = GENERATOR;
         let basepoint_affine_x = composer.add_input(basepoint.get_x());
         let basepoint_affine_y = composer.add_input(basepoint.get_y());
         let basepoint_affine_xy = composer.add_input(basepoint.get_x() * basepoint.get_y());

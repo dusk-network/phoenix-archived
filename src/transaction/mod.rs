@@ -104,7 +104,7 @@ impl Read for Transaction {
             buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
                 .next()
                 .ok_or(Error::InvalidParameters)
-                .and_then(|c| utils::serialize_bls_scalar(&self.inputs[i].merkle_root, c))
+                .and_then(|c| Ok(c.copy_from_slice(&self.inputs[i].merkle_root.to_bytes()[..])))
                 .map_err::<io::Error, _>(|e| e.into())?;
             n += utils::BLS_SCALAR_SERIALIZED_SIZE;
             buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
@@ -112,7 +112,7 @@ impl Read for Transaction {
             buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
                 .next()
                 .ok_or(Error::InvalidParameters)
-                .and_then(|c| utils::serialize_bls_scalar(self.inputs[i].nullifier.s(), c))
+                .and_then(|c| Ok(c.copy_from_slice(&self.inputs[i].nullifier.s().to_bytes()[..])))
                 .map_err::<io::Error, _>(|e| e.into())?;
             n += utils::BLS_SCALAR_SERIALIZED_SIZE;
             buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];

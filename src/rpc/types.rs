@@ -1,4 +1,6 @@
-use crate::{rpc, utils, BlsScalar, Error, JubJubExtended, JubJubScalar, Nonce, Nullifier};
+use crate::{
+    rpc, utils, BlsScalar, Error, JubJubAffine, JubJubExtended, JubJubScalar, Nonce, Nullifier,
+};
 
 use std::convert::TryFrom;
 
@@ -6,7 +8,7 @@ impl From<JubJubScalar> for rpc::Scalar {
     fn from(s: JubJubScalar) -> Self {
         let mut data = [0x00u8; utils::JUBJUB_SCALAR_SERIALIZED_SIZE];
 
-        utils::serialize_jubjub_scalar(&s, &mut data).expect("In-memory write");
+        data.copy_from_slice(&s.to_bytes()[..]);
 
         rpc::Scalar {
             data: data.to_vec(),
@@ -26,7 +28,7 @@ impl From<BlsScalar> for rpc::Scalar {
     fn from(s: BlsScalar) -> Self {
         let mut data = [0x00u8; utils::BLS_SCALAR_SERIALIZED_SIZE];
 
-        utils::serialize_bls_scalar(&s, &mut data).expect("In-memory write");
+        data.copy_from_slice(&s.to_bytes()[..]);
 
         rpc::Scalar {
             data: data.to_vec(),
@@ -54,7 +56,7 @@ impl From<JubJubExtended> for rpc::CompressedPoint {
     fn from(p: JubJubExtended) -> Self {
         let mut x = [0x00u8; utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE];
 
-        utils::serialize_compressed_jubjub(&p, &mut x).expect("In-memory write");
+        x.copy_from_slice(&JubJubAffine::from(p).to_bytes()[..]);
 
         rpc::CompressedPoint { y: x.to_vec() }
     }

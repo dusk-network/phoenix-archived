@@ -14,7 +14,7 @@ pub struct Nullifier {
 impl Nullifier {
     pub fn new(s: BlsScalar) -> Self {
         let mut b = [0x00u8; utils::BLS_SCALAR_SERIALIZED_SIZE];
-        utils::serialize_bls_scalar(&s, &mut b).expect("In-memory write");
+        b.copy_from_slice(&s.to_bytes()[..]);
 
         Self { s, b }
     }
@@ -39,11 +39,8 @@ impl AsRef<[u8]> for Nullifier {
 }
 
 impl Nullifier {
-    pub fn to_bytes(&self) -> Result<[u8; 32], Error> {
-        let mut scalar_buf = [0u8; 32];
-        utils::serialize_bls_scalar(self.s(), &mut scalar_buf)?;
-
-        Ok(scalar_buf)
+    pub fn to_bytes(&self) -> [u8; 32] {
+        self.s().to_bytes()
     }
 }
 
@@ -76,7 +73,7 @@ impl Read for Nullifier {
         buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
             .next()
             .ok_or(Error::InvalidParameters)
-            .and_then(|c| utils::serialize_bls_scalar(self.s(), c))
+            .and_then(|c| Ok(c.copy_from_slice(&self.s().to_bytes()[..])))
             .map_err::<io::Error, _>(|e| e.into())?;
         let n = utils::BLS_SCALAR_SERIALIZED_SIZE;
 
