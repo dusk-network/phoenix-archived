@@ -5,6 +5,7 @@ use crate::{
 
 use std::convert::TryFrom;
 use std::io::{self, Read, Write};
+use std::mem;
 use std::path::Path;
 use std::{fmt, ptr};
 
@@ -35,7 +36,6 @@ lazy_static::lazy_static! {
 pub mod item;
 
 /// A phoenix transaction
-#[derive(Clone)]
 pub struct Transaction {
     fee: TransactionOutput,
     idx_inputs: usize,
@@ -44,6 +44,24 @@ pub struct Transaction {
     outputs: [TransactionOutput; MAX_OUTPUT_NOTES_PER_TRANSACTION],
     proof: Option<zk::Proof>,
     public_inputs: Option<zk::ZkPublicInputs>,
+}
+
+impl Clone for Transaction {
+    // TODO: we should have a safe way of cloning the proof
+    fn clone(&self) -> Self {
+        unsafe {
+            let p: Option<zk::Proof> = mem::transmute_copy(&self.proof);
+            Transaction {
+                fee: self.fee.clone(),
+                idx_inputs: self.idx_inputs.clone(),
+                inputs: self.inputs.clone(),
+                idx_outputs: self.idx_outputs.clone(),
+                outputs: self.outputs.clone(),
+                proof: p,
+                public_inputs: self.public_inputs.clone(),
+            }
+        }
+    }
 }
 
 impl Default for Transaction {
@@ -68,8 +86,8 @@ impl Read for Transaction {
 
         // Serialize proof
         if self.proof.is_some() {
-            let encoded: Vec<u8> =
-                serialize(&self.proof.unwrap()).unwrap_or(vec![0x00u8; zk::SERIALIZED_PROOF_SIZE]);
+            let encoded: Vec<u8> = serialize(&self.proof().unwrap())
+                .unwrap_or(vec![0x00u8; zk::SERIALIZED_PROOF_SIZE]);
 
             let b = (&encoded[..]).read(buf)?;
             n += b;
