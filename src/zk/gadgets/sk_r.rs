@@ -9,15 +9,15 @@ use crate::zk;
 ///
 /// All the public inputs, estimated to be 20k+, are not tracked, and they are only repeated
 /// zeroes. Hence, this gadget must be the last one to be called
-pub fn sk_r(mut composer: zk::Composer, tx: &zk::ZkTransaction) //zk::Composer 
-    {
+pub fn sk_r(composer: zk::Composer, tx: &zk::ZkTransaction) //zk::Composer
+{
     /* let basepoint = JubJubPointGadget {
         X: *tx.basepoint_affine_x(),
         Y: *tx.basepoint_affine_y(),
         Z: *tx.one(),
         T: *tx.basepoint_affine_xy(),
     };
-    
+
 
     for item in tx.inputs().iter() {
         let mut sk_r_bits: [BoolVar; 256] = [unsafe { mem::zeroed() }; 256];

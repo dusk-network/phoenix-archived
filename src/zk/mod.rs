@@ -109,38 +109,39 @@ pub fn public_inputs() -> &'static Vec<BlsScalar> {
     unsafe { &*PUBLIC_INPUTS.as_ptr() }
 }
 
-fn inner_circuit<'a, P>(mut composer: Composer, tx: &Transaction, pi: P) -> Composer
+fn inner_circuit<'a, P>(composer: Composer, tx: &Transaction, pi: P) -> Composer
 where
     P: Iterator<Item = &'a mut BlsScalar>,
 {
-    let tx_zk = ZkTransaction::from_tx(&mut composer, tx);
+    /*
+        let tx_zk = ZkTransaction::from_tx(&mut composer, tx);
 
-    #[cfg(feature = "circuit-sanity")]
-    let (_, pi) = gadgets::sanity(composer, &tx_zk, pi);
+        #[cfg(feature = "circuit-sanity")]
+        let (_, pi) = gadgets::sanity(composer, &tx_zk, pi);
 
-    #[cfg(feature = "circuit-merkle")]
-    let (_, pi) = gadgets::merkle(composer, &tx_zk, pi);
+        #[cfg(feature = "circuit-merkle")]
+        let (_, pi) = gadgets::merkle(composer, &tx_zk, pi);
 
-    #[cfg(feature = "circuit-preimage")]
-    let (_, pi) = gadgets::preimage(composer, &tx_zk, pi);
+        #[cfg(feature = "circuit-preimage")]
+        let (_, pi) = gadgets::preimage(composer, &tx_zk, pi);
 
-    #[cfg(feature = "circuit-balance")]
-    let (_, pi) = gadgets::balance(composer, &tx_zk, pi);
+        #[cfg(feature = "circuit-balance")]
+        let (_, pi) = gadgets::balance(composer, &tx_zk, pi);
 
-    #[cfg(feature = "circuit-nullifier")]
-    let (_, pi) = gadgets::nullifier(composer, &tx_zk, pi);
+        #[cfg(feature = "circuit-nullifier")]
+        let (_, pi) = gadgets::nullifier(composer, &tx_zk, pi);
 
-    #[cfg(feature = "circuit-skr")]
-    let _ = gadgets::sk_r(composer, &tx_zk);
+        #[cfg(feature = "circuit-skr")]
+        let _ = gadgets::sk_r(composer, &tx_zk);
 
-    let _ = tx_zk;
-    let _ = pi;
-    let mut composer = composer;
+        let _ = tx_zk;
+        let _ = pi;
 
-    (0..composer.circuit_size()).for_each(|_| {
-        composer.add_dummy_constraints();
-    });
+        (0..composer.circuit_size()).for_each(|_| {
+            composer.add_dummy_constraints();
+        });
 
+    */
     composer
 }
 
