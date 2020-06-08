@@ -145,64 +145,40 @@ pub fn safe_48_chunk(bytes: &[u8]) -> [u8; 48] {
 
 /// Decompose a [`JubJubScalar`] to a set of bits represented by [`BlsScalar`]
 pub fn jubjub_scalar_to_bls_bits(scalar: &JubJubScalar) -> [BlsScalar; 256] {
-    let mut bytes = scalar.to_bytes();
-
-    // Compute bit-array
     let mut res = [BlsScalar::zero(); 256];
+    let bytes = scalar.to_bytes();
 
-    let mut res_iter = res.iter_mut();
-    bytes.iter_mut().for_each(|b| {
-        (0..8).for_each(|_| {
-            let r = res_iter.next();
-            if (*b) & 1u8 == 1 {
-                r.map(|r| *r = BlsScalar::one());
-            }
-            *b >>= 1;
-        });
-    });
-
+    for (byte, bits) in bytes.iter().zip(res.chunks_mut(8)) {
+        bits.iter_mut()
+            .enumerate()
+            .for_each(|(i, bit)| *bit = BlsScalar::from(((byte >> i) & 1) as u64))
+    }
     res
 }
 
 /// Decompose a [`JubJubScalar`] to a set of bits
 pub fn jubjub_scalar_to_bits(scalar: &JubJubScalar) -> [u8; 256] {
-    let mut bytes = scalar.to_bytes();
+    let mut res = [0u8; 256];
+    let bytes = scalar.to_bytes();
 
-    // Compute bit-array
-    let mut res = [0x00u8; 256];
-
-    let mut res_iter = res.iter_mut();
-    bytes.iter_mut().for_each(|b| {
-        (0..8).for_each(|_| {
-            let r = res_iter.next();
-            if (*b) & 1u8 == 1 {
-                r.map(|r| *r = 1);
-            }
-            *b >>= 1;
-        });
-    });
-
+    for (byte, bits) in bytes.iter().zip(res.chunks_mut(8)) {
+        bits.iter_mut()
+            .enumerate()
+            .for_each(|(i, bit)| *bit = (byte >> i) & 1)
+    }
     res
 }
 
 /// Decompose a [`BlsScalar`] to a set of bits
 pub fn bls_scalar_to_bits(scalar: &BlsScalar) -> [u8; 256] {
-    let mut bytes = scalar.to_bytes();
+    let mut res = [0u8; 256];
+    let bytes = scalar.to_bytes();
 
-    // Compute bit-array
-    let mut res = [0x00u8; 256];
-
-    let mut res_iter = res.iter_mut();
-    bytes.iter_mut().for_each(|b| {
-        (0..8).for_each(|_| {
-            let r = res_iter.next();
-            if (*b) & 1u8 == 1 {
-                r.map(|r| *r = 1u8);
-            }
-            *b >>= 1;
-        });
-    });
-
+    for (byte, bits) in bytes.iter().zip(res.chunks_mut(8)) {
+        bits.iter_mut()
+            .enumerate()
+            .for_each(|(i, bit)| *bit = (byte >> i) & 1)
+    }
     res
 }
 
