@@ -1,5 +1,6 @@
 use crate::{BlsScalar, Error, JubJubAffine, JubJubExtended, JubJubScalar, Nonce, NONCEBYTES};
 
+use jubjub::GENERATOR;
 use std::io::{self, Read};
 use std::mem::{self, MaybeUninit};
 use std::ops::Mul;
@@ -43,7 +44,7 @@ pub fn init() {
         lazy_static_write(&*INITIALIZING, true);
     }
 
-    let (x, y) = JubJubAffine::GENERATOR;
+    let (x, y) = (GENERATOR.get_x(), GENERATOR.get_y());
     let affine = JubJubAffine::from_raw_unchecked(x, y);
     let projective = JubJubExtended::from(affine);
 
