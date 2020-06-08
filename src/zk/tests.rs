@@ -7,7 +7,6 @@ use std::io::{Read, Write};
 
 #[test]
 fn proof_serialization() {
-    utils::init();
     zk::init();
 
     let mut tx = Transaction::default();

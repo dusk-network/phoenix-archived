@@ -1,16 +1,31 @@
-use crate::{rpc, utils, Error, JubJubProjective, SecretKey};
+use crate::{rpc, utils, Error, JubJubAffine, JubJubExtended, SecretKey};
 
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
+use subtle::{Choice, ConstantTimeEq};
 
 use unprolix::{Constructor, Getters, Setters};
 
 /// Public pair of a·G and b·G
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]
+#[derive(Debug, Clone, Copy, Constructor, Getters, Setters)]
 pub struct PublicKey {
-    A: JubJubProjective,
-    B: JubJubProjective,
+    A: JubJubExtended,
+    B: JubJubExtended,
 }
+
+impl ConstantTimeEq for PublicKey {
+    fn ct_eq(&self, other: &Self) -> Choice {
+        self.A.ct_eq(&other.A) & self.B.ct_eq(&other.B)
+    }
+}
+
+impl PartialEq for PublicKey {
+    fn eq(&self, other: &Self) -> bool {
+        self.ct_eq(&other).unwrap_u8() == 1
+    }
+}
+
+impl Eq for PublicKey {}
 
 impl Default for PublicKey {
     fn default() -> Self {
@@ -63,11 +78,9 @@ impl Into<[u8; PK_SIZE]> for &PublicKey {
     fn into(self) -> [u8; PK_SIZE] {
         let mut bytes = [0x00u8; PK_SIZE];
 
-        utils::serialize_compressed_jubjub(&self.A, &mut bytes[0..PK_SIZE / 2])
-            .expect("In-memory write");
+        bytes[0..PK_SIZE / 2].copy_from_slice(&JubJubAffine::from(self.A).to_bytes()[..]);
 
-        utils::serialize_compressed_jubjub(&self.B, &mut bytes[PK_SIZE / 2..PK_SIZE])
-            .expect("In-memory write");
+        bytes[PK_SIZE / 2..PK_SIZE].copy_from_slice(&JubJubAffine::from(self.B).to_bytes()[..]);
 
         bytes
     }

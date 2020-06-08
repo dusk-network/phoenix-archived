@@ -21,7 +21,6 @@ fn verify_random(proved_txs: &[Transaction]) {
 }
 
 fn benchmark_phoenix(c: &mut Criterion) {
-    utils::init();
     zk::init();
 
     let rng = rand::thread_rng();

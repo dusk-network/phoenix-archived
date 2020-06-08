@@ -1,7 +1,7 @@
 use crate::{zk, BlsScalar};
 
 use hades252::strategies::GadgetStrategy;
-use num_traits::{One, Zero};
+use hades252::strategies::Strategy;
 
 /// Validate the input nullifiers
 pub fn nullifier<'a, P>(
@@ -30,10 +30,9 @@ where
 
             pi.next().map(|p| *p = BlsScalar::zero());
             acc = composer.mul(
+                BlsScalar::one(),
                 acc,
                 two,
-                BlsScalar::one(),
-                -BlsScalar::one(),
                 BlsScalar::zero(),
                 BlsScalar::zero(),
             );
@@ -42,21 +41,17 @@ where
             // current sk_r_prime for the output of a poly_gate
             pi.next().map(|p| *p = BlsScalar::zero());
             let dif = composer.mul(
+                BlsScalar::one(),
                 acc,
                 *bit,
-                BlsScalar::one(),
-                -BlsScalar::one(),
                 BlsScalar::zero(),
                 BlsScalar::zero(),
             );
 
             pi.next().map(|p| *p = BlsScalar::zero());
             sk_r_prime = composer.add(
-                sk_r_prime,
-                dif,
-                BlsScalar::one(),
-                BlsScalar::one(),
-                -BlsScalar::one(),
+                (BlsScalar::one(), sk_r_prime),
+                (BlsScalar::one(), dif),
                 BlsScalar::zero(),
                 BlsScalar::zero(),
             );
@@ -67,12 +62,12 @@ where
         perm.copy_from_slice(&zero_perm);
         perm[1] = sk_r_prime;
         perm[2] = *item.idx();
-        let (mut p_composer, mut p_pi, n) =
-            GadgetStrategy::poseidon_gadget(composer, pi, &mut perm);
+        let mut strat = GadgetStrategy::new(&mut composer);
+        strat.perm(&mut perm);
 
-        p_pi.next().map(|p| *p = *item.nullifier());
-        p_composer.add_gate(
-            n,
+        pi.next().map(|p| *p = *item.nullifier());
+        composer.add_gate(
+            perm[1],
             zero,
             zero,
             -BlsScalar::one(),
@@ -81,9 +76,6 @@ where
             BlsScalar::zero(),
             *item.nullifier(),
         );
-
-        composer = p_composer;
-        pi = p_pi;
     }
 
     (composer, pi)
@@ -95,7 +87,6 @@ mod tests {
 
     #[test]
     fn tx_input_nullifier_invalid() {
-        utils::init();
         zk::init();
 
         let mut tx = Transaction::default();

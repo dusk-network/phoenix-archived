@@ -1,12 +1,12 @@
 use crate::{
-    utils, zk, BlsScalar, Note, Transaction, TransactionInput, TransactionItem,
+    utils, zk, BlsScalar, JubJubAffine, Note, Transaction, TransactionInput, TransactionItem,
     MAX_INPUT_NOTES_PER_TRANSACTION, MAX_OUTPUT_NOTES_PER_TRANSACTION,
 };
 
 use std::mem;
 
-use algebra::curves::ProjectiveCurve;
-use num_traits::{One, Zero};
+use jubjub::GENERATOR;
+
 use unprolix::{Constructor, Getters, Setters};
 
 /// Structure reflecting a [`Transaction`] committed to a circuit
@@ -31,14 +31,14 @@ impl ZkTransaction {
     pub fn from_tx(composer: &mut zk::Composer, tx: &Transaction) -> Self {
         let zero = composer.add_input(BlsScalar::zero());
         let one = composer.add_input(BlsScalar::one());
-        let two = composer.add_input(BlsScalar::from(2u8));
-        let three = composer.add_input(BlsScalar::from(3u8));
-        let fifteen = composer.add_input(BlsScalar::from(15u8));
+        let two = composer.add_input(BlsScalar::from(2u64));
+        let three = composer.add_input(BlsScalar::from(3u64));
+        let fifteen = composer.add_input(BlsScalar::from(15u64));
 
-        let basepoint = utils::jubjub_projective_basepoint().into_affine();
-        let basepoint_affine_x = composer.add_input(basepoint.x);
-        let basepoint_affine_y = composer.add_input(basepoint.y);
-        let basepoint_affine_xy = composer.add_input(basepoint.x * basepoint.y);
+        let basepoint = GENERATOR;
+        let basepoint_affine_x = composer.add_input(basepoint.get_x());
+        let basepoint_affine_y = composer.add_input(basepoint.get_y());
+        let basepoint_affine_xy = composer.add_input(basepoint.get_x() * basepoint.get_y());
 
         let mut inputs = [unsafe { mem::zeroed() }; MAX_INPUT_NOTES_PER_TRANSACTION];
         let mut outputs = [unsafe { mem::zeroed() }; MAX_OUTPUT_NOTES_PER_TRANSACTION];
@@ -109,11 +109,11 @@ impl ZkTransactionInput {
         let idx = BlsScalar::from(idx);
         let idx = composer.add_input(idx);
 
-        let pk_r_affine = item.note().pk_r().into_affine();
-        let pk_r_affine_x = composer.add_input(pk_r_affine.x);
-        let pk_r_affine_y = composer.add_input(pk_r_affine.y);
+        let pk_r_affine = JubJubAffine::from(item.note().pk_r());
+        let pk_r_affine_x = composer.add_input(pk_r_affine.get_x());
+        let pk_r_affine_y = composer.add_input(pk_r_affine.get_y());
 
-        let pk_r_affine_xy = pk_r_affine.x * pk_r_affine.y;
+        let pk_r_affine_xy = pk_r_affine.get_x() * pk_r_affine.get_y();
         let pk_r_affine_xy = composer.add_input(pk_r_affine_xy);
 
         let note_hash_scalar = item.note().hash();
@@ -179,8 +179,8 @@ impl ZkTransactionOutput {
         let idx = BlsScalar::from(idx);
         let idx = composer.add_input(idx);
 
-        let pk_r_affine = item.note().pk_r().into_affine();
-        let pk_r_affine_x_scalar = pk_r_affine.x;
+        let pk_r_affine = JubJubAffine::from(item.note().pk_r());
+        let pk_r_affine_x_scalar = pk_r_affine.get_x();
         let pk_r_affine_x = composer.add_input(pk_r_affine_x_scalar);
 
         let note_hash_scalar = item.note().hash();

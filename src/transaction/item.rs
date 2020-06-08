@@ -1,6 +1,6 @@
 use crate::{
-    crypto, db, rpc, utils, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator,
-    NoteVariant, Nullifier, PublicKey, SecretKey, TransparentNote,
+    crypto, db, rpc, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator, NoteVariant,
+    Nullifier, PublicKey, SecretKey, TransparentNote,
 };
 
 use std::cmp::Ordering;
@@ -8,8 +8,6 @@ use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::io::{self, Read, Write};
 use std::path::Path;
-
-use num_traits::Zero;
 
 /// A transaction item constains sensitive data for a proof creation, and must be obfuscated before
 /// network propagation.
@@ -49,9 +47,9 @@ impl Default for TransactionInput {
         let pk = sk.public_key();
         let value = 0;
 
-        let r = JubJubScalar::from(3u8);
+        let r = JubJubScalar::from(3u64);
         let nonce = Nonce([5u8; 24]);
-        let blinding_factor = BlsScalar::from(7u8);
+        let blinding_factor = BlsScalar::from(7u64);
 
         let merkle_opening = crypto::MerkleProof::default();
 
@@ -187,9 +185,9 @@ impl Default for TransactionOutput {
         let pk = sk.public_key();
         let value = 0;
 
-        let r = JubJubScalar::from(11u8);
+        let r = JubJubScalar::from(11u64);
         let nonce = Nonce([13u8; 24]);
-        let blinding_factor = BlsScalar::from(17u8);
+        let blinding_factor = BlsScalar::from(17u64);
 
         TransparentNote::deterministic_output(&r, nonce, &pk, value, blinding_factor)
             .to_transaction_output(value, blinding_factor, pk)
@@ -300,7 +298,7 @@ impl From<TransactionInput> for rpc::TransactionInput {
 impl From<TransactionInput> for rpc::Nullifier {
     fn from(item: TransactionInput) -> Self {
         let mut scalar_buf = [0u8; 32];
-        utils::serialize_bls_scalar(item.nullifier.s(), &mut scalar_buf).expect("In-memory write");
+        scalar_buf.copy_from_slice(&item.nullifier.s().to_bytes()[..]);
 
         rpc::Nullifier {
             h: Some(rpc::Scalar {

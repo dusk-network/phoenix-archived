@@ -1,7 +1,10 @@
-use crate::{rpc, utils, Error, JubJubProjective, JubJubScalar, PublicKey, SecretKey};
+use crate::{rpc, utils, Error, JubJubAffine, JubJubExtended, JubJubScalar, PublicKey, SecretKey};
 
+use jubjub::GENERATOR;
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
+use std::ops::Mul;
+use subtle::{Choice, ConstantTimeEq};
 
 use unprolix::{Constructor, Getters, Setters};
 
@@ -9,11 +12,25 @@ use unprolix::{Constructor, Getters, Setters};
 ///
 /// The notes are encrypted against secret a, so this is used to decrypt the blinding factor and
 /// value
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]
+#[derive(Debug, Clone, Copy, Constructor, Getters, Setters)]
 pub struct ViewKey {
     a: JubJubScalar,
-    B: JubJubProjective,
+    B: JubJubExtended,
 }
+
+impl ConstantTimeEq for ViewKey {
+    fn ct_eq(&self, other: &Self) -> Choice {
+        self.B.ct_eq(&other.B)
+    }
+}
+
+impl PartialEq for ViewKey {
+    fn eq(&self, other: &Self) -> bool {
+        self.a == other.a && self.ct_eq(&other).unwrap_u8() == 1
+    }
+}
+
+impl Eq for ViewKey {}
 
 impl Default for ViewKey {
     fn default() -> Self {
@@ -24,7 +41,7 @@ impl Default for ViewKey {
 impl ViewKey {
     /// Derive the secret to deterministically construct a [`PublicKey`]
     pub fn public_key(&self) -> PublicKey {
-        let A = utils::mul_by_basepoint_jubjub(&self.a);
+        let A = JubJubExtended::from(GENERATOR).mul(&self.a);
 
         PublicKey::new(A, self.B)
     }
@@ -74,10 +91,9 @@ impl Into<[u8; VK_SIZE]> for &ViewKey {
     fn into(self) -> [u8; VK_SIZE] {
         let mut bytes = [0x00u8; VK_SIZE];
 
-        utils::serialize_jubjub_scalar(&self.a, &mut bytes[0..VK_SIZE_A]).expect("In-memory write");
+        bytes[0..VK_SIZE_A].copy_from_slice(&self.a.to_bytes()[..]);
 
-        utils::serialize_compressed_jubjub(&self.B, &mut bytes[VK_SIZE_A..VK_SIZE])
-            .expect("In-memory write");
+        bytes[VK_SIZE_A..VK_SIZE].copy_from_slice(&JubJubAffine::from(self.B).to_bytes()[..]);
 
         bytes
     }

@@ -1,7 +1,7 @@
 use crate::{zk, BlsScalar};
 
 use hades252::strategies::GadgetStrategy;
-use num_traits::{One, Zero};
+use hades252::strategies::Strategy;
 
 macro_rules! value_commitment_preimage {
     (
@@ -20,19 +20,15 @@ macro_rules! value_commitment_preimage {
         $perm[1] = *$item.value();
         $perm[2] = *$item.blinding_factor();
 
-        let (p_composer, p_pi, p_c) = GadgetStrategy::poseidon_gadget($composer, $pi, &mut $perm);
+        let mut strat = GadgetStrategy::new(&mut $composer);
+        strat.perm(&mut $perm);
 
-        $composer = p_composer;
-        $pi = p_pi;
-        $cc = p_c;
+        $cc = $perm[1];
 
         $pi.next().map(|p| *p = BlsScalar::zero());
         $acc = $composer.add(
-            $acc,
-            *$item.value(),
-            BlsScalar::one(),
-            BlsScalar::one(),
-            -BlsScalar::one(),
+            (BlsScalar::one(), $acc),
+            (BlsScalar::one(), *$item.value()),
             BlsScalar::zero(),
             BlsScalar::zero(),
         );
@@ -125,7 +121,6 @@ mod tests {
 
     #[test]
     fn tx_balance_invalid() {
-        utils::init();
         zk::init();
 
         let mut tx = Transaction::default();

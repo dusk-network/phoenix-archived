@@ -12,7 +12,6 @@ use kelvin::annotations::Count;
 use kelvin::{Blake2b, Content, Root, Sink, Source};
 use kelvin_hamt::CountingHAMTMap as HAMTMap;
 use kelvin_radix::DefaultRadixMap as RadixMap;
-use rand::Rng;
 use tracing::trace;
 
 /// Type used for notes storage
@@ -63,14 +62,16 @@ impl<H: ByteHash> crypto::MerkleProofProvider for Db<H> {
         let mut rng = rand::thread_rng();
 
         let mut leaves = [None; crypto::ARITY];
-        leaves.iter_mut().for_each(|l| *l = rng.gen());
+        leaves
+            .iter_mut()
+            .for_each(|l| *l = Some(BlsScalar::random(&mut rng)));
 
         Ok(leaves)
     }
 
     fn root(&self) -> Result<BlsScalar, Error> {
         // TODO - Implement
-        Ok((&mut rand::thread_rng()).gen())
+        Ok(BlsScalar::random(&mut rand::thread_rng()))
     }
 }
 

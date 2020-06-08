@@ -1,7 +1,6 @@
-use crate::{utils, zk, BlsScalar};
+use crate::{zk, BlsScalar};
 
-use algebra::curves::ProjectiveCurve;
-use num_traits::{One, Zero};
+use jubjub::GENERATOR;
 
 /// Perform the pre-image of the value commitment and check if the inputs equals the outputs + fee
 pub fn sanity<'a, P>(
@@ -12,10 +11,10 @@ pub fn sanity<'a, P>(
 where
     P: Iterator<Item = &'a mut BlsScalar>,
 {
-    let basepoint = utils::jubjub_projective_basepoint().into_affine();
-    let basepoint_affine_xy = basepoint.x * basepoint.y;
+    let basepoint = GENERATOR;
+    let basepoint_affine_xy = basepoint.get_x() * basepoint.get_y();
 
-    pi.next().map(|p| *p = basepoint.x);
+    pi.next().map(|p| *p = basepoint.get_x());
     composer.add_gate(
         *tx.basepoint_affine_x(),
         *tx.zero(),
@@ -24,10 +23,10 @@ where
         BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::zero(),
-        basepoint.x,
+        basepoint.get_x(),
     );
 
-    pi.next().map(|p| *p = basepoint.y);
+    pi.next().map(|p| *p = basepoint.get_y());
     composer.add_gate(
         *tx.basepoint_affine_y(),
         *tx.zero(),
@@ -36,7 +35,7 @@ where
         BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::zero(),
-        basepoint.y,
+        basepoint.get_y(),
     );
 
     pi.next().map(|p| *p = basepoint_affine_xy);
@@ -75,7 +74,7 @@ where
         BlsScalar::one(),
     );
 
-    pi.next().map(|p| *p = BlsScalar::from(2u8));
+    pi.next().map(|p| *p = BlsScalar::from(2u64));
     composer.add_gate(
         *tx.two(),
         *tx.zero(),
@@ -84,10 +83,10 @@ where
         BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::zero(),
-        BlsScalar::from(2u8),
+        BlsScalar::from(2u64),
     );
 
-    pi.next().map(|p| *p = BlsScalar::from(3u8));
+    pi.next().map(|p| *p = BlsScalar::from(3u64));
     composer.add_gate(
         *tx.three(),
         *tx.zero(),
@@ -96,10 +95,10 @@ where
         BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::zero(),
-        BlsScalar::from(3u8),
+        BlsScalar::from(3u64),
     );
 
-    pi.next().map(|p| *p = BlsScalar::from(15u8));
+    pi.next().map(|p| *p = BlsScalar::from(15u64));
     composer.add_gate(
         *tx.fifteen(),
         *tx.zero(),
@@ -108,7 +107,7 @@ where
         BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::zero(),
-        BlsScalar::from(15u8),
+        BlsScalar::from(15u64),
     );
 
     (composer, pi)

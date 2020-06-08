@@ -1,5 +1,5 @@
 use crate::{
-    crypto, rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, Note,
+    crypto, rpc, utils, BlsScalar, Error, JubJubAffine, JubJubExtended, JubJubScalar, Nonce, Note,
     NoteGenerator, NoteType, PublicKey, ViewKey, NONCEBYTES,
 };
 
@@ -14,8 +14,8 @@ use unprolix::Constructor;
 pub struct TransparentNote {
     value_commitment: BlsScalar,
     nonce: Nonce,
-    R: JubJubProjective,
-    pk_r: JubJubProjective,
+    R: JubJubExtended,
+    pk_r: JubJubExtended,
     idx: u64,
     pub value: u64,
     pub blinding_factor: BlsScalar,
@@ -41,7 +41,7 @@ impl Read for TransparentNote {
         buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
             .next()
             .ok_or(Error::InvalidParameters)
-            .and_then(|c| utils::serialize_bls_scalar(&self.value_commitment, c))
+            .and_then(|c| Ok(c.copy_from_slice(&self.value_commitment.to_bytes()[..])))
             .map_err::<io::Error, _>(|e| e.into())?;
         n += utils::BLS_SCALAR_SERIALIZED_SIZE;
         buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
@@ -57,7 +57,7 @@ impl Read for TransparentNote {
         buf.chunks_mut(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
             .next()
             .ok_or(Error::InvalidParameters)
-            .and_then(|c| utils::serialize_compressed_jubjub(&self.R, c))
+            .and_then(|c| Ok(c.copy_from_slice(&JubJubAffine::from(&self.R).to_bytes()[..])))
             .map_err::<io::Error, _>(|e| e.into())?;
         n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
         buf = &mut buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
@@ -65,7 +65,7 @@ impl Read for TransparentNote {
         buf.chunks_mut(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
             .next()
             .ok_or(Error::InvalidParameters)
-            .and_then(|c| utils::serialize_compressed_jubjub(&self.pk_r, c))
+            .and_then(|c| Ok(c.copy_from_slice(&JubJubAffine::from(&self.pk_r).to_bytes()[..])))
             .map_err::<io::Error, _>(|e| e.into())?;
         n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
         buf = &mut buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
@@ -89,7 +89,7 @@ impl Read for TransparentNote {
         buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
             .next()
             .ok_or(Error::InvalidParameters)
-            .and_then(|c| utils::serialize_bls_scalar(&self.blinding_factor, c))
+            .and_then(|c| Ok(c.copy_from_slice(&self.blinding_factor.to_bytes()[..])))
             .map_err::<io::Error, _>(|e| e.into())?;
         n += utils::BLS_SCALAR_SERIALIZED_SIZE;
 
@@ -235,11 +235,11 @@ impl Note for TransparentNote {
         &self.nonce
     }
 
-    fn R(&self) -> &JubJubProjective {
+    fn R(&self) -> &JubJubExtended {
         &self.R
     }
 
-    fn pk_r(&self) -> &JubJubProjective {
+    fn pk_r(&self) -> &JubJubExtended {
         &self.pk_r
     }
 
@@ -362,26 +362,15 @@ impl TryFrom<rpc::DecryptedNote> for TransparentNote {
 
 impl<H: ByteHash> Content<H> for TransparentNote {
     fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
-        utils::bls_scalar_to_bytes(&self.value_commitment)
-            .map_err::<io::Error, _>(|e| e.into())
-            .and_then(|b| sink.write_all(&b))?;
-
-        utils::projective_jubjub_to_bytes(&self.R)
-            .map_err::<io::Error, _>(|e| e.into())
-            .and_then(|b| sink.write_all(&b))?;
-
-        utils::projective_jubjub_to_bytes(&self.pk_r)
-            .map_err::<io::Error, _>(|e| e.into())
-            .and_then(|b| sink.write_all(&b))?;
+        sink.write_all(&self.value_commitment.to_bytes())?;
+        sink.write_all(&JubJubAffine::from(&self.R).to_bytes())?;
+        sink.write_all(&JubJubAffine::from(&self.pk_r).to_bytes())?;
 
         self.nonce.0.persist(sink)?;
         self.idx.persist(sink)?;
         self.value.persist(sink)?;
 
-        utils::bls_scalar_to_bytes(&self.blinding_factor)
-            .map_err::<io::Error, _>(|e| e.into())
-            .and_then(|b| sink.write_all(&b))?;
-
+        sink.write_all(&self.blinding_factor.to_bytes())?;
         Ok(())
     }
 

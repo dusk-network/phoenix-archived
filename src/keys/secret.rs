@@ -1,7 +1,9 @@
-use crate::{rpc, utils, Error, JubJubScalar, PublicKey, ViewKey};
+use crate::{rpc, utils, Error, JubJubExtended, JubJubScalar, PublicKey, ViewKey};
 
+use jubjub::GENERATOR;
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
+use std::ops::Mul;
 
 use rand::RngCore;
 use unprolix::{Constructor, Getters, Setters};
@@ -35,15 +37,15 @@ impl SecretKey {
 
     /// Derive the secret to deterministically construct a [`PublicKey`]
     pub fn public_key(&self) -> PublicKey {
-        let A = utils::mul_by_basepoint_jubjub(&self.a);
-        let B = utils::mul_by_basepoint_jubjub(&self.b);
+        let A = JubJubExtended::from(GENERATOR).mul(&self.a);
+        let B = JubJubExtended::from(GENERATOR).mul(&self.b);
 
         PublicKey::new(A, B)
     }
 
     /// Derive the secret to deterministically construct a [`ViewKey`]
     pub fn view_key(&self) -> ViewKey {
-        let B = utils::mul_by_basepoint_jubjub(&self.b);
+        let B = JubJubExtended::from(GENERATOR).mul(&self.b);
 
         ViewKey::new(self.a, B)
     }
@@ -75,11 +77,9 @@ impl Into<[u8; SK_SIZE]> for &SecretKey {
     fn into(self) -> [u8; SK_SIZE] {
         let mut bytes = [0x00u8; SK_SIZE];
 
-        utils::serialize_jubjub_scalar(&self.a, &mut bytes[0..SK_SIZE / 2])
-            .expect("In-memory write");
+        bytes[0..SK_SIZE / 2].copy_from_slice(&self.a.to_bytes()[..]);
 
-        utils::serialize_jubjub_scalar(&self.b, &mut bytes[SK_SIZE / 2..SK_SIZE])
-            .expect("In-memory write");
+        bytes[SK_SIZE / 2..SK_SIZE].copy_from_slice(&self.b.to_bytes()[..]);
 
         bytes
     }

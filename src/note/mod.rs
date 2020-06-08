@@ -1,15 +1,16 @@
 use crate::{
-    crypto, db, rpc, utils, BlsScalar, Error, JubJubProjective, JubJubScalar, Nonce, NoteType,
-    PublicKey, SecretKey, TransactionInput, TransactionOutput, ViewKey,
+    crypto, db, rpc, utils, BlsScalar, Error, JubJubAffine, JubJubExtended, JubJubScalar, Nonce,
+    NoteType, PublicKey, SecretKey, TransactionInput, TransactionOutput, ViewKey,
 };
 
+use rand;
 use std::convert::TryFrom;
 use std::fmt::Debug;
 use std::io;
 use std::ops::Mul;
 use std::path::Path;
 
-use algebra::curves::{AffineCurve, ProjectiveCurve};
+use jubjub::GENERATOR;
 
 /// Nullifier definition
 pub mod nullifier;
@@ -56,7 +57,7 @@ pub trait NoteGenerator:
     fn output(pk: &PublicKey, value: u64) -> (Self, BlsScalar) {
         let r = utils::gen_random_scalar();
         let nonce = utils::gen_nonce();
-        let blinding_factor = utils::gen_random_bls_scalar();
+        let blinding_factor = BlsScalar::random(&mut rand::thread_rng());
 
         let note = Self::deterministic_output(&r, nonce, pk, value, blinding_factor);
 
@@ -103,7 +104,7 @@ pub trait NoteGenerator:
     }
 
     /// Generate a random `r` and call [`Self::new_pk_r`]
-    fn generate_pk_r(pk: &PublicKey) -> (JubJubScalar, JubJubProjective, JubJubProjective) {
+    fn generate_pk_r(pk: &PublicKey) -> (JubJubScalar, JubJubExtended, JubJubExtended) {
         let r = utils::gen_random_scalar();
 
         let (R, pk_r) = Self::new_pk_r(&r, pk);
@@ -112,15 +113,15 @@ pub trait NoteGenerator:
     }
 
     /// Generate a new `PKr = H(a · R) · G + B` from a given `r`
-    fn new_pk_r(r: &JubJubScalar, pk: &PublicKey) -> (JubJubProjective, JubJubProjective) {
-        let R = utils::mul_by_basepoint_jubjub(r);
+    fn new_pk_r(r: &JubJubScalar, pk: &PublicKey) -> (JubJubExtended, JubJubExtended) {
+        let R = JubJubExtended::from(GENERATOR).mul(r);
 
         let rA = pk.A().mul(r);
         let rA = crypto::hash_jubjub_projective_to_jubjub_scalar(&rA);
-        let rA = utils::mul_by_basepoint_jubjub(&rA);
+        let rA = JubJubExtended::from(GENERATOR).mul(rA);
 
         let pk_r = rA + pk.B();
-        let pk_r = pk_r.into_affine().into_projective();
+        let pk_r = JubJubExtended::from(JubJubAffine::from(pk_r));
 
         (R, pk_r)
     }
@@ -139,8 +140,7 @@ pub trait NoteGenerator:
         blinding_factor: &BlsScalar,
     ) -> [u8; 48] {
         let mut blinding_factor_bytes = [0x00u8; utils::BLS_SCALAR_SERIALIZED_SIZE];
-        utils::serialize_bls_scalar(blinding_factor, &mut blinding_factor_bytes)
-            .expect("In-memory write");
+        blinding_factor_bytes.copy_from_slice(&blinding_factor.to_bytes()[..]);
 
         let bytes = crypto::encrypt(r, pk, &nonce.increment_le(), blinding_factor_bytes);
         utils::safe_48_chunk(bytes.as_slice())
@@ -152,7 +152,7 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
     /// Create a unique nullifier for the note
     fn generate_nullifier(&self, sk: &SecretKey) -> Nullifier {
         let sk_r = self.sk_r(sk);
-        let sk_r = utils::bls_scalar_from_jubjub_bits(&sk_r);
+        let sk_r = BlsScalar::from_bytes(&sk_r.to_bytes()).unwrap();
 
         let idx = BlsScalar::from(self.idx());
 
@@ -208,13 +208,13 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
 
     /// Return a hash represented by `H(value_commitment, idx, H([R]), H([PKr]))`
     fn hash(&self) -> BlsScalar {
-        let pk_r = self.pk_r().into_affine();
+        let pk_r = JubJubAffine::from(self.pk_r());
 
         crypto::hash_merkle(&[
             *self.value_commitment(),
             BlsScalar::from(self.idx()),
-            pk_r.x,
-            pk_r.y,
+            pk_r.get_x(),
+            pk_r.get_y(),
         ])
     }
 
@@ -244,9 +244,9 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
     /// Return the raw encrypted value blinding factor
     fn encrypted_blinding_factor(&self) -> &[u8; 48];
     /// Return the `r · G` used for the DHKE randomness
-    fn R(&self) -> &JubJubProjective;
+    fn R(&self) -> &JubJubExtended;
     /// Return the public DHKE combined with the secret key of the owner of the note
-    fn pk_r(&self) -> &JubJubProjective;
+    fn pk_r(&self) -> &JubJubExtended;
 
     /// Generate a `sk_r = H(a · R) + b`
     fn sk_r(&self, sk: &SecretKey) -> JubJubScalar {
@@ -263,7 +263,7 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
     fn is_owned_by(&self, vk: &ViewKey) -> bool {
         let aR = self.R().mul(vk.a());
         let aR = crypto::hash_jubjub_projective_to_jubjub_scalar(&aR);
-        let aR = utils::mul_by_basepoint_jubjub(&aR);
+        let aR = JubJubExtended::from(GENERATOR).mul(&aR);
 
         let pk_r = aR + vk.B();
 

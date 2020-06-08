@@ -1,22 +1,18 @@
 use crate::{
-    crypto, utils, BlsScalar, Error, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
+    crypto, utils, BlsScalar, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
     MAX_OUTPUT_NOTES_PER_TRANSACTION,
 };
 
 use std::mem::{self, MaybeUninit};
 
-use algebra::bytes::{FromBytes, ToBytes};
-use algebra::curves::bls12_381::Bls12_381;
-use algebra::curves::bls12_381::G1Affine;
-use ff_fft::EvaluationDomain;
+use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
+use dusk_plonk::commitment_scheme::kzg10::{ProverKey, VerifierKey};
+pub use dusk_plonk::constraint_system::composer::StandardComposer as Composer;
+use dusk_plonk::fft::EvaluationDomain;
 use merlin::Transcript;
-use num_traits::Zero;
-use plonk::cs::composer::StandardComposer;
-use plonk::cs::{proof::Proof as PlonkProof, Composer as _, PreProcessedCircuit};
-use plonk::srs;
-use poly_commit::kzg10::{Commitment, Powers, VerifierKey};
 
-pub use plonk::cs::constraint_system::Variable;
+pub use dusk_plonk::constraint_system::Variable;
+pub use dusk_plonk::proof_system::{PreProcessedCircuit, Proof};
 
 /// [`ZkMerkleProof`] definition
 pub mod merkle;
@@ -53,19 +49,15 @@ pub const PI_LEN: usize = {
 };
 
 lazy_static::lazy_static! {
-    static ref DOMAIN: EvaluationDomain<BlsScalar> = unsafe { mem::zeroed() };
-    static ref CK: Powers<'static, Bls12_381> = unsafe { mem::zeroed() };
-    static ref VK: VerifierKey<Bls12_381> = unsafe { mem::zeroed() };
+    static ref DOMAIN: EvaluationDomain = unsafe { mem::zeroed() };
+    static ref CK: ProverKey = unsafe { mem::zeroed() };
+    static ref VK: VerifierKey = unsafe { mem::zeroed() };
     static ref TRANSCRIPT: Transcript = unsafe { mem::zeroed() };
-    static ref PREPROCESSED_CIRCUIT: MaybeUninit<Circuit> =
+    static ref PREPROCESSED_CIRCUIT: MaybeUninit<PreProcessedCircuit> =
         MaybeUninit::uninit();
     static ref PUBLIC_INPUTS: MaybeUninit<Vec<BlsScalar>> =
         MaybeUninit::uninit();
 }
-
-pub type Circuit = PreProcessedCircuit<Bls12_381>;
-pub type Composer = StandardComposer<Bls12_381>;
-pub type Proof = PlonkProof<Bls12_381>;
 
 pub const SERIALIZED_PROOF_SIZE: usize = 1097;
 
@@ -75,134 +67,15 @@ pub mod gadgets;
 #[cfg(test)]
 mod tests;
 
-/// Serialize a proof into bytes
-pub fn proof_to_bytes(proof: &Proof) -> Result<[u8; SERIALIZED_PROOF_SIZE], Error> {
-    let mut bytes = [0xf5u8; SERIALIZED_PROOF_SIZE];
-
-    let mut bytes_commitments = bytes.chunks_mut(97);
-
-    proof
-        .a_comm
-        .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .b_comm
-        .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .c_comm
-        .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .z_comm
-        .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .t_lo_comm
-        .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .t_mid_comm
-        .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .t_hi_comm
-        .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .w_z_comm
-        .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .w_zw_comm
-        .write(bytes_commitments.next().ok_or(Error::InvalidParameters)?)?;
-
-    let mut bytes_scalars = (&mut bytes[9 * 97..]).chunks_mut(32);
-
-    proof
-        .a_eval
-        .write(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .b_eval
-        .write(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .c_eval
-        .write(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .left_sigma_eval
-        .write(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .right_sigma_eval
-        .write(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .lin_poly_eval
-        .write(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    proof
-        .z_hat_eval
-        .write(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-
-    Ok(bytes)
-}
-
-/// Deserialize a [`Proof`] from a slice with up to 1097 bytes
-pub fn bytes_to_proof(bytes: &[u8]) -> Result<Proof, Error> {
-    let mut bytes_commitments = bytes.chunks(97);
-
-    let a_comm = Commitment(G1Affine::read(
-        bytes_commitments.next().ok_or(Error::InvalidParameters)?,
-    )?);
-    let b_comm = Commitment(G1Affine::read(
-        bytes_commitments.next().ok_or(Error::InvalidParameters)?,
-    )?);
-    let c_comm = Commitment(G1Affine::read(
-        bytes_commitments.next().ok_or(Error::InvalidParameters)?,
-    )?);
-    let z_comm = Commitment(G1Affine::read(
-        bytes_commitments.next().ok_or(Error::InvalidParameters)?,
-    )?);
-    let t_lo_comm = Commitment(G1Affine::read(
-        bytes_commitments.next().ok_or(Error::InvalidParameters)?,
-    )?);
-    let t_mid_comm = Commitment(G1Affine::read(
-        bytes_commitments.next().ok_or(Error::InvalidParameters)?,
-    )?);
-    let t_hi_comm = Commitment(G1Affine::read(
-        bytes_commitments.next().ok_or(Error::InvalidParameters)?,
-    )?);
-    let w_z_comm = Commitment(G1Affine::read(
-        bytes_commitments.next().ok_or(Error::InvalidParameters)?,
-    )?);
-    let w_zw_comm = Commitment(G1Affine::read(
-        bytes_commitments.next().ok_or(Error::InvalidParameters)?,
-    )?);
-
-    let mut bytes_scalars = (&bytes[9 * 97..]).chunks(32);
-
-    let a_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    let b_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    let c_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    let left_sigma_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    let right_sigma_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    let lin_poly_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-    let z_hat_eval = BlsScalar::read(bytes_scalars.next().ok_or(Error::InvalidParameters)?)?;
-
-    Ok(Proof {
-        a_comm,
-        b_comm,
-        c_comm,
-        z_comm,
-        t_lo_comm,
-        t_mid_comm,
-        t_hi_comm,
-        w_z_comm,
-        w_zw_comm,
-        a_eval,
-        b_eval,
-        c_eval,
-        left_sigma_eval,
-        right_sigma_eval,
-        lin_poly_eval,
-        z_hat_eval,
-    })
-}
-
 /// Initialize the zk static data
 pub fn init() {
-    let public_parameters = srs::setup(CAPACITY, &mut utils::generate_rng(b"phoenix-plonk-srs"));
-    let (ck, vk) = srs::trim(&public_parameters, CAPACITY).unwrap();
-    let domain: EvaluationDomain<BlsScalar> = EvaluationDomain::new(CAPACITY).unwrap();
+    let public_parameters = PublicParameters::setup(
+        CAPACITY,
+        &mut utils::generate_rng(b"phoenix-plonk-PublicParameters"),
+    )
+    .unwrap();
+    let (ck, vk) = PublicParameters::trim(&public_parameters, CAPACITY).unwrap();
+    let domain: EvaluationDomain = EvaluationDomain::new(CAPACITY).unwrap();
 
     unsafe {
         utils::lazy_static_write(&*DOMAIN, domain);
@@ -227,7 +100,7 @@ pub fn init() {
 }
 
 /// Full transaction circuit
-pub fn circuit() -> &'static Circuit {
+pub fn circuit() -> &'static PreProcessedCircuit {
     unsafe { &*PREPROCESSED_CIRCUIT.as_ptr() }
 }
 
@@ -236,36 +109,39 @@ pub fn public_inputs() -> &'static Vec<BlsScalar> {
     unsafe { &*PUBLIC_INPUTS.as_ptr() }
 }
 
-fn inner_circuit<'a, P>(mut composer: Composer, tx: &Transaction, pi: P) -> Composer
+fn inner_circuit<'a, P>(composer: Composer, _tx: &Transaction, _pi: P) -> Composer
 where
     P: Iterator<Item = &'a mut BlsScalar>,
 {
-    let tx_zk = ZkTransaction::from_tx(&mut composer, tx);
+    /*
+        let tx_zk = ZkTransaction::from_tx(&mut composer, tx);
 
-    #[cfg(feature = "circuit-sanity")]
-    let (composer, pi) = gadgets::sanity(composer, &tx_zk, pi);
+        #[cfg(feature = "circuit-sanity")]
+        let (_, pi) = gadgets::sanity(composer, &tx_zk, pi);
 
-    #[cfg(feature = "circuit-merkle")]
-    let (composer, pi) = gadgets::merkle(composer, &tx_zk, pi);
+        #[cfg(feature = "circuit-merkle")]
+        let (_, pi) = gadgets::merkle(composer, &tx_zk, pi);
 
-    #[cfg(feature = "circuit-preimage")]
-    let (composer, pi) = gadgets::preimage(composer, &tx_zk, pi);
+        #[cfg(feature = "circuit-preimage")]
+        let (_, pi) = gadgets::preimage(composer, &tx_zk, pi);
 
-    #[cfg(feature = "circuit-balance")]
-    let (composer, pi) = gadgets::balance(composer, &tx_zk, pi);
+        #[cfg(feature = "circuit-balance")]
+        let (_, pi) = gadgets::balance(composer, &tx_zk, pi);
 
-    #[cfg(feature = "circuit-nullifier")]
-    let (composer, pi) = gadgets::nullifier(composer, &tx_zk, pi);
+        #[cfg(feature = "circuit-nullifier")]
+        let (_, pi) = gadgets::nullifier(composer, &tx_zk, pi);
 
-    #[cfg(feature = "circuit-skr")]
-    let composer = gadgets::sk_r(composer, &tx_zk);
+        #[cfg(feature = "circuit-skr")]
+        let _ = gadgets::sk_r(composer, &tx_zk);
 
-    let _ = tx_zk;
-    let _ = pi;
-    let mut composer = composer;
+        let _ = tx_zk;
+        let _ = pi;
 
-    composer.fill_capacity_with_dummy_constraints(CAPACITY);
+        (0..composer.circuit_size()).for_each(|_| {
+            composer.add_dummy_constraints();
+        });
 
+    */
     composer
 }
 

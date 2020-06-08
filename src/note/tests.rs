@@ -1,10 +1,12 @@
 use crate::{
-    rpc, utils, Note, NoteGenerator, NoteType, NoteVariant, ObfuscatedNote, PublicKey, SecretKey,
-    TransparentNote,
+    rpc, utils, JubJubExtended, Note, NoteGenerator, NoteType, NoteVariant, ObfuscatedNote,
+    PublicKey, SecretKey, TransparentNote,
 };
 
+use jubjub::GENERATOR;
 use std::convert::TryFrom;
 use std::io::{Read, Write};
+use std::ops::Mul;
 
 use kelvin::{
     tests::{arbitrary as a, fuzz_content, fuzz_content_iterations},
@@ -13,8 +15,6 @@ use kelvin::{
 
 #[test]
 fn transparent_note() {
-    utils::init();
-
     let sk = SecretKey::default();
     let pk = sk.public_key();
     let value = 25;
@@ -40,8 +40,6 @@ fn transparent_note() {
 
 #[test]
 fn obfuscated_note() {
-    utils::init();
-
     let sk = SecretKey::default();
     let pk = sk.public_key();
     let vk = sk.view_key();
@@ -77,8 +75,6 @@ fn obfuscated_note() {
 
 #[test]
 fn note_keys_consistency() {
-    utils::init();
-
     let sk = SecretKey::default();
     let pk = sk.public_key();
     let vk = sk.view_key();
@@ -97,14 +93,15 @@ fn note_keys_consistency() {
     let sk_r = note.sk_r(&sk);
     let wrong_sk_r = note.sk_r(&wrong_sk);
 
-    assert_eq!(note.pk_r(), &utils::mul_by_basepoint_jubjub(&sk_r));
-    assert_ne!(note.pk_r(), &utils::mul_by_basepoint_jubjub(&wrong_sk_r));
+    assert_eq!(note.pk_r(), &JubJubExtended::from(GENERATOR).mul(&sk_r));
+    assert_ne!(
+        note.pk_r(),
+        &JubJubExtended::from(GENERATOR).mul(&wrong_sk_r)
+    );
 }
 
 #[test]
 fn content_implementations() {
-    utils::init();
-
     impl a::Arbitrary for TransparentNote {
         fn arbitrary(u: &mut a::Unstructured<'_>) -> Result<Self, a::Error> {
             let vec: Vec<u8> = a::Arbitrary::arbitrary(u)?;

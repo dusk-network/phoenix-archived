@@ -5,12 +5,16 @@ use crate::{
 
 use std::convert::TryFrom;
 use std::io::{self, Read, Write};
+use std::mem;
 use std::path::Path;
 use std::{fmt, ptr};
 
-use num_traits::Zero;
+use dusk_plonk::proof_system::Proof;
+
 use rand::distributions::{Distribution, Standard};
 use rand::Rng;
+
+use bincode::{deserialize, serialize};
 
 pub const MAX_NOTES_PER_TRANSACTION: usize = 1 + 2;
 pub const MAX_INPUT_NOTES_PER_TRANSACTION: usize = 1;
@@ -32,7 +36,6 @@ lazy_static::lazy_static! {
 pub mod item;
 
 /// A phoenix transaction
-#[derive(Clone)]
 pub struct Transaction {
     fee: TransactionOutput,
     idx_inputs: usize,
@@ -41,6 +44,24 @@ pub struct Transaction {
     outputs: [TransactionOutput; MAX_OUTPUT_NOTES_PER_TRANSACTION],
     proof: Option<zk::Proof>,
     public_inputs: Option<zk::ZkPublicInputs>,
+}
+
+impl Clone for Transaction {
+    // TODO: we should have a safe way of cloning the proof
+    fn clone(&self) -> Self {
+        unsafe {
+            let p: Option<zk::Proof> = mem::transmute_copy(&self.proof);
+            Transaction {
+                fee: self.fee.clone(),
+                idx_inputs: self.idx_inputs.clone(),
+                inputs: self.inputs.clone(),
+                idx_outputs: self.idx_outputs.clone(),
+                outputs: self.outputs.clone(),
+                proof: p,
+                public_inputs: self.public_inputs.clone(),
+            }
+        }
+    }
 }
 
 impl Default for Transaction {
@@ -64,15 +85,14 @@ impl Read for Transaction {
         let mut n = 0;
 
         // Serialize proof
-        let proof = self
-            .proof
-            .as_ref()
-            .map(zk::proof_to_bytes)
-            .unwrap_or(Ok([0x00u8; zk::SERIALIZED_PROOF_SIZE]))
-            .map_err::<io::Error, _>(|e| e.into())?;
-        let b = (&proof[..]).read(buf)?;
-        n += b;
-        buf = &mut buf[b..];
+        if self.proof.is_some() {
+            let encoded: Vec<u8> = serialize(&self.proof().unwrap())
+                .unwrap_or(vec![0x00u8; zk::SERIALIZED_PROOF_SIZE]);
+
+            let b = (&encoded[..]).read(buf)?;
+            n += b;
+            buf = &mut buf[b..];
+        }
 
         // Serialize tx inputs (merkle root and nullifier)
         let inputs = self.idx_inputs.to_le_bytes();
@@ -84,7 +104,7 @@ impl Read for Transaction {
             buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
                 .next()
                 .ok_or(Error::InvalidParameters)
-                .and_then(|c| utils::serialize_bls_scalar(&self.inputs[i].merkle_root, c))
+                .and_then(|c| Ok(c.copy_from_slice(&self.inputs[i].merkle_root.to_bytes()[..])))
                 .map_err::<io::Error, _>(|e| e.into())?;
             n += utils::BLS_SCALAR_SERIALIZED_SIZE;
             buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
@@ -92,7 +112,7 @@ impl Read for Transaction {
             buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
                 .next()
                 .ok_or(Error::InvalidParameters)
-                .and_then(|c| utils::serialize_bls_scalar(self.inputs[i].nullifier.s(), c))
+                .and_then(|c| Ok(c.copy_from_slice(&self.inputs[i].nullifier.s().to_bytes()[..])))
                 .map_err::<io::Error, _>(|e| e.into())?;
             n += utils::BLS_SCALAR_SERIALIZED_SIZE;
             buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
@@ -124,7 +144,9 @@ impl Write for Transaction {
         // Deserialize proof
         let mut proof = [0x00u8; zk::SERIALIZED_PROOF_SIZE];
         let b = (&mut proof[..]).write(buf)?;
-        let proof = zk::bytes_to_proof(&proof[..]).map_err::<io::Error, _>(|e| e.into())?;
+        let proof: Proof = deserialize(&proof[..])
+            .map_err(|_| Error::InvalidParameters)
+            .map_err::<io::Error, _>(|e| e.into())?;
         self.proof.replace(proof);
         n += b;
         buf = &buf[b..];
@@ -545,7 +567,7 @@ impl Transaction {
 
         let proof = tx.proof;
         if !proof.is_empty() {
-            let proof = zk::bytes_to_proof(proof.as_slice())?;
+            let proof = deserialize(proof.as_slice()).map_err(|_| Error::InvalidParameters)?;
             transaction.set_proof(proof);
         }
 
@@ -575,7 +597,7 @@ impl TryFrom<rpc::Transaction> for Transaction {
 
         let proof = tx.proof;
         if !proof.is_empty() {
-            let proof = zk::bytes_to_proof(proof.as_slice())?;
+            let proof = deserialize(proof.as_slice()).map_err(|_| Error::InvalidParameters)?;
             transaction.set_proof(proof);
         }
 
@@ -615,8 +637,9 @@ impl TryFrom<Transaction> for rpc::Transaction {
 
         let proof = tx
             .proof()
-            .map(|p| zk::proof_to_bytes(p).map(|b| b.to_vec()))
-            .transpose()?
+            .map(|p| serialize(p).map(|b| b.to_vec()))
+            .transpose()
+            .map_err(|_| Error::InvalidParameters)?
             .unwrap_or_default();
 
         Ok(rpc::Transaction {
@@ -630,17 +653,13 @@ impl TryFrom<Transaction> for rpc::Transaction {
 
 impl fmt::LowerHex for Transaction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", hex::encode(utils::scalar_as_slice(&self.hash().0)))
+        write!(f, "{}", hex::encode(self.hash().to_bytes()))
     }
 }
 
 impl fmt::UpperHex for Transaction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            hex::encode_upper(utils::scalar_as_slice(&self.hash().0))
-        )
+        write!(f, "{}", hex::encode_upper(self.hash().to_bytes()))
     }
 }
 
