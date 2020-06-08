@@ -73,9 +73,10 @@ pub fn init() {
     let public_parameters = PublicParameters::setup(
         CAPACITY,
         &mut utils::generate_rng(b"phoenix-plonk-PublicParameters"),
-    );
+    )
+    .unwrap();
     let (ck, vk) = PublicParameters::trim(&public_parameters, CAPACITY).unwrap();
-    let domain: EvaluationDomain<BlsScalar> = EvaluationDomain::new(CAPACITY).unwrap();
+    let domain: EvaluationDomain = EvaluationDomain::new(CAPACITY).unwrap();
 
     unsafe {
         utils::lazy_static_write(&*DOMAIN, domain);
