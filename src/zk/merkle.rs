@@ -2,7 +2,6 @@ use crate::{crypto, zk, BlsScalar};
 
 use std::mem;
 
-
 use unprolix::{Constructor, Getters, Setters};
 
 #[derive(Debug, Clone, Copy, Getters, Setters)]

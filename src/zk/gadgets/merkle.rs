@@ -1,7 +1,7 @@
 use crate::{crypto, zk, BlsScalar};
 
 use hades252::strategies::GadgetStrategy;
-
+use hades252::strategies::Strategy;
 
 /// Verify the merkle opening
 pub fn merkle<'a, P>(
@@ -100,9 +100,10 @@ where
             );
 
             perm.copy_from_slice(l.perm());
-            let x = GadgetStrategy::poseidon_gadget(&mut composer, &mut perm);
+            let mut strat = GadgetStrategy::new(&mut composer);
+            strat.perm(&mut perm);
 
-            prev_hash = x;
+            prev_hash = perm[1];
         }
 
         pi.next().map(|p| *p = *item.merkle_root());

@@ -1,6 +1,7 @@
 use crate::{zk, BlsScalar};
 
 use hades252::strategies::GadgetStrategy;
+use hades252::strategies::Strategy;
 
 macro_rules! value_commitment_preimage {
     (
@@ -19,9 +20,10 @@ macro_rules! value_commitment_preimage {
         $perm[1] = *$item.value();
         $perm[2] = *$item.blinding_factor();
 
-        let p_c = GadgetStrategy::poseidon_gadget(&mut $composer, &mut $perm);
+        let mut strat = GadgetStrategy::new(&mut $composer);
+        strat.perm(&mut $perm);
 
-        $cc = p_c;
+        $cc = $perm[1];
 
         $pi.next().map(|p| *p = BlsScalar::zero());
         $acc = $composer.add(

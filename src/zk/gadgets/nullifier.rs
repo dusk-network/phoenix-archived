@@ -1,6 +1,7 @@
 use crate::{zk, BlsScalar};
 
 use hades252::strategies::GadgetStrategy;
+use hades252::strategies::Strategy;
 
 /// Validate the input nullifiers
 pub fn nullifier<'a, P>(
@@ -61,11 +62,12 @@ where
         perm.copy_from_slice(&zero_perm);
         perm[1] = sk_r_prime;
         perm[2] = *item.idx();
-        let n = GadgetStrategy::poseidon_gadget(&mut composer, &mut perm);
+        let mut strat = GadgetStrategy::new(&mut composer);
+        strat.perm(&mut perm);
 
         pi.next().map(|p| *p = *item.nullifier());
         composer.add_gate(
-            n,
+            perm[1],
             zero,
             zero,
             -BlsScalar::one(),

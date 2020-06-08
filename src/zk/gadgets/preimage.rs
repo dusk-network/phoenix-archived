@@ -1,6 +1,7 @@
 use crate::{zk, BlsScalar};
 
 use hades252::strategies::GadgetStrategy;
+use hades252::strategies::Strategy;
 
 /// Prove the pre-image of the notes
 ///
@@ -27,11 +28,12 @@ where
         perm[2] = *item.idx();
         perm[3] = *item.pk_r_affine_x();
         perm[4] = *item.pk_r_affine_y();
-        let hs = GadgetStrategy::poseidon_gadget(&mut composer, &mut perm);
+        let mut strat = GadgetStrategy::new(&mut composer);
+        strat.perm(&mut perm);
 
         pi.next().map(|p| *p = BlsScalar::zero());
         composer.add_gate(
-            hs,
+            perm[1],
             *item.note_hash(),
             zero,
             -BlsScalar::one(),
