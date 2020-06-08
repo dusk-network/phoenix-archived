@@ -5,16 +5,15 @@ use crate::{
 
 use std::mem::{self, MaybeUninit};
 
+use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
 use dusk_plonk::commitment_scheme::kzg10::{ProverKey, VerifierKey};
 pub use dusk_plonk::constraint_system::composer::StandardComposer as Composer;
-use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
 use dusk_plonk::fft::EvaluationDomain;
 use merlin::Transcript;
 use num_traits::Zero;
 
 pub use dusk_plonk::constraint_system::Variable;
 pub use dusk_plonk::proof_system::{PreProcessedCircuit, Proof};
-
 
 /// [`ZkMerkleProof`] definition
 pub mod merkle;
@@ -51,7 +50,7 @@ pub const PI_LEN: usize = {
 };
 
 lazy_static::lazy_static! {
-    static ref DOMAIN: EvaluationDomain<BlsScalar> = unsafe { mem::zeroed() };
+    static ref DOMAIN: EvaluationDomain = unsafe { mem::zeroed() };
     static ref CK: ProverKey = unsafe { mem::zeroed() };
     static ref VK: VerifierKey = unsafe { mem::zeroed() };
     static ref TRANSCRIPT: Transcript = unsafe { mem::zeroed() };
@@ -71,7 +70,10 @@ mod tests;
 
 /// Initialize the zk static data
 pub fn init() {
-    let public_parameters = PublicParameters::setup(CAPACITY, &mut utils::generate_rng(b"phoenix-plonk-PublicParameters"));
+    let public_parameters = PublicParameters::setup(
+        CAPACITY,
+        &mut utils::generate_rng(b"phoenix-plonk-PublicParameters"),
+    );
     let (ck, vk) = PublicParameters::trim(&public_parameters, CAPACITY).unwrap();
     let domain: EvaluationDomain<BlsScalar> = EvaluationDomain::new(CAPACITY).unwrap();
 
@@ -114,22 +116,22 @@ where
     let tx_zk = ZkTransaction::from_tx(&mut composer, tx);
 
     #[cfg(feature = "circuit-sanity")]
-    let (composer, pi) = gadgets::sanity(composer, &tx_zk, pi);
+    let (_, pi) = gadgets::sanity(composer, &tx_zk, pi);
 
     #[cfg(feature = "circuit-merkle")]
-    let (composer, pi) = gadgets::merkle(composer, &tx_zk, pi);
+    let (_, pi) = gadgets::merkle(composer, &tx_zk, pi);
 
     #[cfg(feature = "circuit-preimage")]
-    let (composer, pi) = gadgets::preimage(composer, &tx_zk, pi);
+    let (_, pi) = gadgets::preimage(composer, &tx_zk, pi);
 
     #[cfg(feature = "circuit-balance")]
-    let (composer, pi) = gadgets::balance(composer, &tx_zk, pi);
+    let (_, pi) = gadgets::balance(composer, &tx_zk, pi);
 
     #[cfg(feature = "circuit-nullifier")]
-    let (composer, pi) = gadgets::nullifier(composer, &tx_zk, pi);
+    let (_, pi) = gadgets::nullifier(composer, &tx_zk, pi);
 
     #[cfg(feature = "circuit-skr")]
-    let composer = gadgets::sk_r(composer, &tx_zk);
+    let _ = gadgets::sk_r(composer, &tx_zk);
 
     let _ = tx_zk;
     let _ = pi;

@@ -86,7 +86,6 @@ pub fn gen_random_bls_scalar_from_rng<R: RngCore>(rng: &mut R) -> BlsScalar {
     rng.gen()
 }
 
-
 pub fn jubjub_projective_basepoint() -> &'static JubJubExtended {
     &JUBJUB_BASEPOINT_PROJECTIVE
 }
@@ -156,38 +155,74 @@ pub fn kelvin_source_to_nonce<H: ByteHash>(source: &mut Source<H>) -> io::Result
 
 /// Convert a [`JubJubExtended`] into affine and then serialize the `x` coordinate
 pub fn serialize_compressed_jubjub(p: &JubJubExtended, bytes: &mut [u8]) -> Result<usize, Error> {
-    JubJubAffine::from(p).serialize(&[], bytes)?;
+    let b = JubJubAffine::from(p).to_bytes();
+    bytes.copy_from_slice(&b[..]);
 
     Ok(COMPRESSED_JUBJUB_SERIALIZED_SIZE)
 }
 
 /// Deserialize a [`JubJubAffine`] from a slice of bytes, and convert it to [`JubJubExtended`]
 pub fn deserialize_compressed_jubjub(bytes: &[u8]) -> Result<JubJubExtended, Error> {
-    Ok(JubJubAffine::deserialize(bytes, &mut [])?.into_projective())
+    if bytes.len() < 32 {
+        return Err(Error::InvalidParameters);
+    }
+
+    let mut array = [0u8; 32];
+    array.copy_from_slice(&bytes[..32]);
+    let result = JubJubAffine::from_bytes(array);
+    if result.is_none().unwrap_u8() == 1 {
+        return Err(Error::InvalidParameters);
+    }
+
+    Ok(JubJubExtended::from(result.unwrap()))
 }
 
 /// Serialize a [`JubJubScalar`] into bytes
 pub fn serialize_jubjub_scalar(s: &JubJubScalar, bytes: &mut [u8]) -> Result<usize, Error> {
-    s.serialize(&[], bytes)?;
+    let b = s.to_bytes();
+    bytes.copy_from_slice(&b[..]);
 
     Ok(JUBJUB_SCALAR_SERIALIZED_SIZE)
 }
 
 /// Deserialize a [`JubJubScalar`] from a slice of bytes
 pub fn deserialize_jubjub_scalar(bytes: &[u8]) -> Result<JubJubScalar, Error> {
-    Ok(JubJubScalar::deserialize(bytes, &mut [])?)
+    if bytes.len() < 32 {
+        return Err(Error::InvalidParameters);
+    }
+
+    let mut array = [0u8; 32];
+    array.copy_from_slice(&bytes[..32]);
+    let result = JubJubScalar::from_bytes(&array);
+    if result.is_none().unwrap_u8() == 1 {
+        return Err(Error::InvalidParameters);
+    }
+
+    Ok(result.unwrap())
 }
 
 /// Serialize a [`BlsScalar`] into bytes
 pub fn serialize_bls_scalar(s: &BlsScalar, bytes: &mut [u8]) -> Result<usize, Error> {
-    s.serialize(&[], bytes)?;
+    let b = s.to_bytes();
+    bytes.copy_from_slice(&b[..]);
 
     Ok(BLS_SCALAR_SERIALIZED_SIZE)
 }
 
 /// Deserialize a [`BlsScalar`] from a slice of bytes
 pub fn deserialize_bls_scalar(bytes: &[u8]) -> Result<BlsScalar, Error> {
-    Ok(BlsScalar::deserialize(bytes, &mut [])?)
+    if bytes.len() < 32 {
+        return Err(Error::InvalidParameters);
+    }
+
+    let mut array = [0u8; 32];
+    array.copy_from_slice(&bytes[..32]);
+    let result = BlsScalar::from_bytes(&array);
+    if result.is_none().unwrap_u8() == 1 {
+        return Err(Error::InvalidParameters);
+    }
+
+    Ok(result.unwrap())
 }
 
 /// Generate a new random nonce
