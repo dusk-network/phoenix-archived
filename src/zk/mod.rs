@@ -109,7 +109,7 @@ pub fn public_inputs() -> &'static Vec<BlsScalar> {
     unsafe { &*PUBLIC_INPUTS.as_ptr() }
 }
 
-fn inner_circuit<'a, P>(composer: Composer, tx: &Transaction, pi: P) -> Composer
+fn inner_circuit<'a, P>(composer: Composer, _tx: &Transaction, _pi: P) -> Composer
 where
     P: Iterator<Item = &'a mut BlsScalar>,
 {

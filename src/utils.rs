@@ -71,7 +71,7 @@ pub fn gen_random_scalar() -> JubJubScalar {
 }
 
 /// Generate a random [`JubJubScalar`] from a provided random number generator
-pub fn gen_random_scalar_from_rng<R: RngCore>(rng: &mut R) -> JubJubScalar {
+pub fn gen_random_scalar_from_rng<R: RngCore>(_rng: &mut R) -> JubJubScalar {
     let random_nums = rand::thread_rng().gen::<[u64; 4]>();
     JubJubScalar::from_raw(random_nums)
 }
