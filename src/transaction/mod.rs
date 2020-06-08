@@ -15,8 +15,6 @@ use rand::Rng;
 
 use bincode::{deserialize, serialize};
 
-
-
 pub const MAX_NOTES_PER_TRANSACTION: usize = 1 + 2;
 pub const MAX_INPUT_NOTES_PER_TRANSACTION: usize = 1;
 pub const MAX_OUTPUT_NOTES_PER_TRANSACTION: usize = 2;
@@ -634,17 +632,13 @@ impl TryFrom<Transaction> for rpc::Transaction {
 
 impl fmt::LowerHex for Transaction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", hex::encode(self.hash().to_bytes()
+        write!(f, "{}", hex::encode(self.hash().to_bytes()))
     }
 }
 
 impl fmt::UpperHex for Transaction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            hex::encode_upper(self.hash().to_bytes()
-        )
+        write!(f, "{}", hex::encode_upper(self.hash().to_bytes()))
     }
 }
 
