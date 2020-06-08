@@ -9,7 +9,7 @@ use std::fmt;
 use std::io::{self, Read, Write};
 use std::path::Path;
 
-use num_traits::Zero;
+
 
 /// A transaction item constains sensitive data for a proof creation, and must be obfuscated before
 /// network propagation.

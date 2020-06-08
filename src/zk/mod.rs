@@ -10,7 +10,6 @@ use dusk_plonk::commitment_scheme::kzg10::{ProverKey, VerifierKey};
 pub use dusk_plonk::constraint_system::composer::StandardComposer as Composer;
 use dusk_plonk::fft::EvaluationDomain;
 use merlin::Transcript;
-use num_traits::Zero;
 
 pub use dusk_plonk::constraint_system::Variable;
 pub use dusk_plonk::proof_system::{PreProcessedCircuit, Proof};

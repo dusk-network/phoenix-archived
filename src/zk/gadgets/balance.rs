@@ -1,7 +1,7 @@
 use crate::{zk, BlsScalar};
 
 use hades252::strategies::GadgetStrategy;
-use num_traits::{One, Zero};
+
 
 macro_rules! value_commitment_preimage {
     (

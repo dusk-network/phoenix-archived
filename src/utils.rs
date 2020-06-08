@@ -7,14 +7,15 @@ use std::ops::Mul;
 use std::{cmp, ptr, thread};
 
 use kelvin::{ByteHash, Source};
-use num_traits::{One, Zero};
+
+
 use rand::rngs::StdRng;
 use rand::SeedableRng;
 use rand::{Rng, RngCore};
 use sha2::{Digest, Sha256};
 use sodiumoxide::crypto::secretbox;
 
-use serde::{Deserialize, Serialize};
+
 
 lazy_static::lazy_static! {
     static ref INITIALIZING: bool = false;

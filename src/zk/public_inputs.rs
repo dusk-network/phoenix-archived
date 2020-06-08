@@ -5,7 +5,6 @@ use crate::{
 
 use std::io::{self, Read, Write};
 
-use num_traits::Zero;
 use unprolix::{Constructor, Getters, Setters};
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Constructor, Getters, Setters)]

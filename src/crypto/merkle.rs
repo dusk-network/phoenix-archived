@@ -1,7 +1,7 @@
 use crate::{BlsScalar, Error, Note, NoteVariant};
 
 use hades252::strategies::{ScalarStrategy, Strategy};
-use num_traits::Zero;
+
 use unprolix::{Constructor, Getters, Setters};
 
 pub const ARITY: usize = hades252::WIDTH - 1;

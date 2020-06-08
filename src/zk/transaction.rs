@@ -5,7 +5,8 @@ use crate::{
 
 use std::mem;
 
-use num_traits::{One, Zero};
+
+
 use unprolix::{Constructor, Getters, Setters};
 
 /// Structure reflecting a [`Transaction`] committed to a circuit

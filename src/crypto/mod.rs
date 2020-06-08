@@ -5,7 +5,7 @@ use crate::{
 
 use std::{cmp, ptr};
 
-use num_traits::{One, Zero};
+
 use rand::seq::SliceRandom;
 
 use hades252::strategies::{ScalarStrategy, Strategy};
@@ -38,7 +38,7 @@ lazy_static::lazy_static! {
 /// Perform a DHKE to create a shared secret
 pub fn dhke(sk: &JubJubScalar, pk: &JubJubExtended) -> Key {
     let shared_secret = JubJubAffine::from(pk * sk);
-    let shared_secret = (shared_secret.get_y().0);
+    let shared_secret = shared_secret.get_y().0;
 
     let mut key = [0x00u8; 32];
     unsafe {

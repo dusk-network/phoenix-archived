@@ -9,7 +9,7 @@ use std::path::Path;
 use std::{fmt, ptr};
 
 use dusk_plonk::proof_system::Proof;
-use num_traits::Zero;
+
 use rand::distributions::{Distribution, Standard};
 use rand::Rng;
 

@@ -1,7 +1,7 @@
 use crate::{crypto, zk, BlsScalar};
 
 use hades252::strategies::GadgetStrategy;
-use num_traits::{One, Zero};
+
 
 /// Verify the merkle opening
 pub fn merkle<'a, P>(
