@@ -547,7 +547,7 @@ impl Transaction {
 
         let proof = tx.proof;
         if !proof.is_empty() {
-            let proof = deserialize(proof.as_slice())?;
+            let proof = deserialize(proof.as_slice()).map_err(|_| Error::InvalidParameters)?;
             transaction.set_proof(proof);
         }
 
@@ -577,7 +577,7 @@ impl TryFrom<rpc::Transaction> for Transaction {
 
         let proof = tx.proof;
         if !proof.is_empty() {
-            let proof = deserialize(proof.as_slice())?;
+            let proof = deserialize(proof.as_slice()).map_err(|_| Error::InvalidParameters)?;
             transaction.set_proof(proof);
         }
 
@@ -618,7 +618,8 @@ impl TryFrom<Transaction> for rpc::Transaction {
         let proof = tx
             .proof()
             .map(|p| serialize(p).map(|b| b.to_vec()))
-            .transpose()?
+            .transpose()
+            .map_err(|_| Error::InvalidParameters)?
             .unwrap_or_default();
 
         Ok(rpc::Transaction {
