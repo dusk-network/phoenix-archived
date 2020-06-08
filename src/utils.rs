@@ -8,7 +8,7 @@ use kelvin::{ByteHash, Source};
 
 use rand::rngs::StdRng;
 use rand::SeedableRng;
-use rand::{CryptoRng, Rng, RngCore};
+use rand::{Rng, RngCore};
 use sha2::{Digest, Sha256};
 use sodiumoxide::crypto::secretbox;
 
@@ -32,16 +32,6 @@ pub fn gen_random_scalar() -> JubJubScalar {
 pub fn gen_random_scalar_from_rng<R: RngCore>(rng: &mut R) -> JubJubScalar {
     let random_nums = rng.gen::<[u64; 4]>();
     JubJubScalar::from_raw(random_nums)
-}
-
-/// Generate a random [`BlsScalar`] from [`rand::thread_rng`]
-pub fn gen_random_bls_scalar() -> BlsScalar {
-    gen_random_bls_scalar_from_rng(&mut rand::thread_rng())
-}
-
-/// Generate a random [`BlsScalar`] from a provided random number generator
-pub fn gen_random_bls_scalar_from_rng<R: Rng + CryptoRng>(mut rng: &mut R) -> BlsScalar {
-    BlsScalar::random(&mut rng)
 }
 
 /// Serialized size of a compressed JubJub affine point

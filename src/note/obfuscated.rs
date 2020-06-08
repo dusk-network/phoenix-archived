@@ -3,6 +3,7 @@ use crate::{
     NoteGenerator, NoteType, PublicKey, ViewKey, NONCEBYTES,
 };
 
+use rand;
 use std::convert::{TryFrom, TryInto};
 use std::io::{self, Read, Write};
 use std::{cmp, fmt};
@@ -294,7 +295,7 @@ impl Note for ObfuscatedNote {
         );
 
         utils::deserialize_bls_scalar(blinding_factor.as_slice())
-            .unwrap_or(utils::gen_random_bls_scalar())
+            .unwrap_or(BlsScalar::random(&mut rand::thread_rng()))
     }
 
     fn encrypted_blinding_factor(&self) -> &[u8; ENCRYPTED_BLINDING_FACTOR_SIZE] {

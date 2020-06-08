@@ -3,6 +3,7 @@ use crate::{
     NoteType, PublicKey, SecretKey, TransactionInput, TransactionOutput, ViewKey,
 };
 
+use rand;
 use std::convert::TryFrom;
 use std::fmt::Debug;
 use std::io;
@@ -56,7 +57,7 @@ pub trait NoteGenerator:
     fn output(pk: &PublicKey, value: u64) -> (Self, BlsScalar) {
         let r = utils::gen_random_scalar();
         let nonce = utils::gen_nonce();
-        let blinding_factor = utils::gen_random_bls_scalar();
+        let blinding_factor = BlsScalar::random(&mut rand::thread_rng());
 
         let note = Self::deterministic_output(&r, nonce, pk, value, blinding_factor);
 
