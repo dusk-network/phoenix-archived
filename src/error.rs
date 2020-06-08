@@ -65,7 +65,6 @@ impl error::Error for Error {
         match self {
             Error::Io(e) => Some(e),
             Error::Fmt(e) => Some(e),
-            Error::JubJubSerialization(e) => Some(e),
             _ => None,
         }
     }
