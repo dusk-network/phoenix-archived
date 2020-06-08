@@ -2,8 +2,6 @@ use crate::{crypto, utils, Note, NoteGenerator, ObfuscatedNote, SecretKey};
 
 #[test]
 fn decrypt() {
-    utils::init();
-
     let sk = SecretKey::default();
     let pk = sk.public_key();
     let vk = sk.view_key();
@@ -20,8 +18,6 @@ fn decrypt() {
 
 #[test]
 fn decrypt_with_wrong_key_should_fail() {
-    utils::init();
-
     let sk = SecretKey::default();
     let pk = sk.public_key();
     let vk = sk.view_key();
@@ -41,8 +37,6 @@ fn decrypt_with_wrong_key_should_fail() {
 
 #[test]
 fn decrypt_obfuscated_note() {
-    utils::init();
-
     let value = 25;
 
     let sk = SecretKey::default();

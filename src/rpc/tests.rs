@@ -9,7 +9,6 @@ use tempdir::TempDir;
 
 #[test]
 fn rpc_transaction() {
-    utils::init();
     zk::init();
 
     let db_path = TempDir::new("rpc_transaction").unwrap();

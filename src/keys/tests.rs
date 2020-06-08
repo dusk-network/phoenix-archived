@@ -5,8 +5,6 @@ use std::ops::Mul;
 
 #[test]
 fn sk_from_bytes() {
-    utils::init();
-
     let bytes = b"some bytes".to_vec();
 
     let sk_a = SecretKey::from(bytes.as_slice());
@@ -17,8 +15,6 @@ fn sk_from_bytes() {
 
 #[test]
 fn keys_encoding() {
-    utils::init();
-
     let bytes = b"some bytes".to_vec();
 
     let sk = SecretKey::from(bytes.as_slice());

@@ -2,7 +2,6 @@ use crate::{zk, BlsScalar};
 
 use hades252::strategies::GadgetStrategy;
 
-
 macro_rules! value_commitment_preimage {
     (
         $item:ident,
@@ -53,17 +52,7 @@ where
     let mut outputs = zero;
 
     for item in tx.inputs().iter() {
-        value_commitment_preimage!(
-            item,
-            composer,
-            perm,
-            zero_perm,
-            bitflags,
-            pi,
-            zero,
-            inputs,
-            c
-        );
+        value_commitment_preimage!(item, composer, perm, zero_perm, bitflags, pi, zero, inputs, c);
 
         pi.next().map(|p| *p = BlsScalar::zero());
         composer.add_gate(
@@ -79,17 +68,7 @@ where
     }
 
     let fee = *tx.fee();
-    value_commitment_preimage!(
-        fee,
-        composer,
-        perm,
-        zero_perm,
-        bitflags,
-        pi,
-        zero,
-        outputs,
-        c
-    );
+    value_commitment_preimage!(fee, composer, perm, zero_perm, bitflags, pi, zero, outputs, c);
 
     pi.next().map(|p| *p = *fee.value_commitment_scalar());
     composer.add_gate(
@@ -140,7 +119,6 @@ mod tests {
 
     #[test]
     fn tx_balance_invalid() {
-        utils::init();
         zk::init();
 
         let mut tx = Transaction::default();

@@ -10,8 +10,6 @@ use tempdir::TempDir;
 
 #[test]
 fn transparent_note_serialization() {
-    utils::init();
-
     let sk = SecretKey::default();
     let vk = sk.view_key();
     let pk = sk.public_key();
@@ -50,8 +48,6 @@ fn transparent_note_serialization() {
 
 #[test]
 fn obfuscated_note_serialization() {
-    utils::init();
-
     let sk = SecretKey::default();
     let vk = sk.view_key();
     let pk = sk.public_key();
@@ -90,7 +86,6 @@ fn obfuscated_note_serialization() {
 
 #[test]
 fn double_spending() {
-    utils::init();
     zk::init();
 
     let db_path = TempDir::new("double_spending").unwrap();

@@ -85,7 +85,6 @@ mod tests {
 
     #[test]
     fn tx_input_nullifier_invalid() {
-        utils::init();
         zk::init();
 
         let mut tx = Transaction::default();
