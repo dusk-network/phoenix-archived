@@ -152,7 +152,7 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
     /// Create a unique nullifier for the note
     fn generate_nullifier(&self, sk: &SecretKey) -> Nullifier {
         let sk_r = self.sk_r(sk);
-        let sk_r = utils::bls_scalar_from_jubjub_bits(&sk_r);
+        let sk_r = BlsScalar::from_bytes(&sk_r.to_bytes()).unwrap();
 
         let idx = BlsScalar::from(self.idx());
 

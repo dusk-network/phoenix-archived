@@ -182,24 +182,6 @@ pub fn bls_scalar_to_bits(scalar: &BlsScalar) -> [u8; 256] {
     res
 }
 
-/// Decompose a [`JubJubScalar`] into bits and reconstruct a [`BlsScalar`] from them
-pub fn bls_scalar_from_jubjub_bits(s: &JubJubScalar) -> BlsScalar {
-    let two = BlsScalar::from(2u64);
-    let mut result = BlsScalar::zero();
-
-    jubjub_scalar_to_bits(s)
-        .iter()
-        .fold(BlsScalar::one(), |mut acc, bit| {
-            acc *= &two;
-            if bit == &1u8 {
-                result += &acc;
-            }
-            acc
-        });
-
-    result
-}
-
 /// Generate a [`StdRng`] from a given slice of bytes
 pub fn generate_rng(bytes: &[u8]) -> StdRng {
     let mut hasher = Sha256::default();
