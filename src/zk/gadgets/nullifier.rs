@@ -60,8 +60,7 @@ pub fn nullifier(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Comp
             BlsScalar::one(),
             BlsScalar::one(),
             BlsScalar::zero(),
-            BlsScalar::zero(),
-            //*item.nullifier(),
+            *item.nullifier(),
         );
     }
 
