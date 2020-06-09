@@ -54,7 +54,61 @@ pub fn preimage(
     composer
 }
 
-#[test]
-fn test_preimage_gadget(){
-    assert!
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
+
+    #[test]
+    fn preimage_gadget() {
+        zk::init();
+
+        let mut tx = Transaction::default();
+
+        let sk = SecretKey::default();
+        let pk = sk.public_key();
+        let value = 100;
+        let note = TransparentNote::output(&pk, value).0;
+        let merkle_opening = crypto::MerkleProof::mock(note.hash());
+        tx.push_input(note.to_transaction_input(merkle_opening, sk))
+            .unwrap();
+
+        let sk = SecretKey::default();
+        let pk = sk.public_key();
+
+        let (note, blinding_factor) = TransparentNote::output(&pk, value);
+        tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
+            .unwrap();
+
+        let sk = SecretKey::default();
+        let pk = sk.public_key();
+        let value = 2;
+        let (note, blinding_factor) = TransparentNote::output(&pk, value);
+        tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
+            .unwrap();
+
+        let sk = SecretKey::default();
+        let pk = sk.public_key();
+        let value = 3;
+        let (note, blinding_factor) = TransparentNote::output(&pk, value);
+        tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
+
+        let mut composer = zk::Composer::new();
+
+        let zk_tx = zk::ZkTransaction::from_tx(&mut composer, &tx);
+
+        let mut composer = preimage(composer, &zk_tx);
+        let mut transcript = zk::TRANSCRIPT.clone();
+
+        composer.add_dummy_constraints();
+        let circuit = composer.preprocess(&zk::CK, &mut transcript, &zk::DOMAIN);
+
+        let proof = composer.prove(&zk::CK, &circuit, &mut transcript);
+
+        assert!(proof.verify(
+            &circuit,
+            &mut transcript,
+            &zk::VK,
+            &composer.public_inputs()
+        ));
+    }
