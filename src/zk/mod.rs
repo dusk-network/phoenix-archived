@@ -67,7 +67,7 @@ pub mod gadgets;
 #[cfg(test)]
 mod tests;
 
-/// Initialize the zk static data
+/// Initialize the ZK static data
 pub fn init() {
     let public_parameters = PublicParameters::setup(
         CAPACITY,
