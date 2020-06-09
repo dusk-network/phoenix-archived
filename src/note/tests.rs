@@ -1,6 +1,6 @@
 use crate::{
-    rpc, utils, JubJubExtended, Note, NoteGenerator, NoteType, NoteVariant, ObfuscatedNote,
-    PublicKey, SecretKey, TransparentNote,
+    rpc, JubJubExtended, Note, NoteGenerator, NoteType, NoteVariant, ObfuscatedNote, PublicKey,
+    SecretKey, TransparentNote,
 };
 
 use jubjub::GENERATOR;

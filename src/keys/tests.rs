@@ -1,7 +1,6 @@
-use crate::{utils, JubJubExtended, JubJubScalar, PublicKey, SecretKey, ViewKey};
+use crate::{PublicKey, SecretKey, ViewKey};
 
 use std::convert::TryFrom;
-use std::ops::Mul;
 
 #[test]
 fn sk_from_bytes() {

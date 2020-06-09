@@ -19,7 +19,7 @@ pub struct ZkPublicInputs {
 impl ZkPublicInputs {
     pub fn generate_pi(&self) -> Vec<BlsScalar> {
         // TODO - Structure should be updated according to the set features
-        let mut pi = zk::public_inputs().clone();
+        let mut pi = vec![];
 
         self.merkle_roots
             .iter()

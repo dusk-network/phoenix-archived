@@ -1,6 +1,6 @@
 use crate::{
-    db, utils, zk, Note, NoteGenerator, NoteVariant, NotesDb, ObfuscatedNote, SecretKey,
-    Transaction, TransparentNote,
+    db, zk, Note, NoteGenerator, NoteVariant, NotesDb, ObfuscatedNote, SecretKey, Transaction,
+    TransparentNote,
 };
 
 use std::fs;
