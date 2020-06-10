@@ -26,7 +26,7 @@ pub fn preimage(
         perm[3] = *item.pk_r_affine_y();
         let output = sponge_hash_gadget(&mut composer, &perm);
 
-        composer.big_add_gate(
+        composer.add_gate(
             output,
             *item.note_hash(),
             zero,
@@ -103,6 +103,8 @@ mod tests {
         composer.add_dummy_constraints();
         let circuit = composer.preprocess(&zk::CK, &mut transcript, &zk::DOMAIN);
 
+        composer.check_circuit_satisfied();
+
         let proof = composer.prove(&zk::CK, &circuit, &mut transcript);
 
         assert!(proof.verify(
@@ -112,3 +114,4 @@ mod tests {
             &composer.public_inputs()
         ));
     }
+}
