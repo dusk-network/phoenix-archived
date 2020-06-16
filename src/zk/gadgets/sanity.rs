@@ -3,15 +3,9 @@ use crate::{zk, BlsScalar};
 use jubjub::GENERATOR;
 
 /// Perform the pre-image of the value commitment and check if the inputs equals the outputs + fee
-pub fn sanity<'a, P>(
-    mut composer: zk::Composer,
-    tx: &zk::ZkTransaction,
-) -> zk::Composer
-
-{
+pub fn sanity(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Composer {
     let basepoint = GENERATOR;
     let basepoint_affine_xy = basepoint.get_x() * basepoint.get_y();
-
 
     composer.add_gate(
         *tx.basepoint_affine_x(),
@@ -24,7 +18,6 @@ pub fn sanity<'a, P>(
         basepoint.get_x(),
     );
 
-
     composer.add_gate(
         *tx.basepoint_affine_y(),
         *tx.zero(),
@@ -35,7 +28,6 @@ pub fn sanity<'a, P>(
         BlsScalar::zero(),
         basepoint.get_y(),
     );
-
 
     composer.add_gate(
         *tx.basepoint_affine_xy(),
@@ -48,7 +40,6 @@ pub fn sanity<'a, P>(
         basepoint_affine_xy,
     );
 
-
     composer.add_gate(
         *tx.zero(),
         *tx.zero(),
@@ -59,7 +50,6 @@ pub fn sanity<'a, P>(
         BlsScalar::zero(),
         BlsScalar::zero(),
     );
-
 
     composer.add_gate(
         *tx.one(),
@@ -72,7 +62,6 @@ pub fn sanity<'a, P>(
         BlsScalar::one(),
     );
 
-
     composer.add_gate(
         *tx.two(),
         *tx.zero(),
@@ -83,7 +72,6 @@ pub fn sanity<'a, P>(
         BlsScalar::zero(),
         BlsScalar::from(2u64),
     );
-
 
     composer.add_gate(
         *tx.three(),
@@ -96,7 +84,6 @@ pub fn sanity<'a, P>(
         BlsScalar::from(3u64),
     );
 
-
     composer.add_gate(
         *tx.fifteen(),
         *tx.zero(),
@@ -107,7 +94,6 @@ pub fn sanity<'a, P>(
         BlsScalar::zero(),
         BlsScalar::from(15u64),
     );
-
 
     composer
 }
