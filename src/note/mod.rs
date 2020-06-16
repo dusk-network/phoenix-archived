@@ -156,7 +156,7 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
 
         let idx = BlsScalar::from(self.idx());
 
-        crypto::hash_merkle(&[sk_r, idx]).into()
+        crypto::sponge_hash(&[sk_r, idx]).into()
     }
 
     /// Fully decrypt the note (value and blinding factor) with the provided [`ViewKey`], and
@@ -210,7 +210,7 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
     fn hash(&self) -> BlsScalar {
         let pk_r = JubJubAffine::from(self.pk_r());
 
-        crypto::hash_merkle(&[
+        crypto::sponge_hash(&[
             *self.value_commitment(),
             BlsScalar::from(self.idx()),
             pk_r.get_x(),

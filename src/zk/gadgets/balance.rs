@@ -1,7 +1,5 @@
 use crate::{zk, BlsScalar};
 
-use hades252::strategies::GadgetStrategy;
-use hades252::strategies::Strategy;
 use poseidon252::sponge::sponge::sponge_hash_gadget;
 
 macro_rules! value_commitment_preimage {

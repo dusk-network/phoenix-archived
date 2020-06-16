@@ -1,7 +1,5 @@
 use crate::{crypto, zk, BlsScalar};
 
-use hades252::strategies::GadgetStrategy;
-use hades252::strategies::Strategy;
 use poseidon252::sponge::sponge::sponge_hash_gadget;
 
 /// Verify the merkle opening

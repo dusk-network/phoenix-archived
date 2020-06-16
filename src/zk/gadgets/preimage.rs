@@ -1,9 +1,8 @@
 use crate::{zk, BlsScalar};
 
-use hades252::strategies::GadgetStrategy;
-use hades252::strategies::Strategy;
 use poseidon252::sponge::sponge::sponge_hash_gadget;
 
+/// TODO: revise comment
 /// Prove the pre-image of the notes
 ///
 /// The output notes will be validated as public inputs
@@ -22,6 +21,7 @@ pub fn preimage(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Compo
         perm[3] = *item.pk_r_affine_y();
         let output = sponge_hash_gadget(&mut composer, &perm);
 
+        println!("{}", composer.circuit_size());
         composer.add_gate(
             output,
             *item.note_hash(),
@@ -49,6 +49,15 @@ pub fn preimage(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Compo
 
     composer
 }
+
+// pub fn equivalence_gadget(composer: &mut zk::Composer, tx: &zk::ZkTransaction) {
+//     composer.add(
+//         (BlsScalar::one(), composer.zero_var),
+//         (-BlsScalar::one(), tx.hash()),
+//         BlsScalar::zero(),
+//         tx.hash(),
+//     );
+// }
 
 #[cfg(test)]
 mod tests {
@@ -82,12 +91,6 @@ mod tests {
         let (note, blinding_factor) = TransparentNote::output(&pk, value);
         tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
             .unwrap();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 3;
-        let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
 
         let mut composer = zk::Composer::new();
 
