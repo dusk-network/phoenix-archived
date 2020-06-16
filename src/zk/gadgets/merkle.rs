@@ -4,14 +4,7 @@ use hades252::strategies::GadgetStrategy;
 use hades252::strategies::Strategy;
 
 /// Verify the merkle opening
-pub fn merkle<'a, P>(
-    mut composer: zk::Composer,
-    tx: &zk::ZkTransaction,
-    mut pi: P,
-) -> (zk::Composer, P)
-where
-    P: Iterator<Item = &'a mut BlsScalar>,
-{
+pub fn merkle(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Composer {
     let zero = *tx.zero();
     let mut perm = [zero; hades252::WIDTH];
 
@@ -19,10 +12,8 @@ where
         // Bool bitflags
         item.merkle().levels().iter().for_each(|l| {
             let sum = l.bitflags().iter().fold(zero, |acc, b| {
-                pi.next().map(|p| *p = BlsScalar::zero());
                 composer.bool_gate(*b);
 
-                pi.next().map(|p| *p = BlsScalar::zero());
                 composer.add(
                     (BlsScalar::one(), acc),
                     (-BlsScalar::one(), *b),
@@ -31,7 +22,6 @@ where
                 )
             });
 
-            pi.next().map(|p| *p = BlsScalar::one());
             composer.add_gate(
                 sum,
                 zero,
@@ -52,7 +42,6 @@ where
                 .iter()
                 .zip(l.perm().iter().skip(1))
                 .for_each(|(b, p)| {
-                    pi.next().map(|p| *p = BlsScalar::zero());
                     let x_prime = composer.mul(
                         -BlsScalar::one(),
                         *b,
@@ -61,7 +50,6 @@ where
                         BlsScalar::zero(),
                     );
 
-                    pi.next().map(|p| *p = BlsScalar::zero());
                     let x = composer.mul(
                         -BlsScalar::one(),
                         *b,
@@ -70,7 +58,6 @@ where
                         BlsScalar::zero(),
                     );
 
-                    pi.next().map(|p| *p = BlsScalar::zero());
                     composer.add_gate(
                         x,
                         x_prime,
@@ -87,7 +74,6 @@ where
         // Perform the chain hash towards the merkle root
         let mut prev_hash = *item.note_hash();
         for l in item.merkle().levels().iter() {
-            pi.next().map(|p| *p = BlsScalar::zero());
             composer.add_gate(
                 *l.current(),
                 prev_hash,
@@ -106,7 +92,6 @@ where
             prev_hash = perm[1];
         }
 
-        pi.next().map(|p| *p = *item.merkle_root());
         composer.add_gate(
             item.merkle().levels()[crypto::TREE_HEIGHT - 1].perm()[1],
             zero,
@@ -119,5 +104,65 @@ where
         );
     }
 
-    (composer, pi)
+    composer
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
+
+    #[test]
+    fn merkle_gadget() {
+        zk::init();
+
+        let mut tx = Transaction::default();
+
+        let sk = SecretKey::default();
+        let pk = sk.public_key();
+        let value = 100;
+        let note = TransparentNote::output(&pk, value).0;
+        let merkle_opening = crypto::MerkleProof::mock(note.hash());
+        tx.push_input(note.to_transaction_input(merkle_opening, sk))
+            .unwrap();
+
+        let sk = SecretKey::default();
+        let pk = sk.public_key();
+        let value = 95;
+        let (note, blinding_factor) = TransparentNote::output(&pk, value);
+        tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
+            .unwrap();
+
+        let sk = SecretKey::default();
+        let pk = sk.public_key();
+        let value = 2;
+        let (note, blinding_factor) = TransparentNote::output(&pk, value);
+        tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
+            .unwrap();
+
+        let sk = SecretKey::default();
+        let pk = sk.public_key();
+        let value = 3;
+        let (note, blinding_factor) = TransparentNote::output(&pk, value);
+        tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
+
+        let mut composer = zk::Composer::new();
+
+        let zk_tx = zk::ZkTransaction::from_tx(&mut composer, &tx);
+
+        let mut composer = merkle(composer, &zk_tx);
+        let mut transcript = zk::TRANSCRIPT.clone();
+
+        composer.add_dummy_constraints();
+        let circuit = composer.preprocess(&zk::CK, &mut transcript, &zk::DOMAIN);
+
+        let proof = composer.prove(&zk::CK, &circuit, &mut transcript);
+
+        assert!(proof.verify(
+            &circuit,
+            &mut transcript,
+            &zk::VK,
+            &composer.public_inputs()
+        ));
+    }
 }
