@@ -6,7 +6,7 @@ use poseidon252::sponge::sponge::sponge_hash_gadget;
 /// Prove the pre-image of the notes
 ///
 /// The fee is not validated because its R and pk_r is updated by the block generator
-pub fn preimage(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Composer {
+pub fn preimage(composer: &mut zk::Composer, tx: &zk::ZkTransaction) {
     let zero = *tx.zero();
     let zero_perm = [zero; hades252::WIDTH];
     let mut perm = [zero; hades252::WIDTH];
@@ -17,7 +17,7 @@ pub fn preimage(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Compo
         perm[1] = *item.idx();
         perm[2] = *item.pk_r_affine_x();
         perm[3] = *item.pk_r_affine_y();
-        let output = sponge_hash_gadget(&mut composer, &perm);
+        let output = sponge_hash_gadget(composer, &perm);
 
         composer.add_gate(
             output,
@@ -30,8 +30,6 @@ pub fn preimage(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Compo
             BlsScalar::zero(),
         );
     }
-
-    composer
 }
 
 // pub fn equivalence_gadget(composer: &mut zk::Composer, tx: &zk::ZkTransaction) {
@@ -80,7 +78,7 @@ mod tests {
 
         let zk_tx = zk::ZkTransaction::from_tx(&mut composer, &tx);
 
-        let mut composer = preimage(composer, &zk_tx);
+        preimage(&mut composer, &zk_tx);
         composer.add_dummy_constraints();
 
         let mut transcript = zk::TRANSCRIPT.clone();

@@ -70,12 +70,12 @@ mod tests;
 /// Initialize the ZK static data
 pub fn init() {
     let public_parameters = PublicParameters::setup(
-        CAPACITY,
+        1 << 18,
         &mut utils::generate_rng(b"phoenix-plonk-PublicParameters"),
     )
     .unwrap();
-    let (ck, vk) = PublicParameters::trim(&public_parameters, CAPACITY).unwrap();
-    let domain: EvaluationDomain = EvaluationDomain::new(CAPACITY).unwrap();
+    let (ck, vk) = PublicParameters::trim(&public_parameters, 1 << 17).unwrap();
+    let domain: EvaluationDomain = EvaluationDomain::new(1 << 17).unwrap();
 
     unsafe {
         utils::lazy_static_write(&*DOMAIN, domain);
@@ -113,35 +113,35 @@ fn inner_circuit<'a, P>(composer: Composer, _tx: &Transaction, _pi: P) -> Compos
 where
     P: Iterator<Item = &'a mut BlsScalar>,
 {
-     /*
-        let tx_zk = ZkTransaction::from_tx(&mut composer, tx);
+    /*
+    let tx_zk = ZkTransaction::from_tx(&mut composer, tx);
 
-        #[cfg(feature = "circuit-sanity")]
-        let (_, pi) = gadgets::sanity(composer, &tx_zk, pi);
+    #[cfg(feature = "circuit-sanity")]
+    let (_, pi) = gadgets::sanity(composer, &tx_zk, pi);
 
-        #[cfg(feature = "circuit-merkle")]
-        let (_, pi) = gadgets::merkle(composer, &tx_zk, pi);
+    #[cfg(feature = "circuit-merkle")]
+    let (_, pi) = gadgets::merkle(composer, &tx_zk, pi);
 
-        #[cfg(feature = "circuit-preimage")]
-        let (_, pi) = gadgets::preimage(composer, &tx_zk, pi);
+    #[cfg(feature = "circuit-preimage")]
+    let (_, pi) = gadgets::preimage(composer, &tx_zk, pi);
 
-        #[cfg(feature = "circuit-balance")]
-        let (_, pi) = gadgets::balance(composer, &tx_zk, pi);
+    #[cfg(feature = "circuit-balance")]
+    let (_, pi) = gadgets::balance(composer, &tx_zk, pi);
 
-        #[cfg(feature = "circuit-nullifier")]
-        let (_, pi) = gadgets::nullifier(composer, &tx_zk, pi);
+    #[cfg(feature = "circuit-nullifier")]
+    let (_, pi) = gadgets::nullifier(composer, &tx_zk, pi);
 
-        #[cfg(feature = "circuit-skr")]
-        let _ = gadgets::sk_r(composer, &tx_zk);
+    #[cfg(feature = "circuit-skr")]
+    let _ = gadgets::sk_r(composer, &tx_zk);
 
-        let _ = tx_zk;
-        let _ = pi;
+    let _ = tx_zk;
+    let _ = pi;
 
-        (0..composer.circuit_size()).for_each(|_| {
-            composer.add_dummy_constraints();
-        });
-        */
-    
+    (0..composer.circuit_size()).for_each(|_| {
+        composer.add_dummy_constraints();
+    });
+    */
+
     composer
 }
 
