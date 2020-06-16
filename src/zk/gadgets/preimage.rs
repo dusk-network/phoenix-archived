@@ -9,11 +9,7 @@ use poseidon252::sponge::sponge::sponge_hash_gadget;
 /// The output notes will be validated as public inputs
 ///
 /// The fee is not validated because its R and pk_r is updated by the block generator
-pub fn preimage(
-    mut composer: zk::Composer,
-    tx: &zk::ZkTransaction,
-) -> zk::Composer
-{
+pub fn preimage(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Composer {
     let zero = *tx.zero();
     let zero_perm = [zero; hades252::WIDTH];
     let mut perm = [zero; hades252::WIDTH];
@@ -98,9 +94,9 @@ mod tests {
         let zk_tx = zk::ZkTransaction::from_tx(&mut composer, &tx);
 
         let mut composer = preimage(composer, &zk_tx);
-        let mut transcript = zk::TRANSCRIPT.clone();
-
         composer.add_dummy_constraints();
+
+        let mut transcript = zk::TRANSCRIPT.clone();
         let circuit = composer.preprocess(&zk::CK, &mut transcript, &zk::DOMAIN);
 
         composer.check_circuit_satisfied();
