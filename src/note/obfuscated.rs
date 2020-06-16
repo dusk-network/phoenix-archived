@@ -218,7 +218,7 @@ impl NoteGenerator for ObfuscatedNote {
     ) -> Self {
         let (R, pk_r) = Self::new_pk_r(r, pk);
         let value_commitment = BlsScalar::from(value);
-        let value_commitment = crypto::hash_merkle(&[value_commitment, blinding_factor]);
+        let value_commitment = crypto::sponge_hash(&[value_commitment, blinding_factor]);
 
         // Output notes have undefined idx
         let idx = 0;

@@ -11,6 +11,7 @@ use sodiumoxide::crypto::secretbox::{self, Key};
 pub mod merkle;
 
 pub use merkle::{MerkleProof, MerkleProofProvider, ARITY, TREE_HEIGHT};
+pub use poseidon252::sponge::sponge::sponge_hash;
 
 #[cfg(test)]
 mod tests;
@@ -65,70 +66,17 @@ pub fn decrypt(R: &JubJubExtended, vk: &ViewKey, nonce: &Nonce, value: &[u8]) ->
     })
 }
 
-/// Hash an arbitrary long message to a [`BlsScalar`]
-pub fn sponge_hash(input: &[BlsScalar]) -> BlsScalar {
-    // TODO - Review
-    let mut strategy = ScalarStrategy::new();
-
-    let zero = [BlsScalar::zero(); hades252::WIDTH];
-    let mut perm = [BlsScalar::zero(); hades252::WIDTH];
-
-    input
-        .chunks(hades252::WIDTH - 2)
-        .fold(strategy.poseidon(&mut perm), |h, i| {
-            perm.copy_from_slice(&zero);
-
-            let chunk = cmp::min(i.len(), hades252::WIDTH - 2);
-
-            perm[0] = HASH_BITFLAGS[chunk];
-            perm[1] = h;
-
-            (&mut perm[2..2 + chunk]).copy_from_slice(&i[0..chunk]);
-
-            strategy.poseidon(&mut perm)
-        })
-}
-
-/// Hash slice of scalars [`BlsScalar`] using a fixed-width merkle aspect
-///
-/// Will truncate the input to [`hades252::WIDTH`]
-pub fn hash_merkle(input: &[BlsScalar]) -> BlsScalar {
-    let mut i = [BlsScalar::zero(); hades252::WIDTH];
-
-    let chunk = cmp::min(input.len(), hades252::WIDTH - 1);
-    (&mut i[1..1 + chunk]).copy_from_slice(&input[0..chunk]);
-
-    i[0] = HASH_BITFLAGS[chunk];
-
-    ScalarStrategy::new().poseidon(&mut i)
-}
-
-/// Hash a [`BlsScalar`]
-pub fn hash_scalar(s: &BlsScalar) -> BlsScalar {
-    let mut input = [BlsScalar::zero(); hades252::WIDTH];
-
-    input[0] = BlsScalar::one();
-    input[1] = *s;
-
-    ScalarStrategy::new().poseidon(&mut input)
-}
-
 /// Convert to a deterministic representation of the projective point, and perform `H(x, y, z, t)`
 pub fn hash_jubjub_projective(p: &JubJubExtended) -> BlsScalar {
     let p = JubJubExtended::from(JubJubAffine::from(p));
 
-    hash_merkle(&[p.get_x(), p.get_y(), p.get_z(), p.get_t1(), p.get_t2()])
-}
-
-/// Return a hash represented by `H(x, y)`
-pub fn hash_jubjub_affine(p: &JubJubAffine) -> BlsScalar {
-    hash_merkle(&[p.get_x(), p.get_y()])
+    sponge_hash(&[p.get_x(), p.get_y(), p.get_z(), p.get_t1(), p.get_t2()])
 }
 
 /// Perform  a poseidon merkle slice hash strategy on a bits representation of a jubjub scalar
 pub fn jubjub_scalar_to_bls(s: &JubJubScalar) -> BlsScalar {
     let bits = utils::jubjub_scalar_to_bls_bits(s);
-    ScalarStrategy::new().poseidon_slice(&bits)
+    sponge_hash(&bits)
 }
 
 /// Hash the point into a [`BlsScalar`], decompose the result in bits and reconstruct a
