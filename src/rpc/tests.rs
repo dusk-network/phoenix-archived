@@ -8,6 +8,7 @@ use std::fs;
 use tempdir::TempDir;
 
 #[test]
+#[ignore]
 fn rpc_transaction() {
     zk::init();
 
