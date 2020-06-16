@@ -113,7 +113,7 @@ fn inner_circuit<'a, P>(composer: Composer, _tx: &Transaction, _pi: P) -> Compos
 where
     P: Iterator<Item = &'a mut BlsScalar>,
 {
-   
+     /*
         let tx_zk = ZkTransaction::from_tx(&mut composer, tx);
 
         #[cfg(feature = "circuit-sanity")]
@@ -140,7 +140,7 @@ where
         (0..composer.circuit_size()).for_each(|_| {
             composer.add_dummy_constraints();
         });
-
+        */
     
     composer
 }

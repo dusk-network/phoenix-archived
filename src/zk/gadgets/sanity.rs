@@ -6,15 +6,13 @@ use jubjub::GENERATOR;
 pub fn sanity<'a, P>(
     mut composer: zk::Composer,
     tx: &zk::ZkTransaction,
-    mut pi: P,
-) -> (zk::Composer, P)
-where
-    P: Iterator<Item = &'a mut BlsScalar>,
+) -> zk::Composer
+
 {
     let basepoint = GENERATOR;
     let basepoint_affine_xy = basepoint.get_x() * basepoint.get_y();
 
-    pi.next().map(|p| *p = basepoint.get_x());
+
     composer.add_gate(
         *tx.basepoint_affine_x(),
         *tx.zero(),
@@ -26,7 +24,7 @@ where
         basepoint.get_x(),
     );
 
-    pi.next().map(|p| *p = basepoint.get_y());
+
     composer.add_gate(
         *tx.basepoint_affine_y(),
         *tx.zero(),
@@ -38,7 +36,7 @@ where
         basepoint.get_y(),
     );
 
-    pi.next().map(|p| *p = basepoint_affine_xy);
+
     composer.add_gate(
         *tx.basepoint_affine_xy(),
         *tx.zero(),
@@ -50,7 +48,7 @@ where
         basepoint_affine_xy,
     );
 
-    pi.next().map(|p| *p = BlsScalar::zero());
+
     composer.add_gate(
         *tx.zero(),
         *tx.zero(),
@@ -62,7 +60,7 @@ where
         BlsScalar::zero(),
     );
 
-    pi.next().map(|p| *p = BlsScalar::one());
+
     composer.add_gate(
         *tx.one(),
         *tx.zero(),
@@ -74,7 +72,7 @@ where
         BlsScalar::one(),
     );
 
-    pi.next().map(|p| *p = BlsScalar::from(2u64));
+
     composer.add_gate(
         *tx.two(),
         *tx.zero(),
@@ -86,7 +84,7 @@ where
         BlsScalar::from(2u64),
     );
 
-    pi.next().map(|p| *p = BlsScalar::from(3u64));
+
     composer.add_gate(
         *tx.three(),
         *tx.zero(),
@@ -98,7 +96,7 @@ where
         BlsScalar::from(3u64),
     );
 
-    pi.next().map(|p| *p = BlsScalar::from(15u64));
+
     composer.add_gate(
         *tx.fifteen(),
         *tx.zero(),
@@ -110,7 +108,8 @@ where
         BlsScalar::from(15u64),
     );
 
-    (composer, pi)
+
+    composer
 }
 
 #[cfg(test)]
