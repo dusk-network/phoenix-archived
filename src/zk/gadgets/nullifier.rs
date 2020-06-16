@@ -86,6 +86,7 @@ mod tests {
     use crate::{crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
 
     #[test]
+    #[ignore]
     fn tx_input_nullifier_invalid() {
         zk::init();
 
