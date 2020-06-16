@@ -85,6 +85,7 @@ fn obfuscated_note_serialization() {
 }
 
 #[test]
+#[ignore]
 fn double_spending() {
     zk::init();
 

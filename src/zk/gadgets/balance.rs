@@ -101,6 +101,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn tx_balance_invalid() {
         let mut tx = Transaction::default();
 

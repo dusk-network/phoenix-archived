@@ -63,6 +63,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn tx_input_nullifier_invalid() {
         let sk = SecretKey::default();
         let pk = sk.public_key();
