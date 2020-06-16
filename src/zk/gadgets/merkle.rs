@@ -2,6 +2,7 @@ use crate::{crypto, zk, BlsScalar};
 
 use hades252::strategies::GadgetStrategy;
 use hades252::strategies::Strategy;
+use poseidon252::sponge::sponge::sponge_hash_gadget;
 
 /// Verify the merkle opening
 pub fn merkle(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Composer {
@@ -86,10 +87,9 @@ pub fn merkle(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Compose
             );
 
             perm.copy_from_slice(l.perm());
-            let mut strat = GadgetStrategy::new(&mut composer);
-            strat.perm(&mut perm);
 
-            prev_hash = perm[1];
+            let output = sponge_hash_gadget(&mut composer, &perm);
+            prev_hash = output;
         }
 
         composer.add_gate(
@@ -135,26 +135,22 @@ mod tests {
 
         let sk = SecretKey::default();
         let pk = sk.public_key();
-        let value = 2;
+        let value = 5;
         let (note, blinding_factor) = TransparentNote::output(&pk, value);
         tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
             .unwrap();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 3;
-        let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
 
         let mut composer = zk::Composer::new();
 
         let zk_tx = zk::ZkTransaction::from_tx(&mut composer, &tx);
 
         let mut composer = merkle(composer, &zk_tx);
-        let mut transcript = zk::TRANSCRIPT.clone();
-
         composer.add_dummy_constraints();
+
+        let mut transcript = zk::TRANSCRIPT.clone();
         let circuit = composer.preprocess(&zk::CK, &mut transcript, &zk::DOMAIN);
+
+        composer.check_circuit_satisfied();
 
         let proof = composer.prove(&zk::CK, &circuit, &mut transcript);
 
