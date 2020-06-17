@@ -117,7 +117,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::{crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
+    use crate::{crypto, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
 
     #[test]
     #[ignore]

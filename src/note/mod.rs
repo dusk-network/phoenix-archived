@@ -1,5 +1,5 @@
 use crate::{
-    crypto, db, rpc, utils, BlsScalar, Error, JubJubAffine, JubJubExtended, JubJubScalar, Nonce,
+    crypto, rpc, utils, BlsScalar, Error, JubJubAffine, JubJubExtended, JubJubScalar, Nonce,
     NoteType, PublicKey, SecretKey, TransactionInput, TransactionOutput, ViewKey,
 };
 
@@ -8,7 +8,6 @@ use std::convert::TryFrom;
 use std::fmt::Debug;
 use std::io;
 use std::ops::Mul;
-use std::path::Path;
 
 use jubjub::GENERATOR;
 
@@ -39,11 +38,6 @@ pub trait NoteGenerator:
     + Into<NoteVariant>
     + TryFrom<NoteVariant>
 {
-    /// Create a new phoenix input note
-    fn input<P: AsRef<Path>>(db_path: P, idx: u64) -> Result<Self, Error> {
-        Self::try_from(db::fetch_note(db_path, idx)?).map_err(|_| Error::InvalidParameters)
-    }
-
     /// Create a new phoenix output note without inner randomness
     fn deterministic_output(
         r: &JubJubScalar,
