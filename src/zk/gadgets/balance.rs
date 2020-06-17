@@ -1,7 +1,7 @@
-use crate::{zk, BlsScalar, Transaction, TransactionItem};
+use crate::{BlsScalar, Transaction, TransactionItem};
 
 use dusk_plonk::constraint_system::StandardComposer;
-use poseidon252::sponge::sponge::sponge_hash_gadget;
+
 
 /// Prove that the amount inputted equals the amount outputted
 pub fn balance(composer: &mut StandardComposer, tx: &Transaction) {

@@ -1,4 +1,4 @@
-use crate::{zk, BlsScalar, Note, TransactionInput, TransactionItem};
+use crate::{BlsScalar, Note, TransactionInput, TransactionItem};
 
 use dusk_plonk::constraint_system::StandardComposer;
 use poseidon252::sponge::sponge::sponge_hash_gadget;

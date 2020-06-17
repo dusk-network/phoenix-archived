@@ -2,11 +2,11 @@ use crate::{
     utils, BlsScalar, JubJubAffine, JubJubExtended, JubJubScalar, Nonce, PublicKey, ViewKey,
 };
 
-use std::{cmp, ptr};
+use std::{ptr};
 
 use rand::seq::SliceRandom;
 
-use hades252::strategies::{ScalarStrategy, Strategy};
+
 use sodiumoxide::crypto::secretbox::{self, Key};
 
 pub mod merkle;

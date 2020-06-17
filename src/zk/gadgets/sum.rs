@@ -1,4 +1,4 @@
-use crate::{zk, BlsScalar, Note, NoteVariant, TransactionInput, TransactionItem, ViewKey};
+use crate::{BlsScalar, TransactionItem};
 
 use dusk_plonk::constraint_system::StandardComposer;
 
@@ -84,6 +84,6 @@ mod tests {
 
         let proof = composer.prove(&ck, &circuit, &mut transcript.clone());
 
-        assert!(proof.verify(&circuit, &mut transcript, &vk, &[BlsScalar::zero()]));
+        assert!(proof.verify(&circuit, &mut transcript, &vk, &composer.public_inputs()));
     }
 }
