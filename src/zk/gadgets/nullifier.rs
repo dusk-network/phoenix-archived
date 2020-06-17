@@ -1,70 +1,27 @@
-use crate::{zk, BlsScalar};
+use crate::{zk, BlsScalar, Note, TransactionInput, TransactionItem};
 
 use poseidon252::sponge::sponge::sponge_hash_gadget;
 
-/// Validate the input nullifiers
-pub fn nullifier(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Composer {
-    let zero = *tx.zero();
-    let one = *tx.one();
-    let two = *tx.two();
+/// Validate the input nullifier
+pub fn nullifier(composer: &mut zk::Composer, input: &TransactionInput) {
+    let zero = composer.add_input(BlsScalar::zero());
+    let sk_r = input.note().sk_r(input.sk());
+    let sk_r = composer.add_input(BlsScalar::from_bytes(&sk_r.to_bytes()).unwrap());
+    let idx = composer.add_input(BlsScalar::from(input.note().idx()));
 
-    let mut zero_perm = [zero; hades252::WIDTH];
-    let mut perm = [zero; hades252::WIDTH];
+    let output = sponge_hash_gadget(composer, &[sk_r, idx]);
+    let nul = composer.add_input(BlsScalar::from_bytes(&input.nullifier().to_bytes()).unwrap());
 
-    zero_perm[0] = *tx.three();
-
-    for item in tx.inputs().iter() {
-        let mut sk_r_prime = *tx.zero();
-
-        item.sk_r().iter().fold(one, |mut acc, bit| {
-            composer.bool_gate(*bit);
-
-            acc = composer.mul(
-                BlsScalar::one(),
-                acc,
-                two,
-                BlsScalar::zero(),
-                BlsScalar::zero(),
-            );
-
-            // TODO - The next two gates can be reduced to one with the ability to evaluate the
-            // current sk_r_prime for the output of a poly_gate
-            let dif = composer.mul(
-                BlsScalar::one(),
-                acc,
-                *bit,
-                BlsScalar::zero(),
-                BlsScalar::zero(),
-            );
-
-            sk_r_prime = composer.add(
-                (BlsScalar::one(), sk_r_prime),
-                (BlsScalar::one(), dif),
-                BlsScalar::zero(),
-                BlsScalar::zero(),
-            );
-
-            acc
-        });
-
-        perm.copy_from_slice(&zero_perm);
-        perm[1] = sk_r_prime;
-        perm[2] = *item.idx();
-        let output = sponge_hash_gadget(&mut composer, &perm);
-
-        composer.add_gate(
-            output,
-            zero,
-            zero,
-            -BlsScalar::one(),
-            BlsScalar::one(),
-            BlsScalar::one(),
-            BlsScalar::zero(),
-            *item.nullifier(),
-        );
-    }
-
-    composer
+    composer.add_gate(
+        output,
+        nul,
+        zero,
+        -BlsScalar::one(),
+        BlsScalar::one(),
+        BlsScalar::one(),
+        BlsScalar::zero(),
+        BlsScalar::zero(),
+    );
 }
 
 #[cfg(test)]
@@ -83,47 +40,32 @@ mod tests {
         let value = 100;
         let note = TransparentNote::output(&pk, value).0;
         let merkle_opening = crypto::MerkleProof::mock(note.hash());
-        tx.push_input(note.to_transaction_input(merkle_opening, sk))
-            .unwrap();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 95;
-        let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
-            .unwrap();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 2;
-        let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
-            .unwrap();
-
-        let sk = SecretKey::default();
-        let pk = sk.public_key();
-        let value = 3;
-        let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
+        let input = note.to_transaction_input(merkle_opening, sk);
 
         let mut composer = zk::Composer::new();
 
-        let zk_tx = zk::ZkTransaction::from_tx(&mut composer, &tx);
-
-        let mut composer = nullifier(composer, &zk_tx);
-        let mut transcript = zk::TRANSCRIPT.clone();
+        nullifier(&mut composer, &input);
 
         composer.add_dummy_constraints();
-        let circuit = composer.preprocess(&zk::CK, &mut transcript, &zk::DOMAIN);
+        use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
+        use dusk_plonk::fft::EvaluationDomain;
+        use merlin::Transcript;
 
-        let proof = composer.prove(&zk::CK, &circuit, &mut transcript);
+        // Generate Composer & Public Parameters
+        let pub_params = PublicParameters::setup(1 << 17, &mut rand::thread_rng()).unwrap();
+        let (ck, vk) = pub_params.trim(1 << 16).unwrap();
+        let mut transcript = Transcript::new(b"TEST");
 
-        assert!(proof.verify(
-            &circuit,
+        composer.check_circuit_satisfied();
+        let circuit = composer.preprocess(
+            &ck,
             &mut transcript,
-            &zk::VK,
-            &composer.public_inputs()
-        ));
+            &EvaluationDomain::new(composer.circuit_size()).unwrap(),
+        );
+
+        let proof = composer.prove(&ck, &circuit, &mut transcript.clone());
+
+        assert!(proof.verify(&circuit, &mut transcript, &vk, &composer.public_inputs()));
     }
 
     #[test]
