@@ -1,92 +1,66 @@
-use crate::{zk, BlsScalar};
+use crate::{zk, BlsScalar, Transaction, TransactionItem};
 
+use dusk_plonk::constraint_system::StandardComposer;
 use poseidon252::sponge::sponge::sponge_hash_gadget;
 
-macro_rules! value_commitment_preimage {
-    (
-        $item:ident,
-        $composer:ident,
-        $perm:ident,
-        $zero_perm:ident,
-        $zero:ident,
-        $acc:ident,
-        $cc:ident
-    ) => {
-        $perm.copy_from_slice(&$zero_perm);
-        $perm[0] = *$item.value();
-        $perm[1] = *$item.blinding_factor();
-
-        let output = sponge_hash_gadget($composer, &$perm[0..2]);
-
-        $cc = output;
-
-        $acc = $composer.add(
-            (BlsScalar::one(), $acc),
-            (BlsScalar::one(), *$item.value()),
-            BlsScalar::zero(),
-            BlsScalar::zero(),
-        );
-    };
-}
-
-/// Perform the pre-image of the value commitment and check if the inputs equals the outputs + fee
-pub fn balance(composer: &mut zk::Composer, tx: &zk::ZkTransaction) {
-    let zero = *tx.zero();
-    let zero_perm = [zero; hades252::WIDTH];
-    let mut perm = [zero; hades252::WIDTH];
-    let mut c;
-
-    let mut inputs = zero;
-    let mut outputs = zero;
-
+/// Prove that the amount inputted equals the amount outputted
+pub fn balance(composer: &mut StandardComposer, tx: &Transaction) {
+    let mut inputs = 0;
     for item in tx.inputs().iter() {
-        value_commitment_preimage!(item, composer, perm, zero_perm, zero, inputs, c);
-
+        let value = composer.add_input(BlsScalar::from(item.value()));
+        let sum = composer.add_input(BlsScalar::from(inputs));
+        inputs += item.value();
+        let inputs_var = composer.add_input(BlsScalar::from(inputs));
         composer.add_gate(
-            *item.value_commitment(),
-            c,
-            zero,
+            sum,
+            value,
+            inputs_var,
+            BlsScalar::one(),
+            BlsScalar::one(),
             -BlsScalar::one(),
-            BlsScalar::one(),
-            BlsScalar::one(),
             BlsScalar::zero(),
             BlsScalar::zero(),
         );
     }
 
-    let fee = *tx.fee();
-    value_commitment_preimage!(fee, composer, perm, zero_perm, zero, outputs, c);
-
-    composer.add_gate(
-        c,
-        zero,
-        zero,
-        -BlsScalar::one(),
-        BlsScalar::one(),
-        BlsScalar::one(),
-        BlsScalar::zero(),
-        *fee.value_commitment_scalar(),
-    );
-
+    let mut outputs = 0;
     for item in tx.outputs().iter() {
-        value_commitment_preimage!(item, composer, perm, zero_perm, zero, outputs, c);
-
+        let value = composer.add_input(BlsScalar::from(item.value()));
+        let sum = composer.add_input(BlsScalar::from(outputs));
+        outputs += item.value();
+        let outputs_var = composer.add_input(BlsScalar::from(outputs));
         composer.add_gate(
-            c,
-            zero,
-            zero,
+            sum,
+            value,
+            outputs_var,
+            BlsScalar::one(),
+            BlsScalar::one(),
             -BlsScalar::one(),
-            BlsScalar::one(),
-            BlsScalar::one(),
             BlsScalar::zero(),
-            *item.value_commitment_scalar(),
+            BlsScalar::zero(),
         );
     }
 
+    // let fee = *tx.fee();
+
+    // let value = composer.add_input(BlsScalar::from(fee.value()));
+    // composer.add_gate(
+    //     value,
+    //     composer.zero_var,
+    //     composer.zero_var,
+    //     BlsScalar::one(),
+    //     BlsScalar::one(),
+    //     -BlsScalar::one(),
+    //     BlsScalar::zero(),
+    //     *fee.value_commitment_scalar(),
+    // );
+
+    let inputs_var = composer.add_input(BlsScalar::from(inputs));
+    let outputs_var = composer.add_input(BlsScalar::from(outputs));
     composer.add_gate(
-        inputs,
-        outputs,
-        zero,
+        inputs_var,
+        outputs_var,
+        composer.zero_var,
         -BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::one(),
@@ -121,7 +95,7 @@ mod tests {
 
         let sk = SecretKey::default();
         let pk = sk.public_key();
-        let value = 2;
+        let value = 5;
         let (note, blinding_factor) = TransparentNote::output(&pk, value);
         tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
             .unwrap();
@@ -134,9 +108,7 @@ mod tests {
 
         let mut composer = zk::Composer::new();
 
-        let zk_tx = zk::ZkTransaction::from_tx(&mut composer, &tx);
-
-        balance(&mut composer, &zk_tx);
+        balance(&mut composer, &tx);
 
         composer.add_dummy_constraints();
         use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
@@ -148,6 +120,7 @@ mod tests {
         let (ck, vk) = pub_params.trim(1 << 16).unwrap();
         let mut transcript = Transcript::new(b"TEST");
 
+        composer.check_circuit_satisfied();
         let circuit = composer.preprocess(
             &ck,
             &mut transcript,
