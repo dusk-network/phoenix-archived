@@ -31,8 +31,6 @@ mod tests {
 
     #[test]
     fn nullifier_gadget() {
-        zk::init();
-
         let mut tx = Transaction::default();
 
         let sk = SecretKey::default();
@@ -42,7 +40,7 @@ mod tests {
         let merkle_opening = crypto::MerkleProof::mock(note.hash());
         let input = note.to_transaction_input(merkle_opening, sk);
 
-        let mut composer = zk::Composer::new();
+        let mut composer = dusk_plonk::constraint_system::StandardComposer::new();
 
         nullifier(&mut composer, &input);
 
