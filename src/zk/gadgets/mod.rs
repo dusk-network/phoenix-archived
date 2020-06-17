@@ -1,5 +1,7 @@
 #[cfg(feature = "circuit-balance")]
 pub use balance::balance;
+#[cfg(feature = "circuit-commitment")]
+pub use commitment::commitment;
 #[cfg(feature = "circuit-merkle")]
 pub use merkle::merkle;
 #[cfg(feature = "circuit-nullifier")]
@@ -13,6 +15,8 @@ pub use sk_r::sk_r;
 
 #[cfg(feature = "circuit-balance")]
 mod balance;
+#[cfg(feature = "circuit-commitment")]
+mod commitment;
 #[cfg(feature = "circuit-merkle")]
 mod merkle;
 #[cfg(feature = "circuit-nullifier")]

@@ -11,7 +11,8 @@ default = [
     "circuit-balance",
     "circuit-nullifier",
     "circuit-sanity",
-    "circuit-skr"
+    "circuit-skr",
+    "circuit-commitment"
 ]
 circuit-merkle = []
 circuit-preimage = []
@@ -19,6 +20,7 @@ circuit-balance = []
 circuit-nullifier = []
 circuit-sanity = []
 circuit-skr = []
+circuit-commitment = []
 
 [dependencies]
 bincode = "^1.2.1"
