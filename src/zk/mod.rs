@@ -70,12 +70,12 @@ mod tests;
 /// Initialize the ZK static data
 pub fn init() {
     let public_parameters = PublicParameters::setup(
-        1 << 18,
+        CAPACITY,
         &mut utils::generate_rng(b"phoenix-plonk-PublicParameters"),
     )
     .unwrap();
-    let (ck, vk) = PublicParameters::trim(&public_parameters, 1 << 17).unwrap();
-    let domain: EvaluationDomain = EvaluationDomain::new(1 << 17).unwrap();
+    let (ck, vk) = PublicParameters::trim(&public_parameters, CAPACITY).unwrap();
+    let domain: EvaluationDomain = EvaluationDomain::new(CAPACITY).unwrap();
 
     unsafe {
         utils::lazy_static_write(&*DOMAIN, domain);

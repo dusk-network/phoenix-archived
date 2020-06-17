@@ -16,7 +16,7 @@ macro_rules! value_commitment_preimage {
         $perm[0] = *$item.value();
         $perm[1] = *$item.blinding_factor();
 
-        let output = sponge_hash_gadget(&mut $composer, &$perm);
+        let output = sponge_hash_gadget($composer, &$perm[0..2]);
 
         $cc = output;
 
@@ -30,7 +30,7 @@ macro_rules! value_commitment_preimage {
 }
 
 /// Perform the pre-image of the value commitment and check if the inputs equals the outputs + fee
-pub fn balance(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Composer {
+pub fn balance(composer: &mut zk::Composer, tx: &zk::ZkTransaction) {
     let zero = *tx.zero();
     let zero_perm = [zero; hades252::WIDTH];
     let mut perm = [zero; hades252::WIDTH];
@@ -93,8 +93,6 @@ pub fn balance(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Compos
         BlsScalar::zero(),
         BlsScalar::zero(),
     );
-
-    composer
 }
 
 #[cfg(test)]
@@ -104,8 +102,6 @@ mod tests {
 
     #[test]
     fn balance_gadget() {
-        zk::init();
-
         let mut tx = Transaction::default();
 
         let sk = SecretKey::default();
@@ -140,20 +136,27 @@ mod tests {
 
         let zk_tx = zk::ZkTransaction::from_tx(&mut composer, &tx);
 
-        let mut composer = balance(composer, &zk_tx);
-        let mut transcript = zk::TRANSCRIPT.clone();
+        balance(&mut composer, &zk_tx);
 
         composer.add_dummy_constraints();
-        let circuit = composer.preprocess(&zk::CK, &mut transcript, &zk::DOMAIN);
+        use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
+        use dusk_plonk::fft::EvaluationDomain;
+        use merlin::Transcript;
 
-        let proof = composer.prove(&zk::CK, &circuit, &mut transcript);
+        // Generate Composer & Public Parameters
+        let pub_params = PublicParameters::setup(1 << 17, &mut rand::thread_rng()).unwrap();
+        let (ck, vk) = pub_params.trim(1 << 16).unwrap();
+        let mut transcript = Transcript::new(b"TEST");
 
-        assert!(proof.verify(
-            &circuit,
+        let circuit = composer.preprocess(
+            &ck,
             &mut transcript,
-            &zk::VK,
-            &composer.public_inputs()
-        ));
+            &EvaluationDomain::new(composer.circuit_size()).unwrap(),
+        );
+
+        let proof = composer.prove(&ck, &circuit, &mut transcript.clone());
+
+        assert!(proof.verify(&circuit, &mut transcript, &vk, &composer.public_inputs()));
     }
 
     #[test]
