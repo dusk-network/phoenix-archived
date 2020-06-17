@@ -109,11 +109,10 @@ pub fn public_inputs() -> &'static Vec<BlsScalar> {
     unsafe { &*PUBLIC_INPUTS.as_ptr() }
 }
 
-fn inner_circuit<'a, P>(composer: Composer, _tx: &Transaction, _pi: P) -> Composer
-where
-    P: Iterator<Item = &'a mut BlsScalar>,
+fn inner_circuit (composer: Composer, _tx: &Transaction, _pi: P) -> Composer
+
 {
-    /*
+    
     let tx_zk = ZkTransaction::from_tx(&mut composer, tx);
 
     #[cfg(feature = "circuit-sanity")]
@@ -140,7 +139,7 @@ where
     (0..composer.circuit_size()).for_each(|_| {
         composer.add_dummy_constraints();
     });
-    */
+    
 
     composer
 }
