@@ -3,8 +3,8 @@ use crate::{zk, BlsScalar, Note, NoteVariant, TransactionInput, TransactionItem,
 use dusk_plonk::constraint_system::StandardComposer;
 use poseidon252::sponge::sponge::sponge_hash_gadget;
 
+/// Prove knowledge of the value and blinding factor, which make up the value commitment.
 pub fn commitment(composer: &mut StandardComposer, note: &NoteVariant, vk: Option<&ViewKey>) {
-    let zero = composer.add_input(BlsScalar::zero());
     let value = composer.add_input(BlsScalar::from(note.value(vk)));
     let blinding_factor = composer.add_input(note.blinding_factor(vk));
 
@@ -14,7 +14,7 @@ pub fn commitment(composer: &mut StandardComposer, note: &NoteVariant, vk: Optio
     composer.add_gate(
         output,
         commitment,
-        zero,
+        composer.zero_var,
         -BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::one(),

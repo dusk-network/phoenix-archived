@@ -5,7 +5,6 @@ use poseidon252::sponge::sponge::sponge_hash_gadget;
 
 /// Prove knowledge of the pre-image of an input note
 pub fn input_preimage(composer: &mut StandardComposer, input: &TransactionInput) {
-    let zero = composer.add_input(BlsScalar::zero());
     let value_commitment = composer.add_input(*input.note().value_commitment());
     let idx = composer.add_input(BlsScalar::from(input.note().idx()));
     let pk_r_affine_x = composer.add_input(input.note().pk_r().get_x());
@@ -19,7 +18,7 @@ pub fn input_preimage(composer: &mut StandardComposer, input: &TransactionInput)
     composer.add_gate(
         output,
         note_hash,
-        zero,
+        composer.zero_var,
         -BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::one(),

@@ -2,9 +2,8 @@ use crate::{zk, BlsScalar, Note, TransactionInput, TransactionItem};
 
 use poseidon252::sponge::sponge::sponge_hash_gadget;
 
-/// Validate the input nullifier
+/// Prove knowledge of the input nullifier
 pub fn nullifier(composer: &mut zk::Composer, input: &TransactionInput) {
-    let zero = composer.add_input(BlsScalar::zero());
     let sk_r = input.note().sk_r(input.sk());
     let sk_r = composer.add_input(BlsScalar::from_bytes(&sk_r.to_bytes()).unwrap());
     let idx = composer.add_input(BlsScalar::from(input.note().idx()));
@@ -15,7 +14,7 @@ pub fn nullifier(composer: &mut zk::Composer, input: &TransactionInput) {
     composer.add_gate(
         output,
         nul,
-        zero,
+        composer.zero_var,
         -BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::one(),
