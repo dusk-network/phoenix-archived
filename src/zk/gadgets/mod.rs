@@ -5,7 +5,7 @@ pub use merkle::merkle;
 #[cfg(feature = "circuit-nullifier")]
 pub use nullifier::nullifier;
 #[cfg(feature = "circuit-preimage")]
-pub use preimage::preimage;
+pub use preimage::input_preimage;
 #[cfg(feature = "circuit-sanity")]
 pub use sanity::sanity;
 #[cfg(feature = "circuit-skr")]
