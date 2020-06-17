@@ -16,8 +16,8 @@ use rand::Rng;
 
 use bincode::{deserialize, serialize};
 
-pub const MAX_NOTES_PER_TRANSACTION: usize = 1 + 2;
-pub const MAX_INPUT_NOTES_PER_TRANSACTION: usize = 1;
+pub const MAX_NOTES_PER_TRANSACTION: usize = 4 + 2;
+pub const MAX_INPUT_NOTES_PER_TRANSACTION: usize = 4;
 pub const MAX_OUTPUT_NOTES_PER_TRANSACTION: usize = 2;
 
 /// Maximum allowed number of notes per transaction.
