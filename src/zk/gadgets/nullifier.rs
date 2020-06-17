@@ -31,8 +31,6 @@ mod tests {
 
     #[test]
     fn nullifier_gadget() {
-        let mut tx = Transaction::default();
-
         let sk = SecretKey::default();
         let pk = sk.public_key();
         let value = 100;
