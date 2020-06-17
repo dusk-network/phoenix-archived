@@ -1,9 +1,10 @@
 use crate::{zk, BlsScalar, Note, TransactionInput, TransactionItem};
 
+use dusk_plonk::constraint_system::StandardComposer;
 use poseidon252::sponge::sponge::sponge_hash_gadget;
 
 /// Prove knowledge of the pre-image of an input note
-pub fn input_preimage(composer: &mut zk::Composer, input: &TransactionInput) {
+pub fn input_preimage(composer: &mut StandardComposer, input: &TransactionInput) {
     let zero = composer.add_input(BlsScalar::zero());
     let value_commitment = composer.add_input(*input.note().value_commitment());
     let idx = composer.add_input(BlsScalar::from(input.note().idx()));
