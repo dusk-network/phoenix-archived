@@ -86,7 +86,6 @@ mod tests {
         let (ck, vk) = pub_params.trim(1 << 16).unwrap();
         let mut transcript = Transcript::new(b"TEST");
 
-        composer.check_circuit_satisfied();
         let circuit = composer.preprocess(
             &ck,
             &mut transcript,
