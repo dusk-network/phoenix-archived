@@ -137,22 +137,29 @@ mod tests {
         let (note, blinding_factor) = TransparentNote::output(&pk, value);
         tx.set_fee(note.to_transaction_output(value, blinding_factor, pk));
 
-        let mut composer = zk::Composer::new();
+        let mut composer = dusk_plonk::constraint_system::StandardComposer::new();
 
         let zk_tx = zk::ZkTransaction::from_tx(&mut composer, &tx);
 
         let mut composer = sanity(composer, &zk_tx);
-        let mut transcript = zk::TRANSCRIPT.clone();
-
         composer.add_dummy_constraints();
-        let circuit = composer.preprocess(&zk::CK, &mut transcript, &zk::DOMAIN);
+        use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
+        use dusk_plonk::fft::EvaluationDomain;
+        use merlin::Transcript;
 
-        let proof = composer.prove(&zk::CK, &circuit, &mut transcript);
+        // Generate Composer & Public Parameters
+        let pub_params = PublicParameters::setup(1 << 17, &mut rand::thread_rng()).unwrap();
+        let (ck, vk) = pub_params.trim(1 << 16).unwrap();
+        let mut transcript = Transcript::new(b"TEST");
+
+        let circuit = composer.preprocess(&ck, &mut transcript, &EvaluationDomain::new(composer.circuit_size()).unwrap(),);
+
+        let proof = composer.prove(&ck, &circuit, &mut transcript.clone());
 
         assert!(proof.verify(
             &circuit,
             &mut transcript,
-            &zk::VK,
+            &vk,
             &composer.public_inputs()
         ));
     }
