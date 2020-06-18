@@ -44,10 +44,10 @@ bytehash = "0.3"
 lazy_static = "1.4"
 num-traits = "0.2"
 unprolix = "0.1"
-hades252 = { git = "https://github.com/dusk-network/Hades252.git", tag ="v0.5.0"}
+hades252 = { git = "https://github.com/dusk-network/Hades252.git", tag = "v0.5.0" }
 dusk-bls12_381 = "0.1.0"
-jubjub = {git = "https://github.com/dusk-network/jubjub.git"}
-poseidon252 = { git = "https://github.com/dusk-network/Poseidon252" }
+jubjub = { git = "https://github.com/dusk-network/jubjub.git" }
+poseidon252 = { git = "https://github.com/dusk-network/Poseidon252", tag = "v0.5.0" }
 
 [dependencies.dusk-plonk]
 version = "0.1.0"
