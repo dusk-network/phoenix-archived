@@ -1,6 +1,5 @@
 use crate::{
-    crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote,
-    TX_SERIALIZED_SIZE,
+    crypto, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote, TX_SERIALIZED_SIZE,
 };
 
 use std::io::{Read, Write};

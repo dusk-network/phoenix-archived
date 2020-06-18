@@ -1,7 +1,6 @@
-use crate::{BlsScalar, Note, NoteVariant, TransactionItem, ViewKey};
+use crate::{NoteVariant, TransactionItem, ViewKey};
 
 use dusk_plonk::constraint_system::StandardComposer;
-use poseidon252::sponge::sponge::sponge_hash_gadget;
 
 /// Prove knowledge of the value and blinding factor, which make up the value commitment.
 pub fn commitment(composer: &mut StandardComposer, note: &NoteVariant, vk: Option<&ViewKey>) {
@@ -30,7 +29,10 @@ pub fn commitment(composer: &mut StandardComposer, note: &NoteVariant, vk: Optio
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
+    use crate::{crypto, Note, NoteGenerator, SecretKey, TransparentNote};
+    use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
+    use dusk_plonk::fft::EvaluationDomain;
+    use merlin::Transcript;
 
     #[test]
     fn commitment_gadget() {
@@ -42,13 +44,15 @@ mod tests {
         let merkle_opening = crypto::MerkleProof::mock(note.hash());
         let input = note.to_transaction_input(merkle_opening, sk);
 
-        let mut composer = dusk_plonk::constraint_system::StandardComposer::new();
+        let mut composer = StandardComposer::new();
 
         commitment(&mut composer, input.note(), Some(&vk));
         composer.add_dummy_constraints();
-        use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
-        use dusk_plonk::fft::EvaluationDomain;
-        use merlin::Transcript;
+        // NOTE: this is here to make the test pass, as one set of dummy constraints
+        // isn't enough when no extra gates are added. It should be removed once the
+        // commitment gadget is properly implemented.
+        composer.add_dummy_constraints();
+        ////////////////////////////////////////////////////////////////////////////
 
         // Generate Composer & Public Parameters
         let pub_params = PublicParameters::setup(1 << 17, &mut rand::thread_rng()).unwrap();

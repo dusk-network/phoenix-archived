@@ -39,7 +39,10 @@ pub fn input_preimage(composer: &mut StandardComposer, input: &TransactionInput)
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
+    use crate::{crypto, Note, NoteGenerator, SecretKey, TransparentNote};
+    use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
+    use dusk_plonk::fft::EvaluationDomain;
+    use merlin::Transcript;
 
     #[test]
     fn preimage_gadget() {
@@ -50,13 +53,10 @@ mod tests {
         let merkle_opening = crypto::MerkleProof::mock(note.hash());
         let input = note.to_transaction_input(merkle_opening, sk);
 
-        let mut composer = dusk_plonk::constraint_system::StandardComposer::new();
+        let mut composer = StandardComposer::new();
 
         input_preimage(&mut composer, &input);
         composer.add_dummy_constraints();
-        use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
-        use dusk_plonk::fft::EvaluationDomain;
-        use merlin::Transcript;
 
         // Generate Composer & Public Parameters
         let pub_params = PublicParameters::setup(1 << 17, &mut rand::thread_rng()).unwrap();

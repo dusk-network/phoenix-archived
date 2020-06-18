@@ -1,5 +1,5 @@
 use crate::{
-    db, rpc, utils, zk, NoteGenerator, NoteVariant, ObfuscatedNote, SecretKey, Transaction,
+    db, rpc, zk, NoteGenerator, NoteVariant, ObfuscatedNote, SecretKey, Transaction,
     TransactionItem, TransparentNote,
 };
 

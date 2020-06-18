@@ -101,7 +101,7 @@ pub fn sanity(mut composer: zk::Composer, tx: &zk::ZkTransaction) -> zk::Compose
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
+    use crate::{crypto, zk, Note, NoteGenerator, SecretKey, Transaction, TransparentNote};
 
     #[test]
     fn sanity_gadget() {
@@ -152,15 +152,14 @@ mod tests {
         let (ck, vk) = pub_params.trim(1 << 16).unwrap();
         let mut transcript = Transcript::new(b"TEST");
 
-        let circuit = composer.preprocess(&ck, &mut transcript, &EvaluationDomain::new(composer.circuit_size()).unwrap(),);
+        let circuit = composer.preprocess(
+            &ck,
+            &mut transcript,
+            &EvaluationDomain::new(composer.circuit_size()).unwrap(),
+        );
 
         let proof = composer.prove(&ck, &circuit, &mut transcript.clone());
 
-        assert!(proof.verify(
-            &circuit,
-            &mut transcript,
-            &vk,
-            &composer.public_inputs()
-        ));
+        assert!(proof.verify(&circuit, &mut transcript, &vk, &composer.public_inputs()));
     }
 }

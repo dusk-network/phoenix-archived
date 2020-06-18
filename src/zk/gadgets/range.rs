@@ -1,4 +1,4 @@
-use crate::{crypto, zk, BlsScalar, TransactionItem};
+use crate::{BlsScalar, TransactionItem};
 
 use dusk_plonk::constraint_system::StandardComposer;
 
@@ -10,10 +10,7 @@ pub fn range<T: TransactionItem>(composer: &mut StandardComposer, item: &T) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        crypto, utils, zk, Note, NoteGenerator, SecretKey, Transaction, TransactionInput,
-        TransparentNote,
-    };
+    use crate::{crypto, Note, NoteGenerator, SecretKey, TransparentNote};
 
     #[test]
     fn range_gadget() {
