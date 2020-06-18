@@ -2,40 +2,24 @@ use crate::{BlsScalar, Transaction, TransactionItem};
 
 use dusk_plonk::constraint_system::StandardComposer;
 
-
 /// Prove that the amount inputted equals the amount outputted
 pub fn balance(composer: &mut StandardComposer, tx: &Transaction) {
-    let mut inputs = 0;
+    let mut sum = composer.zero_var;
     for item in tx.inputs().iter() {
         let value = composer.add_input(BlsScalar::from(item.value()));
-        let sum = composer.add_input(BlsScalar::from(inputs));
-        inputs += item.value();
-        let inputs_var = composer.add_input(BlsScalar::from(inputs));
-        composer.add_gate(
-            sum,
-            value,
-            inputs_var,
-            BlsScalar::one(),
-            BlsScalar::one(),
-            -BlsScalar::one(),
+        sum = composer.add(
+            (BlsScalar::one(), sum),
+            (BlsScalar::one(), value),
             BlsScalar::zero(),
             BlsScalar::zero(),
         );
     }
 
-    let mut outputs = 0;
     for item in tx.outputs().iter() {
         let value = composer.add_input(BlsScalar::from(item.value()));
-        let sum = composer.add_input(BlsScalar::from(outputs));
-        outputs += item.value();
-        let outputs_var = composer.add_input(BlsScalar::from(outputs));
-        composer.add_gate(
-            sum,
-            value,
-            outputs_var,
-            BlsScalar::one(),
-            BlsScalar::one(),
-            -BlsScalar::one(),
+        sum = composer.add(
+            (BlsScalar::one(), sum),
+            (-BlsScalar::one(), value),
             BlsScalar::zero(),
             BlsScalar::zero(),
         );
@@ -55,18 +39,7 @@ pub fn balance(composer: &mut StandardComposer, tx: &Transaction) {
     //     *fee.value_commitment_scalar(),
     // );
 
-    let inputs_var = composer.add_input(BlsScalar::from(inputs));
-    let outputs_var = composer.add_input(BlsScalar::from(outputs));
-    composer.add_gate(
-        inputs_var,
-        outputs_var,
-        composer.zero_var,
-        -BlsScalar::one(),
-        BlsScalar::one(),
-        BlsScalar::one(),
-        BlsScalar::zero(),
-        BlsScalar::zero(),
-    );
+    composer.constrain_to_constant(sum, BlsScalar::zero(), BlsScalar::zero());
 }
 
 #[cfg(test)]
