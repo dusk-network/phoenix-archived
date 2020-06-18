@@ -5,22 +5,26 @@ use poseidon252::sponge::sponge::sponge_hash_gadget;
 
 /// Prove knowledge of the value and blinding factor, which make up the value commitment.
 pub fn commitment(composer: &mut StandardComposer, note: &NoteVariant, vk: Option<&ViewKey>) {
-    let value = composer.add_input(BlsScalar::from(note.value(vk)));
-    let blinding_factor = composer.add_input(note.blinding_factor(vk));
+    // let value = composer.add_input(BlsScalar::from(note.value(vk)));
+    // let blinding_factor = composer.add_input(note.blinding_factor(vk));
 
-    let output = sponge_hash_gadget(composer, &[value, blinding_factor]);
+    // let output = sponge_hash_gadget(composer, &[value, blinding_factor]);
 
-    let commitment = composer.add_input(*note.value_commitment());
-    composer.add_gate(
-        output,
-        commitment,
-        composer.zero_var,
-        -BlsScalar::one(),
-        BlsScalar::one(),
-        BlsScalar::one(),
-        BlsScalar::zero(),
-        BlsScalar::zero(),
-    );
+    // let commitment = composer.add_input(*note.value_commitment());
+    // composer.add_gate(
+    //     output,
+    //     commitment,
+    //     composer.zero_var,
+    //     -BlsScalar::one(),
+    //     BlsScalar::one(),
+    //     BlsScalar::one(),
+    //     BlsScalar::zero(),
+    //     BlsScalar::zero(),
+    // );
+    //
+    // NOTE:
+    // We are currently mocking the commitment gadget, as we are still missing the ECC gate
+    // implementation.
 }
 
 #[cfg(test)]
