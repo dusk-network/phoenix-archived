@@ -6,7 +6,8 @@ use poseidon252::merkle_proof::{merkle_opening_gadget, PoseidonBranch};
 /// Verify the merkle opening
 pub fn merkle(composer: &mut StandardComposer, branch: PoseidonBranch, input: &TransactionInput) {
     let leaf = composer.add_input(input.note().hash());
-    merkle_opening_gadget(composer, branch, leaf, input.merkle_root);
+    let root = branch.root;
+    merkle_opening_gadget(composer, branch, leaf, root);
 }
 
 #[cfg(test)]
@@ -27,7 +28,7 @@ mod tests {
         let value = 100;
         let note = TransparentNote::output(&pk, value).0;
         let merkle_opening = crypto::MerkleProof::mock(note.hash());
-        let mut input = note.to_transaction_input(merkle_opening, sk);
+        let input = note.to_transaction_input(merkle_opening, sk);
 
         // Generate a tree with random scalars inside.
         // However, we set our nullifier on a specific index.
@@ -42,7 +43,6 @@ mod tests {
                 .push(StorageScalar(BlsScalar::from(i as u64)))
                 .unwrap();
         }
-        input.merkle_root = ptree.root().unwrap();
 
         // Our branch will be on 567
         let branch = ptree.poseidon_branch(index).unwrap().unwrap();
