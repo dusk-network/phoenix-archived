@@ -13,7 +13,8 @@ default = [
     "circuit-sanity",
     "circuit-skr",
     "circuit-commitment",
-    "circuit-sum"
+    "circuit-sum",
+    "circuit-range"
 ]
 circuit-merkle = []
 circuit-preimage = []
@@ -23,6 +24,7 @@ circuit-sanity = []
 circuit-skr = []
 circuit-commitment = []
 circuit-sum = []
+circuit-range = []
 
 [dependencies]
 bincode = "^1.2.1"
