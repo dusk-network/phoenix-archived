@@ -9,17 +9,16 @@ pub fn nullifier(composer: &mut zk::Composer, input: &TransactionInput) {
     let idx = composer.add_input(BlsScalar::from(input.note().idx()));
 
     let output = sponge_hash_gadget(composer, &[sk_r, idx]);
-    let nul = composer.add_input(BlsScalar::from_bytes(&input.nullifier().to_bytes()).unwrap());
 
     composer.add_gate(
         output,
-        nul,
+        composer.zero_var,
         composer.zero_var,
         -BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::one(),
         BlsScalar::zero(),
-        BlsScalar::zero(),
+        BlsScalar::from_bytes(&input.nullifier().to_bytes()).unwrap(),
     );
 }
 
