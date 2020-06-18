@@ -7,27 +7,31 @@ pub fn sum<T>(composer: &mut StandardComposer, items: Vec<T>)
 where
     T: TransactionItem,
 {
-    let mut sum = 0;
+    let mut sum = composer.zero_var;
+    let mut scalar_sum = BlsScalar::zero();
     for item in items.iter() {
         let value = composer.add_input(BlsScalar::from(item.value()));
-        let old_sum = composer.add_input(BlsScalar::from(sum));
-        sum += item.value();
-        let new_sum = composer.add_input(BlsScalar::from(sum));
-        composer.add_gate(
-            old_sum,
-            value,
-            new_sum,
-            BlsScalar::one(),
-            BlsScalar::one(),
-            -BlsScalar::one(),
+        scalar_sum += BlsScalar::from(item.value());
+        sum = composer.add(
+            (BlsScalar::one(), sum),
+            (BlsScalar::one(), value),
             BlsScalar::zero(),
             BlsScalar::zero(),
         );
     }
 
-    let sum_scalar = BlsScalar::from(sum);
-    let sum_var = composer.add_input(sum_scalar);
-    composer.constrain_to_constant(sum_var, sum_scalar, BlsScalar::zero());
+    // Constrain: -sum + (1 * scalar_sum) = 0
+    let one = composer.add_input(BlsScalar::one());
+    composer.add_gate(
+        sum,
+        one,
+        composer.zero_var,
+        -BlsScalar::one(),
+        scalar_sum,
+        BlsScalar::one(),
+        BlsScalar::zero(),
+        BlsScalar::zero(),
+    );
 }
 
 #[cfg(test)]
