@@ -14,8 +14,6 @@ pub use range::range;
 pub use sanity::sanity;
 #[cfg(feature = "circuit-skr")]
 pub use sk_r::sk_r;
-#[cfg(feature = "circuit-sum")]
-pub use sum::sum;
 
 #[cfg(feature = "circuit-balance")]
 mod balance;
@@ -33,5 +31,3 @@ mod range;
 mod sanity;
 #[cfg(feature = "circuit-skr")]
 mod sk_r;
-#[cfg(feature = "circuit-sum")]
-mod sum;
