@@ -25,19 +25,15 @@ pub fn balance(composer: &mut StandardComposer, tx: &Transaction) {
         );
     }
 
-    // let fee = *tx.fee();
+    let fee = *tx.fee();
 
-    // let value = composer.add_input(BlsScalar::from(fee.value()));
-    // composer.add_gate(
-    //     value,
-    //     composer.zero_var,
-    //     composer.zero_var,
-    //     BlsScalar::one(),
-    //     BlsScalar::one(),
-    //     -BlsScalar::one(),
-    //     BlsScalar::zero(),
-    //     *fee.value_commitment_scalar(),
-    // );
+    let value = composer.add_input(BlsScalar::from(fee.value()));
+    sum = composer.add(
+        (BlsScalar::one(), sum),
+        (-BlsScalar::one(), value),
+        BlsScalar::zero(),
+        BlsScalar::zero(),
+    );
 
     composer.constrain_to_constant(sum, BlsScalar::zero(), BlsScalar::zero());
 }
@@ -68,7 +64,7 @@ mod tests {
 
         let sk = SecretKey::default();
         let pk = sk.public_key();
-        let value = 5;
+        let value = 2;
         let (note, blinding_factor) = TransparentNote::output(&pk, value);
         tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
             .unwrap();
@@ -93,7 +89,6 @@ mod tests {
         let (ck, vk) = pub_params.trim(1 << 16).unwrap();
         let mut transcript = Transcript::new(b"TEST");
 
-        composer.check_circuit_satisfied();
         let circuit = composer.preprocess(
             &ck,
             &mut transcript,
