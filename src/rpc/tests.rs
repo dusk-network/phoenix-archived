@@ -1,18 +1,16 @@
 use crate::{
-    db, rpc, utils, zk, NoteGenerator, NoteVariant, ObfuscatedNote, SecretKey, Transaction,
-    TransactionItem, TransparentNote,
+    db, rpc, zk, MerkleProofProvider, NoteGenerator, NoteVariant, ObfuscatedNote, SecretKey,
+    Transaction, TransactionItem, TransparentNote,
 };
 
-use std::fs;
-
-use tempdir::TempDir;
+use kelvin::Blake2b;
 
 #[test]
 #[ignore]
 fn rpc_transaction() {
     zk::init();
 
-    let db_path = TempDir::new("rpc_transaction").unwrap();
+    let mut db = db::Db::<Blake2b>::default();
 
     let mut tx = Transaction::default();
 
@@ -21,8 +19,8 @@ fn rpc_transaction() {
     let value = 100;
     let note = TransparentNote::output(&pk, value).0;
     let variant: NoteVariant = note.into();
-    db::store_unspent_note(&db_path, variant).unwrap();
-    let merkle_opening = db::merkle_opening(&db_path, &variant).unwrap();
+    db.store_unspent_note(variant).unwrap();
+    let merkle_opening = db.opening(&variant).unwrap();
     tx.push_input(note.to_transaction_input(merkle_opening, sk))
         .unwrap();
 
@@ -62,8 +60,7 @@ fn rpc_transaction() {
 
     rpc_transaction.fee = Some(fee.into());
 
-    let mut transaction =
-        Transaction::try_from_rpc_transaction_db(&db_path, rpc_transaction).unwrap();
+    let mut transaction = Transaction::try_from_rpc_transaction_db(&db, rpc_transaction).unwrap();
 
     // It is not possible to verify an unproven transaction
     assert!(transaction.verify().is_err());
@@ -75,7 +72,4 @@ fn rpc_transaction() {
 
     assert_eq!(3, transaction.fee().value());
     transaction.verify().unwrap();
-
-    // Clean up the db
-    fs::remove_dir_all(db_path).expect("could not remove temp db");
 }

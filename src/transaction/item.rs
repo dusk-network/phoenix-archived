@@ -1,13 +1,14 @@
 use crate::{
-    crypto, db, rpc, BlsScalar, Error, JubJubScalar, Nonce, Note, NoteGenerator, NoteVariant,
-    Nullifier, PublicKey, SecretKey, TransparentNote,
+    crypto, db, rpc, BlsScalar, Error, JubJubScalar, MerkleProofProvider, Nonce, Note,
+    NoteGenerator, NoteVariant, Nullifier, PublicKey, SecretKey, TransparentNote,
 };
 
 use std::cmp::Ordering;
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::io::{self, Read, Write};
-use std::path::Path;
+
+use kelvin::ByteHash;
 
 /// A transaction item constains sensitive data for a proof creation, and must be obfuscated before
 /// network propagation.
@@ -107,14 +108,14 @@ impl TransactionInput {
 
     /// Attempt to generate a transaction input from a provided database and rpc item with the
     /// position of the note and its secret
-    pub fn try_from_rpc_transaction_input<P: AsRef<Path>>(
-        db_path: P,
+    pub fn try_from_rpc_transaction_input<H: ByteHash>(
+        db: &db::Db<H>,
         item: rpc::TransactionInput,
     ) -> Result<Self, Error> {
         let sk: SecretKey = item.sk.ok_or(Error::InvalidParameters)?.try_into()?;
 
-        let note = db::fetch_note(db_path.as_ref(), item.pos)?;
-        let merkle_opening = db::merkle_opening(db_path.as_ref(), &note)?;
+        let note = db.fetch_note(item.pos)?;
+        let merkle_opening = db.opening(&note)?;
 
         let txi = match note {
             NoteVariant::Transparent(n) => n.to_transaction_input(merkle_opening, sk),

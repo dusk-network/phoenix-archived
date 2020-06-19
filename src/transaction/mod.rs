@@ -1,15 +1,15 @@
 use crate::{
-    crypto, rpc, utils, zk, BlsScalar, Error, Note, NoteGenerator, ObfuscatedNote, PublicKey,
+    crypto, db, rpc, utils, zk, BlsScalar, Error, Note, NoteGenerator, ObfuscatedNote, PublicKey,
     SecretKey, TransparentNote,
 };
 
 use std::convert::TryFrom;
 use std::io::{self, Read, Write};
 use std::mem;
-use std::path::Path;
 use std::{fmt, ptr};
 
 use dusk_plonk::proof_system::Proof;
+use kelvin::ByteHash;
 
 use rand::distributions::{Distribution, Standard};
 use rand::Rng;
@@ -507,8 +507,8 @@ impl Transaction {
     /// Create a new transaction from a set of inputs/outputs defined by a rpc source.
     ///
     /// Will prove and verify the created transaction.
-    pub fn try_from_rpc_io<P: AsRef<Path>>(
-        db_path: P,
+    pub fn try_from_rpc_io<H: ByteHash>(
+        db: &db::Db<H>,
         fee_value: u64,
         inputs: &[rpc::TransactionInput],
         outputs: &[rpc::TransactionOutput],
@@ -518,7 +518,7 @@ impl Transaction {
         inputs
             .iter()
             .map(|i| {
-                TransactionInput::try_from_rpc_transaction_input(db_path.as_ref(), i.clone())
+                TransactionInput::try_from_rpc_transaction_input(db, i.clone())
                     .and_then(|i| transaction.push_input(i))
             })
             .collect::<Result<_, _>>()?;
@@ -542,8 +542,8 @@ impl Transaction {
     }
 
     /// Attempt to create a transaction from a rpc request.
-    pub fn try_from_rpc_transaction_db<P: AsRef<Path> + Clone>(
-        db_path: P,
+    pub fn try_from_rpc_transaction_db<H: ByteHash>(
+        db: &crate::db::Db<H>,
         tx: rpc::Transaction,
     ) -> Result<Self, Error> {
         let mut transaction = Transaction::default();
@@ -555,7 +555,7 @@ impl Transaction {
         tx.inputs
             .into_iter()
             .map(|i| {
-                TransactionInput::try_from_rpc_transaction_input(db_path.clone(), i)
+                TransactionInput::try_from_rpc_transaction_input(&db, i)
                     .and_then(|i| transaction.push_input(i))
             })
             .collect::<Result<_, _>>()?;
