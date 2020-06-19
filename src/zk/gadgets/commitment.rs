@@ -1,4 +1,4 @@
-use crate::{NoteVariant, TransactionItem, ViewKey};
+use crate::{NoteVariant, ViewKey};
 
 use dusk_plonk::constraint_system::StandardComposer;
 
