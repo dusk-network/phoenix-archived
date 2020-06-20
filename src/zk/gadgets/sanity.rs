@@ -10,7 +10,7 @@ pub fn sanity(mut composer: &mut StandardComposer) {
     let basepoint_affine_xy = basepoint.get_x() * basepoint.get_y();
 
     composer.add_gate(
-        basepoint.get_x(),
+        composer.add_input(basepoint.get_x()),
         composer.zero_var,
         composer.zero_var,
         -BlsScalar::one(),
@@ -21,7 +21,7 @@ pub fn sanity(mut composer: &mut StandardComposer) {
     );
 
     composer.add_gate(
-        basepoint.get_y(),
+        composer.add_input(basepoint.get_y()),
         composer.zero_var,
         composer.zero_var,
         -BlsScalar::one(),
@@ -32,7 +32,7 @@ pub fn sanity(mut composer: &mut StandardComposer) {
     );
 
     composer.add_gate(
-        basepoint_affine_xy,
+        composer.add_input(basepoint_affine_xy),
         composer.zero_var,
         composer.zero_var,
         -BlsScalar::one(),
