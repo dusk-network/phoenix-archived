@@ -1,5 +1,5 @@
 use crate::{
-    utils, zk, BlsScalar, Error, JubJubAffine, Note, Nullifier, Transaction, TransactionItem,
+    utils, BlsScalar, Error, JubJubAffine, Note, Nullifier, Transaction, TransactionItem,
     MAX_INPUT_NOTES_PER_TRANSACTION, MAX_OUTPUT_NOTES_PER_TRANSACTION,
 };
 

@@ -1,16 +1,17 @@
-use crate::{BlsScalar};
+use crate::BlsScalar;
 
-use jubjub::GENERATOR;
 use dusk_plonk::constraint_system::StandardComposer;
 use jubjub;
+use jubjub::GENERATOR;
 
 /// Perform the pre-image of the value commitment and check if the inputs equals the outputs + fee
-pub fn sanity(mut composer: &mut StandardComposer) {
+pub fn sanity(composer: &mut StandardComposer) {
     let basepoint = GENERATOR;
     let basepoint_affine_xy = basepoint.get_x() * basepoint.get_y();
 
+    let x = composer.add_input(basepoint.get_x());
     composer.add_gate(
-        composer.add_input(basepoint.get_x()),
+        x,
         composer.zero_var,
         composer.zero_var,
         -BlsScalar::one(),
@@ -20,8 +21,9 @@ pub fn sanity(mut composer: &mut StandardComposer) {
         basepoint.get_x(),
     );
 
+    let y = composer.add_input(basepoint.get_y());
     composer.add_gate(
-        composer.add_input(basepoint.get_y()),
+        y,
         composer.zero_var,
         composer.zero_var,
         -BlsScalar::one(),
@@ -31,8 +33,9 @@ pub fn sanity(mut composer: &mut StandardComposer) {
         basepoint.get_y(),
     );
 
+    let xy = composer.add_input(basepoint_affine_xy);
     composer.add_gate(
-        composer.add_input(basepoint_affine_xy),
+        xy,
         composer.zero_var,
         composer.zero_var,
         -BlsScalar::one(),
@@ -53,8 +56,9 @@ pub fn sanity(mut composer: &mut StandardComposer) {
         BlsScalar::zero(),
     );
 
+    let one = composer.add_input(BlsScalar::from(1u64));
     composer.add_gate(
-        composer.add_input(BlsScalar::from(1u64)),
+        one,
         composer.zero_var,
         composer.zero_var,
         -BlsScalar::one(),
@@ -64,8 +68,9 @@ pub fn sanity(mut composer: &mut StandardComposer) {
         BlsScalar::one(),
     );
 
+    let two = composer.add_input(BlsScalar::from(2u64));
     composer.add_gate(
-        composer.add_input(BlsScalar::from(2u64)),
+        two,
         composer.zero_var,
         composer.zero_var,
         -BlsScalar::one(),
@@ -75,8 +80,9 @@ pub fn sanity(mut composer: &mut StandardComposer) {
         BlsScalar::from(2u64),
     );
 
+    let three = composer.add_input(BlsScalar::from(3u64));
     composer.add_gate(
-        composer.add_input(BlsScalar::from(3u64)),
+        three,
         composer.zero_var,
         composer.zero_var,
         -BlsScalar::one(),
@@ -86,8 +92,9 @@ pub fn sanity(mut composer: &mut StandardComposer) {
         BlsScalar::from(3u64),
     );
 
+    let fifteen = composer.add_input(BlsScalar::from(15u64));
     composer.add_gate(
-        composer.add_input(BlsScalar::from(15u64)),
+        fifteen,
         composer.zero_var,
         composer.zero_var,
         -BlsScalar::one(),
@@ -96,7 +103,6 @@ pub fn sanity(mut composer: &mut StandardComposer) {
         BlsScalar::zero(),
         BlsScalar::from(15u64),
     );
-
 }
 
 #[cfg(test)]
