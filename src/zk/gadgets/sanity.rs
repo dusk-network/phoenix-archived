@@ -124,7 +124,7 @@ mod tests {
 
         let mut composer = StandardComposer::new();
 
-        input_preimage(&mut composer, &input);
+        sanity(&mut composer);
         composer.add_dummy_constraints();
 
         // Generate Composer & Public Parameters

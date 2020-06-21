@@ -29,7 +29,7 @@ pub fn commitment(composer: &mut StandardComposer, note: &NoteVariant, vk: Optio
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{crypto, Note, NoteGenerator, SecretKey, TransparentNote};
+    use crate::{crypto, Note, NoteGenerator, SecretKey, TransactionItem, TransparentNote};
     use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
     use dusk_plonk::fft::EvaluationDomain;
     use merlin::Transcript;

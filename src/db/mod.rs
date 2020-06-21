@@ -1,15 +1,13 @@
 use crate::{
-    crypto, crypto::MerkleProofProvider, BlsScalar, Error, Note, NoteVariant, Nullifier,
-    Transaction, TransactionItem, MAX_NOTES_PER_TRANSACTION,
+    crypto, BlsScalar, Error, MerkleProofProvider, Note, NoteVariant, Nullifier, Transaction,
+    TransactionItem, MAX_NOTES_PER_TRANSACTION,
 };
 
-use std::convert::TryFrom;
 use std::io;
-use std::path::{Path, PathBuf};
 
 use bytehash::ByteHash;
 use kelvin::annotations::Count;
-use kelvin::{Blake2b, Content, Root, Sink, Source};
+use kelvin::{Blake2b, Content, Sink, Source};
 use kelvin_hamt::CountingHAMTMap as HAMTMap;
 use kelvin_radix::DefaultRadixMap as RadixMap;
 use tracing::trace;
@@ -76,99 +74,26 @@ impl<H: ByteHash> crypto::MerkleProofProvider for Db<H> {
 }
 
 /// Generate a [`MerkleProof`] provided a note and a db path
-pub fn merkle_opening<P: AsRef<Path>>(
-    path: P,
+pub fn merkle_opening(
     note: &NoteVariant,
+    state: &Db<Blake2b>,
 ) -> Result<crypto::MerkleProof, Error> {
-    let root = Root::<_, Blake2b>::new(path.as_ref())?;
-    let state: Db<_> = root.restore()?;
-
     state.opening(note)
 }
 
 /// Store a provided [`Transaction`]. Return the position of the note on the tree.
-pub fn store<P: AsRef<Path>>(
-    path: P,
+pub fn store(
+    state: &mut Db<Blake2b>,
     transaction: &Transaction,
 ) -> Result<[Option<u64>; MAX_NOTES_PER_TRANSACTION], Error> {
-    let mut root = Root::<_, Blake2b>::new(path.as_ref())?;
-    let mut state: Db<_> = root.restore()?;
-
     let v = state.store_transaction(transaction)?;
-    root.set_root(&mut state)?;
 
     Ok(v)
 }
 
-/// Store a set of [`Transaction`]. Return a set of positions of the included notes.
-pub fn store_bulk_transactions<P: AsRef<Path>>(
-    path: P,
-    transactions: &[Transaction],
-) -> Result<Vec<u64>, Error> {
-    let mut root = Root::<_, Blake2b>::new(path.as_ref())?;
-    let mut state: Db<_> = root.restore()?;
-    let mut idx = vec![];
-
-    for t in transactions {
-        trace!("Storing tx {}", t);
-        state
-            .store_transaction(t)?
-            .iter()
-            .filter_map(|i| i.as_ref())
-            .for_each(|i| idx.push(*i));
-    }
-
-    root.set_root(&mut state)?;
-
-    Ok(idx)
-}
-
-/// Store a note. Return the position of the stored note on the tree.
-pub fn store_unspent_note<P: AsRef<Path>>(path: P, note: NoteVariant) -> Result<u64, Error> {
-    let mut root = Root::<_, Blake2b>::new(path.as_ref())?;
-    let mut state: Db<_> = root.restore()?;
-
-    let idx = state.store_unspent_note(note)?;
-
-    root.set_root(&mut state)?;
-
-    Ok(idx)
-}
-
-// TODO: for the following two functions, i needed to clone the
-// data structure in question in order to be able to take the value
-// out of this function without the compiler yelling at me.
-// will need to investigate if this is the most optimal strategy.
-/// Provided a position, return a strong typed note from the database
-pub fn fetch_note<P: AsRef<Path>>(path: P, idx: u64) -> Result<NoteVariant, Error> {
-    let root = Root::<_, Blake2b>::new(path.as_ref())?;
-    let state: Db<_> = root.restore()?;
-
-    state.fetch_note(idx)
-}
-
-/// Verify the existence of a provided nullifier on the set
-pub fn fetch_nullifier<P: AsRef<Path>>(
-    path: P,
-    nullifier: &Nullifier,
-) -> Result<Option<()>, Error> {
-    let root = Root::<_, Blake2b>::new(path.as_ref())?;
-    let state: Db<_> = root.restore()?;
-
-    state.fetch_nullifier(nullifier)
-}
-
-/// Return the merkle root of the current state
-pub fn root<P: AsRef<Path>>(path: P) -> Result<BlsScalar, Error> {
-    let root = Root::<_, Blake2b>::new(path.as_ref())?;
-    let state: Db<_> = root.restore()?;
-
-    state.root()
-}
-
 impl<H: ByteHash> Db<H> {
-    pub fn new<P: AsRef<Path>>(db_path: P) -> Result<Db<H>, Error> {
-        Ok(Root::<_, _>::new(db_path.as_ref()).and_then(|root| root.restore())?)
+    pub fn new() -> Db<H> {
+        Default::default()
     }
 
     pub fn store_transaction(
@@ -211,6 +136,24 @@ impl<H: ByteHash> Db<H> {
         Ok(idx)
     }
 
+    /// Store a set of [`Transaction`]. Return a set of positions of the included notes.
+    pub fn store_bulk_transactions(
+        &mut self,
+        transactions: &[Transaction],
+    ) -> Result<Vec<u64>, Error> {
+        let mut idx = vec![];
+
+        for t in transactions {
+            trace!("Storing tx {}", t);
+            self.store_transaction(t)?
+                .iter()
+                .filter_map(|i| i.as_ref())
+                .for_each(|i| idx.push(*i));
+        }
+
+        Ok(idx)
+    }
+
     /// Store a note. Return the position of the stored note on the tree.
     pub fn store_unspent_note(&mut self, mut note: NoteVariant) -> Result<u64, Error> {
         let idx = self.notes.count() as u64;
@@ -248,17 +191,12 @@ pub struct DbNotesIterator<H: ByteHash> {
     cur: u64,
 }
 
-impl<H: ByteHash> TryFrom<PathBuf> for DbNotesIterator<H> {
-    type Error = Error;
-
-    fn try_from(path: PathBuf) -> Result<Self, Self::Error> {
-        let root = Root::<_, H>::new(&path)?;
-        let state: Db<H> = root.restore()?;
-
-        let notes = state.notes.clone();
+impl<H: ByteHash> From<&Db<H>> for DbNotesIterator<H> {
+    fn from(db: &Db<H>) -> Self {
+        let notes = db.notes.clone();
         let cur = 0;
 
-        Ok(DbNotesIterator { notes, cur })
+        DbNotesIterator { notes, cur }
     }
 }
 
