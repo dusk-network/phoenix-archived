@@ -14,8 +14,6 @@
 pub use dusk_plonk::constraint_system::Variable;
 pub use dusk_plonk::proof_system::{PreProcessedCircuit, Proof};
 
-
-
 pub const CAPACITY: usize = 8192 * 8;
 
 pub const SERIALIZED_PROOF_SIZE: usize = 1097;
@@ -23,11 +21,13 @@ pub const SERIALIZED_PROOF_SIZE: usize = 1097;
 /// Circuit gadgets
 pub mod gadgets;
 
+mod public_inputs;
+pub use public_inputs::ZkPublicInputs;
+
 #[cfg(test)]
 mod tests;
 
-
-
+// TODO: uncomment once circuits are finished
 // fn gen_transcript() -> Transcript {
 //     Transcript::new(b"dusk-phoenix-plonk")
 // }
