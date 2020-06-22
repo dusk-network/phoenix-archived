@@ -16,37 +16,6 @@ pub struct ZkPublicInputs {
     outputs_pk_r_affine_x: [BlsScalar; MAX_OUTPUT_NOTES_PER_TRANSACTION],
 }
 
-impl ZkPublicInputs {
-    pub fn generate_pi(&self) -> Vec<BlsScalar> {
-        // TODO - Structure should be updated according to the set features
-        let mut pi = vec![];
-
-        self.merkle_roots
-            .iter()
-            .enumerate()
-            .for_each(|(i, merkle)| pi[(i + 1) * 29894] = *merkle);
-
-        self.nullifiers
-            .iter()
-            .enumerate()
-            .for_each(|(i, nullifier)| pi[(i + 1) * 41347] = *nullifier.s());
-
-        self.outputs_pk_r_affine_x
-            .iter()
-            .enumerate()
-            .for_each(|(i, pk_r_affine_x)| pi[i + 31632] = *pk_r_affine_x);
-
-        self.outputs_value_commitments
-            .iter()
-            .enumerate()
-            .for_each(|(i, value_commitment)| pi[36847 + i * 1738] = *value_commitment);
-
-        pi[35109] = self.fee_value_commitment;
-
-        pi
-    }
-}
-
 impl Write for ZkPublicInputs {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         let mut chunk = buf.chunks(utils::BLS_SCALAR_SERIALIZED_SIZE);
