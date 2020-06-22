@@ -20,6 +20,7 @@ mod tests {
     use merlin::Transcript;
     use poseidon252::PoseidonTree;
     use poseidon252::StorageScalar;
+    use rand::Rng;
 
     #[test]
     fn merkle_gadget() {
@@ -32,7 +33,7 @@ mod tests {
 
         // Generate a tree with random scalars inside.
         // However, we set our nullifier on a specific index.
-        let index = 567;
+        let index = rand::thread_rng().gen_range(0, 1024);
         let mut ptree: PoseidonTree<_, Blake2b> = PoseidonTree::new(17);
         for i in 0..1024u64 {
             if i == index {

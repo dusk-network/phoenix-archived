@@ -453,9 +453,8 @@ impl Transaction {
 
         self.recalculate_pi();
 
-        // TODO: uncomment once circuits are finished
-        // let proof = zk::prove(self);
-        // self.proof.replace(proof);
+        let proof = zk::prove(self);
+        self.proof.replace(proof);
 
         Ok(())
     }
@@ -494,18 +493,17 @@ impl Transaction {
         }
 
         let pi = self.public_inputs.ok_or(Error::InvalidParameters)?;
-        let pi = pi.generate_pi();
+        // TODO: this should be updated once we know the positions of the public inputs
+        // let pi = pi.generate_pi();
+        let pi = vec![];
 
         let proof = self.proof.as_ref().ok_or(Error::Generic)?;
 
-        // TODO: uncomment once circuits are finished
-        // if zk::verify(proof, pi.as_slice()) {
-        //     Ok(())
-        // } else {
-        //     Err(Error::Generic)
-        // }
-
-        Ok(())
+        if zk::verify(proof, pi.as_slice()) {
+            Ok(())
+        } else {
+            Err(Error::Generic)
+        }
     }
 
     /// Create a new transaction from a set of inputs/outputs defined by a rpc source.

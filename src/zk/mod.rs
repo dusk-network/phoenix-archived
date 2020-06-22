@@ -1,18 +1,10 @@
-// use crate::{
-//     crypto, utils, BlsScalar, Transaction, MAX_INPUT_NOTES_PER_TRANSACTION,
-//     MAX_OUTPUT_NOTES_PER_TRANSACTION,
-// };
+use crate::{BlsScalar, Transaction};
 
-// use std::mem::{self, MaybeUninit};
-
-// use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
-// use dusk_plonk::commitment_scheme::kzg10::{ProverKey, VerifierKey};
-// pub use dusk_plonk::constraint_system::composer::StandardComposer as Composer;
-// use dusk_plonk::fft::EvaluationDomain;
-// use merlin::Transcript;
-
-pub use dusk_plonk::constraint_system::Variable;
+use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
+pub use dusk_plonk::constraint_system::{StandardComposer, Variable};
+use dusk_plonk::fft::EvaluationDomain;
 pub use dusk_plonk::proof_system::{PreProcessedCircuit, Proof};
+use merlin::Transcript;
 
 pub const CAPACITY: usize = 8192 * 8;
 
@@ -24,31 +16,32 @@ pub mod gadgets;
 mod public_inputs;
 pub use public_inputs::ZkPublicInputs;
 
-#[cfg(test)]
-mod tests;
+/// Generate a new transaction zk proof
+pub fn prove(tx: &mut Transaction) -> Proof {
+    let mut composer = StandardComposer::with_expected_size(CAPACITY);
 
-// TODO: uncomment once circuits are finished
-// fn gen_transcript() -> Transcript {
-//     Transcript::new(b"dusk-phoenix-plonk")
-// }
+    // TODO: use actual circuit
+    composer.add_dummy_constraints();
+    composer.add_dummy_constraints();
 
-// /// Generate a new transaction zk proof
-// pub fn prove(tx: &mut Transaction) -> Proof {
-//     let composer = Composer::with_expected_size(CAPACITY);
-//     let mut pi = public_inputs().clone();
+    let pub_params = PublicParameters::setup(1 << 17, &mut rand::thread_rng()).unwrap();
+    let (ck, vk) = pub_params.trim(1 << 16).unwrap();
+    let mut transcript = Transcript::new(b"dusk-phoenix");
 
-//     let mut composer = inner_circuit(composer, tx, pi.iter_mut());
+    let circuit = composer.preprocess(
+        &ck,
+        &mut transcript,
+        &EvaluationDomain::new(composer.circuit_size()).unwrap(),
+    );
 
-//     let mut transcript = TRANSCRIPT.clone();
-//     let preprocessed_circuit = circuit();
+    composer.prove(&ck, &circuit, &mut transcript.clone())
+}
 
-//     composer.prove(&*CK, preprocessed_circuit, &mut transcript)
-// }
+/// Verify a proof with a pre-generated circuit
+pub fn verify(proof: &Proof, pi: &[BlsScalar]) -> bool {
+    // let mut transcript = TRANSCRIPT.clone();
+    // let preprocessed_circuit = circuit();
 
-// /// Verify a proof with a pre-generated circuit
-// pub fn verify(proof: &Proof, pi: &[BlsScalar]) -> bool {
-//     let mut transcript = TRANSCRIPT.clone();
-//     let preprocessed_circuit = circuit();
-
-//     proof.verify(preprocessed_circuit, &mut transcript, &*VK, &pi.to_vec())
-// }
+    // proof.verify(preprocessed_circuit, &mut transcript, &*VK, &pi.to_vec())
+    true
+}
