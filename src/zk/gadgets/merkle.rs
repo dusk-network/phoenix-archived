@@ -2,6 +2,7 @@ use crate::{Note, TransactionInput, TransactionItem};
 
 use dusk_plonk::constraint_system::StandardComposer;
 use poseidon252::merkle_proof::{merkle_opening_gadget, PoseidonBranch};
+use rand::Rng;
 
 /// Verify the merkle opening
 pub fn merkle(composer: &mut StandardComposer, branch: PoseidonBranch, input: &TransactionInput) {
@@ -32,7 +33,7 @@ mod tests {
 
         // Generate a tree with random scalars inside.
         // However, we set our nullifier on a specific index.
-        let index = 567;
+        let index = rand::thread_rng().gen_range(0, 1024);
         let mut ptree: PoseidonTree<_, Blake2b> = PoseidonTree::new(17);
         for i in 0..1024u64 {
             if i == index {
