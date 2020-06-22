@@ -4,28 +4,6 @@ version = "2.0.1"
 authors = ["Victor Lopez <vhrlopes@gmail.com>"]
 edition = "2018"
 
-[features]
-default = [
-    "circuit-merkle",
-    "circuit-preimage",
-    "circuit-balance",
-    "circuit-nullifier",
-    "circuit-sanity",
-    "circuit-skr",
-    "circuit-commitment",
-    "circuit-sum",
-    "circuit-range"
-]
-circuit-merkle = []
-circuit-preimage = []
-circuit-balance = []
-circuit-nullifier = []
-circuit-sanity = []
-circuit-skr = []
-circuit-commitment = []
-circuit-sum = []
-circuit-range = []
-
 [dependencies]
 bincode = "^1.2.1"
 serde = "^1.0"
