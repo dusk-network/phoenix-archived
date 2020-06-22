@@ -493,7 +493,9 @@ impl Transaction {
         }
 
         let pi = self.public_inputs.ok_or(Error::InvalidParameters)?;
-        let pi = pi.generate_pi();
+        // TODO: this should be updated once we know the positions of the public inputs
+        // let pi = pi.generate_pi();
+        let pi = vec![];
 
         let proof = self.proof.as_ref().ok_or(Error::Generic)?;
 
