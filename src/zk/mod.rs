@@ -24,11 +24,6 @@ pub mod gadgets;
 mod public_inputs;
 pub use public_inputs::ZkPublicInputs;
 
-// TODO: uncomment once circuits are finished
-// fn gen_transcript() -> Transcript {
-//     Transcript::new(b"dusk-phoenix-plonk")
-// }
-
 // /// Generate a new transaction zk proof
 // pub fn prove(tx: &mut Transaction) -> Proof {
 //     let composer = Composer::with_expected_size(CAPACITY);
