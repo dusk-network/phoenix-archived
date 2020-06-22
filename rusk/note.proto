@@ -17,9 +17,9 @@ message Note {
   Nonce nonce = 3;
   CompressedPoint r_g = 4;
   CompressedPoint pk_r = 5;
-  Scalar value_commitment = 6;
+  CompressedPoint value_commitment = 6;
   oneof blinding_factor {
-    Scalar transparent_blinding_factor = 7;
+    JubJubScalar transparent_blinding_factor = 7;
     bytes encrypted_blinding_factor = 8;
   }
   oneof value {
@@ -35,10 +35,10 @@ message DecryptedNote {
   Nonce nonce = 4;
   CompressedPoint r_g = 5;
   CompressedPoint pk_r = 6;
-  Scalar value_commitment = 7;
-  Scalar blinding_factor = 8;
+  CompressedPoint value_commitment = 7;
+  JubJubScalar blinding_factor = 8;
   oneof rawBlindingFactor {
-    Scalar transparent_blinding_factor = 9;
+    JubJubScalar transparent_blinding_factor = 9;
     bytes encrypted_blinding_factor = 10;
   }
   oneof rawValue {

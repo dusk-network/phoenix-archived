@@ -15,7 +15,7 @@ message TransactionOutput {
   Note note = 1;
   PublicKey pk = 2;
   fixed64 value = 3;
-  Scalar blinding_factor = 4;
+  JubJubScalar blinding_factor = 4;
 }
 
 message Transaction {
