@@ -27,15 +27,6 @@ pub fn input_preimage(composer: &mut StandardComposer, input: &TransactionInput)
     );
 }
 
-// pub fn equivalence_gadget(composer: &mut zk::Composer, tx: &zk::ZkTransaction) {
-//     composer.add(
-//         (BlsScalar::one(), composer.zero_var),
-//         (-BlsScalar::one(), tx.hash()),
-//         BlsScalar::zero(),
-//         tx.hash(),
-//     );
-// }
-
 #[cfg(test)]
 mod tests {
     use super::*;
