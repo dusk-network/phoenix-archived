@@ -36,6 +36,26 @@ impl From<BlsScalar> for rpc::Scalar {
     }
 }
 
+impl From<JubJubScalar> for rpc::JubJubScalar {
+    fn from(s: JubJubScalar) -> Self {
+        let mut data = [0x00u8; utils::JUBJUB_SCALAR_SERIALIZED_SIZE];
+
+        data.copy_from_slice(&s.to_bytes()[..]);
+
+        rpc::JubJubScalar {
+            data: data.to_vec(),
+        }
+    }
+}
+
+impl TryFrom<rpc::JubJubScalar> for JubJubScalar {
+    type Error = Error;
+
+    fn try_from(s: rpc::JubJubScalar) -> Result<JubJubScalar, Error> {
+        utils::deserialize_jubjub_scalar(s.data.as_slice())
+    }
+}
+
 impl From<Nullifier> for rpc::Nullifier {
     fn from(n: Nullifier) -> Self {
         rpc::Nullifier {
@@ -49,6 +69,12 @@ impl TryFrom<rpc::Scalar> for BlsScalar {
 
     fn try_from(s: rpc::Scalar) -> Result<BlsScalar, Error> {
         utils::deserialize_bls_scalar(s.data.as_slice())
+    }
+}
+
+impl From<JubJubAffine> for rpc::CompressedPoint {
+    fn from(p: JubJubAffine) -> Self {
+        JubJubExtended::from(p).into()
     }
 }
 
@@ -67,6 +93,16 @@ impl TryFrom<rpc::CompressedPoint> for JubJubExtended {
 
     fn try_from(p: rpc::CompressedPoint) -> Result<JubJubExtended, Error> {
         utils::deserialize_compressed_jubjub(p.y.as_slice())
+    }
+}
+
+impl TryFrom<rpc::CompressedPoint> for JubJubAffine {
+    type Error = Error;
+
+    fn try_from(p: rpc::CompressedPoint) -> Result<JubJubAffine, Error> {
+        Ok(JubJubAffine::from(utils::deserialize_compressed_jubjub(
+            p.y.as_slice(),
+        )?))
     }
 }
 

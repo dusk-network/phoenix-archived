@@ -100,6 +100,17 @@ pub fn kelvin_source_to_bls_scalar<H: ByteHash>(source: &mut Source<H>) -> io::R
     deserialize_bls_scalar(&s).map_err(|e| e.into())
 }
 
+/// Deserialize a [`JubJubScalar`] from a [`Source`]
+pub fn kelvin_source_to_jubjub_scalar<H: ByteHash>(
+    source: &mut Source<H>,
+) -> io::Result<JubJubScalar> {
+    let mut s = [0x00u8; JUBJUB_SCALAR_SERIALIZED_SIZE];
+
+    source.read_exact(&mut s)?;
+
+    deserialize_jubjub_scalar(&s).map_err(|e| e.into())
+}
+
 /// Deserialize a [`JubJubExtended`] from a [`Source`]
 pub fn kelvin_source_to_jubjub_projective<H: ByteHash>(
     source: &mut Source<H>,
