@@ -24,9 +24,6 @@ pub mod gadgets;
 mod public_inputs;
 pub use public_inputs::ZkPublicInputs;
 
-#[cfg(test)]
-mod tests;
-
 // TODO: uncomment once circuits are finished
 // fn gen_transcript() -> Transcript {
 //     Transcript::new(b"dusk-phoenix-plonk")
