@@ -2,7 +2,6 @@ use crate::{Note, TransactionInput, TransactionItem};
 
 use dusk_plonk::constraint_system::StandardComposer;
 use poseidon252::merkle_proof::{merkle_opening_gadget, PoseidonBranch};
-use rand::Rng;
 
 /// Verify the merkle opening
 pub fn merkle(composer: &mut StandardComposer, branch: PoseidonBranch, input: &TransactionInput) {
@@ -21,6 +20,7 @@ mod tests {
     use merlin::Transcript;
     use poseidon252::PoseidonTree;
     use poseidon252::StorageScalar;
+    use rand::Rng;
 
     #[test]
     fn merkle_gadget() {
