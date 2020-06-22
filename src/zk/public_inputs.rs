@@ -150,9 +150,13 @@ impl Read for ZkPublicInputs {
     }
 }
 
+// TODO: the value commitment public inputs are not correctly stored - only the X values are
+// (since these are BLS scalars).
+// This should be fixed once the circuits are constructed and we have a better overview of
+// how the public inputs will look.
 impl From<&Transaction> for ZkPublicInputs {
     fn from(tx: &Transaction) -> Self {
-        let fee_value_commitment = *tx.fee().note().value_commitment();
+        let fee_value_commitment = tx.fee().note().value_commitment().get_x();
 
         let mut merkle_roots = [BlsScalar::zero(); MAX_INPUT_NOTES_PER_TRANSACTION];
         let mut nullifiers = [Nullifier::default(); MAX_INPUT_NOTES_PER_TRANSACTION];
@@ -176,7 +180,7 @@ impl From<&Transaction> for ZkPublicInputs {
                     .zip(outputs_pk_r_affine_x.iter_mut()),
             )
             .for_each(|(o, (c, x))| {
-                *c = *o.note().value_commitment();
+                *c = o.note().value_commitment().get_x();
                 *x = JubJubAffine::from(o.note().pk_r()).get_x();
             });
 

@@ -237,7 +237,7 @@ impl Distribution<Transaction> for Standard {
                 let note = TransparentNote::output(&pk, value).0;
 
                 let merkle_opening = crypto::MerkleProof::mock(note.hash());
-                tx.push_input(note.to_transaction_input(merkle_opening, sk))
+                tx.push_input(note.to_transaction_input(merkle_opening, sk).unwrap())
                     .unwrap_or_default();
             }
         });
@@ -651,6 +651,7 @@ impl TryFrom<Transaction> for rpc::Transaction {
             outputs,
             fee,
             proof,
+            data: vec![],
         })
     }
 }

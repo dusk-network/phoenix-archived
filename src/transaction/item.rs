@@ -19,7 +19,7 @@ pub trait TransactionItem:
 {
     fn note(&self) -> &NoteVariant;
     fn value(&self) -> u64;
-    fn blinding_factor(&self) -> &BlsScalar;
+    fn blinding_factor(&self) -> &JubJubScalar;
 
     fn as_input(&self) -> Option<&Self>;
     fn as_output(&self) -> Option<&Self>;
@@ -35,7 +35,7 @@ pub trait TransactionItem:
 pub struct TransactionInput {
     note: NoteVariant,
     value: u64,
-    blinding_factor: BlsScalar,
+    blinding_factor: JubJubScalar,
     pub nullifier: Nullifier,
     pub sk: SecretKey,
     pub merkle_opening: crypto::MerkleProof,
@@ -50,12 +50,13 @@ impl Default for TransactionInput {
 
         let r = JubJubScalar::from(3u64);
         let nonce = Nonce([5u8; 24]);
-        let blinding_factor = BlsScalar::from(7u64);
+        let blinding_factor = JubJubScalar::from(7u64);
 
         let merkle_opening = crypto::MerkleProof::default();
 
         TransparentNote::deterministic_output(&r, nonce, &pk, value, blinding_factor)
             .to_transaction_input(merkle_opening, sk)
+            .unwrap()
     }
 }
 
@@ -64,7 +65,7 @@ impl TransactionInput {
         note: NoteVariant,
         nullifier: Nullifier,
         value: u64,
-        blinding_factor: BlsScalar,
+        blinding_factor: JubJubScalar,
         sk: SecretKey,
         merkle_opening: crypto::MerkleProof,
         merkle_root: BlsScalar,
@@ -112,15 +113,9 @@ impl TransactionInput {
         db: &db::Db<H>,
         item: rpc::TransactionInput,
     ) -> Result<Self, Error> {
-        let sk: SecretKey = item.sk.ok_or(Error::InvalidParameters)?.try_into()?;
-
-        let note = db.fetch_note(item.pos)?;
-        let merkle_opening = db.opening(&note)?;
-
-        let txi = match note {
-            NoteVariant::Transparent(n) => n.to_transaction_input(merkle_opening, sk),
-            NoteVariant::Obfuscated(n) => n.to_transaction_input(merkle_opening, sk),
-        };
+        let mut txi = TransactionInput::default();
+        txi.nullifier = item.nullifier.unwrap().try_into()?;
+        txi.merkle_root = item.merkle_root.unwrap().try_into()?;
 
         Ok(txi)
     }
@@ -151,7 +146,7 @@ impl TransactionItem for TransactionInput {
         self.value
     }
 
-    fn blinding_factor(&self) -> &BlsScalar {
+    fn blinding_factor(&self) -> &JubJubScalar {
         &self.blinding_factor
     }
 
@@ -166,7 +161,7 @@ impl TransactionItem for TransactionInput {
     fn clear_sensitive_info(&mut self) {
         self.note = NoteVariant::default();
         self.value = 0;
-        self.blinding_factor = BlsScalar::zero();
+        self.blinding_factor = JubJubScalar::zero();
         self.sk = SecretKey::default();
         self.merkle_opening = crypto::MerkleProof::default();
     }
@@ -176,7 +171,7 @@ impl TransactionItem for TransactionInput {
 pub struct TransactionOutput {
     pub note: NoteVariant,
     pub value: u64,
-    pub blinding_factor: BlsScalar,
+    pub blinding_factor: JubJubScalar,
     pub pk: PublicKey,
 }
 
@@ -188,7 +183,7 @@ impl Default for TransactionOutput {
 
         let r = JubJubScalar::from(11u64);
         let nonce = Nonce([13u8; 24]);
-        let blinding_factor = BlsScalar::from(17u64);
+        let blinding_factor = JubJubScalar::from(17u64);
 
         TransparentNote::deterministic_output(&r, nonce, &pk, value, blinding_factor)
             .to_transaction_output(value, blinding_factor, pk)
@@ -196,7 +191,12 @@ impl Default for TransactionOutput {
 }
 
 impl TransactionOutput {
-    pub fn new(note: NoteVariant, value: u64, blinding_factor: BlsScalar, pk: PublicKey) -> Self {
+    pub fn new(
+        note: NoteVariant,
+        value: u64,
+        blinding_factor: JubJubScalar,
+        pk: PublicKey,
+    ) -> Self {
         Self {
             note,
             value,
@@ -235,7 +235,7 @@ impl TransactionItem for TransactionOutput {
         self.value
     }
 
-    fn blinding_factor(&self) -> &BlsScalar {
+    fn blinding_factor(&self) -> &JubJubScalar {
         &self.blinding_factor
     }
 
@@ -249,7 +249,7 @@ impl TransactionItem for TransactionOutput {
 
     fn clear_sensitive_info(&mut self) {
         self.value = 0;
-        self.blinding_factor = BlsScalar::zero();
+        self.blinding_factor = JubJubScalar::zero();
         self.pk = PublicKey::default();
     }
 }
@@ -284,14 +284,10 @@ impl From<TransactionInput> for rpc::TransactionInput {
         let merkle_root = Some(merkle_root.into());
 
         let nullifier = Some(item.nullifier.into());
-        let note = Some(item.note.into());
 
         rpc::TransactionInput {
             merkle_root,
-            note,
             nullifier,
-            pos: item.note().idx(),
-            sk: Some(item.sk.into()),
         }
     }
 }
@@ -313,9 +309,7 @@ impl TryFrom<rpc::TransactionInput> for TransactionInput {
     type Error = Error;
 
     fn try_from(txi: rpc::TransactionInput) -> Result<Self, Self::Error> {
-        let note = txi.note.unwrap_or_default().try_into()?;
         let nullifier = txi.nullifier.unwrap_or_default().try_into()?;
-        let sk = txi.sk.unwrap_or_default().try_into()?;
         let merkle_root = txi.merkle_root.unwrap_or_default().try_into()?;
 
         let merkle_opening = Default::default();
@@ -323,11 +317,11 @@ impl TryFrom<rpc::TransactionInput> for TransactionInput {
         let blinding_factor = Default::default();
 
         Ok(Self::new(
-            note,
+            NoteVariant::default(),
             nullifier,
             value,
             blinding_factor,
-            sk,
+            SecretKey::default(),
             merkle_opening,
             merkle_root,
         ))

@@ -44,14 +44,14 @@ pub trait NoteGenerator:
         nonce: Nonce,
         pk: &PublicKey,
         value: u64,
-        blinding_factor: BlsScalar,
+        blinding_factor: JubJubScalar,
     ) -> Self;
 
     /// Create a new phoenix output note
-    fn output(pk: &PublicKey, value: u64) -> (Self, BlsScalar) {
+    fn output(pk: &PublicKey, value: u64) -> (Self, JubJubScalar) {
         let r = utils::gen_random_scalar();
         let nonce = utils::gen_nonce();
-        let blinding_factor = BlsScalar::random(&mut rand::thread_rng());
+        let blinding_factor = utils::gen_random_scalar();
 
         let note = Self::deterministic_output(&r, nonce, pk, value, blinding_factor);
 
@@ -64,16 +64,16 @@ pub trait NoteGenerator:
         self,
         merkle_opening: crypto::MerkleProof,
         sk: SecretKey,
-    ) -> TransactionInput {
+    ) -> Result<TransactionInput, Error> {
         let vk = sk.view_key();
 
         let nullifier = self.generate_nullifier(&sk);
         let value = self.value(Some(&vk));
-        let blinding_factor = self.blinding_factor(Some(&vk));
+        let blinding_factor = self.blinding_factor(Some(&vk))?;
 
         let merkle_root = *merkle_opening.root();
 
-        TransactionInput::new(
+        Ok(TransactionInput::new(
             self.into(),
             nullifier,
             value,
@@ -81,7 +81,7 @@ pub trait NoteGenerator:
             sk,
             merkle_opening,
             merkle_root,
-        )
+        ))
     }
 
     /// Create a new transaction output item provided the target value, blinding factor and pk for
@@ -91,7 +91,7 @@ pub trait NoteGenerator:
     fn to_transaction_output(
         self,
         value: u64,
-        blinding_factor: BlsScalar,
+        blinding_factor: JubJubScalar,
         pk: PublicKey,
     ) -> TransactionOutput {
         TransactionOutput::new(self.into(), value, blinding_factor, pk)
@@ -131,9 +131,9 @@ pub trait NoteGenerator:
         r: &JubJubScalar,
         pk: &PublicKey,
         nonce: &Nonce,
-        blinding_factor: &BlsScalar,
+        blinding_factor: &JubJubScalar,
     ) -> [u8; 48] {
-        let mut blinding_factor_bytes = [0x00u8; utils::BLS_SCALAR_SERIALIZED_SIZE];
+        let mut blinding_factor_bytes = [0x00u8; utils::JUBJUB_SCALAR_SERIALIZED_SIZE];
         blinding_factor_bytes.copy_from_slice(&blinding_factor.to_bytes()[..]);
 
         let bytes = crypto::encrypt(r, pk, &nonce.increment_le(), blinding_factor_bytes);
@@ -155,16 +155,16 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
 
     /// Fully decrypt the note (value and blinding factor) with the provided [`ViewKey`], and
     /// return an instance of [`rpc::DecryptedNote`]
-    fn rpc_decrypted_note(&self, vk: &ViewKey) -> rpc::DecryptedNote {
+    fn rpc_decrypted_note(&self, vk: &ViewKey) -> Result<rpc::DecryptedNote, Error> {
         let note_type = self.note().into();
         let pos = self.idx();
         let value = self.value(Some(vk));
         let nonce = Some((*self.nonce()).into());
         let r_g = Some((*self.R()).into());
         let pk_r = Some((*self.pk_r()).into());
-        let value_commitment = Some((*self.value_commitment()).into());
+        let value_commitment = Some(JubJubExtended::from((*self.value_commitment())).into());
 
-        let blinding_factor = self.blinding_factor(Some(vk));
+        let blinding_factor = self.blinding_factor(Some(vk))?;
         let raw_blinding_factor = match self.note() {
             NoteType::Transparent => {
                 rpc::decrypted_note::RawBlindingFactor::TransparentBlindingFactor(
@@ -186,7 +186,7 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
             .unwrap_or(rpc::decrypted_note::RawValue::TransparentValue(value));
         let raw_value = Some(raw_value);
 
-        rpc::DecryptedNote {
+        Ok(rpc::DecryptedNote {
             note_type,
             pos,
             value,
@@ -197,7 +197,7 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
             blinding_factor,
             raw_blinding_factor,
             raw_value,
-        }
+        })
     }
 
     /// Return a hash represented by `H(value_commitment, idx, H([R]), H([PKr]))`
@@ -205,7 +205,8 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
         let pk_r = JubJubAffine::from(self.pk_r());
 
         crypto::sponge_hash(&[
-            *self.value_commitment(),
+            self.value_commitment().get_x(),
+            self.value_commitment().get_y(),
             BlsScalar::from(self.idx()),
             pk_r.get_x(),
             pk_r.get_y(),
@@ -230,11 +231,11 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
     /// Return the raw encrypted bytes of the value. If the note is transparent, `None` is returned
     fn encrypted_value(&self) -> Option<&[u8; 24]>;
     /// Return the value commitment `H(value, blinding_factor)`
-    fn value_commitment(&self) -> &BlsScalar;
+    fn value_commitment(&self) -> &JubJubAffine;
     /// Decrypt the blinding factor with the provided [`ViewKey`]
     ///
     /// If the decrypt fails, a random value is returned
-    fn blinding_factor(&self, vk: Option<&ViewKey>) -> BlsScalar;
+    fn blinding_factor(&self, vk: Option<&ViewKey>) -> Result<JubJubScalar, Error>;
     /// Return the raw encrypted value blinding factor
     fn encrypted_blinding_factor(&self) -> &[u8; 48];
     /// Return the `r · G` used for the DHKE randomness
