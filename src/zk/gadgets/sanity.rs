@@ -114,7 +114,7 @@ mod tests {
     use merlin::Transcript;
 
     #[test]
-    fn preimage_gadget() {
+    fn sanity_gadget() {
         let sk = SecretKey::default();
         let pk = sk.public_key();
         let value = 100;
@@ -140,6 +140,6 @@ mod tests {
 
         let proof = composer.prove(&ck, &circuit, &mut transcript.clone());
 
-        assert!(proof.verify(&circuit, &mut transcript, &vk, &[BlsScalar::zero()]));
+        assert!(proof.verify(&circuit, &mut transcript, &vk, &composer.public_inputs()));
     }
 }
