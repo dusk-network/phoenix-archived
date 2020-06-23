@@ -1,6 +1,6 @@
 use crate::{
-    crypto, rpc, BlsScalar, Error, JubJubExtended, Nonce, Note, NoteGenerator, NoteType,
-    ObfuscatedNote, SecretKey, TransactionInput, TransparentNote, ViewKey,
+    crypto, rpc, BlsScalar, Error, JubJubAffine, JubJubExtended, JubJubScalar, Nonce, Note,
+    NoteGenerator, NoteType, ObfuscatedNote, SecretKey, TransactionInput, TransparentNote, ViewKey,
 };
 
 use std::convert::{TryFrom, TryInto};
@@ -21,7 +21,7 @@ impl NoteVariant {
         self,
         merkle_opening: crypto::MerkleProof,
         sk: SecretKey,
-    ) -> TransactionInput {
+    ) -> Result<TransactionInput, Error> {
         match self {
             NoteVariant::Transparent(note) => note.to_transaction_input(merkle_opening, sk),
             NoteVariant::Obfuscated(note) => note.to_transaction_input(merkle_opening, sk),
@@ -207,14 +207,14 @@ impl Note for NoteVariant {
         }
     }
 
-    fn value_commitment(&self) -> &BlsScalar {
+    fn value_commitment(&self) -> &JubJubExtended {
         match self {
             NoteVariant::Transparent(note) => note.value_commitment(),
             NoteVariant::Obfuscated(note) => note.value_commitment(),
         }
     }
 
-    fn blinding_factor(&self, vk: Option<&ViewKey>) -> BlsScalar {
+    fn blinding_factor(&self, vk: Option<&ViewKey>) -> Result<JubJubScalar, Error> {
         match self {
             NoteVariant::Transparent(note) => note.blinding_factor(vk),
             NoteVariant::Obfuscated(note) => note.blinding_factor(vk),

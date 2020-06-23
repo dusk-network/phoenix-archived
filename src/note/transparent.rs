@@ -1,24 +1,26 @@
 use crate::{
-    crypto, rpc, utils, BlsScalar, Error, JubJubAffine, JubJubExtended, JubJubScalar, Nonce, Note,
+    rpc, utils, BlsScalar, Error, JubJubAffine, JubJubExtended, JubJubScalar, Nonce, Note,
     NoteGenerator, NoteType, PublicKey, ViewKey, NONCEBYTES,
 };
 
 use std::convert::{TryFrom, TryInto};
 use std::io::{self, Read, Write};
 
+use blake2::{Blake2b, Digest};
+use jubjub::GENERATOR;
 use kelvin::{ByteHash, Content, Sink, Source};
 use unprolix::Constructor;
 
 /// A note that does not encrypt its value
 #[derive(Debug, Clone, Copy, Constructor)]
 pub struct TransparentNote {
-    value_commitment: BlsScalar,
+    value_commitment: JubJubExtended,
     nonce: Nonce,
     R: JubJubExtended,
     pk_r: JubJubExtended,
     idx: u64,
     pub value: u64,
-    pub blinding_factor: BlsScalar,
+    pub blinding_factor: JubJubScalar,
 }
 
 impl PartialEq for TransparentNote {
@@ -38,13 +40,15 @@ impl Read for TransparentNote {
     fn read(&mut self, mut buf: &mut [u8]) -> io::Result<usize> {
         let mut n = 0;
 
-        buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
+        buf.chunks_mut(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
             .next()
             .ok_or(Error::InvalidParameters)
-            .and_then(|c| Ok(c.copy_from_slice(&self.value_commitment.to_bytes()[..])))
+            .and_then(|c| {
+                Ok(c.copy_from_slice(&JubJubAffine::from(&self.value_commitment).to_bytes()[..]))
+            })
             .map_err::<io::Error, _>(|e| e.into())?;
-        n += utils::BLS_SCALAR_SERIALIZED_SIZE;
-        buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+        n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
+        buf = &mut buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
 
         buf.chunks_mut(NONCEBYTES)
             .next()
@@ -102,13 +106,13 @@ impl Write for TransparentNote {
         let mut n = 0;
 
         let value_commitment = buf
-            .chunks(utils::BLS_SCALAR_SERIALIZED_SIZE)
+            .chunks(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
             .next()
             .ok_or(Error::InvalidParameters)
-            .and_then(utils::deserialize_bls_scalar)
+            .and_then(utils::deserialize_compressed_jubjub)
             .map_err::<io::Error, _>(|e| e.into())?;
-        n += utils::BLS_SCALAR_SERIALIZED_SIZE;
-        buf = &buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+        n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
+        buf = &buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
 
         let nonce = buf
             .chunks(NONCEBYTES)
@@ -168,12 +172,12 @@ impl Write for TransparentNote {
         buf = &buf[8..];
 
         let blinding_factor = buf
-            .chunks(utils::BLS_SCALAR_SERIALIZED_SIZE)
+            .chunks(utils::JUBJUB_SCALAR_SERIALIZED_SIZE)
             .next()
             .ok_or(Error::InvalidParameters)
-            .and_then(utils::deserialize_bls_scalar)
+            .and_then(utils::deserialize_jubjub_scalar)
             .map_err::<io::Error, _>(|e| e.into())?;
-        n += utils::BLS_SCALAR_SERIALIZED_SIZE;
+        n += utils::JUBJUB_SCALAR_SERIALIZED_SIZE;
 
         self.value_commitment = value_commitment;
         self.nonce = nonce;
@@ -197,11 +201,32 @@ impl NoteGenerator for TransparentNote {
         nonce: Nonce,
         pk: &PublicKey,
         value: u64,
-        blinding_factor: BlsScalar,
+        blinding_factor: JubJubScalar,
     ) -> Self {
         let (R, pk_r) = Self::new_pk_r(r, pk);
-        let value_commitment = BlsScalar::from(value);
-        let value_commitment = crypto::hash_merkle(&[value_commitment, blinding_factor]);
+        let value_commitment = JubJubScalar::from(value);
+        let mut hasher = Blake2b::new();
+        hasher.update(GENERATOR.to_bytes());
+        let res = hasher.finalize();
+        let mut x = [0u64; 4];
+        let mut y = [0u64; 4];
+        x[0] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[0..8]).unwrap());
+        x[1] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[8..16]).unwrap());
+        x[2] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[16..24]).unwrap());
+        x[3] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[24..32]).unwrap());
+        y[0] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[32..40]).unwrap());
+        y[1] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[40..48]).unwrap());
+        y[2] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[48..56]).unwrap());
+        y[3] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[56..64]).unwrap());
+        let x_scalar = BlsScalar::from_raw(x);
+        let y_scalar = BlsScalar::from_raw(y);
+        let second_point =
+            JubJubExtended::from(JubJubAffine::from_raw_unchecked(x_scalar, y_scalar));
+        let second_bytes = JubJubAffine::from(second_point).to_bytes();
+        let second_point = JubJubExtended::from(JubJubAffine::from_bytes(second_bytes).unwrap());
+        let value_commitment =
+            (JubJubExtended::from(GENERATOR) * value_commitment) + (second_point * blinding_factor);
+        let value_commitment = JubJubExtended::from(JubJubAffine::from(value_commitment));
 
         // Output notes have undefined idx
         let idx = 0;
@@ -251,12 +276,12 @@ impl Note for TransparentNote {
         None
     }
 
-    fn value_commitment(&self) -> &BlsScalar {
+    fn value_commitment(&self) -> &JubJubExtended {
         &self.value_commitment
     }
 
-    fn blinding_factor(&self, _vk: Option<&ViewKey>) -> BlsScalar {
-        self.blinding_factor
+    fn blinding_factor(&self, _vk: Option<&ViewKey>) -> Result<JubJubScalar, Error> {
+        Ok(self.blinding_factor)
     }
 
     fn encrypted_blinding_factor(&self) -> &[u8; 48] {
@@ -362,7 +387,7 @@ impl TryFrom<rpc::DecryptedNote> for TransparentNote {
 
 impl<H: ByteHash> Content<H> for TransparentNote {
     fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
-        sink.write_all(&self.value_commitment.to_bytes())?;
+        sink.write_all(&JubJubAffine::from(&self.value_commitment).to_bytes())?;
         sink.write_all(&JubJubAffine::from(&self.R).to_bytes())?;
         sink.write_all(&JubJubAffine::from(&self.pk_r).to_bytes())?;
 
@@ -375,7 +400,7 @@ impl<H: ByteHash> Content<H> for TransparentNote {
     }
 
     fn restore(source: &mut Source<H>) -> io::Result<Self> {
-        let value_commitment = utils::kelvin_source_to_bls_scalar(source)?;
+        let value_commitment = utils::kelvin_source_to_jubjub_projective(source)?;
         let R = utils::kelvin_source_to_jubjub_projective(source)?;
         let pk_r = utils::kelvin_source_to_jubjub_projective(source)?;
 
@@ -383,7 +408,7 @@ impl<H: ByteHash> Content<H> for TransparentNote {
         let idx = u64::restore(source)?;
         let value = u64::restore(source)?;
 
-        let blinding_factor = utils::kelvin_source_to_bls_scalar(source)?;
+        let blinding_factor = utils::kelvin_source_to_jubjub_scalar(source)?;
 
         Ok(TransparentNote::new(
             value_commitment,

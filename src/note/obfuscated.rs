@@ -8,6 +8,8 @@ use std::convert::{TryFrom, TryInto};
 use std::io::{self, Read, Write};
 use std::{cmp, fmt};
 
+use blake2::{Blake2b, Digest};
+use jubjub::GENERATOR;
 use kelvin::{ByteHash, Content, Sink, Source};
 use unprolix::Constructor;
 
@@ -19,7 +21,7 @@ pub const ENCRYPTED_BLINDING_FACTOR_SIZE: usize = 48;
 /// A note that hides its value and blinding factor
 #[derive(Clone, Copy, Constructor)]
 pub struct ObfuscatedNote {
-    value_commitment: BlsScalar,
+    value_commitment: JubJubExtended,
     nonce: Nonce,
     R: JubJubExtended,
     pk_r: JubJubExtended,
@@ -51,13 +53,15 @@ impl Read for ObfuscatedNote {
     fn read(&mut self, mut buf: &mut [u8]) -> io::Result<usize> {
         let mut n = 0;
 
-        buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
+        buf.chunks_mut(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
             .next()
             .ok_or(Error::InvalidParameters)
-            .and_then(|c| Ok(c.copy_from_slice(&self.value_commitment.to_bytes()[..])))
+            .and_then(|c| {
+                Ok(c.copy_from_slice(&JubJubAffine::from(self.value_commitment).to_bytes()[..]))
+            })
             .map_err::<io::Error, _>(|e| e.into())?;
-        n += utils::BLS_SCALAR_SERIALIZED_SIZE;
-        buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+        n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
+        buf = &mut buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
 
         buf.chunks_mut(NONCEBYTES)
             .next()
@@ -115,13 +119,13 @@ impl Write for ObfuscatedNote {
         let mut n = 0;
 
         let value_commitment = buf
-            .chunks(utils::BLS_SCALAR_SERIALIZED_SIZE)
+            .chunks(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
             .next()
             .ok_or(Error::InvalidParameters)
-            .and_then(utils::deserialize_bls_scalar)
+            .and_then(utils::deserialize_compressed_jubjub)
             .map_err::<io::Error, _>(|e| e.into())?;
-        n += utils::BLS_SCALAR_SERIALIZED_SIZE;
-        buf = &buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+        n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
+        buf = &buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
 
         let nonce = buf
             .chunks(NONCEBYTES)
@@ -214,11 +218,32 @@ impl NoteGenerator for ObfuscatedNote {
         nonce: Nonce,
         pk: &PublicKey,
         value: u64,
-        blinding_factor: BlsScalar,
+        blinding_factor: JubJubScalar,
     ) -> Self {
         let (R, pk_r) = Self::new_pk_r(r, pk);
-        let value_commitment = BlsScalar::from(value);
-        let value_commitment = crypto::hash_merkle(&[value_commitment, blinding_factor]);
+        let value_commitment = JubJubScalar::from(value);
+        let mut hasher = Blake2b::new();
+        hasher.update(GENERATOR.to_bytes());
+        let res = hasher.finalize();
+        let mut x = [0u64; 4];
+        let mut y = [0u64; 4];
+        x[0] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[0..8]).unwrap());
+        x[1] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[8..16]).unwrap());
+        x[2] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[16..24]).unwrap());
+        x[3] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[24..32]).unwrap());
+        y[0] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[32..40]).unwrap());
+        y[1] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[40..48]).unwrap());
+        y[2] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[48..56]).unwrap());
+        y[3] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[56..64]).unwrap());
+        let x_scalar = BlsScalar::from_raw(x);
+        let y_scalar = BlsScalar::from_raw(y);
+        let second_point =
+            JubJubExtended::from(JubJubAffine::from_raw_unchecked(x_scalar, y_scalar));
+        let second_bytes = JubJubAffine::from(second_point).to_bytes();
+        let second_point = JubJubExtended::from(JubJubAffine::from_bytes(second_bytes).unwrap());
+        let value_commitment =
+            (JubJubExtended::from(GENERATOR) * value_commitment) + (second_point * blinding_factor);
+        let value_commitment = JubJubExtended::from(JubJubAffine::from(value_commitment));
 
         // Output notes have undefined idx
         let idx = 0;
@@ -280,11 +305,11 @@ impl Note for ObfuscatedNote {
         Some(&self.encrypted_value)
     }
 
-    fn value_commitment(&self) -> &BlsScalar {
+    fn value_commitment(&self) -> &JubJubExtended {
         &self.value_commitment
     }
 
-    fn blinding_factor(&self, vk: Option<&ViewKey>) -> BlsScalar {
+    fn blinding_factor(&self, vk: Option<&ViewKey>) -> Result<JubJubScalar, Error> {
         let vk = vk.copied().unwrap_or_default();
 
         let blinding_factor = crypto::decrypt(
@@ -294,8 +319,7 @@ impl Note for ObfuscatedNote {
             &self.encrypted_blinding_factor[..],
         );
 
-        utils::deserialize_bls_scalar(blinding_factor.as_slice())
-            .unwrap_or(BlsScalar::random(&mut rand::thread_rng()))
+        utils::deserialize_jubjub_scalar(blinding_factor.as_slice()).map_err(|e| e.into())
     }
 
     fn encrypted_blinding_factor(&self) -> &[u8; ENCRYPTED_BLINDING_FACTOR_SIZE] {
@@ -417,7 +441,7 @@ impl TryFrom<rpc::DecryptedNote> for ObfuscatedNote {
 
 impl<H: ByteHash> Content<H> for ObfuscatedNote {
     fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
-        sink.write_all(&self.value_commitment.to_bytes())?;
+        sink.write_all(&JubJubAffine::from(&self.value_commitment).to_bytes())?;
         sink.write_all(&JubJubAffine::from(&self.R).to_bytes())?;
         sink.write_all(&JubJubAffine::from(&self.pk_r).to_bytes())?;
 
@@ -431,7 +455,7 @@ impl<H: ByteHash> Content<H> for ObfuscatedNote {
     }
 
     fn restore(source: &mut Source<H>) -> io::Result<Self> {
-        let value_commitment = utils::kelvin_source_to_bls_scalar(source)?;
+        let value_commitment = utils::kelvin_source_to_jubjub_projective(source)?;
         let R = utils::kelvin_source_to_jubjub_projective(source)?;
         let pk_r = utils::kelvin_source_to_jubjub_projective(source)?;
 

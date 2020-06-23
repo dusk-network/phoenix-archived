@@ -16,37 +16,6 @@ pub struct ZkPublicInputs {
     outputs_pk_r_affine_x: [BlsScalar; MAX_OUTPUT_NOTES_PER_TRANSACTION],
 }
 
-impl ZkPublicInputs {
-    pub fn generate_pi(&self) -> Vec<BlsScalar> {
-        // TODO - Structure should be updated according to the set features
-        let mut pi = zk::public_inputs().clone();
-
-        self.merkle_roots
-            .iter()
-            .enumerate()
-            .for_each(|(i, merkle)| pi[(i + 1) * 29894] = *merkle);
-
-        self.nullifiers
-            .iter()
-            .enumerate()
-            .for_each(|(i, nullifier)| pi[(i + 1) * 41347] = *nullifier.s());
-
-        self.outputs_pk_r_affine_x
-            .iter()
-            .enumerate()
-            .for_each(|(i, pk_r_affine_x)| pi[i + 31632] = *pk_r_affine_x);
-
-        self.outputs_value_commitments
-            .iter()
-            .enumerate()
-            .for_each(|(i, value_commitment)| pi[36847 + i * 1738] = *value_commitment);
-
-        pi[35109] = self.fee_value_commitment;
-
-        pi
-    }
-}
-
 impl Write for ZkPublicInputs {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         let mut chunk = buf.chunks(utils::BLS_SCALAR_SERIALIZED_SIZE);
@@ -150,9 +119,13 @@ impl Read for ZkPublicInputs {
     }
 }
 
+// TODO: the value commitment public inputs are not correctly stored - only the X values are
+// (since these are BLS scalars).
+// This should be fixed once the circuits are constructed and we have a better overview of
+// how the public inputs will look.
 impl From<&Transaction> for ZkPublicInputs {
     fn from(tx: &Transaction) -> Self {
-        let fee_value_commitment = *tx.fee().note().value_commitment();
+        let fee_value_commitment = tx.fee().note().value_commitment().get_x();
 
         let mut merkle_roots = [BlsScalar::zero(); MAX_INPUT_NOTES_PER_TRANSACTION];
         let mut nullifiers = [Nullifier::default(); MAX_INPUT_NOTES_PER_TRANSACTION];
@@ -176,7 +149,7 @@ impl From<&Transaction> for ZkPublicInputs {
                     .zip(outputs_pk_r_affine_x.iter_mut()),
             )
             .for_each(|(o, (c, x))| {
-                *c = *o.note().value_commitment();
+                *c = o.note().value_commitment().get_x();
                 *x = JubJubAffine::from(o.note().pk_r()).get_x();
             });
 

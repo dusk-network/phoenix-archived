@@ -237,7 +237,7 @@ impl Distribution<Transaction> for Standard {
                 let note = TransparentNote::output(&pk, value).0;
 
                 let merkle_opening = crypto::MerkleProof::mock(note.hash());
-                tx.push_input(note.to_transaction_input(merkle_opening, sk))
+                tx.push_input(note.to_transaction_input(merkle_opening, sk).unwrap())
                     .unwrap_or_default();
             }
         });
@@ -493,7 +493,9 @@ impl Transaction {
         }
 
         let pi = self.public_inputs.ok_or(Error::InvalidParameters)?;
-        let pi = pi.generate_pi();
+        // TODO: this should be updated once we know the positions of the public inputs
+        // let pi = pi.generate_pi();
+        let pi = vec![];
 
         let proof = self.proof.as_ref().ok_or(Error::Generic)?;
 
@@ -647,6 +649,7 @@ impl TryFrom<Transaction> for rpc::Transaction {
             outputs,
             fee,
             proof,
+            data: vec![],
         })
     }
 }

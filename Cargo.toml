@@ -4,22 +4,6 @@ version = "2.0.1"
 authors = ["Victor Lopez <vhrlopes@gmail.com>"]
 edition = "2018"
 
-[features]
-default = [
-    "circuit-merkle",
-    "circuit-preimage",
-    "circuit-balance",
-    "circuit-nullifier",
-    "circuit-sanity",
-    "circuit-skr"
-]
-circuit-merkle = []
-circuit-preimage = []
-circuit-balance = []
-circuit-nullifier = []
-circuit-sanity = []
-circuit-skr = []
-
 [dependencies]
 bincode = "^1.2.1"
 serde = "^1.0"
@@ -28,6 +12,7 @@ rand = "^0.7"
 tonic = "^0.1"
 sodiumoxide = "0.2"
 sha2 = "0.8"
+blake2 = "0.9"
 prost = "0.6"
 tracing = "0.1"
 hex = "^0.4"
@@ -38,10 +23,14 @@ bytehash = "0.3"
 lazy_static = "1.4"
 num-traits = "0.2"
 unprolix = "0.1"
-hades252 = { git = "https://github.com/dusk-network/Hades252.git", tag ="v0.5.0"}
+hades252 = { git = "https://github.com/dusk-network/Hades252.git", tag = "v0.5.0" }
 dusk-bls12_381 = "0.1.0"
-dusk-plonk = "0.1.0"
-jubjub = {git = "https://github.com/dusk-network/jubjub.git"}
+jubjub = { git = "https://github.com/dusk-network/jubjub.git" }
+poseidon252 = { git = "https://github.com/dusk-network/Poseidon252", tag = "v0.5.0" }
+
+[dependencies.dusk-plonk]
+version = "0.1.0"
+features = ["trace-print"]
 
 [dependencies.subtle]
 version = "^2.2.1"

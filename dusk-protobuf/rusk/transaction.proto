@@ -7,18 +7,15 @@ import "keys.proto";
 import "note.proto";
 
 message TransactionInput {
-  Note note = 1;
-  fixed64 pos = 2;
-  SecretKey sk = 3;
-  Nullifier nullifier = 4;
-  Scalar merkle_root = 5;
+  Nullifier nullifier = 1;
+  Scalar merkle_root = 2;
 }
 
 message TransactionOutput {
   Note note = 1;
   PublicKey pk = 2;
   fixed64 value = 3;
-  Scalar blinding_factor = 4;
+  JubJubScalar blinding_factor = 4;
 }
 
 message Transaction {
@@ -26,4 +23,5 @@ message Transaction {
   repeated TransactionOutput outputs = 2;
   TransactionOutput fee = 3;
   bytes proof = 4;
+  bytes data = 5;
 }

@@ -66,7 +66,7 @@ fn obfuscated_note() {
     let deserialized_note = ObfuscatedNote::try_from(rpc_note).unwrap();
     assert_eq!(deserialized_note, note);
 
-    let rpc_decrypted_note = note.clone().rpc_decrypted_note(&vk);
+    let rpc_decrypted_note = note.clone().rpc_decrypted_note(&vk).unwrap();
     let deserialized_note = ObfuscatedNote::try_from(rpc_decrypted_note).unwrap();
     assert_eq!(deserialized_note, note);
 
