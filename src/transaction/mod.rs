@@ -50,16 +50,19 @@ pub struct Transaction {
 
 impl Clone for Transaction {
     fn clone(&self) -> Self {
-        Transaction {
-            idx_inputs: self.idx_inputs.clone(),
-            inputs: self.inputs.clone(),
-            crossover: self.crossover.clone(),
-            contract_output: self.contract_output.clone(),
-            idx_outputs: self.idx_outputs.clone(),
-            outputs: self.outputs.clone(),
-            fee: self.fee.clone(),
-            proofs: self.proofs.clone(),
-            public_inputs: self.public_inputs.clone(),
+        unsafe {
+            let p: Vec<zk::Proof> = mem::transmute_copy(&self.proofs);
+            Transaction {
+                idx_inputs: self.idx_inputs.clone(),
+                inputs: self.inputs.clone(),
+                crossover: self.crossover.clone(),
+                contract_output: self.contract_output.clone(),
+                idx_outputs: self.idx_outputs.clone(),
+                outputs: self.outputs.clone(),
+                fee: self.fee.clone(),
+                proofs: p,
+                public_inputs: self.public_inputs.clone(),
+            }
         }
     }
 }
@@ -519,9 +522,12 @@ impl Transaction {
     }
 
     fn recalculate_pi(&mut self) {
+        // TODO: reimplement when circuits are done
+        /*
         self.sort_items();
         let public_inputs = zk::ZkPublicInputs::from(&*self);
         self.public_inputs.replace(public_inputs);
+        */
     }
 
     /// Perform the zk proof, and save internally the created r1cs circuit and the commitment

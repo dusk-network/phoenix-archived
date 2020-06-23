@@ -3,9 +3,9 @@ use crate::{NoteVariant, TransactionItem, ViewKey};
 use dusk_plonk::constraint_system::StandardComposer;
 
 /// Prove knowledge of the value and blinding factor, which make up the value commitment.
-pub fn commitment(composer: &mut StandardComposer, note: &NoteVariant, vk: Option<&ViewKey>) {
-    // let value = composer.add_input(BlsScalar::from(note.value(vk)));
-    // let blinding_factor = composer.add_input(note.blinding_factor(vk));
+pub fn commitment<T: TransactionItem>(composer: &mut StandardComposer, item: &T) {
+    // let value = composer.add_input(BlsScalar::from(item.value()));
+    // let blinding_factor = composer.add_input(item.blinding_factor());
 
     // let output = sponge_hash_gadget(composer, &[value, blinding_factor]);
 
@@ -46,7 +46,7 @@ mod tests {
 
         let mut composer = StandardComposer::new();
 
-        commitment(&mut composer, input.note(), Some(&vk));
+        commitment(&mut composer, &input);
         composer.add_dummy_constraints();
         // NOTE: this is here to make the test pass, as one set of dummy constraints
         // isn't enough when no extra gates are added. It should be removed once the

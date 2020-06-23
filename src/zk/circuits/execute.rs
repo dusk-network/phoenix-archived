@@ -1,32 +1,63 @@
-use crate::{BlsScalar, TransactionInput, TransactionItem, TransactionOutput};
+use crate::{zk::gadgets, BlsScalar, Transaction, TransactionItem, TransactionOutput};
 
-use dusk_plonk::constraint_system::{StandardComposer, Variable};
+use dusk_plonk::constraint_system::StandardComposer;
 
-/// Prove that the amount inputted equals the amount outputted.
-/// This gadget adds constraints for each input value, and each output value.
-/// The remaining value is then returned as a [`Variable`], which the caller can
-/// constrain to zero at their own discretion. The reason we don't do it inside of
-/// the gadget, is because there are different scenarios in which a rest value needs
-/// to be constrained before constraining the entire sum to zero, and each case does
-/// it slightly differently.
-pub fn balance(
-    composer: &mut StandardComposer,
-    inputs: &[TransactionInput],
-    outputs: &[TransactionOutput],
-) -> Variable {
+/// This gadget constructs the circuit for an 'Execute' call on the DUSK token contract.
+pub fn execute_gadget(composer: &mut StandardComposer, tx: &Transaction) {
+    // Define an accumulator which we will use to prove that the sum of all inputs
+    // equals the sum of all outputs.
+    //
+    // Note that we are not using the balance gadget here, since the fee output
+    // needs to be a public input, and the balance gadget only constrains
+    // the fee.
     let mut sum = composer.zero_var;
-    for item in inputs.iter() {
-        let value = composer.add_input(BlsScalar::from(item.value()));
+
+    // Inputs
+    tx.inputs().iter().for_each(|tx_input| {
+        // Merkle opening, preimage knowledge
+        // and nullifier.
+        // TODO: get branch
+        // gadgets::merkle(composer, branch, tx_input);
+        gadgets::input_preimage(composer, tx_input);
+
+        // TODO: ecc_gate function from PLONK
+        //gadget::secret_key();
+
+        gadgets::nullifier(composer, tx_input);
+        gadgets::commitment(composer, tx_input);
+        gadgets::range(composer, tx_input);
+
+        // Constrain the sum of all of the inputs
+        let value = composer.add_input(BlsScalar::from(tx_input.value()));
         sum = composer.add(
             (BlsScalar::one(), sum),
             (BlsScalar::one(), value),
             BlsScalar::zero(),
             BlsScalar::zero(),
         );
-    }
+    });
 
-    for item in outputs.iter() {
-        let value = composer.add_input(BlsScalar::from(item.value()));
+    // Outputs
+    tx.outputs().iter().for_each(|tx_output| {
+        gadgets::commitment(composer, tx_output);
+        gadgets::range(composer, tx_output);
+
+        // Constrain the sum of all outputs
+        let value = composer.add_input(BlsScalar::from(tx_output.value()));
+        sum = composer.add(
+            (BlsScalar::one(), sum),
+            (-BlsScalar::one(), value),
+            BlsScalar::zero(),
+            BlsScalar::zero(),
+        );
+    });
+
+    // Crossover
+    if tx.crossover().is_some() {
+        let crossover = tx.crossover().unwrap();
+        gadgets::commitment(composer, &crossover);
+        gadgets::range(composer, &crossover);
+        let value = composer.add_input(BlsScalar::from(crossover.value()));
         sum = composer.add(
             (BlsScalar::one(), sum),
             (-BlsScalar::one(), value),
@@ -35,21 +66,44 @@ pub fn balance(
         );
     }
 
-    sum
+    // Contract output
+    if tx.contract_output().is_some() {
+        let contract_output = tx.contract_output().unwrap();
+        gadgets::commitment(composer, &contract_output);
+        gadgets::range(composer, &contract_output);
+        let value = composer.add_input(BlsScalar::from(contract_output.value()));
+        sum = composer.add(
+            (BlsScalar::one(), sum),
+            (-BlsScalar::one(), value),
+            BlsScalar::zero(),
+            BlsScalar::zero(),
+        );
+    }
+
+    let fee = *tx.fee();
+
+    sum = composer.add(
+        (-BlsScalar::one(), sum),
+        (BlsScalar::one(), composer.zero_var),
+        BlsScalar::zero(),
+        BlsScalar::from(fee.value()),
+    );
+
+    composer.constrain_to_constant(sum, BlsScalar::zero(), BlsScalar::zero());
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::{
-        crypto, Note, NoteGenerator, SecretKey, Transaction, TransactionOutput, TransparentNote,
+        crypto, Note, NoteGenerator, ObfuscatedNote, SecretKey, Transaction, TransparentNote,
     };
     use dusk_plonk::commitment_scheme::kzg10::PublicParameters;
     use dusk_plonk::fft::EvaluationDomain;
     use merlin::Transcript;
 
     #[test]
-    fn balance_gadget() {
+    fn test_execute_transparent() {
         let mut tx = Transaction::default();
 
         let sk = SecretKey::default();
@@ -82,12 +136,7 @@ mod tests {
 
         let mut composer = StandardComposer::new();
 
-        let mut outputs: Vec<TransactionOutput> = vec![];
-        tx.outputs().iter().for_each(|output| {
-            outputs.push(*output);
-        });
-        outputs.push(*tx.fee());
-        balance(&mut composer, tx.inputs(), &outputs);
+        execute_gadget(&mut composer, &tx);
 
         composer.add_dummy_constraints();
 
@@ -108,14 +157,13 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
-    fn tx_balance_invalid() {
+    fn test_execute_obfuscated() {
         let mut tx = Transaction::default();
 
         let sk = SecretKey::default();
         let pk = sk.public_key();
         let value = 100;
-        let note = TransparentNote::output(&pk, value).0;
+        let note = ObfuscatedNote::output(&pk, value).0;
         let merkle_opening = crypto::MerkleProof::mock(note.hash());
         tx.push_input(note.to_transaction_input(merkle_opening, sk).unwrap())
             .unwrap();
@@ -123,14 +171,14 @@ mod tests {
         let sk = SecretKey::default();
         let pk = sk.public_key();
         let value = 95;
-        let (note, blinding_factor) = TransparentNote::output(&pk, value);
+        let (note, blinding_factor) = ObfuscatedNote::output(&pk, value);
         tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
             .unwrap();
 
         let sk = SecretKey::default();
         let pk = sk.public_key();
-        let value = 100;
-        let (note, blinding_factor) = TransparentNote::output(&pk, value);
+        let value = 2;
+        let (note, blinding_factor) = ObfuscatedNote::output(&pk, value);
         tx.push_output(note.to_transaction_output(value, blinding_factor, pk))
             .unwrap();
 
@@ -142,12 +190,7 @@ mod tests {
 
         let mut composer = StandardComposer::new();
 
-        let mut outputs: Vec<TransactionOutput> = vec![];
-        tx.outputs().iter().for_each(|output| {
-            outputs.push(*output);
-        });
-        outputs.push(*tx.fee());
-        balance(&mut composer, tx.inputs(), &outputs);
+        execute_gadget(&mut composer, &tx);
 
         composer.add_dummy_constraints();
 
@@ -164,6 +207,6 @@ mod tests {
 
         let proof = composer.prove(&ck, &circuit, &mut transcript.clone());
 
-        assert!(!proof.verify(&circuit, &mut transcript, &vk, &composer.public_inputs()));
+        assert!(proof.verify(&circuit, &mut transcript, &vk, &composer.public_inputs()));
     }
 }
