@@ -10,6 +10,8 @@ pub const CAPACITY: usize = 8192 * 8;
 
 pub const SERIALIZED_PROOF_SIZE: usize = 1097;
 
+mod circuits
+
 /// Circuit gadgets
 pub mod gadgets;
 
