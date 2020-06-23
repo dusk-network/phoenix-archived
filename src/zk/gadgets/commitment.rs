@@ -1,4 +1,4 @@
-use crate::{NoteVariant, ViewKey};
+use crate::{NoteVariant, TransactionItem, ViewKey};
 
 use dusk_plonk::constraint_system::StandardComposer;
 
@@ -42,7 +42,7 @@ mod tests {
         let value = 100;
         let note = TransparentNote::output(&pk, value).0;
         let merkle_opening = crypto::MerkleProof::mock(note.hash());
-        let input = note.to_transaction_input(merkle_opening, sk);
+        let input = note.to_transaction_input(merkle_opening, sk).unwrap();
 
         let mut composer = StandardComposer::new();
 

@@ -38,7 +38,7 @@ mod tests {
         let value = 100;
         let note = TransparentNote::output(&pk, value).0;
         let merkle_opening = crypto::MerkleProof::mock(note.hash());
-        let input = note.to_transaction_input(merkle_opening, sk);
+        let input = note.to_transaction_input(merkle_opening, sk).unwrap();
 
         let mut composer = StandardComposer::new();
 
@@ -70,7 +70,7 @@ mod tests {
         let value = 61;
         let note = TransparentNote::output(&pk, value).0;
         let merkle_opening = crypto::MerkleProof::mock(note.hash());
-        let mut txi = note.to_transaction_input(merkle_opening, sk);
+        let mut txi = note.to_transaction_input(merkle_opening, sk).unwrap();
         // Mess up the nullifier
         txi.nullifier = note.generate_nullifier(&SecretKey::default());
 

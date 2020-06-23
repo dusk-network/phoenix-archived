@@ -1,5 +1,5 @@
 use crate::{
-    db, rpc, zk, MerkleProofProvider, NoteGenerator, NoteVariant, ObfuscatedNote, SecretKey,
+    db, rpc, MerkleProofProvider, NoteGenerator, NoteVariant, ObfuscatedNote, SecretKey,
     Transaction, TransactionItem, TransparentNote,
 };
 
@@ -8,8 +8,6 @@ use kelvin::Blake2b;
 #[test]
 #[ignore]
 fn rpc_transaction() {
-    zk::init();
-
     let mut db = db::Db::<Blake2b>::default();
 
     let mut tx = Transaction::default();
@@ -21,7 +19,7 @@ fn rpc_transaction() {
     let variant: NoteVariant = note.into();
     db.store_unspent_note(variant).unwrap();
     let merkle_opening = db.opening(&variant).unwrap();
-    tx.push_input(note.to_transaction_input(merkle_opening, sk))
+    tx.push_input(note.to_transaction_input(merkle_opening, sk).unwrap())
         .unwrap();
 
     let sk = SecretKey::default();

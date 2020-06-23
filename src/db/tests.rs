@@ -1,5 +1,5 @@
 use crate::{
-    db, zk, MerkleProofProvider, Note, NoteGenerator, NoteVariant, ObfuscatedNote, SecretKey,
+    db, MerkleProofProvider, Note, NoteGenerator, NoteVariant, ObfuscatedNote, SecretKey,
     Transaction, TransparentNote,
 };
 
@@ -29,7 +29,7 @@ fn transparent_note_serialization() {
     assert_eq!(note, db_note);
     assert!(db_note.is_owned_by(&vk));
     assert_eq!(value, db_note.value(Some(&vk)));
-    assert_eq!(blinding_factor, db_note.blinding_factor(Some(&vk)));
+    assert_eq!(blinding_factor, db_note.blinding_factor(Some(&vk)).unwrap());
 }
 
 #[test]
@@ -56,14 +56,12 @@ fn obfuscated_note_serialization() {
     assert_eq!(note, db_note);
     assert!(db_note.is_owned_by(&vk));
     assert_eq!(value, db_note.value(Some(&vk)));
-    assert_eq!(blinding_factor, db_note.blinding_factor(Some(&vk)));
+    assert_eq!(blinding_factor, db_note.blinding_factor(Some(&vk)).unwrap());
 }
 
 #[test]
 #[ignore]
 fn double_spending() {
-    zk::init();
-
     let mut db = db::Db::<Blake2b>::default();
 
     let mut tx = Transaction::default();
@@ -75,7 +73,7 @@ fn double_spending() {
     let variant: NoteVariant = note.into();
     let base_note_idx = db.store_unspent_note(variant).unwrap();
     let merkle_opening = db.opening(&variant).unwrap();
-    tx.push_input(note.to_transaction_input(merkle_opening, sk_base))
+    tx.push_input(note.to_transaction_input(merkle_opening, sk_base).unwrap())
         .unwrap();
 
     let sk_receiver = SecretKey::default();
@@ -117,7 +115,10 @@ fn double_spending() {
     let variant: NoteVariant = note.into();
     let merkle_opening = db.opening(&variant).unwrap();
     tx_ok
-        .push_input(note.to_transaction_input(merkle_opening, sk_receiver))
+        .push_input(
+            note.to_transaction_input(merkle_opening, sk_receiver)
+                .unwrap(),
+        )
         .unwrap();
 
     let sk = SecretKey::default();
@@ -152,7 +153,7 @@ fn double_spending() {
     assert_eq!(100, note.value(Some(&vk)));
     let merkle_opening = db.opening(&note).unwrap();
     tx_double_spending
-        .push_input(note.to_transaction_input(merkle_opening, sk_base))
+        .push_input(note.to_transaction_input(merkle_opening, sk_base).unwrap())
         .unwrap();
 
     let sk = SecretKey::default();

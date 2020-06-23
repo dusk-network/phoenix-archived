@@ -207,7 +207,7 @@ impl Note for NoteVariant {
         }
     }
 
-    fn value_commitment(&self) -> &JubJubAffine {
+    fn value_commitment(&self) -> &JubJubExtended {
         match self {
             NoteVariant::Transparent(note) => note.value_commitment(),
             NoteVariant::Obfuscated(note) => note.value_commitment(),

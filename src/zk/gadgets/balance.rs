@@ -55,7 +55,7 @@ mod tests {
         let value = 100;
         let note = TransparentNote::output(&pk, value).0;
         let merkle_opening = crypto::MerkleProof::mock(note.hash());
-        tx.push_input(note.to_transaction_input(merkle_opening, sk))
+        tx.push_input(note.to_transaction_input(merkle_opening, sk).unwrap())
             .unwrap();
 
         let sk = SecretKey::default();
@@ -110,7 +110,7 @@ mod tests {
         let value = 100;
         let note = TransparentNote::output(&pk, value).0;
         let merkle_opening = crypto::MerkleProof::mock(note.hash());
-        tx.push_input(note.to_transaction_input(merkle_opening, sk))
+        tx.push_input(note.to_transaction_input(merkle_opening, sk).unwrap())
             .unwrap();
 
         let sk = SecretKey::default();

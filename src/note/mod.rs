@@ -162,7 +162,7 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
         let nonce = Some((*self.nonce()).into());
         let r_g = Some((*self.R()).into());
         let pk_r = Some((*self.pk_r()).into());
-        let value_commitment = Some(JubJubExtended::from((*self.value_commitment())).into());
+        let value_commitment = Some((*self.value_commitment()).into());
 
         let blinding_factor = self.blinding_factor(Some(vk))?;
         let raw_blinding_factor = match self.note() {
@@ -231,7 +231,7 @@ pub trait Note: Debug + Send + Sync + io::Read + io::Write {
     /// Return the raw encrypted bytes of the value. If the note is transparent, `None` is returned
     fn encrypted_value(&self) -> Option<&[u8; 24]>;
     /// Return the value commitment `H(value, blinding_factor)`
-    fn value_commitment(&self) -> &JubJubAffine;
+    fn value_commitment(&self) -> &JubJubExtended;
     /// Decrypt the blinding factor with the provided [`ViewKey`]
     ///
     /// If the decrypt fails, a random value is returned

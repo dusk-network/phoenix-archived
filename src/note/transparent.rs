@@ -14,7 +14,7 @@ use unprolix::Constructor;
 /// A note that does not encrypt its value
 #[derive(Debug, Clone, Copy, Constructor)]
 pub struct TransparentNote {
-    value_commitment: JubJubAffine,
+    value_commitment: JubJubExtended,
     nonce: Nonce,
     R: JubJubExtended,
     pk_r: JubJubExtended,
@@ -40,13 +40,15 @@ impl Read for TransparentNote {
     fn read(&mut self, mut buf: &mut [u8]) -> io::Result<usize> {
         let mut n = 0;
 
-        buf.chunks_mut(utils::BLS_SCALAR_SERIALIZED_SIZE)
+        buf.chunks_mut(utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE)
             .next()
             .ok_or(Error::InvalidParameters)
-            .and_then(|c| Ok(c.copy_from_slice(&self.value_commitment.to_bytes()[..])))
+            .and_then(|c| {
+                Ok(c.copy_from_slice(&JubJubAffine::from(&self.value_commitment).to_bytes()[..]))
+            })
             .map_err::<io::Error, _>(|e| e.into())?;
-        n += utils::BLS_SCALAR_SERIALIZED_SIZE;
-        buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
+        n += utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE;
+        buf = &mut buf[utils::COMPRESSED_JUBJUB_SERIALIZED_SIZE..];
 
         buf.chunks_mut(NONCEBYTES)
             .next()
@@ -177,7 +179,7 @@ impl Write for TransparentNote {
             .map_err::<io::Error, _>(|e| e.into())?;
         n += utils::JUBJUB_SCALAR_SERIALIZED_SIZE;
 
-        self.value_commitment = JubJubAffine::from(value_commitment);
+        self.value_commitment = value_commitment;
         self.nonce = nonce;
         self.R = R;
         self.pk_r = pk_r;
@@ -218,11 +220,13 @@ impl NoteGenerator for TransparentNote {
         y[3] = u64::from_be_bytes(<[u8; 8]>::try_from(&res[56..64]).unwrap());
         let x_scalar = BlsScalar::from_raw(x);
         let y_scalar = BlsScalar::from_raw(y);
-        let value_commitment = JubJubAffine::from(
-            (JubJubExtended::from(GENERATOR) * value_commitment)
-                + (JubJubExtended::from(JubJubAffine::from_raw_unchecked(x_scalar, y_scalar))
-                    * blinding_factor),
-        );
+        let second_point =
+            JubJubExtended::from(JubJubAffine::from_raw_unchecked(x_scalar, y_scalar));
+        let second_bytes = JubJubAffine::from(second_point).to_bytes();
+        let second_point = JubJubExtended::from(JubJubAffine::from_bytes(second_bytes).unwrap());
+        let value_commitment =
+            (JubJubExtended::from(GENERATOR) * value_commitment) + (second_point * blinding_factor);
+        let value_commitment = JubJubExtended::from(JubJubAffine::from(value_commitment));
 
         // Output notes have undefined idx
         let idx = 0;
@@ -272,7 +276,7 @@ impl Note for TransparentNote {
         None
     }
 
-    fn value_commitment(&self) -> &JubJubAffine {
+    fn value_commitment(&self) -> &JubJubExtended {
         &self.value_commitment
     }
 
@@ -383,7 +387,7 @@ impl TryFrom<rpc::DecryptedNote> for TransparentNote {
 
 impl<H: ByteHash> Content<H> for TransparentNote {
     fn persist(&mut self, sink: &mut Sink<H>) -> io::Result<()> {
-        sink.write_all(&self.value_commitment.to_bytes())?;
+        sink.write_all(&JubJubAffine::from(&self.value_commitment).to_bytes())?;
         sink.write_all(&JubJubAffine::from(&self.R).to_bytes())?;
         sink.write_all(&JubJubAffine::from(&self.pk_r).to_bytes())?;
 
@@ -396,8 +400,7 @@ impl<H: ByteHash> Content<H> for TransparentNote {
     }
 
     fn restore(source: &mut Source<H>) -> io::Result<Self> {
-        let value_commitment =
-            JubJubAffine::from(utils::kelvin_source_to_jubjub_projective(source)?);
+        let value_commitment = utils::kelvin_source_to_jubjub_projective(source)?;
         let R = utils::kelvin_source_to_jubjub_projective(source)?;
         let pk_r = utils::kelvin_source_to_jubjub_projective(source)?;
 

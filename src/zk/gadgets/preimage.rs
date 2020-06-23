@@ -49,7 +49,7 @@ mod tests {
         let value = 100;
         let note = TransparentNote::output(&pk, value).0;
         let merkle_opening = crypto::MerkleProof::mock(note.hash());
-        let input = note.to_transaction_input(merkle_opening, sk);
+        let input = note.to_transaction_input(merkle_opening, sk).unwrap();
 
         let mut composer = StandardComposer::new();
 
