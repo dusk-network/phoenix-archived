@@ -1,6 +1,6 @@
 use crate::{
-    crypto, db, rpc, utils, zk, BlsScalar, Error, Note, NoteGenerator, ObfuscatedNote, PublicKey,
-    SecretKey, TransparentNote,
+    crypto, crypto::commitment::Commitment, db, rpc, utils, zk, BlsScalar, Error, JubJubExtended,
+    Note, NoteGenerator, ObfuscatedNote, PublicKey, SecretKey, TransparentNote,
 };
 
 use std::convert::TryFrom;
@@ -37,29 +37,29 @@ pub mod item;
 
 /// A phoenix transaction
 pub struct Transaction {
-    fee: TransactionOutput,
     idx_inputs: usize,
     inputs: [TransactionInput; MAX_INPUT_NOTES_PER_TRANSACTION],
+    crossover: Option<TransactionOutput>,
+    contract_output: Option<TransactionOutput>,
     idx_outputs: usize,
     outputs: [TransactionOutput; MAX_OUTPUT_NOTES_PER_TRANSACTION],
-    proof: Option<zk::Proof>,
-    public_inputs: Option<zk::ZkPublicInputs>,
+    fee: TransactionOutput,
+    proofs: Vec<zk::Proof>,
+    public_inputs: Vec<zk::ZkPublicInputs>,
 }
 
 impl Clone for Transaction {
-    // TODO: we should have a safe way of cloning the proof
     fn clone(&self) -> Self {
-        unsafe {
-            let p: Option<zk::Proof> = mem::transmute_copy(&self.proof);
-            Transaction {
-                fee: self.fee.clone(),
-                idx_inputs: self.idx_inputs.clone(),
-                inputs: self.inputs.clone(),
-                idx_outputs: self.idx_outputs.clone(),
-                outputs: self.outputs.clone(),
-                proof: p,
-                public_inputs: self.public_inputs.clone(),
-            }
+        Transaction {
+            idx_inputs: self.idx_inputs.clone(),
+            inputs: self.inputs.clone(),
+            crossover: self.crossover.clone(),
+            contract_output: self.contract_output.clone(),
+            idx_outputs: self.idx_outputs.clone(),
+            outputs: self.outputs.clone(),
+            fee: self.fee.clone(),
+            proofs: self.proofs.clone(),
+            public_inputs: self.public_inputs.clone(),
         }
     }
 }
@@ -67,13 +67,15 @@ impl Clone for Transaction {
 impl Default for Transaction {
     fn default() -> Self {
         Self {
-            fee: *DEFAULT_OUTPUT,
             idx_inputs: 0,
             inputs: [*DEFAULT_INPUT; MAX_INPUT_NOTES_PER_TRANSACTION],
+            crossover: None,
+            contract_output: None,
             idx_outputs: 0,
             outputs: [*DEFAULT_OUTPUT; MAX_OUTPUT_NOTES_PER_TRANSACTION],
-            proof: None,
-            public_inputs: None,
+            fee: *DEFAULT_OUTPUT,
+            proofs: vec![],
+            public_inputs: vec![],
         }
     }
 }
@@ -84,10 +86,15 @@ impl Read for Transaction {
 
         let mut n = 0;
 
-        // Serialize proof
-        if self.proof.is_some() {
-            let encoded: Vec<u8> = serialize(&self.proof().unwrap())
-                .unwrap_or(vec![0x00u8; zk::SERIALIZED_PROOF_SIZE]);
+        // Serialize proofs
+        let proofs_size = self.proofs.len().to_le_bytes();
+        let b = (&proofs_size[..]).read(buf)?;
+        n += b;
+        buf = &mut buf[b..];
+
+        for i in 0..self.proofs.len() {
+            let encoded: Vec<u8> =
+                serialize(&self.proofs[i]).unwrap_or(vec![0x00u8; zk::SERIALIZED_PROOF_SIZE]);
 
             let b = (&encoded[..]).read(buf)?;
             n += b;
@@ -118,6 +125,28 @@ impl Read for Transaction {
             buf = &mut buf[utils::BLS_SCALAR_SERIALIZED_SIZE..];
         }
 
+        // Serialize crossover
+        buf[0] = self.crossover.is_some() as u8;
+        n += 1;
+        buf = &mut buf[1..];
+
+        if self.crossover.is_some() {
+            let b = self.crossover.unwrap().read(buf)?;
+            n += b;
+            buf = &mut buf[b..];
+        }
+
+        // Serialize contract output (if any)
+        buf[0] = self.contract_output.is_some() as u8;
+        n += 1;
+        buf = &mut buf[1..];
+
+        if self.contract_output.is_some() {
+            let b = self.contract_output.unwrap().read(buf)?;
+            n += b;
+            buf = &mut buf[b..];
+        }
+
         // Serialize tx outputs
         let outputs = self.idx_outputs.to_le_bytes();
         let b = (&outputs[..]).read(buf)?;
@@ -130,6 +159,7 @@ impl Read for Transaction {
             buf = &mut buf[b..];
         }
 
+        // Serialize fee
         let b = self.fee.read(buf)?;
         n += b;
 
@@ -142,14 +172,21 @@ impl Write for Transaction {
         let mut n = 0;
 
         // Deserialize proof
-        let mut proof = [0x00u8; zk::SERIALIZED_PROOF_SIZE];
-        let b = (&mut proof[..]).write(buf)?;
-        let proof: Proof = deserialize(&proof[..])
-            .map_err(|_| Error::InvalidParameters)
-            .map_err::<io::Error, _>(|e| e.into())?;
-        self.proof.replace(proof);
+        let mut proof_size = 0usize.to_le_bytes();
+        let b = (&mut proof_size[..]).write(buf)?;
         n += b;
         buf = &buf[b..];
+
+        for i in 0..usize::from_le_bytes(proof_size) {
+            let mut proof = [0x00u8; zk::SERIALIZED_PROOF_SIZE];
+            let b = (&mut proof[..]).write(buf)?;
+            let proof: Proof = deserialize(&proof[..])
+                .map_err(|_| Error::InvalidParameters)
+                .map_err::<io::Error, _>(|e| e.into())?;
+            self.proofs.push(proof);
+            n += b;
+            buf = &buf[b..];
+        }
 
         // Deserialize tx inputs (merkle root and nullifier)
         let mut inputs = 0usize.to_le_bytes();
@@ -180,6 +217,34 @@ impl Write for Transaction {
             self.inputs[i] = TransactionInput::obfuscated(nullifier.into(), merkle_root);
         }
 
+        // Deserialize crossover
+        let exists = buf[0] != 0;
+        n += 1;
+        buf = &buf[1..];
+
+        if exists {
+            let output = TransactionOutput::default();
+            let b = output.write(buf)?;
+            n += b;
+            buf = &buf[b..];
+
+            self.crossover = Some(output);
+        }
+
+        // Deserialize contract output (if any)
+        let exists = buf[0] != 0;
+        n += 1;
+        buf = &buf[1..];
+
+        if exists {
+            let output = TransactionOutput::default();
+            let b = output.write(buf)?;
+            n += b;
+            buf = &buf[b..];
+
+            self.contract_output = Some(output);
+        }
+
         // Deserialize tx outputs
         let mut outputs = 0usize.to_le_bytes();
         let b = (&mut outputs[..]).write(buf)?;
@@ -193,6 +258,7 @@ impl Write for Transaction {
             buf = &buf[b..];
         }
 
+        // Deserialize fee
         let b = self.fee.write(buf)?;
         n += b;
 
@@ -339,6 +405,26 @@ impl Transaction {
         Ok(())
     }
 
+    /// Return the crossover value
+    pub fn crossover(&self) -> Option<TransactionOutput> {
+        self.crossover
+    }
+
+    /// Set the crossover value
+    pub fn set_crossover(&mut self, crossover: TransactionOutput) {
+        self.crossover = Some(crossover);
+    }
+
+    /// Return the contract output value
+    pub fn contract_output(&self) -> Option<TransactionOutput> {
+        self.contract_output
+    }
+
+    /// Set the contract output value
+    pub fn set_contract_output(&mut self, contract_output: TransactionOutput) {
+        self.contract_output = Some(contract_output);
+    }
+
     /// Return the fee value.
     ///
     /// A transaction is created with a random public key for the fee. The pre-image of the fee
@@ -454,19 +540,19 @@ impl Transaction {
         self.recalculate_pi();
 
         let proof = zk::prove(self);
-        self.proof.replace(proof);
+        self.add_proof(proof);
 
         Ok(())
     }
 
-    /// Return the transaction proof created via [`Transaction::prove`]
-    pub fn proof(&self) -> Option<&zk::Proof> {
-        self.proof.as_ref()
+    /// Return all the transaction proofs created via [`Transaction::prove`]
+    pub fn proofs(&self) -> Vec<zk::Proof> {
+        self.proofs
     }
 
-    /// Replace the current proof, if any
-    pub fn set_proof(&mut self, proof: zk::Proof) {
-        self.proof.replace(proof);
+    /// Add a proof to the list
+    pub fn add_proof(&mut self, proof: zk::Proof) {
+        self.proofs.push(proof);
     }
 
     /// Remove all the sensitive info from the transaction used to build the zk proof so it can be
@@ -488,22 +574,25 @@ impl Transaction {
     ///
     /// The transaction items will be sorted for verification correctness
     pub fn verify(&mut self) -> Result<(), Error> {
-        if self.public_inputs.is_none() {
+        if self.public_inputs.is_empty() {
             self.recalculate_pi();
         }
 
-        let pi = self.public_inputs.ok_or(Error::InvalidParameters)?;
-        // TODO: this should be updated once we know the positions of the public inputs
-        // let pi = pi.generate_pi();
-        let pi = vec![];
-
-        let proof = self.proof.as_ref().ok_or(Error::Generic)?;
-
-        if zk::verify(proof, pi.as_slice()) {
-            Ok(())
-        } else {
-            Err(Error::Generic)
+        if self.public_inputs.len() != self.proofs.len() {
+            return Err(Error::InvalidParameters);
         }
+
+        for (i, proof) in self.proofs.iter().enumerate() {
+            // TODO: this should be updated once we know the positions of the public inputs
+            // let pi = pi.generate_pi();
+            let pi = vec![];
+
+            if !zk::verify(proof, pi.as_slice()) {
+                return Err(Error::Generic);
+            }
+        }
+
+        Ok(())
     }
 
     /// Create a new transaction from a set of inputs/outputs defined by a rpc source.
@@ -570,7 +659,7 @@ impl Transaction {
         let proof = tx.proof;
         if !proof.is_empty() {
             let proof = deserialize(proof.as_slice()).map_err(|_| Error::InvalidParameters)?;
-            transaction.set_proof(proof);
+            transaction.add_proof(proof);
         }
 
         Ok(transaction)
@@ -600,7 +689,7 @@ impl TryFrom<rpc::Transaction> for Transaction {
         let proof = tx.proof;
         if !proof.is_empty() {
             let proof = deserialize(proof.as_slice()).map_err(|_| Error::InvalidParameters)?;
-            transaction.set_proof(proof);
+            transaction.add_proof(proof);
         }
 
         Ok(transaction)
@@ -637,18 +726,17 @@ impl TryFrom<Transaction> for rpc::Transaction {
 
         let fee = Some(tx.fee.into());
 
-        let proof = tx
-            .proof()
-            .map(|p| serialize(p).map(|b| b.to_vec()))
-            .transpose()
-            .map_err(|_| Error::InvalidParameters)?
-            .unwrap_or_default();
+        let proofs: Vec<Vec<u8>> = tx
+            .proofs()
+            .iter()
+            .map(|p| serialize(p).unwrap_or_default())
+            .collect();
 
         Ok(rpc::Transaction {
             inputs,
             outputs,
             fee,
-            proof,
+            proof: proofs,
             data: vec![],
         })
     }
