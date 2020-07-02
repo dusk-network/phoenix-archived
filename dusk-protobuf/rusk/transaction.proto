@@ -1,0 +1,29 @@
+syntax = "proto3";
+package rusk;
+option go_package = "github.com/dusk-protobuf/autogen/go/rusk";
+
+import "field.proto";
+import "keys.proto";
+import "note.proto";
+
+message TransactionInput {
+  Nullifier nullifier = 1;
+  Scalar merkle_root = 2;
+}
+
+message TransactionOutput {
+  Note note = 1;
+  PublicKey pk = 2;
+  fixed64 value = 3;
+  JubJubScalar blinding_factor = 4;
+}
+
+message Transaction {
+  repeated TransactionInput inputs = 1;
+  repeated TransactionOutput outputs = 2;
+  TransactionOutput crossover = 3;
+  TransactionOutput contract_output = 4;
+  TransactionOutput fee = 5;
+  repeated bytes proofs = 6;
+  repeated bytes data = 7;
+}

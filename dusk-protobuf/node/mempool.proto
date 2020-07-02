@@ -1,0 +1,48 @@
+syntax="proto3";
+package node;
+option go_package = "github.com/dusk-protobuf/autogen/go/node";
+
+enum TxType {
+ // STANDARD indicates either phoenix transaction type or Smart contract calls
+ STANDARD = 0;
+ // DISTRIBUTE indicates the coinbase and reward distribution contract call
+ DISTRIBUTE = 1;
+ // WITHDRAWFEES indicates the Provisioners' withdraw contract call
+ WITHDRAWFEES = 2;
+ // BID transaction propagated by the Block Generator
+ BID = 3;
+ // STAKE transaction propagated by the Provisioners
+ STAKE = 4;
+ // SLASH transaction propagated by the consensus to punish the Committee
+ // members when they turn byzantine
+ SLASH = 5;
+ // WITHDRAWSTAKE transaction propagated by the Provisioners to withdraw
+ // their stake
+ WITHDRAWSTAKE = 6;
+ // WITHDRAWBID transaction propagated by the Block Generator to withdraw
+ // their bids
+ WITHDRAWBID = 7;
+}
+
+message Tx {
+    TxType type = 1;
+    string id = 2;
+    fixed64 lock_time = 3;
+}
+
+// SelectRequest can specify an ID or a transaction type or none
+message SelectRequest {
+    repeated TxType types = 1;
+    string id = 2;
+}
+
+message SelectResponse {
+    //Note: the response was a single string describing the transactions. 
+    //It should actually be responsibility of the caller to format the data or handle it otherwise
+    //string msg = 1;
+    repeated Tx result = 1;
+}
+
+message GetUnconfirmedBalanceRequest {
+	bytes vk = 1;
+}
