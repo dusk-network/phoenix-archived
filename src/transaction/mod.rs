@@ -1,6 +1,6 @@
 use crate::{
-    crypto, crypto::commitment::Commitment, db, rpc, utils, zk, BlsScalar, Error, JubJubExtended,
-    Note, NoteGenerator, ObfuscatedNote, PublicKey, SecretKey, TransparentNote,
+    crypto, db, rpc, utils, zk, BlsScalar, Error, JubJubExtended, Note, NoteGenerator,
+    ObfuscatedNote, PublicKey, SecretKey, TransparentNote,
 };
 
 use std::convert::TryFrom;
@@ -226,7 +226,7 @@ impl Write for Transaction {
         buf = &buf[1..];
 
         if exists {
-            let output = TransactionOutput::default();
+            let mut output = TransactionOutput::default();
             let b = output.write(buf)?;
             n += b;
             buf = &buf[b..];
@@ -240,7 +240,7 @@ impl Write for Transaction {
         buf = &buf[1..];
 
         if exists {
-            let output = TransactionOutput::default();
+            let mut output = TransactionOutput::default();
             let b = output.write(buf)?;
             n += b;
             buf = &buf[b..];
@@ -552,8 +552,8 @@ impl Transaction {
     }
 
     /// Return all the transaction proofs created via [`Transaction::prove`]
-    pub fn proofs(&self) -> Vec<zk::Proof> {
-        self.proofs
+    pub fn proofs(&self) -> &Vec<zk::Proof> {
+        &self.proofs
     }
 
     /// Add a proof to the list
@@ -662,8 +662,16 @@ impl Transaction {
             .map(|o| TransactionOutput::try_from(o).and_then(|o| transaction.push_output(o)))
             .collect::<Result<_, _>>()?;
 
-        let proof = tx.proof;
-        if !proof.is_empty() {
+        if tx.crossover.is_some() {
+            transaction.set_crossover(TransactionOutput::try_from(tx.crossover.unwrap())?);
+        }
+
+        if tx.contract_output.is_some() {
+            transaction
+                .set_contract_output(TransactionOutput::try_from(tx.contract_output.unwrap())?);
+        }
+
+        for proof in tx.proofs.iter() {
             let proof = deserialize(proof.as_slice()).map_err(|_| Error::InvalidParameters)?;
             transaction.add_proof(proof);
         }
@@ -692,8 +700,16 @@ impl TryFrom<rpc::Transaction> for Transaction {
             .map(|o| TransactionOutput::try_from(o).and_then(|o| transaction.push_output(o)))
             .collect::<Result<_, _>>()?;
 
-        let proof = tx.proof;
-        if !proof.is_empty() {
+        if tx.crossover.is_some() {
+            transaction.set_crossover(TransactionOutput::try_from(tx.crossover.unwrap())?);
+        }
+
+        if tx.contract_output.is_some() {
+            transaction
+                .set_contract_output(TransactionOutput::try_from(tx.contract_output.unwrap())?);
+        }
+
+        for proof in tx.proofs.iter() {
             let proof = deserialize(proof.as_slice()).map_err(|_| Error::InvalidParameters)?;
             transaction.add_proof(proof);
         }
@@ -730,6 +746,16 @@ impl TryFrom<Transaction> for rpc::Transaction {
             })
             .collect();
 
+        let mut crossover: Option<rpc::TransactionOutput> = None;
+        if tx.crossover.is_some() {
+            crossover = Some(tx.crossover.unwrap().into());
+        }
+
+        let mut contract_output: Option<rpc::TransactionOutput> = None;
+        if tx.contract_output.is_some() {
+            contract_output = Some(tx.contract_output.unwrap().into());
+        }
+
         let fee = Some(tx.fee.into());
 
         let proofs: Vec<Vec<u8>> = tx
@@ -742,7 +768,9 @@ impl TryFrom<Transaction> for rpc::Transaction {
             inputs,
             outputs,
             fee,
-            proof: proofs,
+            crossover,
+            contract_output,
+            proofs: proofs,
             data: vec![],
         })
     }
