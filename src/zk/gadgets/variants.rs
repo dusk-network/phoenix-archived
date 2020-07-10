@@ -2,18 +2,18 @@
 /// different macros to vary the different circuit types
 
 use dusk_plonk::constraint_system::StandardComposer;
-use phoenix::{
-    utils, zk, Transaction}
-use crate::{NoteVariant, TransactionItem, ViewKey};
 
+use crate::{NoteVariant, TransactionItem, ViewKey, Transaction};
 
-macro_rules! dusk_tx(inputs, outputs, crossover) {
-    () => { 
+#[macro_export]
+macro_rules! dusk_tx {
+    ($inputs:expr, $outputs:expr, $crossover:expr) => { 
+        {
         let mut tx = Transaction::default();
         let value = 100;
 
         // The inputs
-        for i in 0..inputs {
+        for i in 0..$inputs {
         let sk = SecretKey::default();
         let vk = sk.view_key();
         let pk = sk.public_key();
@@ -33,12 +33,13 @@ macro_rules! dusk_tx(inputs, outputs, crossover) {
             output_value = total_output_value/(outputs+1);
         }
         
-        for i in 0..outputs {
+        for i in 0..$outputs {
+
         let sk = SecretKey::default();
         let vk = sk.view_key();
         let pk = sk.public_key();
         let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        let output = note.to_transaction_output(output_value, blinding_factor, pk))
+        let output = note.to_transaction_output(output_value, blinding_factor, pk)
     
         tx.push_output(output).unwrap();
         }
@@ -47,29 +48,32 @@ macro_rules! dusk_tx(inputs, outputs, crossover) {
         let vk = sk.view_key();
         let pk = sk.public_key();
         let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        let output = note.to_transaction_output(output_value, blinding_factor, pk))
+        let output = note.to_transaction_output(output_value, blinding_factor, pk)
     
         tx.set_fee(output).unwrap();
 
-        if crossover {
+        if $crossover {
         let sk = SecretKey::default();
         let vk = sk.view_key();
         let pk = sk.public_key();
         let (note, blinding_factor) = TransparentNote::output(&pk, value);
-        let output = note.to_transaction_output(output_value, blinding_factor, pk))
+        let output = note.to_transaction_output(output_value, blinding_factor, pk)
         
         tx.set_crossover(output);
         tx.set_contract_output(output);
         }
 
-        
-
-
 
     };
 
     tx
+    }
 }
 
 
+
+
 #[test]
+fn dusk_tx_test() {
+   
+}
