@@ -54,3 +54,4 @@ impl Default for ZkMerkleLevel {
         }
     }
 }
+
