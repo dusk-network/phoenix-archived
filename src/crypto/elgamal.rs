@@ -9,11 +9,13 @@ use rand::Rng;
 pub struct SecretKey(Fr);
 
 const Q: [u8;32] = [14, 125, 180, 234, 101, 51, 175, 169, 6, 103, 59, 1, 1, 52, 59, 0, 166, 104, 32, 147, 204, 200, 16, 130, 208, 151, 14, 94, 214, 247, 44, 183];
+const R: [u8;32] = [115, 237, 167, 83, 41, 157, 125, 72, 51, 57, 216, 8, 9, 161, 216, 5, 83, 189, 164, 2, 255, 254, 91, 254, 255, 255, 255, 255, 0, 0, 0, 1];
 
 impl SecretKey{
     // This will create a new private key
     // from a scalar of the Field Fr.
-    pub fn new(scalar: Fr) -> Result<SecretKey, Error> {
+    pub fn new() -> Result<SecretKey, Error> {
+        let scalar = random_fr();
         if scalar.ct_eq(&Fr::zero()).unwrap_u8() == 1u8 {
             return Err(Error::InvalidParameters);
         }
@@ -42,7 +44,7 @@ impl PublicKey {
     
     pub fn new() -> Result<PublicKey, Error> {
         let sk = SecretKey::new();
-        let pk = SecretKey::to_public(sk);
+        let pk = SecretKey::to_public(&sk.unwrap());
         Ok(pk)
     }
 }
@@ -68,18 +70,18 @@ pub struct CipherText {
     cipher: AffinePoint,
 }
 
-impl CipherText {
+// impl CipherText {
 
-    pub fn random() -> Result<CipherText, Error> {
-        let public = PublicKey::new();
-        let x = SecretKey::new();
-        let y = SecretKey::new();
-        let cipher = from_raw_unchecked(x, y);
+//     pub fn random() -> Result<CipherText, Error> {
+//         let public = PublicKey::new();
+//         let x = SecretKey::new();
+//         let y = SecretKey::new();
+//         let cipher = from_raw_unchecked(x, y);
 
-        let cyph = CypherText { publicKey, cipher };
-        Ok(cyph)
-    }
-}
+//         let cyph = CypherText { publicKey, cipher };
+//         Ok(cyph)
+//     }
+// }
 
 
 #[derive(Debug, PartialEq, Eq)]
@@ -112,7 +114,7 @@ pub fn encrypt(sk: SecretKey, pk: PublicKey, msg: &Message) -> CipherText {
 }
 
 pub fn decrypt(sk: SecretKey, cipher: CipherText) -> Message {
-    let s_inv = ExtendedPoint::from(cipher.publicKey.0) * (Fr::from_bytes(&Q).unwrap() - sk.0);
+    let s_inv = ExtendedPoint::from(cipher.publicKey.0) * (Fr::from_bytes(&R).unwrap() - sk.0);
 
     let m = ExtendedPoint::from(cipher.cipher) + s_inv;
     Message(AffinePoint::from(m).to_bytes())
@@ -131,8 +133,8 @@ fn random_fr() -> Fr {
 fn test_encryption() {
     for _ in 0..10 {
         let msg1 = Message::random();
-        let sk1 = SecretKey::new(random_fr()).unwrap();
-        let sk2 = SecretKey::new(random_fr()).unwrap();
+        let sk1 = SecretKey::new().unwrap();
+        let sk2 = SecretKey::new().unwrap();
         let pk2 = PublicKey::from_secret(&sk2);
 
         let cyph = encrypt(sk1, pk2, &msg1);
@@ -141,6 +143,7 @@ fn test_encryption() {
         assert_eq!(msg1, msg2);
     }
 }
+
 
 
 
