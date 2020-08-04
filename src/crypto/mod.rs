@@ -10,6 +10,8 @@ use sodiumoxide::crypto::secretbox::{self, Key};
 
 pub mod merkle;
 
+mod elgamal;
+
 pub use merkle::{MerkleProof, MerkleProofProvider, ARITY, TREE_HEIGHT};
 pub use poseidon252::sponge::sponge::sponge_hash;
 
